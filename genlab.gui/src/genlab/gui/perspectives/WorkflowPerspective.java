@@ -2,7 +2,6 @@ package genlab.gui.perspectives;
 
 import genlab.gui.views.ExistingView;
 import genlab.gui.views.MessagesView;
-import genlab.gui.views.NavigatorView;
 import genlab.gui.views.WorkflowView;
 
 import org.eclipse.ui.IFolderLayout;
@@ -16,6 +15,8 @@ public class WorkflowPerspective implements IPerspectiveFactory {
 	 */
 	public static final String ID = "genlab.gui.perspectives.WorkflowPerspective";
 
+	
+	
 	public void createInitialLayout(IPageLayout layout) {
 		
 		String editorArea = layout.getEditorArea();
@@ -32,7 +33,7 @@ public class WorkflowPerspective implements IPerspectiveFactory {
 		IFolderLayout folderLeft = layout.createFolder("left folder", IPageLayout.LEFT, 0.15f, editorArea);
 		folderLeft.addPlaceholder(MessagesView.ID + ":*");
 		// add a navigator
-		folderLeft.addView(NavigatorView.ID);
+		folderLeft.addView("genlab.gui.views.projectexplorer");
 		folderLeft.addView(WorkflowView.ID);
 		
 		// add a folder at right...

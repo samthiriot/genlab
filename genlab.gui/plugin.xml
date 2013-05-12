@@ -31,14 +31,6 @@
       </view>
       <view
             allowMultiple="false"
-            class="genlab.gui.views.NavigatorView"
-            icon="icons/view_navigator.gif"
-            id="genlab.gui.views.NavigatorView"
-            name="Navigator"
-            restorable="true">
-      </view>
-      <view
-            allowMultiple="false"
             class="genlab.gui.views.WorkflowView"
             id="genlab.gui.views.WorkflowView"
             name="Workflow"
@@ -48,6 +40,13 @@
             class="genlab.gui.views.ExistingView"
             id="genlab.gui.views.ExistingView"
             name="Algos"
+            restorable="true">
+      </view>
+      <view
+            class="org.eclipse.ui.navigator.CommonNavigator"
+            icon="icons/view_navigator.gif"
+            id="genlab.gui.views.projectexplorer"
+            name="Project Explorer"
             restorable="true">
       </view>
    </extension>
@@ -113,6 +112,61 @@
                tooltip="clear messages">
          </command>
       </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.viewer">
+      <viewerContentBinding
+            viewerId="genlab.gui.views.projectexplorer">
+         <includes>
+            <contentExtension
+                  pattern="org.eclipse.ui.navigator.resourceContent">
+            </contentExtension>
+            <contentExtension
+                  pattern="org.eclipse.ui.navigator.resources.filters.*">
+            </contentExtension>
+            <contentExtension
+                  pattern="genlab.gui.views.projectexplorer.propertiesContent">
+            </contentExtension>
+         </includes>
+      </viewerContentBinding>
+      <viewerActionBinding
+            viewerId="genlab.gui.views.projectexplorer">
+         <includes>
+            <actionExtension
+                  pattern="org.eclipse.ui.navigator.resources.*">
+            </actionExtension>
+         </includes>
+      </viewerActionBinding>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.navigatorContent">
+      <navigatorContent
+            contentProvider="genlab.gui.views.ProjectNavigatorContentProvider"
+            id="genlab.gui.views.projectexplorer.propertiesContent"
+            name="Properties file content">
+         <triggerPoints>
+            <or>
+               <and>
+                  <instanceof
+                        value="org.eclipse.core.resources.IResource">
+                  </instanceof>
+                  <test
+                        forcePluginActivation="true"
+                        property="org.eclipse.core.resources.extension"
+                        value="properties">
+                  </test>
+               </and>
+               <instanceof
+                     value="org.eclipse.ui.examples.navigator.PropertiesTreeData">
+               </instanceof>
+            </or>
+         </triggerPoints>
+         <possibleChildren>
+            <instanceof
+                  value="genlab.gui.views.projectexplorer.PropertiesTreeData">
+            </instanceof>
+         </possibleChildren>
+      </navigatorContent>
    </extension>
 
 </plugin>

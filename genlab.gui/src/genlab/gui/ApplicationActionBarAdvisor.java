@@ -21,6 +21,7 @@ import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
+import org.eclipse.ui.ide.IDEActionFactory;
 
 /**
  * An action bar advisor is responsible for creating, adding, and disposing of the
@@ -34,12 +35,17 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     // when fillActionBars is called with FILL_PROXY.
     private IWorkbenchAction exitAction;
     private IWorkbenchAction aboutAction;
-    private IWorkbenchAction newWindowAction;
     private OpenViewAction openViewAction;
     private Action messagePopupAction;
     private IContributionItem viewShortListItem;
     private IContributionItem viewListItem;
+    private IWorkbenchAction switchWorkspace;
 
+    // window
+    private IWorkbenchAction openPreferences;
+    private IWorkbenchAction openNewWizard;
+    
+    
     public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
         super(configurer);
     }
@@ -51,14 +57,13 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         // Registering also provides automatic disposal of the actions when
         // the window is closed.
 
+    	
         exitAction = ActionFactory.QUIT.create(window);
         register(exitAction);
         
         aboutAction = ActionFactory.ABOUT.create(window);
         register(aboutAction);
-        
-        newWindowAction = ActionFactory.OPEN_NEW_WINDOW.create(window);
-        register(newWindowAction);
+      
         
         openViewAction = new OpenViewAction(window, "Open Another Message View", View.ID);
         register(openViewAction);
@@ -66,10 +71,21 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         messagePopupAction = new MessagePopupAction("Open Message", window);
         register(messagePopupAction);
         
-
+        switchWorkspace = IDEActionFactory.OPEN_WORKSPACE.create(window);
+        register(switchWorkspace);
+        
         // window
         viewShortListItem =  ContributionItemFactory.VIEWS_SHORTLIST.create(window);
         viewListItem =  ContributionItemFactory.VIEWS_SHOW_IN.create(window);
+       
+        openPreferences = ActionFactory.PREFERENCES.create(window);
+        register(openPreferences);
+       
+        openNewWizard = ActionFactory.NEW.create(window);
+        register(openNewWizard);
+        
+        
+        //ActionFactory.NEW_EDITOR
         
     }
     
@@ -86,16 +102,20 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         menuBar.add(helpMenu);
         
         // File
-        fileMenu.add(newWindowAction);
+        fileMenu.add(openNewWizard);
+
         fileMenu.add(new Separator());
         fileMenu.add(messagePopupAction);
         fileMenu.add(openViewAction);
+        fileMenu.add(new Separator());
+        fileMenu.add(switchWorkspace);
         fileMenu.add(new Separator());
         fileMenu.add(exitAction);
         
         // Windows
         windowMenu.add(viewListItem);
         windowMenu.add(viewShortListItem);
+        windowMenu.add(openPreferences);
         
         // Help
         helpMenu.add(aboutAction);
