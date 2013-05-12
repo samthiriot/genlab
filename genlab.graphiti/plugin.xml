@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.graphiti.ui.diagramTypes">
+      <diagramType
+            name="Graphiti Diagram Type"
+            type="genlab.graphiti.diagtypes.workflow"
+            id="genlab.graphiti.diagtypes.workflow">
+      </diagramType>
+   </extension>
+   <extension
+         point="org.eclipse.graphiti.ui.diagramTypeProviders">
+      <diagramTypeProvider
+            name="Graphiti Diagram Type Provider"
+            class="genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider"
+            id="genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider">
+         <diagramType
+               id="genlab.graphiti.diagtypes.workflow">
+         </diagramType>
+      </diagramTypeProvider>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="genlab.graphiti"
+            name="TODO Category">
+      </category>
+      <view
+            category="genlab.graphiti"
+            class="genlab.gui.graphiti.views.WorkflowGraphityView"
+            icon="icons/sample.gif"
+            id="genlab.graphiti.views.WorkflowGraphityView"
+            name="WorkflowView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            defaultHandler="genlab.gui.graphiti.handlers.CallGraffitiEditor"
+            description="opens a workflow editor"
+            id="genlab.gui.graphiti.commands.showWorkflowEditor"
+            name="edit workflow">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:window">
+         <command
+               commandId="genlab.gui.graphiti.commands.showWorkflowEditor"
+               label="edit workflow"
+               style="push">
+         </command>
+      </menuContribution>
+   </extension>
+
+</plugin>

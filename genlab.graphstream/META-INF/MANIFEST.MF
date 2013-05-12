@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: GenLab Graphstream
+Bundle-SymbolicName: genlab.graphstream;singleton:=true
+Bundle-Version: 0.0.1
+Bundle-Activator: genlab.graphstream.Activator
+Bundle-Vendor: Samuel Thiriot
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ genlab.core;bundle-version="0.0.1",
+ org.junit
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: ext/gs-algo-1.1.2.jar,
+ ext/gs-core-1.1.2.jar,
+ ext/gs-ui-1.1.2.jar,
+ .

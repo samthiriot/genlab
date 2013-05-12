@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="genlab.graphstream.algos"
+         name="algos from graphstream"
+         point="genlab.core.algo">
+      <algo
+            class="genlab.graphstream.algos.generators.WattsStrogatzAlgo"
+            id="genlab.graphstream.algos.generators.WattsStrogatzAlgo">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.readers.GraphStreamDGSParser"
+            id="genlab.graphstream.algos.readers.GraphStreamDGSParser">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.readers.GraphStreamDOTParser"
+            id="genlab.graphstream.algos.readers.GraphStreamDOTParser">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.readers.GraphStreamEdgeParser"
+            id="genLab.graphstream.algo3">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.readers.GraphStreamGEXFParser"
+            id="genlab.graphstream.algos.readers.GraphStreamGEXFParser">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.readers.GraphStreamGraphMLParser"
+            id="genlab.graphstream.algos.readers.GraphStreamGraphMLParser">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.readers.GraphStreamLGLParser"
+            id="genlab.graphstream.algos.readers.GraphStreamLGLParser">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.readers.GraphStreamNCOLParser"
+            id="genlab.graphstream.algos.readers.GraphStreamNCOLParser">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.readers.GraphStreamPajekParser"
+            id="genlab.graphstream.algos.readers.GraphStreamPajekParser">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.readers.GraphStreamTLPParser"
+            id="genlab.graphstream.algos.readers.GraphStreamTLPParser">
+      </algo>
+   </extension>
+<!-- TODO
+   <extension point="genlab.appli.algo" class="" name="graphML parser" id="genlab.graphstream.readers.GraphStreamGraphMLParser>
+   	<class>genlab.graphstream.readers.GraphStreamGraphMLParser</class>
+   	
+   </extension>
+-->
+</plugin>

@@ -1,0 +1,30 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Graphiti
+Bundle-SymbolicName: genlab.graphiti; singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: genlab.gui.graphiti.Activator
+Bundle-Vendor: Samuel Thiriot
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.graphiti,
+ org.eclipse.graphiti.ui,
+ org.eclipse.graphiti.pattern,
+ org.eclipse.emf,
+ org.eclipse.emf.transaction,
+ org.eclipse.emf.workspace,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.ide,
+ org.eclipse.ui.console,
+ org.eclipse.ui.navigator,
+ org.eclipse.ui.views,
+ org.eclipse.ui.views.log,
+ genlab.core,
+ org.eclipse.graphiti.ui.capabilities,
+ org.eclipse.gef,
+ org.eclipse.emf.common.ui,
+ org.eclipse.emf.transaction.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Export-Package: genlab.gui.graphiti.handlers
