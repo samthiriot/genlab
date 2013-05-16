@@ -4,27 +4,54 @@ import java.util.Date;
 
 public class TextMessage implements ITextMessage {
 
-	protected final MessageLevel level;
-	protected final MessageAudience audience;
-	protected final String message;
-	protected final Long timestamp;
+	public final MessageLevel level;
+	public final MessageAudience audience;
+	public final String message;
+	public final Long timestamp;
 	protected int count = 1;
-	protected final Exception exception;
+	public final Exception exception;
+	public final String fromShort;
+	public final Class emitter;
 	
-	public TextMessage(MessageLevel level, MessageAudience audience, String message, Exception exception) {
+	
+	public TextMessage(MessageLevel level, MessageAudience audience, String fromShort, Class emitter, String message, Exception exception) {
 		this.level = level;
 		this.audience = audience;
 		this.message = message;
 		this.timestamp = System.currentTimeMillis();
 		this.exception = exception;
+		this.fromShort = fromShort;
+		this.emitter = emitter;
 	}
 	
-	public TextMessage(MessageLevel level, MessageAudience audience, String message) {
+	public TextMessage(MessageLevel level, MessageAudience audience, String fromShort, Class emitter, String message) {
 		this.level = level;
 		this.audience = audience;
 		this.message = message;
 		this.timestamp = System.currentTimeMillis();
 		this.exception = null;
+		this.fromShort = fromShort;
+		this.emitter = emitter;
+	}
+	
+	public TextMessage(MessageLevel level, MessageAudience audience, Class emitter, String message, Exception exception) {
+		this.level = level;
+		this.audience = audience;
+		this.message = message;
+		this.timestamp = System.currentTimeMillis();
+		this.exception = exception;
+		this.fromShort = emitter.getSimpleName();
+		this.emitter = emitter;
+	}
+	
+	public TextMessage(MessageLevel level, MessageAudience audience, Class emitter, String message) {
+		this.level = level;
+		this.audience = audience;
+		this.message = message;
+		this.timestamp = System.currentTimeMillis();
+		this.exception = null;
+		this.fromShort = emitter.getSimpleName();
+		this.emitter = emitter;
 	}
 
 	@Override
@@ -67,8 +94,19 @@ public class TextMessage implements ITextMessage {
 		return new Date(timestamp);
 	}
 	
+	@Override
 	public Exception getException() {
 		return exception;
+	}
+
+	@Override
+	public Class getEmitter() {
+		return emitter;
+	}
+
+	@Override
+	public String getShortEmitter() {
+		return fromShort;
 	}
 
 }

@@ -7,6 +7,6 @@ public enum MessageLevel {
 	WARNING,
 	INFO,
 	ERROR,
-	CONSEIL;
+	TIP;
 	
 }

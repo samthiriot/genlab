@@ -12,6 +12,7 @@ Bundle-ActivationPolicy: lazy
 Export-Package: genlab.basics.flow,
  genlab.basics.javaTypes,
  genlab.basics.javaTypes.graphs,
+ genlab.basics.workflow,
  genlab.core,
  genlab.core.algos,
  genlab.core.commons,

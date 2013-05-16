@@ -5,9 +5,11 @@ import static org.junit.Assert.*;
 import java.util.HashMap;
 
 import genlab.basics.javaTypes.graphs.IGenlabGraph;
+import genlab.basics.workflow.WorkflowFactory;
 import genlab.core.algos.IAlgoExecution;
 import genlab.core.algos.IAlgoInstance;
 import genlab.core.algos.IComputationResult;
+import genlab.core.algos.IGenlabWorkflow;
 import genlab.core.algos.IInputOutput;
 
 import org.junit.After;
@@ -89,5 +91,7 @@ public class TestWattsStrogatz {
 		
 		
 	}
+	
+
 
 }

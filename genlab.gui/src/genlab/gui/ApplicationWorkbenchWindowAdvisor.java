@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
+import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
@@ -18,6 +19,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     }
     
     public void preWindowOpen() {
+    	
         IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
         configurer.setInitialSize(new Point(600, 400));
         configurer.setShowCoolBar(true);
@@ -29,6 +31,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         
 		VisualResources.initVisualResource(Display.getCurrent().getActiveShell());
 
+		 
     }
     
     @Override

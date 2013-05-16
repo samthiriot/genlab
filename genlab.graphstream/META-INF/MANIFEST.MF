@@ -15,3 +15,8 @@ Bundle-ClassPath: ext/gs-algo-1.1.2.jar,
  ext/gs-core-1.1.2.jar,
  ext/gs-ui-1.1.2.jar,
  .
+Export-Package: genlab.graphstream,
+ genlab.graphstream.algos.generators,
+ genlab.graphstream.algos.readers,
+ genlab.graphstream.algos.writers,
+ genlab.graphstream.utils

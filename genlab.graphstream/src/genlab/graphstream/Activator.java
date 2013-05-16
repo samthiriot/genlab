@@ -2,13 +2,13 @@ package genlab.graphstream;
 
 import genlab.core.usermachineinteraction.GLLogger;
 
-import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends Plugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "genLab.graphstream"; //$NON-NLS-1$
@@ -29,8 +29,7 @@ public class Activator extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		GLLogger.debugTech("activator started: "+getClass().getCanonicalName());
-		GLLogger.debugTech("activator started: "+getClass().getCanonicalName());
+		GLLogger.infoTech("initializing the graphstream plugin for genlab...", getClass());
 
 	}
 

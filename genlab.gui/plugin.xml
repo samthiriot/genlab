@@ -43,6 +43,7 @@
             restorable="true">
       </view>
       <view
+            allowMultiple="false"
             class="org.eclipse.ui.navigator.CommonNavigator"
             icon="icons/view_navigator.gif"
             id="genlab.gui.views.projectexplorer"
@@ -141,9 +142,13 @@
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
       <navigatorContent
+            activeByDefault="true"
             contentProvider="genlab.gui.views.ProjectNavigatorContentProvider"
+            icon="icons/view_navigator.gif"
             id="genlab.gui.views.projectexplorer.propertiesContent"
-            name="Properties file content">
+            labelProvider="genlab.gui.views.ProjectNavigatorLabelProvider"
+            name="Properties file content"
+            priority="higher">
          <triggerPoints>
             <or>
                <and>
@@ -163,10 +168,70 @@
          </triggerPoints>
          <possibleChildren>
             <instanceof
-                  value="genlab.gui.views.projectexplorer.PropertiesTreeData">
+                  value="genlab.gui.views.ProjectNavigatorPropertiesTreeData">
             </instanceof>
          </possibleChildren>
+         <enablement>
+            <and>
+               <adapt
+                     type="org.eclipse.core.resources.IProject">
+               </adapt>
+               <test
+                     property="org.eclipse.core.resources.projectNature"
+                     value="genlab.gui.projectnatureImage">
+               </test>
+            </and>
+         </enablement>
       </navigatorContent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="genlab.gui.wizards.category"
+            name="GenLab">
+      </category>
+      <wizard
+            category="genlab.gui.wizards.category"
+            class="genlab.gui.wizards.NewGenlabProjectWizard"
+            finalPerspective="genlab.gui.perspectives.WorkflowPerspective"
+            icon="icons/explorer_project_open.gif"
+            id="genlab.gui.wizards.newgenlabproject"
+            name="New Genlab project"
+            project="true">
+      </wizard>
+      <wizard
+            category="genlab.gui.wizards.category"
+            class="genlab.gui.wizards.NewWorkflowWizard"
+            finalPerspective="genlab.gui.perspectives.WorkflowPerspective"
+            icon="icons/graph1.gif"
+            id="genlab.gui.wizards.newworkflow"
+            name="New workflow"
+            project="false">
+      </wizard>
+   </extension>
+   <extension
+         id="genlabProjectNature"
+         name="Workflow nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="genlab.gui.genlab2eclipse.GenLabWorkflowProjectNature">
+         </run>
+      </runtime>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="icons/explorer_project_open.gif"
+            id="genlab.gui.projectnatureImage"
+            natureId="genlab.gui.genlabProjectNature">
+      </image>
+   </extension>
+   <extension
+         point="genlab.core.workflow.listeners">
+      <listener
+            class="genlab.gui.genlab2eclipse.WorkflowsListener">
+      </listener>
    </extension>
 
 </plugin>

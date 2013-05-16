@@ -7,6 +7,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
+/**
+ * TODO view http://devdesignandstuff.blogspot.fr/2010/10/contributing-to-eclipse-common.html
+ * 
+ * @author B12772
+ *
+ */
 class ProjectNavigatorContentProvider implements ITreeContentProvider {
 
 	@Override
@@ -22,6 +28,7 @@ class ProjectNavigatorContentProvider implements ITreeContentProvider {
 
 	@Override
 	public Object[] getElements(Object inputElement) {
+		
 		// get children :-)
 		if (inputElement instanceof IWorkspaceRoot) {
 			IWorkspaceRoot workspaceRoot = (IWorkspaceRoot)inputElement;

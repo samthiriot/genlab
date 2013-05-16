@@ -16,14 +16,20 @@ public interface IGenlabGraph {
 	public void setGraphAttribute(String attributeId, Object value);
 	public Object getGraphAttribute(String attributeId);
 	
+
 	public void declareVertexAttribute(String attributeId, Class type);
 	public void declareEdgeAttribute(String attributeId, Class type);
+	
 	
 	public Collection<String> getDeclaredVertexAttributes();
 	public Map<String,Class> getDeclaredVertexAttributesAndTypes();
 
 	public Collection<String> getDeclaredEdgeAttributes();
 	public Map<String,Class> getDeclaredEdgeAttributesAndTypes();
+
+	public Map<String,Object> getVertexAttributes(String vertexId);
+	public Map<String,Object> getEdgeAttributes(String vertexId);
+	public Map<String,Object> getGraphAttributes();
 
 	public void addVertex(String id);
 	
@@ -72,5 +78,10 @@ public interface IGenlabGraph {
 	
 	public Collection<String> getNeighboors(String vertexId);
 	
+	public String getEdgeVertexFrom(String edgeId);
+	public String getEdgeVertexTo(String edgeId);
+	public boolean isEdgeDirected(String edgeId);
+	
+	public Collection<String> getEdges();
 	
 }

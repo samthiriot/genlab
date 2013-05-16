@@ -24,4 +24,11 @@ public interface ITextMessage extends Comparable<ITextMessage> {
 	public void addIncrementCount();
 	
 	public int getCount();
+	
+	public Exception getException();
+	
+	public Class getEmitter();
+	
+	public String getShortEmitter();
+	
 }

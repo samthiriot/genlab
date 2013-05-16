@@ -35,28 +35,34 @@ public final class ExistingAlgos {
 	
 	
 	public void declareAlgo(IAlgo algo) {
-		GLLogger.debugTech("detected available algorithm: "+algo.getName());
+		GLLogger.debugTech("detected available algorithm: "+algo.getName(), getClass());
 		name2algos.put(algo.getName(), algo);
 	}
 	
 	
 	private void detectedFromExtensionPoints() {
-		GLLogger.debugTech("detecting available algorithms from plugins...");
+		
+		GLLogger.debugTech("detecting available algorithms from plugins...", getClass());
 	    IExtensionRegistry reg = Platform.getExtensionRegistry();
 	    IConfigurationElement[] elements = reg.getConfigurationElementsFor(EXTENSION_POINT_ALGOS_ID);
 	    for (IConfigurationElement e : elements) {
-	    	GLLogger.debugTech("Evaluating extension: "+e.getName());
+	    	GLLogger.debugTech("Evaluating extension: "+e.getName(), getClass());
 		    Object o;
 			try {
 				o = e.createExecutableExtension("class");
 				if (o instanceof IAlgo) {
 					declareAlgo((IAlgo) o);
+				} else {
+					GLLogger.warnTech("detected something which is not an algo: "+o, getClass());
 				}
 			} catch (CoreException e1) {
-				GLLogger.errorTech("error while detecting available algorithms: error with extension point "+e.getName(), e1);
+				GLLogger.errorTech("error while detecting available algorithms: error with extension point "+e.getName(), getClass(), e1);
 			}
 			
 		}
+	    
+		GLLogger.infoTech("detected "+name2algos.size()+" algorithms provided by plugins", getClass());
+
 	}
 	
 	public Collection<String> getAlgoNames() {

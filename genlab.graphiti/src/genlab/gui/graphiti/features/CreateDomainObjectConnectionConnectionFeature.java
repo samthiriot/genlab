@@ -25,6 +25,7 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 
 	@Override
 	public boolean canCreate(ICreateConnectionContext context) {
+		
 		PictogramElement sourcePictogramElement = context.getSourcePictogramElement();
 		PictogramElement targetPictogramElement = context.getTargetPictogramElement();
 

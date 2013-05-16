@@ -13,7 +13,7 @@ import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.util.IColorConstant;
 
-
+// TODO delete
 public class AddDomainObjectConnectionConnectionFeature extends AbstractAddFeature implements
 		IAddFeature {
 
@@ -29,6 +29,7 @@ public class AddDomainObjectConnectionConnectionFeature extends AbstractAddFeatu
 
 	@Override
 	public PictogramElement add(IAddContext context) {
+		
 		IAddConnectionContext addConContext = (IAddConnectionContext) context;
 		IPeCreateService peCreateService = Graphiti.getPeCreateService();
 		IGaService gaService = Graphiti.getGaService();

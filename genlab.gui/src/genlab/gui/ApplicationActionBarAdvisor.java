@@ -40,6 +40,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     private IContributionItem viewShortListItem;
     private IContributionItem viewListItem;
     private IWorkbenchAction switchWorkspace;
+    private IWorkbenchAction exportAction;
 
     // window
     private IWorkbenchAction openPreferences;
@@ -57,7 +58,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         // Registering also provides automatic disposal of the actions when
         // the window is closed.
 
-    	
+    	// file
         exitAction = ActionFactory.QUIT.create(window);
         register(exitAction);
         
@@ -73,6 +74,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         
         switchWorkspace = IDEActionFactory.OPEN_WORKSPACE.create(window);
         register(switchWorkspace);
+        
+        exportAction = ActionFactory.EXPORT.create(window);
+        register(exportAction);
         
         // window
         viewShortListItem =  ContributionItemFactory.VIEWS_SHORTLIST.create(window);
@@ -107,10 +111,16 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         fileMenu.add(new Separator());
         fileMenu.add(messagePopupAction);
         fileMenu.add(openViewAction);
+        
+        fileMenu.add(new Separator());
+
+        fileMenu.add(exportAction);
+        
         fileMenu.add(new Separator());
         fileMenu.add(switchWorkspace);
         fileMenu.add(new Separator());
         fileMenu.add(exitAction);
+       
         
         // Windows
         windowMenu.add(viewListItem);

@@ -45,6 +45,18 @@
             class="genlab.graphstream.algos.readers.GraphStreamTLPParser"
             id="genlab.graphstream.algos.readers.GraphStreamTLPParser">
       </algo>
+      <algo
+            class="genlab.graphstream.algos.writers.GraphStreamDGSWriter"
+            id="genlab.graphstream.algos.writers.GraphStreamDGSWriter">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.writers.GraphStreamGMLWriter"
+            id="genlab.graphstream.algos.writers.GraphStreamGMLWriter">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.writers.GraphStreamTikzWriter"
+            id="genlab.graphstream.algos.writers.GraphStreamTikzWriter">
+      </algo>
    </extension>
 <!-- TODO
    <extension point="genlab.appli.algo" class="" name="graphML parser" id="genlab.graphstream.readers.GraphStreamGraphMLParser>

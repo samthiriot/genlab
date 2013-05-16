@@ -2,17 +2,8 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension-point id="genlab.core.algo" name="genlab.algo" schema="schema/genlab.core.algo.exsd"/>
+   <extension-point id="genlab.core.workflow.listeners" name="listeners" schema="schema/genlab.core.workflow.listeners.exsd"/>
 
 
-   <extension
-         point="org.eclipse.help.toc">
-      <toc
-            file="toc.xml">
-      </toc>
-      <toc
-            file="testToc.xml"
-            primary="true">
-      </toc>
-   </extension>
 
 </plugin>

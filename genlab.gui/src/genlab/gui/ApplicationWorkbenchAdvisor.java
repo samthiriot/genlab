@@ -4,11 +4,13 @@ import genlab.gui.perspectives.WorkflowPerspective;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.internal.ide.model.WorkbenchAdapterBuilder;
 
 /**
  * This workbench advisor creates the window advisor, and specifies
@@ -33,9 +35,17 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
 	@Override
 	public void initialize(IWorkbenchConfigurer configurer) {
-		
+
+        configurer.setSaveAndRestore(true); 
+
 		// register everything, including CNF (navigator)
 		IDE.registerAdapters();
+		
+		// no file linking
+		// TODO not working...
+		PlatformUI.getPreferenceStore().setValue(ResourcesPlugin.PREF_DISABLE_LINKING, true); 
+
+
 	}
 	
 }

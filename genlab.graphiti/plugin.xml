@@ -56,5 +56,22 @@
          </command>
       </menuContribution>
    </extension>
+   <extension
+         point="genlab.core.workflow.listeners">
+      <listener
+            class="genlab.gui.graphiti.genlab2graphiti.WorkflowListener">
+      </listener>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="genlab.gui.graphiti.editors.GenlabDiagramEditor"
+            default="true"
+            extensions="wfdiag"
+            id="genlab.gui.graphiti.editors.GenlabDiagramEditor"
+            matchingStrategy="org.eclipse.graphiti.ui.editor.DiagramEditorMatchingStrategy"
+            name="Workflow Editor">
+      </editor>
+   </extension>
 
 </plugin>

@@ -6,9 +6,11 @@ import genlab.core.commons.ProgramException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
@@ -307,4 +309,51 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 	public long getEdgesCount() {
 		return gsGraph.getEdgeCount();
 	}
+	
+	@Override
+	public Map<String, Object> getVertexAttributes(String vertexId) {
+		//gsGraph.getNode(vertexId).
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> getEdgeAttributes(String vertexId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> getGraphAttributes() {
+		
+		return null;
+	}
+
+	
+	@Override
+	public String getEdgeVertexFrom(String edgeId) {
+		return gsGraph.getEdge(edgeId).getNode0().getId();
+	}
+
+	@Override
+	public String getEdgeVertexTo(String edgeId) {
+		return gsGraph.getEdge(edgeId).getNode1().getId();
+	}
+
+	@Override
+	public boolean isEdgeDirected(String edgeId) {
+		return gsGraph.getEdge(edgeId).isDirected();
+	}
+
+	@Override
+	public Collection<String> getEdges() {
+		Set<String> edgesIds = new HashSet<String>();
+		for (Edge e : gsGraph.getEachEdge()) {
+			edgesIds.add(e.getId());
+		}
+		return edgesIds;
+	}
+
+	
+
 }

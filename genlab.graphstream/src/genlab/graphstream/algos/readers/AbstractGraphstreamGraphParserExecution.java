@@ -41,7 +41,7 @@ public class AbstractGraphstreamGraphParserExecution extends
 		ComputationResult result = new ComputationResult(algoInst.getAlgo(), progress);
 		
 		// init our sink which will process events from the filesource
-		GraphstreamConvertors.GenLabGraphSink ourSink = new GraphstreamConvertors.GenLabGraphSink("opened");
+		GraphstreamConvertors.GenLabGraphSink ourSink = new GraphstreamConvertors.GenLabGraphSink("opened", result.getMessages());
 		
 		// that we listen to
 		filesource.addSink(ourSink);

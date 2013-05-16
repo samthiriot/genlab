@@ -9,6 +9,8 @@ import java.util.Set;
  * This class refers to an algo available, not an algo instanciated into 
  * a workflow.
  * 
+ * TODO add group to sort things.
+ * 
  * @author Samuel Thiriot
  */
 public interface IAlgo  {

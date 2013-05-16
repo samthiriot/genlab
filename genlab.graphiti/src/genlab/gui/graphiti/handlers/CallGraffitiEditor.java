@@ -60,7 +60,7 @@ public class CallGraffitiEditor extends AbstractHandler {
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		
 		
-		GLLogger.debugTech("attempting to open editor");
+		GLLogger.debugTech("attempting to open editor", getClass());
 		
 		/*
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("diagram", new XMIResourceFactoryImpl());
@@ -200,6 +200,7 @@ public class CallGraffitiEditor extends AbstractHandler {
 		 return null;
 		 */
 		
+		
 		final String containerName = "container";
         final String fileName = "toto.txt";
         final ResourceSet rs = new ResourceSetImpl();
@@ -256,13 +257,13 @@ public class CallGraffitiEditor extends AbstractHandler {
         try {
         	PlatformUI.getWorkbench().getActiveWorkbenchWindow().run( true, false, op);
         } catch (InterruptedException e) {
-        	GLLogger.errorTech("error while creating graph editor",e);
+        	GLLogger.errorTech("error while creating graph editor",getClass(),e);
             return false;
         } catch (InvocationTargetException e) {
         	e.printStackTrace();
             Throwable realException = e.getTargetException();
             MessageDialog.openError(Display.getDefault().getActiveShell(), "Error", realException.getMessage());
-    		GLLogger.errorTech("error while creating graph editor",e);
+    		GLLogger.errorTech("error while creating graph editor",getClass(),e);
 
             return false;
         }

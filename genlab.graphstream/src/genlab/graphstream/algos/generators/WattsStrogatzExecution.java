@@ -46,7 +46,7 @@ public class WattsStrogatzExecution extends AbstractGraphStreamGenerator {
 		
 		// TODO state !
 		
-		result.addMessage(new TextMessage(MessageLevel.INFO, MessageAudience.USER, "test of information"));
+		result.addMessage(new TextMessage(MessageLevel.INFO, MessageAudience.USER, getClass(), "test of information"));
 		
 		BaseGenerator generator = new WattsStrogatzGenerator(size, nei, p);
 		
@@ -54,7 +54,8 @@ public class WattsStrogatzExecution extends AbstractGraphStreamGenerator {
 				// TODO ???
 				"generatedTODO", 
 				generator, 
-				-1
+				-1,
+				result.getMessages()
 				);
 		result.setResult(WattsStrogatzAlgo.OUTPUT_GRAPH, graph);
 		

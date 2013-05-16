@@ -6,15 +6,19 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 import genlab.gui.VisualResources;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.Locale;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -26,7 +30,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 
 /**
- * TODO images !
+ * TODO add exportation to a text file ?!
  * 
  * @author Samuel Thiriot
  *
@@ -66,7 +70,6 @@ public class MessagesView extends ViewPart  {
 
 		@Override
 		public Object[] getElements(Object inputElement) {
-			System.err.println("loading elements: "+list.getSize());
 			return list.asArray();
 		}
 
@@ -145,6 +148,9 @@ public class MessagesView extends ViewPart  {
 		      rc = p1.getTimestamp().compareTo(p2.getTimestamp());
 		      break;
 		    case 3:
+		    	rc = p1.getEmitter().getCanonicalName().compareTo(p2.getEmitter().getCanonicalName());
+		      break;
+		    case 4:
 		    	rc = p1.getMessage().compareTo(p2.getMessage());
 		      break;
 		    default:
@@ -196,7 +202,10 @@ public class MessagesView extends ViewPart  {
 				parent, 
 				SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER | SWT.READ_ONLY
 				);
-		
+
+		ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE);
+
+
 		// configure viewer
 		
 		comparator = new MyViewerComparator();
@@ -223,7 +232,7 @@ public class MessagesView extends ViewPart  {
 				  case TRACE:
 				  case DEBUG:
 					  return VisualResources.ICON_DEBUG;
-				  case CONSEIL:
+				  case TIP:
 					  return VisualResources.ICON_TIP;
 				  case ERROR:
 					  return VisualResources.ICON_ERROR;
@@ -271,28 +280,89 @@ public class MessagesView extends ViewPart  {
 		}
 		{
 			TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
-			col.getColumn().setWidth(400);
-			col.getColumn().setText("Message");
+			col.getColumn().setWidth(300);
+			col.getColumn().setText("From");
+			
 			col.setLabelProvider(new ColorColumnProvider() {
 				
-			  @Override
-			  public String getText(Object element) {
-			    ITextMessage message = (ITextMessage)element;
-			    if (message.getCount() > 1) {
-			    	StringBuffer sb = new StringBuffer();
-			    	return sb
-				    		.append("(")					//$NON-NLS-1$
-				    		.append(message.getCount())
-				    		.append(" times") 
-				    		.append(") ")					//$NON-NLS-1$
-				    		.append(message.getMessage())
-				    		.toString();
-			    } else
-			    	return message.getMessage();
-			  }
-			});
-			col.getColumn().addSelectionListener(getSelectionAdapter(col.getColumn(), 3));
+				@Override
+				public String getToolTipText(Object element) {
+					ITextMessage message = (ITextMessage)element;
+					return message.getEmitter().getCanonicalName();
+				}
+				
 
+				public int getToolTipDisplayDelayTime(Object object) {
+					return 500;
+				}
+
+				public int getToolTipTimeDisplayed(Object object) {
+					return 10000;
+				}
+
+				  @Override
+				  public String getText(Object element) {
+				    ITextMessage message = (ITextMessage)element;
+				    return message.getEmitter().getCanonicalName();
+				  }
+			  
+			  
+			  
+			});
+			
+			col.getColumn().addSelectionListener(getSelectionAdapter(col.getColumn(), 3));
+			
+		}
+		{
+			TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
+			col.getColumn().setWidth(400);
+			col.getColumn().setText("Message");
+			
+			col.setLabelProvider(new ColorColumnProvider() {
+				
+				@Override
+				public String getToolTipText(Object element) {
+					ITextMessage message = (ITextMessage)element;
+					if (message.getException() != null) {
+						StringWriter sw = new StringWriter();
+						PrintWriter pw = new PrintWriter(sw);
+						message.getException().printStackTrace(pw);
+						return sw.toString(); 
+					} else
+						return null;
+				}
+				
+
+				public int getToolTipDisplayDelayTime(Object object) {
+					return 500;
+				}
+
+				public int getToolTipTimeDisplayed(Object object) {
+					return 10000;
+				}
+
+				  @Override
+				  public String getText(Object element) {
+				    ITextMessage message = (ITextMessage)element;
+				    if (message.getCount() > 1) {
+				    	StringBuffer sb = new StringBuffer();
+				    	return sb
+					    		.append("(")					//$NON-NLS-1$
+					    		.append(message.getCount())
+					    		.append(" times") 
+					    		.append(") ")					//$NON-NLS-1$
+					    		.append(message.getMessage())
+					    		.toString();
+					  } else
+				    	return message.getMessage();
+				  	}
+			  
+			  
+			  
+			});
+			
+			col.getColumn().addSelectionListener(getSelectionAdapter(col.getColumn(), 4));
+			
 		}
 		
 		// configure table

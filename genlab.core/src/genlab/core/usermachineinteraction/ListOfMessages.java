@@ -166,4 +166,322 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			return sortedMessages.size();
 		}
 	}
+	
+	public void debugUser(String message, String fromShort, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.DEBUG, 
+						MessageAudience.USER, 
+						fromShort,
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void debugUser(String message, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.DEBUG, 
+						MessageAudience.USER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void warnUser(String message, String fromShort, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.WARNING, 
+						MessageAudience.USER, 
+						fromShort,
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void warnUser(String message, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.WARNING, 
+						MessageAudience.USER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void infoUser(String message, String fromShort, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.INFO, 
+						MessageAudience.USER, 
+						fromShort,
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void infoUser(String message, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.INFO, 
+						MessageAudience.USER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void tipUser(String message, String fromShort, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.TIP, 
+						MessageAudience.USER, 
+						fromShort,
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void tipUser(String message, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.TIP, 
+						MessageAudience.USER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message
+						)
+			);
+	}
+	
+
+	public void errorUser(String message, String fromShort, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.ERROR, 
+						MessageAudience.USER, 
+						fromShort,
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void errorUser(String message, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.ERROR, 
+						MessageAudience.USER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message
+						)
+			);
+	}
+	public void debugTech(String message, String fromShort, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.DEBUG, 
+						MessageAudience.DEVELOPER, 
+						fromShort,
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void debugTech(String message, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.DEBUG, 
+						MessageAudience.DEVELOPER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void debugTech(String message, String fromShort, Class fromClass, Exception e) {
+		add(
+				new TextMessage(
+						MessageLevel.DEBUG, 
+						MessageAudience.DEVELOPER, 
+						fromShort,
+						fromClass,
+						message,
+						e
+						)
+			);
+	}
+	
+	public void debugTech(String message, Class fromClass, Exception e) {
+		add(
+				new TextMessage(
+						MessageLevel.DEBUG, 
+						MessageAudience.DEVELOPER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message,
+						e
+						)
+			);
+	}
+	
+	public void warnTech(String message, String fromShort, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.WARNING, 
+						MessageAudience.DEVELOPER, 
+						fromShort,
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void warnTech(String message, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.WARNING, 
+						MessageAudience.DEVELOPER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void warnTech(String message, String fromShort, Class fromClass, Exception e) {
+		add(
+				new TextMessage(
+						MessageLevel.WARNING, 
+						MessageAudience.DEVELOPER, 
+						fromShort,
+						fromClass,
+						message,
+						e
+						)
+			);
+	}
+	
+	public void warnTech(String message, Class fromClass, Exception e) {
+		add(
+				new TextMessage(
+						MessageLevel.WARNING, 
+						MessageAudience.DEVELOPER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message,
+						e
+						)
+			);
+	}
+	
+	public void infoTech(String message, String fromShort, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.INFO, 
+						MessageAudience.DEVELOPER, 
+						fromShort,
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void infoTech(String message, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.INFO, 
+						MessageAudience.DEVELOPER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void tipTech(String message, String fromShort, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.TIP, 
+						MessageAudience.DEVELOPER, 
+						fromShort,
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void tipTech(String message, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.TIP, 
+						MessageAudience.DEVELOPER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void errorTech(String message, String fromShort, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.ERROR, 
+						MessageAudience.DEVELOPER, 
+						fromShort,
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void errorTech(String message, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.ERROR, 
+						MessageAudience.DEVELOPER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void errorTech(String message, String fromShort, Class fromClass, Exception e) {
+		add(
+				new TextMessage(
+						MessageLevel.ERROR, 
+						MessageAudience.DEVELOPER, 
+						fromShort,
+						fromClass,
+						message,
+						e
+						)
+			);
+	}
+	
+	public void errorTech(String message, Class fromClass, Exception e) {
+		add(
+				new TextMessage(
+						MessageLevel.ERROR, 
+						MessageAudience.DEVELOPER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message,
+						e
+						)
+			);
+	}
 }

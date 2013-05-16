@@ -19,7 +19,7 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		GLLogger.debugTech("activator started: "+getClass().getCanonicalName());
+		GLLogger.infoTech("initializing the genlab core...", getClass());
 	}
 
 	/*
