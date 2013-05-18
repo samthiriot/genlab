@@ -7,6 +7,7 @@ import genlab.core.algos.AlgoInstance;
 import genlab.core.algos.IAlgo;
 import genlab.core.algos.IAlgoExecution;
 import genlab.core.algos.IAlgoInstance;
+import genlab.core.algos.IGenlabWorkflow;
 import genlab.core.algos.IInputOutput;
 import genlab.core.algos.InputOutput;
 
@@ -17,6 +18,7 @@ import java.util.Set;
 
 import org.graphstream.stream.file.FileSink;
 
+// TODO use basicalgo instead
 public abstract class AbstractGraphStreamGraphWriter implements IAlgo {
 
 	public static final InputOutput<IGenlabGraph> PARAM_GRAPH = new InputOutput<IGenlabGraph>(
@@ -52,8 +54,8 @@ public abstract class AbstractGraphStreamGraphWriter implements IAlgo {
 	}
 
 	@Override
-	public IAlgoInstance createInstance() {
-		return new AlgoInstance(this);
+	public IAlgoInstance createInstance(IGenlabWorkflow workflow) {
+		return new AlgoInstance(this, workflow);
 	}
 	
 	protected abstract FileSink getGraphStreamFileSink();

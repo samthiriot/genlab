@@ -3,6 +3,7 @@ package genlab.gui.graphiti.genlab2graphiti;
 import genlab.core.algos.IGenlabWorkflow;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.editors.GenlabDiagramEditor;
+import genlab.gui.listeners.WorkflowEvents;
 
 import java.io.IOException;
 
@@ -27,6 +28,9 @@ import org.eclipse.ui.part.FileEditorInput;
 
 public class Genlab2GraphitiUtils {
 
+	public static final String KEY_WORKFLOW_TO_GRAPHITI_FILE = "graphiti_file";
+	
+	
 	public static void createDiagram(IGenlabWorkflow workflow, IProject project) {
 		
 		GLLogger.debugTech("creating a diagram for this workflow", Genlab2GraphitiUtils.class);
@@ -61,6 +65,8 @@ public class Genlab2GraphitiUtils {
 			
 		}
 		
+		MappingObjects.register(operation.getDiagram().eResource().getURI(), workflow);
+		
 		// Dispose the editing domain to eliminate memory leak
 		editingDomain.dispose();
 		
@@ -73,10 +79,14 @@ public class Genlab2GraphitiUtils {
 					input, 
 					GenlabDiagramEditor.EDITOR_ID
 					);
+			WorkflowEvents.workflowEvents.workflowShown(workflow);
 		} catch (PartInitException e) {
 			IStatus status = new Status(IStatus.ERROR, "org.eclipse.graphiti.examples.tutorial", e.getMessage(), e); //$NON-NLS-1$
 			ErrorDialog.openError(Display.getCurrent().getActiveShell(), "oops", e.getMessage(), status);
 		}
+		
+		
+		
 	}
 
 }

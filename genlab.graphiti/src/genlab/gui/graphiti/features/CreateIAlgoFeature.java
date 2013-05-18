@@ -2,7 +2,9 @@ package genlab.gui.graphiti.features;
 
 import genlab.core.algos.IAlgo;
 import genlab.core.algos.IAlgoInstance;
+import genlab.core.algos.IGenlabWorkflow;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
@@ -44,9 +46,13 @@ public class CreateIAlgoFeature extends AbstractCreateFeature {
 		*/
 		
 		// create instance
-		GLLogger.debugTech("should add the algo instance therre ????", getClass());
+		GLLogger.debugTech("adding an algo instance for algo "+algo.getName(), getClass());
 
-		IAlgoInstance algoInstance = algo.createInstance();
+		// TODO should add this to the workflow !
+		
+		IGenlabWorkflow workflow = (IGenlabWorkflow) MappingObjects.getGenlabResourceFor(context.getTargetContainer().eResource().getURI());
+		
+		IAlgoInstance algoInstance = algo.createInstance(workflow);
 		
 		addGraphicalRepresentation(context, algoInstance);
 

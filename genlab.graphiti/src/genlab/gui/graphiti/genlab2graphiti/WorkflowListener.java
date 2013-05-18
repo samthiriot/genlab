@@ -130,14 +130,25 @@ public class WorkflowListener implements IWorkflowListener {
 
 	@Override
 	public void workflowOpened(IGenlabWorkflow workflow) {
-		// TODO Auto-generated method stub
 
+		// retrieve diagram filename
+		String filename = (String) workflow.getObjectForKey(Genlab2GraphitiUtils.KEY_WORKFLOW_TO_GRAPHITI_FILE);
+		
+		GLLogger.debugTech("opening the graphiti diagram for this workflow, which should be there: "+filename, getClass()); 
+		
 	}
 
 	@Override
 	public void workflowSaving(IGenlabWorkflow workflow) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void workflowChanged(IGenlabWorkflow workflow) {
+		// TODO Auto-generated method stub
+		
+		// TODO update graphiti when the workflow changes !
 	}
 
 }

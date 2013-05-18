@@ -14,14 +14,11 @@ import org.graphstream.stream.file.FileSourcePajek;
  */
 public class GraphStreamEdgeParser extends AbstractGraphStreamGraphParser {
 
-	@Override
-	public String getName() {
-		return "Edge parser";
-	}
-
-	@Override
-	public String getDescription() {
-		return "parser of the Edge format, as provided by the graphstream library";
+	public GraphStreamEdgeParser() {
+		super(
+				 "Edge parser",
+				 "parser of the Edge format, as provided by the graphstream library"
+				 );
 	}
 
 	@Override

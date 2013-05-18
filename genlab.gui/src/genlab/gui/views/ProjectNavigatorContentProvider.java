@@ -1,5 +1,7 @@
 package genlab.gui.views;
 
+import genlab.core.usermachineinteraction.GLLogger;
+
 import java.io.File;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -15,6 +17,9 @@ import org.eclipse.jface.viewers.Viewer;
  */
 class ProjectNavigatorContentProvider implements ITreeContentProvider {
 
+	public ProjectNavigatorContentProvider() {
+		
+	}
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
@@ -29,6 +34,7 @@ class ProjectNavigatorContentProvider implements ITreeContentProvider {
 	@Override
 	public Object[] getElements(Object inputElement) {
 		
+		System.err.println("project navigator: get elements");
 		// get children :-)
 		if (inputElement instanceof IWorkspaceRoot) {
 			IWorkspaceRoot workspaceRoot = (IWorkspaceRoot)inputElement;
@@ -44,6 +50,7 @@ class ProjectNavigatorContentProvider implements ITreeContentProvider {
 	@Override
 	public Object[] getChildren(Object parentElement) {
 		
+		System.err.println("project navigator: get children");
 		if (parentElement instanceof IWorkspaceRoot) {
 			IWorkspaceRoot workspaceRoot = (IWorkspaceRoot)parentElement;
 			return workspaceRoot.getProjects();

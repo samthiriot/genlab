@@ -1,11 +1,21 @@
 package genlab.core.algos;
 
+import genlab.core.commons.IWithAssociatedData;
 import genlab.core.projects.IGenlabProject;
 
 import java.io.File;
+import java.util.Collection;
 
-
-public interface IGenlabWorkflow extends IAlgo {
+/**
+ * 
+ * Contributors may store objects in order to persist data related to workflows.
+ * 
+ * 
+ * 
+ * @author Samuel Thiriot
+ *
+ */
+public interface IGenlabWorkflow extends IAlgo, IWithAssociatedData {
 
 	public String getName();
 	
@@ -26,5 +36,7 @@ public interface IGenlabWorkflow extends IAlgo {
 	public String getFilename();
 
 	public IGenlabProject getProject();
+	
+	public Collection<IAlgoInstance> getAlgoInstances();
 	
 }

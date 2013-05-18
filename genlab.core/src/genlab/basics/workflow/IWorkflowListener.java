@@ -6,6 +6,8 @@ public interface IWorkflowListener {
 
 	public void workflowCreation(IGenlabWorkflow workflow);
 	
+	public void workflowChanged(IGenlabWorkflow workflow);
+
 	public void workflowOpened(IGenlabWorkflow workflow);
 	
 	public void workflowSaving(IGenlabWorkflow workflow);

@@ -76,4 +76,14 @@ public class WorkflowHooks {
 			}
 		}
 	}
+	
+	public void notifyWorkflowChange(IGenlabWorkflow wf) {
+		for (IWorkflowListener l : listeners) {
+			try {
+				l.workflowChanged(wf);
+			} catch (RuntimeException e) {
+				GLLogger.warnTech("in the workflow listener, catched an exception: "+e.getMessage(), getClass(), e);
+			}
+		}
+	}
 }

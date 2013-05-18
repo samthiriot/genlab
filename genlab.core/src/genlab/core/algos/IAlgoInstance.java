@@ -1,8 +1,10 @@
 package genlab.core.algos;
 
+import genlab.core.IGenlabResource;
+
 import java.util.Map;
 
-public interface IAlgoInstance {
+public interface IAlgoInstance extends IGenlabResource {
 
 	public String getId();
 	
@@ -13,5 +15,8 @@ public interface IAlgoInstance {
 	 * @return
 	 */
 	public IAlgoExecution execute(Map<IInputOutput,Object> inputs);
+	
+	public IGenlabWorkflow getWorkflow();
+	
 	
 }

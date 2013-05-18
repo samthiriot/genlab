@@ -18,6 +18,7 @@ import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.impl.IIndependenceSolver;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.pattern.DefaultFeatureProviderWithPatterns;
 
@@ -32,7 +33,6 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		
 		independenceSolver = new GenLabIndependenceSolver();
 		setIndependenceSolver(independenceSolver);
-		
 	}
 
 	@Override
@@ -66,6 +66,12 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		
 		return res;
 	}
+	
+	
+	public GenLabIndependenceSolver getGenlabIndependenceSolver() {
+		return independenceSolver;
+	}
+
 
 	@Override
 	public void link(PictogramElement pictogramElement, Object businessObject) {

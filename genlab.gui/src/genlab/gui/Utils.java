@@ -1,8 +1,14 @@
 package genlab.gui;
 
+import genlab.core.usermachineinteraction.GLLogger;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.navigator.CommonNavigator;
 
 public class Utils {
 
@@ -31,6 +37,19 @@ public class Utils {
 			pathStr = pathStr.substring(projectPath.length());
 		}
 		return pathStr;
+	}
+	
+	
+	public static CommonNavigator findCommonNavigator(String navigatorViewId)
+	{
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		if (page != null) {
+			IViewPart view = page.findView(navigatorViewId);
+			if (view != null && view instanceof CommonNavigator)
+				return ((CommonNavigator) view);
+
+		}
+		return null;
 	}
 
 }

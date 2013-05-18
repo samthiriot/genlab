@@ -8,6 +8,8 @@ import org.eclipse.graphiti.ui.editor.DiagramEditor;
 /**
  * Specific diagram editor that does not sync with EMF objects
  * 
+ * TODO listen for workflow changes
+ * 
  * @author Samuel Thiriot
  */
 public class GenlabDiagramEditor extends DiagramEditor {

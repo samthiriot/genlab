@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Testing
+Bundle-SymbolicName: genlab.testing
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: genlab.testing.Activator
+Bundle-Vendor: Samuel Thiriot
+Require-Bundle: genlab.core;bundle-version="0.0.1",
+ genlab.gephi;bundle-version="0.0.1",
+ genlab.graphiti;bundle-version="1.0.0",
+ genlab.graphstream;bundle-version="0.0.1",
+ genlab.gui;bundle-version="0.0.1",
+ org.eclipse.jdt.junit;bundle-version="3.7.100",
+ org.junit
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

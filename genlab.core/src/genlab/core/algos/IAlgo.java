@@ -1,5 +1,7 @@
 package genlab.core.algos;
 
+import genlab.core.IGenlabResource;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -13,7 +15,7 @@ import java.util.Set;
  * 
  * @author Samuel Thiriot
  */
-public interface IAlgo  {
+public interface IAlgo extends IGenlabResource {
 
 	public String getName();
 	
@@ -25,8 +27,8 @@ public interface IAlgo  {
 	public Set<IInputOutput> getOuputs();
 	
 	
-	public IAlgoInstance createInstance();
-	
+	public IAlgoInstance createInstance(IGenlabWorkflow workflow);
+
 
 	/**
 	 * computes the algo on these input types. 

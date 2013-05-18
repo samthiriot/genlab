@@ -1,7 +1,6 @@
 package genlab.core.algos;
 
 import genlab.core.IStaticMessagesEmitter;
-import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.util.Map;
 

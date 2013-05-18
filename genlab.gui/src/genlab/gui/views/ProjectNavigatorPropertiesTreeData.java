@@ -4,6 +4,7 @@ public class ProjectNavigatorPropertiesTreeData {
 
 	public ProjectNavigatorPropertiesTreeData() {
 		// TODO Auto-generated constructor stub
+		System.err.println("ProjectNavigatorPropertiesTreeData");
 	}
 
 }

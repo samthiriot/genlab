@@ -5,7 +5,7 @@ import genlab.core.algos.IGenlabWorkflow;
 
 /**
  * Listens for workflow activity, and updates the corresponding 
- * GUI eclipse files correspondingly
+ * GUI eclipse files and views accordingly.
  * 
  * @author Samuel Thiriot
  *
@@ -27,12 +27,20 @@ public class WorkflowsListener implements IWorkflowListener {
 	public void workflowOpened(IGenlabWorkflow workflow) {
 		// TODO Auto-generated method stub
 		System.err.println("a workflow is opened !");
+		
 	}
 
 	@Override
 	public void workflowSaving(IGenlabWorkflow workflow) {
 		// TODO Auto-generated method stub
 		System.err.println("a workflow is saving !");
+	}
+
+	@Override
+	public void workflowChanged(IGenlabWorkflow workflow) {
+		// TODO Auto-generated method stub
+		System.err.println("a workflow was changed !");
+
 	}
 
 }

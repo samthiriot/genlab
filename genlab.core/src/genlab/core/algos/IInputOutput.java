@@ -1,8 +1,8 @@
 package genlab.core.algos;
 
-import java.util.Map;
-
 import genlab.core.flow.IFlowType;
+
+import java.util.Map;
 
 public interface IInputOutput<JavaType> {
 

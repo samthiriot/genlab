@@ -4,13 +4,16 @@ import genlab.basics.flow.DoubleFlowType;
 import genlab.basics.flow.IntegerFlowType;
 import genlab.basics.flow.SimpleGraphFlowType;
 import genlab.basics.javaTypes.graphs.IGenlabGraph;
+import genlab.basics.workflow.IWorkflowListener;
 import genlab.core.algos.AbstractAlgoExecution;
 import genlab.core.algos.AlgoInstance;
+import genlab.core.algos.BasicAlgo;
 import genlab.core.algos.ComputationProgressWithSteps;
 import genlab.core.algos.IAlgo;
 import genlab.core.algos.IAlgoExecution;
 import genlab.core.algos.IAlgoInstance;
 import genlab.core.algos.IComputationProgress;
+import genlab.core.algos.IGenlabWorkflow;
 import genlab.core.algos.IInputOutput;
 import genlab.core.algos.InputOutput;
 
@@ -18,7 +21,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class WattsStrogatzAlgo implements IAlgo {
+public class WattsStrogatzAlgo extends BasicAlgo {
 
 	public static final String ALGO_NAME = "watts-strogatz beta generator";
 			
@@ -42,12 +45,6 @@ public class WattsStrogatzAlgo implements IAlgo {
 			"rewiring probability"
 		);
 	
-	private final Set<IInputOutput> inputs = new HashSet<IInputOutput>() {{
-		add(PARAM_N);
-		add(PARAM_K);
-		add(PARAM_P);
-	}};
-	
 	public static final InputOutput<IGenlabGraph> OUTPUT_GRAPH =  new InputOutput<IGenlabGraph>(
 			new SimpleGraphFlowType(), 
 			ALGO_NAME+".graph", 
@@ -55,40 +52,24 @@ public class WattsStrogatzAlgo implements IAlgo {
 			"resulting graph"
 		);
 	
-	private Set<IInputOutput> outputs = new HashSet<IInputOutput>() {{
-		
-		add(OUTPUT_GRAPH);
-		
-	}};
+	
+	private IGenlabWorkflow workflow = null;
 	
 	public WattsStrogatzAlgo() {
+		super(
+				ALGO_NAME,
+				"as implemented into the graphstream library"
+				);
 		
+		inputs.add(PARAM_N);
+		inputs.add(PARAM_K);
+		inputs.add(PARAM_P);
+		outputs.add(OUTPUT_GRAPH);
 	}
-	
-
+		
 	@Override
-	public String getName() {
-		return ALGO_NAME;
-	}
-
-	@Override
-	public String getDescription() {
-		return "as implemented into the graphstream library";
-	}
-	
-	@Override
-	public Set<IInputOutput> getInputs() {
-		return inputs;
-	}
-
-	@Override
-	public Set<IInputOutput> getOuputs() {
-		return outputs;
-	}
-
-	@Override
-	public IAlgoInstance createInstance() {
-		return new AlgoInstance(this);
+	public IAlgoInstance createInstance(IGenlabWorkflow workflow) {
+		return new AlgoInstance(this, workflow);
 	}
 
 
@@ -102,7 +83,6 @@ public class WattsStrogatzAlgo implements IAlgo {
 				PARAM_P.decodeFromParameters(inputs)
 				);
 	}
-
 
 
 }

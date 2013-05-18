@@ -8,13 +8,13 @@ import org.eclipse.graphiti.features.impl.IIndependenceSolver;
 /**
  * see http://www.eclipse.org/forums/index.php/t/266445/
  * 
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 
 public class GenLabIndependenceSolver implements IIndependenceSolver {
 
-	private static Map<String, Object> objectMap = new HashMap<String, Object>();
+	private Map<String, Object> objectMap = new HashMap<String, Object>();
 
 	@Override
 	public String getKeyForBusinessObject(Object bo) {
@@ -32,5 +32,6 @@ public class GenLabIndependenceSolver implements IIndependenceSolver {
 	public Object getBusinessObjectForKey(String key) {
 		return objectMap.get(key);
 	}
+	
 
 }

@@ -10,14 +10,11 @@ import org.graphstream.stream.file.FileSourceTLP;
 
 public class GraphStreamNCOLParser extends AbstractGraphStreamGraphParser {
 
-	@Override
-	public String getName() {
-		return "NCOL parser";
-	}
-
-	@Override
-	public String getDescription() {
-		return "parser of the NCOL format, as provided by the graphstream library";
+	public GraphStreamNCOLParser() {
+		super(
+				"NCOL parser",
+				"parser of the NCOL format, as provided by the graphstream library"
+				 );
 	}
 
 	@Override

@@ -5,15 +5,14 @@ import org.graphstream.stream.file.FileSourceGEXF;
 
 public class GraphStreamGEXFParser extends AbstractGraphStreamGraphParser {
 
-	@Override
-	public String getName() {
-		return "GEXF parser";
+	public GraphStreamGEXFParser() {
+		super(
+				"GEXF parser",
+				"parser of the GEXF format, as provided by the graphstream library"
+				 );
 	}
-
-	@Override
-	public String getDescription() {
-		return "parser of the GEXF format, as provided by the graphstream library";
-	}
+	
+	
 
 	@Override
 	protected FileSource getGraphStreamFileSource() {

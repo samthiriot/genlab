@@ -10,6 +10,9 @@ import genlab.core.commons.FileUtils;
 import genlab.core.projects.IGenlabProject;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +25,8 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 	public String name;
 	public String description;
 	private String relativeFilename;
+	
+	private Map<String,Object> key2object = new HashMap<String, Object>();
 	
 	public GenlabWorkflow(IGenlabProject project, String name, String description, String relativeFilename) {
 		this.project = project;
@@ -39,11 +44,13 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 	@Override
 	public void addAlgoInstance(IAlgoInstance algoInstance) {
 		algoInstances.add(algoInstance);
+		WorkflowHooks.getWorkflowHooks().notifyWorkflowChange(this);
 	}
 
 	@Override
 	public void removeAlgoInstance(IAlgoInstance algoInstance) {
 		algoInstances.remove(algoInstance);
+		WorkflowHooks.getWorkflowHooks().notifyWorkflowChange(this);
 	}
 
 
@@ -70,7 +77,7 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 	}
 
 	@Override
-	public IAlgoInstance createInstance() {
+	public IAlgoInstance createInstance(IGenlabWorkflow workflow) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -100,6 +107,7 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 		
 		Connection c = new Connection(algoFrom, fromOutput, algoTo, toInput);
 		
+		WorkflowHooks.getWorkflowHooks().notifyWorkflowChange(this);
 	}
 
 	@Override
@@ -126,5 +134,21 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 	public String getFilename() {
 		return FileUtils.extractFilename(relativeFilename);
 	}
+
+	@Override
+	public Collection<IAlgoInstance> getAlgoInstances() {
+		return Collections.unmodifiableCollection(algoInstances);
+	}
+
+	@Override
+	public Object getObjectForKey(String key) {
+		return key2object.get(key);
+	}
+
+	@Override
+	public Object addObjectForKey(String key, Object object) {
+			return key2object.put(key, object);
+	}
+
 
 }

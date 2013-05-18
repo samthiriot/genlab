@@ -21,8 +21,13 @@
    </extension>
    <extension
          point="org.eclipse.ui.views">
+      <category
+            id="genlab.gui.views.categorygenlab"
+            name="Genlab">
+      </category>
       <view
             allowMultiple="false"
+            category="genlab.gui.views.categorygenlab"
             class="genlab.gui.views.MessagesView"
             icon="icons/console_view.gif"
             id="genlab.gui.views.MessagesView"
@@ -31,12 +36,14 @@
       </view>
       <view
             allowMultiple="false"
+            category="genlab.gui.views.categorygenlab"
             class="genlab.gui.views.WorkflowView"
             id="genlab.gui.views.WorkflowView"
             name="Workflow"
             restorable="true">
       </view>
       <view
+            category="genlab.gui.views.categorygenlab"
             class="genlab.gui.views.ExistingView"
             id="genlab.gui.views.ExistingView"
             name="Algos"
@@ -44,10 +51,20 @@
       </view>
       <view
             allowMultiple="false"
+            category="genlab.gui.views.categorygenlab"
             class="org.eclipse.ui.navigator.CommonNavigator"
             icon="icons/view_navigator.gif"
             id="genlab.gui.views.projectexplorer"
             name="Project Explorer"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="false"
+            category="genlab.gui.views.categorygenlab"
+            class="org.eclipse.ui.navigator.CommonNavigator"
+            icon="icons/workflow_explorer.gif"
+            id="genlab.gui.views.workflowexplorer"
+            name="Workflow explorer"
             restorable="true">
       </view>
    </extension>
@@ -138,6 +155,18 @@
             </actionExtension>
          </includes>
       </viewerActionBinding>
+      <viewer
+            viewerId="genlab.gui.views.workflowexplorer">
+      </viewer>
+      <viewerContentBinding
+            viewerId="genlab.gui.views.workflowexplorer">
+         <includes>
+            <contentExtension
+                  isRoot="true"
+                  pattern="genlab.gui.views.projectexplorer.workflowContent">
+            </contentExtension>
+         </includes>
+      </viewerContentBinding>
    </extension>
    <extension
          point="org.eclipse.ui.navigator.navigatorContent">
@@ -148,7 +177,7 @@
             id="genlab.gui.views.projectexplorer.propertiesContent"
             labelProvider="genlab.gui.views.ProjectNavigatorLabelProvider"
             name="Properties file content"
-            priority="higher">
+            priority="normal">
          <triggerPoints>
             <or>
                <and>
@@ -182,6 +211,24 @@
                </test>
             </and>
          </enablement>
+      </navigatorContent>
+      <navigatorContent
+            activeByDefault="true"
+            contentProvider="genlab.gui.views.WorkflowNavigatorContentProvider"
+            icon="icons/workflow_explorer.gif"
+            id="genlab.gui.views.projectexplorer.workflowContent"
+            labelProvider="genlab.gui.views.WorkflowNavigatorLabelProvider"
+            name="workflow content">
+         <triggerPoints>
+            <instanceof
+                  value="genlab.core.IGenlabResource">
+            </instanceof>
+         </triggerPoints>
+         <possibleChildren>
+            <instanceof
+                  value="genlab.gui.views.WorkflowRoot">
+            </instanceof>
+         </possibleChildren>
       </navigatorContent>
    </extension>
    <extension

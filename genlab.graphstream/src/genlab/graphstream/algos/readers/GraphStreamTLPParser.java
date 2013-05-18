@@ -9,14 +9,12 @@ import org.graphstream.stream.file.FileSourceTLP;
 
 public class GraphStreamTLPParser extends AbstractGraphStreamGraphParser {
 
-	@Override
-	public String getName() {
-		return "TLP parser";
-	}
 
-	@Override
-	public String getDescription() {
-		return "parser of the TLP format, as provided by the graphstream library";
+	public GraphStreamTLPParser() {
+		super(
+				"TLP parser parser",
+				"parser of the TLP parser format, as provided by the graphstream library"
+				 );
 	}
 
 	@Override

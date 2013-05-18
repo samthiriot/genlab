@@ -4,20 +4,19 @@ import genlab.basics.flow.FileFlowType;
 import genlab.basics.flow.SimpleGraphFlowType;
 import genlab.basics.javaTypes.graphs.IGenlabGraph;
 import genlab.core.algos.AlgoInstance;
-import genlab.core.algos.IAlgo;
+import genlab.core.algos.BasicAlgo;
 import genlab.core.algos.IAlgoExecution;
 import genlab.core.algos.IAlgoInstance;
+import genlab.core.algos.IGenlabWorkflow;
 import genlab.core.algos.IInputOutput;
 import genlab.core.algos.InputOutput;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.graphstream.stream.file.FileSource;
 
-public abstract class AbstractGraphStreamGraphParser implements IAlgo {
+public abstract class AbstractGraphStreamGraphParser extends BasicAlgo {
 
 	public static final InputOutput<File> PARAM_FILE = new InputOutput<File>(
 			new FileFlowType(), 
@@ -33,27 +32,15 @@ public abstract class AbstractGraphStreamGraphParser implements IAlgo {
 			"the graph loaded from the file"
 	);
 	
-	private final Set<IInputOutput> inputs = new HashSet<IInputOutput>() {{
-		add(PARAM_FILE);
-	}};
-	
-	private final Set<IInputOutput> outputs = new HashSet<IInputOutput>() {{
-		add(OUTPUT_GRAPH);
-	}};
+	public AbstractGraphStreamGraphParser(String name, String desc) {
+		super(name, desc);
+		inputs.add(PARAM_FILE);
+		outputs.add(OUTPUT_GRAPH);
+	}
 	
 	@Override
-	public Set<IInputOutput> getInputs() {
-		return inputs;
-	}
-
-	@Override
-	public Set<IInputOutput> getOuputs() {
-		return outputs;
-	}
-
-	@Override
-	public IAlgoInstance createInstance() {
-		return new AlgoInstance(this);
+	public IAlgoInstance createInstance(IGenlabWorkflow workflow) {
+		return new AlgoInstance(this, workflow);
 	}
 	
 	protected abstract FileSource getGraphStreamFileSource();
