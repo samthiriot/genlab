@@ -4,6 +4,7 @@ import genlab.basics.workflow.IWorkflowListener;
 import genlab.core.algos.IGenlabWorkflow;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 
 import org.eclipse.core.resources.IProject;
 
@@ -25,7 +26,7 @@ public class WorkflowListener implements IWorkflowListener {
 		
 		Genlab2GraphitiUtils.createDiagram(
 				workflow, 
-				(IProject) workflow.getProject().getAttachedObject(IGenlabProject.KEY_ECLIPSE_PROJECT)
+				GenLab2eclipseUtils.getEclipseProjectForGenlabProject(workflow.getProject())
 				);
 		
 		
@@ -149,6 +150,12 @@ public class WorkflowListener implements IWorkflowListener {
 		// TODO Auto-generated method stub
 		
 		// TODO update graphiti when the workflow changes !
+	}
+
+	@Override
+	public void workflowSaved(IGenlabWorkflow workflow) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

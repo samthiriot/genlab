@@ -6,7 +6,8 @@ public class AlgoInstance implements IAlgoInstance {
 
 	private final IAlgo algo;
 	private final String id;
-	private final IGenlabWorkflow workflow;
+	
+	private final transient IGenlabWorkflow workflow;
 	
 	public AlgoInstance(IAlgo algo, IGenlabWorkflow workflow) {
 		this.algo = algo;
@@ -38,6 +39,11 @@ public class AlgoInstance implements IAlgoInstance {
 	@Override
 	public String getName() {
 		return algo.getName();
+	}
+
+	@Override
+	public void delete() {
+		workflow.removeAlgoInstance(this);
 	}
 
 }

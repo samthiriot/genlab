@@ -18,5 +18,10 @@ public interface IAlgoInstance extends IGenlabResource {
 	
 	public IGenlabWorkflow getWorkflow();
 	
+	/**
+	 * removes this algo instance (removes for related elements as well, 
+	 * including workflow.)
+	 */
+	public void delete();
 	
 }

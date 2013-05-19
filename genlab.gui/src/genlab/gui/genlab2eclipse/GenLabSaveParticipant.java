@@ -1,13 +1,22 @@
 package genlab.gui.genlab2eclipse;
 
+import genlab.core.algos.IAlgoInstance;
+import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.persistence.GenlabPersistence;
+import genlab.core.projects.IGenlabProject;
+import genlab.core.usermachineinteraction.GLLogger;
+
 import org.eclipse.core.resources.ISaveContext;
 import org.eclipse.core.resources.ISaveParticipant;
 import org.eclipse.core.runtime.CoreException;
 
 /**
- * TODO is not called... why ?
+ * Save participant is called as soon as an eclipse project is being saved. 
+ * It saves all genlab data related to the project. 
+ * The eclipse project and related informations (views, etc.) take care of that 
+ * themselves.
  * 
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public class GenLabSaveParticipant implements ISaveParticipant {
@@ -40,8 +49,26 @@ public class GenLabSaveParticipant implements ISaveParticipant {
 
 	@Override
 	public void saving(ISaveContext context) throws CoreException {
-		// TODO Auto-generated method stub
-
+		
+		GLLogger.debugTech("save each resource associated with the eclipse project", getClass());
+		
+		if (context.getProject() == null) {
+			GLLogger.warnTech("unable to find the project in the saving context ?", getClass());
+			System.err.println("unable to find the project in the saving context ?");
+			return;
+		} 
+		
+		IGenlabProject genlabProject = GenLab2eclipseUtils.getGenlabProjectForEclipseProject(context.getProject());
+		for (IGenlabWorkflow workflow : genlabProject.getWorkflows()) {
+			GLLogger.debugTech("saving workflow: "+workflow, getClass());
+			try {
+				GenlabPersistence.getPersistence().saveWorkflow(workflow);
+			} catch (Exception e) {
+				GLLogger.errorTech("error while saving workflow "+workflow, getClass(), e);
+				// TODO warn user
+			}
+		}
+		
 	}
 
 }

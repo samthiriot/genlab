@@ -6,9 +6,9 @@ import genlab.core.usermachineinteraction.GLLogger;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public class WorkflowEvents {
+public class WorkflowGUIEventsDispatcher {
 
-	public static WorkflowEvents workflowEvents = new WorkflowEvents();
+	public static WorkflowGUIEventsDispatcher workflowEvents = new WorkflowGUIEventsDispatcher();
 	
 	private Collection<IWorkflowGUIListener> listeners = new LinkedList<IWorkflowGUIListener>();
 	
@@ -64,7 +64,7 @@ public class WorkflowEvents {
 	}
 	*/
 	
-	private WorkflowEvents() {
+	private WorkflowGUIEventsDispatcher() {
 		
 	}
 

@@ -196,7 +196,7 @@ public class MessagesView extends ViewPart  {
 	}
 	
 	@Override
-	public void createPartControl(Composite parent) {
+	public void createPartControl(final Composite parent) {
 		
 		viewer = new TableViewer(
 				parent, 
@@ -379,16 +379,27 @@ public class MessagesView extends ViewPart  {
 			@Override
 			public void contentChanged(ListOfMessages list) {
 
-
-				try {
-					viewer.setInput("toto");
-	
-					viewer.refresh();
-					
-				} catch (RuntimeException e) {
-						// TODO manage disposed exception
-					e.printStackTrace();
+				if (parent.isDisposed()) {
+					ListsOfMessages.getGenlabMessages().removeListener(this);
+					return;
 				}
+				
+				parent.getDisplay().asyncExec(new Runnable() {
+					
+					@Override
+					public void run() {
+						try {
+							viewer.setInput("toto");
+			
+							viewer.refresh();
+							
+						} catch (RuntimeException e) {
+								// TODO manage disposed exception
+							e.printStackTrace();
+						}
+					}
+				});
+				
 			}
 		};
 		

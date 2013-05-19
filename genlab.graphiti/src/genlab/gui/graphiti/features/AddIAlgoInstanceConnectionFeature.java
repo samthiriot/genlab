@@ -2,6 +2,7 @@ package genlab.gui.graphiti.features;
 
 import genlab.core.algos.IAlgoInstance;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
@@ -27,13 +28,13 @@ import org.eclipse.graphiti.util.IColorConstant;
  * @author Samuel Thiriot
  *
  */
-public class AddIAlgoConnectionFeature extends AbstractAddFeature {
+public class AddIAlgoInstanceConnectionFeature extends AbstractAddFeature {
 
-	public AddIAlgoConnectionFeature(IFeatureProvider fp) {
+	public AddIAlgoInstanceConnectionFeature(IFeatureProvider fp) {
 		super(fp);
 		
 	}
-
+	
 	@Override
 	public boolean canAdd(IAddContext context) {
 		
@@ -64,14 +65,14 @@ public class AddIAlgoConnectionFeature extends AbstractAddFeature {
 		ContainerShape containerShape = peCreateService.createContainerShape(targetDiagram, true);
 		
 		// with default size..
-		int width = 100;
-		int height = 100;
+		final int width = 100;
+		final int height = 100;
 		IGaService gaService = Graphiti.getGaService();
 		RoundedRectangle roundedRectangle;
 		
 		// create and set graphics algo
 		{
-			roundedRectangle = gaService.createRoundedRectangle(containerShape, 5, 5);
+			roundedRectangle = gaService.createRoundedRectangle(containerShape, 10, 10);
 			roundedRectangle.setForeground(manageColor(IColorConstant.DARK_GRAY));
 			roundedRectangle.setBackground(manageColor(IColorConstant.WHITE));
 			roundedRectangle.setLineWidth(2);
@@ -91,12 +92,13 @@ public class AddIAlgoConnectionFeature extends AbstractAddFeature {
 			polyline.setForeground(manageColor(IColorConstant.DARK_GRAY));
 			polyline.setLineWidth(2);
 			
+			
 		}
 		// add text
 		{
 			Shape shape = peCreateService.createShape(containerShape, false);
-			
-			Text text = gaService.createText(shape, "haah: "+addedAlgo.getAlgo().getName());
+		
+			Text text = gaService.createText(shape, addedAlgo.getAlgo().getName());
 			text.setForeground(manageColor(IColorConstant.BLACK));
 			text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
 			text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
@@ -105,7 +107,11 @@ public class AddIAlgoConnectionFeature extends AbstractAddFeature {
 			link(shape, addedAlgo);
 		}
 		
+		MappingObjects.register(containerShape, addedAlgo);
+		
 		return containerShape;
 	}
+	
+	
 
 }

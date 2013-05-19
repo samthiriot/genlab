@@ -1,0 +1,5 @@
+voir BPMN rep graphique / process (Modeling Notation) BPML (Modeling Language)
+BPEL (execution Langage)
+
+SOA
+outil exemple : Yaoqiang

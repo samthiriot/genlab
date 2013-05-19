@@ -35,6 +35,8 @@ public interface IGenlabWorkflow extends IAlgo, IWithAssociatedData {
 
 	public String getFilename();
 
+	public String getAbsolutePath();
+
 	public IGenlabProject getProject();
 	
 	public Collection<IAlgoInstance> getAlgoInstances();

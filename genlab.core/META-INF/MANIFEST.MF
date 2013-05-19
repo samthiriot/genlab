@@ -18,5 +18,8 @@ Export-Package: genlab.basics.flow,
  genlab.core.commons,
  genlab.core.execution,
  genlab.core.flow,
+ genlab.core.persistence,
  genlab.core.projects,
  genlab.core.usermachineinteraction
+Bundle-ClassPath: ext/xstream-1.4.4.jar,
+ .

@@ -3,6 +3,7 @@ package genlab.gui.graphiti.features;
 import genlab.core.algos.IAlgo;
 import genlab.core.algos.IAlgoInstance;
 import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.persistence.GenlabPersistence;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
 
@@ -17,11 +18,11 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
  * @author Samuel Thiriot
  *
  */
-public class CreateIAlgoFeature extends AbstractCreateFeature {
+public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
 
 	private final IAlgo algo;
 	
-	public CreateIAlgoFeature(IFeatureProvider fp, IAlgo algo) {
+	public CreateIAlgoInstanceFeature(IFeatureProvider fp, IAlgo algo) {
 		super(fp, algo.getName(), algo.getDescription());
 		this.algo = algo;
 	}
@@ -56,6 +57,7 @@ public class CreateIAlgoFeature extends AbstractCreateFeature {
 		
 		addGraphicalRepresentation(context, algoInstance);
 
+		
 		return new Object[]{algoInstance};
 		
 		

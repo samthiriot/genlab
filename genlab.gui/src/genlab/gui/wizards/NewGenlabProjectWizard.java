@@ -2,9 +2,11 @@ package genlab.gui.wizards;
 
 import genlab.core.projects.IGenlabProject;
 import genlab.core.projects.ProjectFactory;
+import genlab.gui.Utils;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 import genlab.gui.genlab2eclipse.GenLabWorkflowProjectNature;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 
@@ -149,18 +151,19 @@ public class NewGenlabProjectWizard extends Wizard implements IWorkbenchWizard {
 		
 		// also create the corresponding genlab project
 		IGenlabProject genlabProject = ProjectFactory.getProject(
-				workspace
-					.getRoot()
-					.getFullPath()
-					.toFile()
-					.getAbsolutePath()
-					);
+				newProject.getLocation().toOSString()
+				);
 		
 		GenLab2eclipseUtils.registerEclipseProjectForGenlabProject(
 				newProject, 
 				genlabProject
 				);
-		genlabProject.setAttachedObject(IGenlabProject.KEY_ECLIPSE_PROJECT, newProject);
+		
+		// expand in the navigator view
+		Utils.expandInCommonNavigator(
+				"genlab.gui.views.projectexplorer", 
+				newProject
+				);
 		
 		return newProject;
 	}
@@ -173,8 +176,7 @@ public class NewGenlabProjectWizard extends Wizard implements IWorkbenchWizard {
 
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		// TODO Auto-generated method stub
-		System.err.println("huh ?");
+		
 	}
 	
 	

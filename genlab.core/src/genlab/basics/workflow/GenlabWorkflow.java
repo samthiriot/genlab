@@ -17,14 +17,22 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 
+ * 
+ * Nota: for persistence, always use the Persistence genlab class to ensure integrity.
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class GenlabWorkflow implements IGenlabWorkflow {
 
 	protected Set<IAlgoInstance> algoInstances = new HashSet<IAlgoInstance>();
 	
-	public IGenlabProject project;
+	public transient IGenlabProject project;
 	public String name;
 	public String description;
-	private String relativeFilename;
+	private transient String relativeFilename;
 	
 	private Map<String,Object> key2object = new HashMap<String, Object>();
 	
@@ -33,6 +41,7 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 		this.name = name;
 		this.description = description;
 		this.relativeFilename = relativeFilename;
+		project.addWorkflow(this);
 	}
 
 	@Override
@@ -150,5 +159,20 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 			return key2object.put(key, object);
 	}
 
+	@Override
+	public String getAbsolutePath() {
+		StringBuffer sbFile = new StringBuffer();
+		
+		sbFile.append(getProject().getBaseDirectory());
+		sbFile.append(File.separator);
+		sbFile.append(getRelativeFilename());
+		
+		return sbFile.toString();
+	}
+	
+	@Override
+	public String toString() {
+		return getName();
+	}
 
 }

@@ -40,6 +40,22 @@ public class Activator extends AbstractUIPlugin {
 		super.start(context);
 		GLLogger.infoTech("initializing the Graphical User Interface plugin for genlab...", getClass());
 		plugin = this;
+		
+		// add a save participant, and hook it, so our data will be save along with the eclipse's one.
+		GLLogger.infoTech("registering a save participant...", getClass());
+		ISaveParticipant saveParticipant = new GenLabSaveParticipant();
+		ISavedState lastState = ResourcesPlugin.getWorkspace().addSaveParticipant(PLUGIN_ID, saveParticipant);
+		
+		/*
+		 * if (lastState == null)
+		 
+		    return;
+		IPath location = lastState.lookup(new Path("save"));
+		if (location == null)
+		    return;
+		// the plugin instance should read any important state from the file.
+		File f = getStateLocation().append(location).toFile();
+		*/		 
 	}
 
 	/*
@@ -71,26 +87,4 @@ public class Activator extends AbstractUIPlugin {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
-	@Override
-	public void startup() throws CoreException {
-		super.startup();
-		
-		System.err.println("loading data !");
-		
-		// add a save participant, and hook it, so our data will be save along with the eclipse's one.
-		ISaveParticipant saveParticipant = new GenLabSaveParticipant();
-		ISavedState lastState = ResourcesPlugin.getWorkspace().addSaveParticipant(PLUGIN_ID, saveParticipant);
-		if (lastState == null)
-		    return;
-		IPath location = lastState.lookup(new Path("save"));
-		if (location == null)
-		    return;
-		// the plugin instance should read any important state from the file.
-		File f = getStateLocation().append(location).toFile();
-		 
-		 
-        // readStateFrom(f);
-	}
-	
-	
 }

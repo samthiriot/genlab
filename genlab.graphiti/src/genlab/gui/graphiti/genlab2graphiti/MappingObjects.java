@@ -27,6 +27,15 @@ public class MappingObjects {
 		return genlab2graphiti.get(genlabResource);
 	}
 	
+	public static void removeGenlabResourceFor(Object graphitiResource) {
+		GLLogger.debugTech("removing genlab resource for graphiti object: "+graphitiResource, MappingObjects.class);
+		
+		IGenlabResource genlabResource = graphiti2genlab.remove(graphitiResource);
+		genlab2graphiti.remove(genlabResource);
+		
+	}
+	
+	
 	private MappingObjects() {	
 	}
 

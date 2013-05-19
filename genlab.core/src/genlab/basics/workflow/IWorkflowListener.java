@@ -12,5 +12,7 @@ public interface IWorkflowListener {
 	
 	public void workflowSaving(IGenlabWorkflow workflow);
 
+	public void workflowSaved(IGenlabWorkflow workflow);
+
 	
 }

@@ -1,10 +1,15 @@
 package genlab.gui;
 
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.views.WorkflowRoot;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.viewers.ContentViewer;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
@@ -50,6 +55,65 @@ public class Utils {
 
 		}
 		return null;
+	}
+	
+	public static void updateCommonNavigator(String navigatorViewId, Object toUpdate)
+	{
+		CommonNavigator cn = Utils.findCommonNavigator(navigatorViewId);
+		if (cn != null) {
+			if (toUpdate instanceof IResource) {
+				// resources are different: we have to update them (this is long), and their listeners 
+				// (including navigators) will update accordingly
+				IResource resToUpdate = (IResource)toUpdate;
+				try {
+					resToUpdate.refreshLocal(1, null);
+				} catch (CoreException e) {
+					GLLogger.warnTech("error while refreshing the project navigator : "+e.getMessage(), Utils.class, e);
+				}
+			} else 
+				// juste update the viewer
+				cn.getCommonViewer().refresh(toUpdate, false);
+			
+			// expand this item
+			cn.selectReveal(new StructuredSelection(toUpdate));
+
+		}
+	}
+	
+	public static void updateCommonNavigator(String navigatorViewId)
+	{
+		CommonNavigator cn = Utils.findCommonNavigator(navigatorViewId);
+		if (cn != null) {
+			cn.getCommonViewer().refresh(); 
+		}
+	}
+	
+	public static void setCommonNavigatorInput(String navigatorViewId, Object input)
+	{
+		CommonNavigator cn = Utils.findCommonNavigator(navigatorViewId);
+		if (cn == null) {
+			GLLogger.debugTech("the workflow view is closed, can't update it.", Utils.class);
+			return;
+		}
+		ContentViewer cv = cn.getCommonViewer();
+		cv.setInput(input);
+		cn.selectReveal(new StructuredSelection(input));
+		
+	}
+	
+	/**
+	 * TODO is it working ?!
+	 * @param navigatorViewId
+	 * @param elem
+	 */
+	public static void expandInCommonNavigator(String navigatorViewId, Object elem) {
+		CommonNavigator cn = Utils.findCommonNavigator(navigatorViewId);
+		if (cn == null) {
+			GLLogger.debugTech("the workflow view is closed, can't update it.", Utils.class);
+			return;
+		}
+		cn.selectReveal(new StructuredSelection(elem));
+		
 	}
 
 }
