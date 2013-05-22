@@ -19,4 +19,6 @@ public interface IGenlabProject {
 	
 	public void addWorkflow(IGenlabWorkflow workflow);
 	
+	public String getProjectSavingFilename();
+	
 }

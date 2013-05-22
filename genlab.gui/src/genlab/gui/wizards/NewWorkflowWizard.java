@@ -1,6 +1,6 @@
 package genlab.gui.wizards;
 
-import genlab.basics.workflow.WorkflowFactory;
+import genlab.basics.workflow.GenlabFactory;
 import genlab.core.algos.IGenlabWorkflow;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.Utils;
@@ -53,7 +53,7 @@ public class NewWorkflowWizard extends Wizard implements IWorkbenchWizard {
 		IProject eclipseProject = Utils.findEclipseProjectInSelection(selection);
 				
 		
-		IGenlabWorkflow workflow = WorkflowFactory.createWorkflow(
+		IGenlabWorkflow workflow = GenlabFactory.createWorkflow(
 				GenLab2eclipseUtils.getGenlabProjectForEclipseProject(eclipseProject), 
 				page1.getWorkflowName(), 
 				page1.getWorkflowDesc(), 

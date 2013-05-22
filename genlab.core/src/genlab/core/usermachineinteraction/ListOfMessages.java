@@ -1,11 +1,20 @@
 package genlab.core.usermachineinteraction;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.TreeSet;
+
+import javax.swing.DebugGraphics;
+
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 /**
  * Stores a set of messages. Orders them by increasing timestamp.
@@ -34,7 +43,30 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 */
 	private TreeSet<ITextMessage> sortedMessages = new TreeSet<ITextMessage>();
 
-	private LinkedList<IListOfMessagesListener> listeners = null;
+	private LinkedList<IListOfMessagesListener> listeners = new LinkedList<IListOfMessagesListener>();
+	
+	/**
+	 * If true, relays every message to a log4j logger.
+	 */
+	public static final boolean RELAY_TO_LOG4J = true;
+	
+	protected static final Map<MessageLevel,Priority> messageLevel2log4jPriority = new HashMap<MessageLevel, Priority>(){{
+		put(MessageLevel.TRACE, Priority.DEBUG);
+		put(MessageLevel.DEBUG, Priority.DEBUG);
+		put(MessageLevel.INFO, Priority.INFO);
+		put(MessageLevel.TIP, Priority.INFO);
+		put(MessageLevel.WARNING, Priority.WARN);
+		put(MessageLevel.ERROR, Priority.ERROR);
+	}};
+	
+	{
+		// init of LOG4J
+		if (RELAY_TO_LOG4J) {
+		    BasicConfigurator.configure();
+			Logger.getRootLogger().setLevel(Level.DEBUG);
+			//Logger.getRootLogger().addAppender(new ConsoleAppender());
+		}
+	}
 	
 	public boolean isEmpty() {
 		return hashedMessages.isEmpty();
@@ -44,6 +76,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 		return sortedMessages.last();
 	}
 	
+	
 	/**
 	 * Adds without raising event
 	 * @param e
@@ -51,6 +84,18 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 */
 	private boolean _add(ITextMessage e) {
 
+		if (RELAY_TO_LOG4J) {
+			
+			Logger.getLogger((e.getClass()==null?Object.class:e.getClass())).log(
+					messageLevel2log4jPriority.get(e.getLevel()),
+					(new StringBuffer())
+						.append(e.getDate().toString())
+						.append(" - ")
+						.append(e.getMessage())
+						.toString()
+					);
+		}
+		
 		synchronized (hashedMessages) {
 
 		ITextMessage messageJustBefore = sortedMessages.lower(e);
@@ -77,9 +122,10 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 
 		_add(e);
 		
-		for (IListOfMessagesListener l : getListeners()) {
+		for (IListOfMessagesListener l : new LinkedList<IListOfMessagesListener>(getListeners())) {
 			l.contentChanged(this);
 		}
+		
 		return true;
 		
 	}
@@ -107,11 +153,15 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 				this._add(itOther.next());
 			}
 			
+			
+
+		}
+		synchronized (listeners) {
 			for (IListOfMessagesListener l : getListeners()) {
 				l.contentChanged(this);
 			}
-
 		}
+		
 		return true;
 		
 	}
@@ -124,10 +174,12 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			sortedMessages.clear();
 			
 		}
-		
-		for (IListOfMessagesListener l : getListeners()) {
-			l.contentChanged(this);
+		synchronized (listeners) {
+			for (IListOfMessagesListener l : getListeners()) {
+				l.contentChanged(this);
+			}
 		}
+		
 	}
 
 	public ITextMessage[] asArray() {
@@ -140,24 +192,25 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	private final Collection<IListOfMessagesListener> getOrCreateListeners() {
-		if (listeners == null)
-			listeners = new LinkedList<IListOfMessagesListener>();
 		
 		return listeners;
 	}
+	
 	public Collection<IListOfMessagesListener> getListeners() {
-		if (listeners == null)
-			return Collections.EMPTY_LIST;
-		else 
-			return listeners;
+		return listeners;
 	}
 	
 	public void addListener(IListOfMessagesListener l) {
-		getOrCreateListeners().add(l);
+		synchronized (listeners) {
+			getOrCreateListeners().add(l);
+		}
+		
 	}
 	
 	public void removeListener(IListOfMessagesListener l) {
-		getOrCreateListeners().remove(l);
+		synchronized (listeners) {
+			getOrCreateListeners().remove(l);
+		}
 	}
 	
 	public int getSize() {
@@ -485,3 +538,4 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			);
 	}
 }
+

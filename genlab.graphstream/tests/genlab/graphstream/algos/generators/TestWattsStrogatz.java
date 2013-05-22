@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import java.util.HashMap;
 
 import genlab.basics.javaTypes.graphs.IGenlabGraph;
-import genlab.basics.workflow.WorkflowFactory;
+import genlab.basics.workflow.GenlabFactory;
 import genlab.core.algos.IAlgoExecution;
 import genlab.core.algos.IAlgoInstance;
 import genlab.core.algos.IComputationResult;

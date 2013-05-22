@@ -4,6 +4,8 @@ import genlab.basics.flow.FileFlowType;
 import genlab.basics.flow.SimpleGraphFlowType;
 import genlab.basics.javaTypes.graphs.IGenlabGraph;
 import genlab.core.algos.AlgoInstance;
+import genlab.core.algos.BasicAlgo;
+import genlab.core.algos.ExistingAlgoCategories;
 import genlab.core.algos.IAlgo;
 import genlab.core.algos.IAlgoExecution;
 import genlab.core.algos.IAlgoInstance;
@@ -12,15 +14,13 @@ import genlab.core.algos.IInputOutput;
 import genlab.core.algos.InputOutput;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.graphstream.stream.file.FileSink;
 
-// TODO use basicalgo instead
-public abstract class AbstractGraphStreamGraphWriter implements IAlgo {
+public abstract class AbstractGraphStreamGraphWriter extends BasicAlgo implements IAlgo {
 
+	
 	public static final InputOutput<IGenlabGraph> PARAM_GRAPH = new InputOutput<IGenlabGraph>(
 			new SimpleGraphFlowType(), 
 			"TODO.graph", 
@@ -35,24 +35,13 @@ public abstract class AbstractGraphStreamGraphWriter implements IAlgo {
 			"the file to save the thing to"
 	);
 	
-	private final Set<IInputOutput> inputs = new HashSet<IInputOutput>() {{
-		add(PARAM_GRAPH);
-	}};
-	
-	private final Set<IInputOutput> outputs = new HashSet<IInputOutput>() {{
-		add(OUTPUT_FILE);
-	}};
-	
-	@Override
-	public Set<IInputOutput> getInputs() {
-		return inputs;
-	}
+	public AbstractGraphStreamGraphWriter(String name, String description) {
+		super(name, description, ExistingAlgoCategories.WRITER_GRAPH.getTotalId());
 
-	@Override
-	public Set<IInputOutput> getOuputs() {
-		return outputs;
+		inputs.add(PARAM_GRAPH);
+		outputs.add(OUTPUT_FILE);
 	}
-
+	
 	@Override
 	public IAlgoInstance createInstance(IGenlabWorkflow workflow) {
 		return new AlgoInstance(this, workflow);

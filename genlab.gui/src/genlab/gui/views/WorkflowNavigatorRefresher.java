@@ -3,6 +3,7 @@ package genlab.gui.views;
 import genlab.basics.workflow.IWorkflowListener;
 import genlab.basics.workflow.WorkflowHooks;
 import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.Utils;
 import genlab.gui.listeners.IWorkflowGUIListener;
@@ -54,6 +55,11 @@ public class WorkflowNavigatorRefresher implements IWorkflowGUIListener, IWorkfl
 	@Override
 	public void workflowSaved(IGenlabWorkflow workflow) {
 		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void projectSaved(IGenlabProject project) {
 		
 	}
 	

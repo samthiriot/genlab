@@ -6,8 +6,6 @@ import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 
-import org.eclipse.core.resources.IProject;
-
 public class WorkflowListener implements IWorkflowListener {
 
 	public WorkflowListener() {
@@ -137,6 +135,9 @@ public class WorkflowListener implements IWorkflowListener {
 		
 		GLLogger.debugTech("opening the graphiti diagram for this workflow, which should be there: "+filename, getClass()); 
 		
+		MappingObjects.register(workflow.getAbsolutePath(), workflow);
+		
+		
 	}
 
 	@Override
@@ -154,6 +155,12 @@ public class WorkflowListener implements IWorkflowListener {
 
 	@Override
 	public void workflowSaved(IGenlabWorkflow workflow) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void projectSaved(IGenlabProject project) {
 		// TODO Auto-generated method stub
 		
 	}

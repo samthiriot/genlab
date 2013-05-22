@@ -1,6 +1,9 @@
 package genlab.gui.graphiti.features;
 
+import genlab.basics.workflow.GenlabWorkflow;
+import genlab.core.algos.AlgoInstance;
 import genlab.core.algos.IAlgoInstance;
+import genlab.core.algos.IGenlabWorkflow;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
 
@@ -43,7 +46,26 @@ public class AddIAlgoInstanceConnectionFeature extends AbstractAddFeature {
 			
 			// and to what it is added
 			if (context.getTargetContainer() instanceof Diagram) {
-				return true;
+				
+				IGenlabWorkflow workflow = (IGenlabWorkflow) getBusinessObjectForPictogramElement(
+						context.getTargetContainer()
+						);
+				if (workflow == null) {
+					GLLogger.warnTech("unable to find the workflow for this diagram, problems ahead", getClass());
+					return false;
+				}
+				
+				final IAlgoInstance algoInstanceToAdd = (IAlgoInstance)context.getNewObject();
+				
+				// don't add the same instance twice, that is...
+				return	(
+							// the algo instance is not already in the workflow 
+							(!workflow.containsAlgoInstance(algoInstanceToAdd))
+							||
+							// or it still has no graphical representation
+							(getFeatureProvider().getPictogramElementForBusinessObject(algoInstanceToAdd) == null)
+						);
+				
 			}
 			
 		}
@@ -57,8 +79,12 @@ public class AddIAlgoInstanceConnectionFeature extends AbstractAddFeature {
 		GLLogger.debugTech("creating an algo graphic representation", getClass());
 		
 		// retrieve parameters
-		IAlgoInstance addedAlgo = (IAlgoInstance) context.getNewObject();
+		AlgoInstance addedAlgo = (AlgoInstance) context.getNewObject();
 		Diagram targetDiagram = (Diagram) context.getTargetContainer();
+		
+		GenlabWorkflow workflow = (GenlabWorkflow)this.getBusinessObjectForPictogramElement(targetDiagram);
+		
+		addedAlgo._setWorkflow(workflow);
 		
 		// create container 
 		IPeCreateService peCreateService = Graphiti.getPeCreateService();
@@ -107,7 +133,7 @@ public class AddIAlgoInstanceConnectionFeature extends AbstractAddFeature {
 			link(shape, addedAlgo);
 		}
 		
-		MappingObjects.register(containerShape, addedAlgo);
+		link(containerShape, addedAlgo);
 		
 		return containerShape;
 	}

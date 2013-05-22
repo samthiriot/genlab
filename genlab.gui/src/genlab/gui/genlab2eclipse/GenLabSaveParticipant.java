@@ -1,7 +1,5 @@
 package genlab.gui.genlab2eclipse;
 
-import genlab.core.algos.IAlgoInstance;
-import genlab.core.algos.IGenlabWorkflow;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -52,6 +50,9 @@ public class GenLabSaveParticipant implements ISaveParticipant {
 		
 		GLLogger.debugTech("save each resource associated with the eclipse project", getClass());
 		
+		if (context.getKind() != ISaveContext.FULL_SAVE && context.getKind() != ISaveContext.PROJECT_SAVE)
+			return;
+		
 		if (context.getProject() == null) {
 			GLLogger.warnTech("unable to find the project in the saving context ?", getClass());
 			System.err.println("unable to find the project in the saving context ?");
@@ -59,15 +60,8 @@ public class GenLabSaveParticipant implements ISaveParticipant {
 		} 
 		
 		IGenlabProject genlabProject = GenLab2eclipseUtils.getGenlabProjectForEclipseProject(context.getProject());
-		for (IGenlabWorkflow workflow : genlabProject.getWorkflows()) {
-			GLLogger.debugTech("saving workflow: "+workflow, getClass());
-			try {
-				GenlabPersistence.getPersistence().saveWorkflow(workflow);
-			} catch (Exception e) {
-				GLLogger.errorTech("error while saving workflow "+workflow, getClass(), e);
-				// TODO warn user
-			}
-		}
+		GenlabPersistence.getPersistence().saveProject(genlabProject);
+		
 		
 	}
 

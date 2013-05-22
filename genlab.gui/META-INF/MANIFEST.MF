@@ -13,7 +13,8 @@ Require-Bundle: genlab.core,
  org.eclipse.ui.navigator;bundle-version="3.5.200",
  org.eclipse.ui.navigator.resources;bundle-version="3.4.400",
  org.eclipse.ui.ide;bundle-version="3.8.2",
- org.eclipse.ui.intro;bundle-version="3.4.200"
+ org.eclipse.ui.intro;bundle-version="3.4.200",
+ org.eclipse.equinox.util;bundle-version="1.0.400"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: genlab.gui.genlab2eclipse,

@@ -1,12 +1,11 @@
 package genlab.gui.wizards;
 
+import genlab.basics.workflow.GenlabFactory;
 import genlab.core.projects.IGenlabProject;
-import genlab.core.projects.ProjectFactory;
 import genlab.gui.Utils;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 import genlab.gui.genlab2eclipse.GenLabWorkflowProjectNature;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 
@@ -150,7 +149,7 @@ public class NewGenlabProjectWizard extends Wizard implements IWorkbenchWizard {
 		}
 		
 		// also create the corresponding genlab project
-		IGenlabProject genlabProject = ProjectFactory.getProject(
+		IGenlabProject genlabProject = GenlabFactory.createProject(
 				newProject.getLocation().toOSString()
 				);
 		

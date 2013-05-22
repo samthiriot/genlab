@@ -6,17 +6,12 @@ import genlab.core.algos.ComputationProgressWithSteps;
 import genlab.core.algos.ComputationResult;
 import genlab.core.algos.ComputationState;
 import genlab.core.algos.IAlgoInstance;
-import genlab.core.algos.WrongParametersException;
 import genlab.graphstream.utils.GraphstreamConvertors;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.graphstream.stream.file.FileSink;
-import org.graphstream.stream.file.FileSource;
 
 public class AbstractGraphstreamGraphWriterExecution extends
 		AbstractAlgoExecution {

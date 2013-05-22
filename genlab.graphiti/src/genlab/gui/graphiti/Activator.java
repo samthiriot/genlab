@@ -1,15 +1,12 @@
 package genlab.gui.graphiti;
 
-import java.util.Arrays;
-
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
-import genlab.gui.graphiti.editors.GenlabDiagramEditor;
+import genlab.gui.graphiti.genlab2graphiti.EclipseResourceListener;
 
-import org.eclipse.gef.ui.parts.GraphicalEditor;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.graphiti.dt.IDiagramType;
-import org.eclipse.graphiti.internal.GraphitiPlugin;
-import org.eclipse.graphiti.ui.internal.services.GraphitiUiInternal;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -71,6 +68,13 @@ public class Activator extends AbstractUIPlugin {
 			}
 				
 		}
+		
+		// listen for resource events, notably to save genlab resources when graphiti ones are
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(
+				new EclipseResourceListener(),
+				IResourceChangeEvent.POST_CHANGE
+				);
+		
 		
 	}
 

@@ -1,6 +1,7 @@
 package genlab.basics.workflow;
 
 import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
@@ -101,6 +102,16 @@ public class WorkflowHooks {
 		for (IWorkflowListener l : listeners) {
 			try {
 				l.workflowSaved(wf);
+			} catch (RuntimeException e) {
+				GLLogger.warnTech("in the workflow listener, catched an exception: "+e.getMessage(), getClass(), e);
+			}
+		}
+	}
+	
+	public void notifyProjectSaved(IGenlabProject project) {
+		for (IWorkflowListener l : listeners) {
+			try {
+				l.projectSaved(project);
 			} catch (RuntimeException e) {
 				GLLogger.warnTech("in the workflow listener, catched an exception: "+e.getMessage(), getClass(), e);
 			}

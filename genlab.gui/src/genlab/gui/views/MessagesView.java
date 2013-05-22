@@ -374,7 +374,7 @@ public class MessagesView extends ViewPart  {
 		viewer.setContentProvider(new MessagesContentProvider(ListsOfMessages.getGenlabMessages()));
 		viewer.setInput("toto");
 		
-		IListOfMessagesListener list = new IListOfMessagesListener() {
+		IListOfMessagesListener listener = new IListOfMessagesListener() {
 			
 			@Override
 			public void contentChanged(ListOfMessages list) {
@@ -384,10 +384,18 @@ public class MessagesView extends ViewPart  {
 					return;
 				}
 				
+				final IListOfMessagesListener myThis = this;
+				
 				parent.getDisplay().asyncExec(new Runnable() {
 					
 					@Override
 					public void run() {
+						
+						if (parent.isDisposed()) {
+							ListsOfMessages.getGenlabMessages().removeListener(myThis);
+							return;
+						}
+						
 						try {
 							viewer.setInput("toto");
 			
@@ -403,7 +411,7 @@ public class MessagesView extends ViewPart  {
 			}
 		};
 		
-		ListsOfMessages.getGenlabMessages().addListener(list);
+		ListsOfMessages.getGenlabMessages().addListener(listener);
 
 		
 	}

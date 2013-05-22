@@ -17,6 +17,7 @@ import java.util.Set;
  */
 public interface IAlgo extends IGenlabResource {
 
+			
 	public String getName();
 	
 	public String getDescription();
@@ -25,7 +26,6 @@ public interface IAlgo extends IGenlabResource {
 	public Set<IInputOutput> getInputs();
 	
 	public Set<IInputOutput> getOuputs();
-	
 	
 	public IAlgoInstance createInstance(IGenlabWorkflow workflow);
 
@@ -38,5 +38,12 @@ public interface IAlgo extends IGenlabResource {
 	 * @return
 	 */
 	public IAlgoExecution createExec(AlgoInstance algoInstance, Map<IInputOutput, Object> inputs);
-	
+
+	/**
+	 * Returns the category of the algo, in the form "category1/subcategory1/subsub" (various number of levels, 2 recommanded).
+	 * Would be better to use the constants defined here.
+	 * Constants have to be localized.
+	 * @return
+	 */
+	public String getCategoryId();
 }

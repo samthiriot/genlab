@@ -2,9 +2,10 @@ package genlab.basics.workflow;
 
 import genlab.core.algos.IGenlabWorkflow;
 import genlab.core.persistence.GenlabPersistence;
+import genlab.core.projects.GenlabProject;
 import genlab.core.projects.IGenlabProject;
 
-public class WorkflowFactory {
+public class GenlabFactory {
 
 	
 	public static IGenlabWorkflow createWorkflow(IGenlabProject project, String name, String desc, String relativePath) {
@@ -19,7 +20,17 @@ public class WorkflowFactory {
 		
 	}
 	
+	public static IGenlabProject createProject(String absoluteDirectory) {
+		
+		IGenlabProject project = new GenlabProject(absoluteDirectory);
+				
+		GenlabPersistence.getPersistence().saveProject(project);
+		
+		return project;
+		
+	}
 	
-	private WorkflowFactory() {}
+	
+	private GenlabFactory() {}
 
 }

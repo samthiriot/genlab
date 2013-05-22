@@ -3,9 +3,7 @@ package genlab.gui.graphiti.features;
 import genlab.core.algos.IAlgo;
 import genlab.core.algos.IAlgoInstance;
 import genlab.core.algos.IGenlabWorkflow;
-import genlab.core.persistence.GenlabPersistence;
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
@@ -29,7 +27,12 @@ public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
 
 	@Override
 	public boolean canCreate(ICreateContext context) {
-		return context.getTargetContainer() instanceof Diagram;
+		
+		if (!(context.getTargetContainer() instanceof Diagram))
+			return false;
+		
+		return true;
+		
 	}
 
 	@Override
@@ -51,7 +54,10 @@ public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
 
 		// TODO should add this to the workflow !
 		
-		IGenlabWorkflow workflow = (IGenlabWorkflow) MappingObjects.getGenlabResourceFor(context.getTargetContainer().eResource().getURI());
+		System.err.println("search for diag: "+context.getTargetContainer());
+		IGenlabWorkflow workflow = (IGenlabWorkflow)getBusinessObjectForPictogramElement(context.getTargetContainer());
+		if (workflow == null)
+			GLLogger.warnTech("unable to find the workflow related to this diagram, problems ahead", getClass());
 		
 		IAlgoInstance algoInstance = algo.createInstance(workflow);
 		
@@ -61,6 +67,10 @@ public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
 		return new Object[]{algoInstance};
 		
 		
+	}
+	
+	public IAlgo getAlgo() {
+		return algo;
 	}
 
 }

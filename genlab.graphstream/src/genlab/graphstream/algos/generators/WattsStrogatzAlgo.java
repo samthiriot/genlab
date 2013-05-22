@@ -9,6 +9,7 @@ import genlab.core.algos.AbstractAlgoExecution;
 import genlab.core.algos.AlgoInstance;
 import genlab.core.algos.BasicAlgo;
 import genlab.core.algos.ComputationProgressWithSteps;
+import genlab.core.algos.ExistingAlgoCategories;
 import genlab.core.algos.IAlgo;
 import genlab.core.algos.IAlgoExecution;
 import genlab.core.algos.IAlgoInstance;
@@ -58,7 +59,8 @@ public class WattsStrogatzAlgo extends BasicAlgo {
 	public WattsStrogatzAlgo() {
 		super(
 				ALGO_NAME,
-				"as implemented into the graphstream library"
+				"as implemented into the graphstream library",
+				ExistingAlgoCategories.GENERATORS_GRAPHS.getTotalId()
 				);
 		
 		inputs.add(PARAM_N);
@@ -83,6 +85,8 @@ public class WattsStrogatzAlgo extends BasicAlgo {
 				PARAM_P.decodeFromParameters(inputs)
 				);
 	}
+
+	
 
 
 }

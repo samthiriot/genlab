@@ -16,6 +16,11 @@ public interface IAlgoExecution {
 	
 	public IComputationResult getResult();
 	
+	/**
+	 * TODO !
+	 * @return
+	 */
+	//public int getPreferedCountThreads();
 	
 	public void run();
 	

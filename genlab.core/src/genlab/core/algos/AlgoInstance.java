@@ -4,16 +4,20 @@ import java.util.Map;
 
 public class AlgoInstance implements IAlgoInstance {
 
-	private final IAlgo algo;
 	private final String id;
+	private final String algoClassName;
 	
-	private final transient IGenlabWorkflow workflow;
+	private transient IAlgo algo;
+	private transient IGenlabWorkflow workflow;
+	
 	
 	public AlgoInstance(IAlgo algo, IGenlabWorkflow workflow) {
 		this.algo = algo;
-		this.id = getAlgo()+".1"; // TODO mechanism to generate ids
+		this.algoClassName = algo.getClass().getCanonicalName();
+		this.id = getAlgo()+"."+System.currentTimeMillis(); // TODO mechanism to generate ids
 		this.workflow = workflow;
-		workflow.addAlgoInstance(this);
+		if (workflow != null)
+			workflow.addAlgoInstance(this);
 	}
 
 	@Override
@@ -43,7 +47,23 @@ public class AlgoInstance implements IAlgoInstance {
 
 	@Override
 	public void delete() {
-		workflow.removeAlgoInstance(this);
+		if (workflow != null)
+			workflow.removeAlgoInstance(this);
+	}
+	
+	public void _setWorkflow(IGenlabWorkflow workflow) {
+		this.workflow = workflow;
+		if (workflow != null)
+			workflow.addAlgoInstance(this);
+	}
+	
+	public void _setAlgo(IAlgo algo) {
+		this.algo = algo;
+	}
+	
+	private Object readResolve() {
+		algo = ExistingAlgos.getExistingAlgos().getAlgoForClass(algoClassName);
+		return this;
 	}
 
 }

@@ -207,7 +207,7 @@
                </adapt>
                <test
                      property="org.eclipse.core.resources.projectNature"
-                     value="genlab.gui.projectnatureImage">
+                     value="genlab.gui.genlabProjectNature">
                </test>
             </and>
          </enablement>

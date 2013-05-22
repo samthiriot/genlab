@@ -3,8 +3,10 @@ package genlab.gui;
 import java.io.File;
 
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.genlab2eclipse.EclipseResourceListener;
 import genlab.gui.genlab2eclipse.GenLabSaveParticipant;
 
+import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ISaveParticipant;
 import org.eclipse.core.resources.ISavedState;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -45,6 +47,12 @@ public class Activator extends AbstractUIPlugin {
 		GLLogger.infoTech("registering a save participant...", getClass());
 		ISaveParticipant saveParticipant = new GenLabSaveParticipant();
 		ISavedState lastState = ResourcesPlugin.getWorkspace().addSaveParticipant(PLUGIN_ID, saveParticipant);
+		
+		// listen for workspace events, so we will load the corresponding genlab resources.
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(
+				new EclipseResourceListener(),
+				IResourceChangeEvent.POST_CHANGE
+				);
 		
 		/*
 		 * if (lastState == null)

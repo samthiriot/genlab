@@ -2,7 +2,6 @@ package genlab.graphstream.algos.readers;
 
 import org.graphstream.stream.file.FileSource;
 import org.graphstream.stream.file.FileSourceGraphML;
-import org.graphstream.stream.file.FileSourcePajek;
 
 public class GraphStreamGraphMLParser extends AbstractGraphStreamGraphParser {
 

@@ -15,10 +15,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
-import org.eclipse.graphiti.services.Graphiti;
-import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.services.IPeCreateService;
-import org.eclipse.graphiti.services.IPeService;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IFileEditorInput;
@@ -29,8 +25,12 @@ import org.eclipse.ui.part.FileEditorInput;
 public class Genlab2GraphitiUtils {
 
 	public static final String KEY_WORKFLOW_TO_GRAPHITI_FILE = "graphiti_file";
+	public static final String EXTENSION_FILE_MAPPING = ".mapping";
+
+// TODO remove 	public static final String KEY_WORKFLOW_TO_INDEPENDANCE_SOLVER = "graphiti_independance_solver";
+
 	
-	
+	// TODO remove old code for errors
 	public static void createDiagram(IGenlabWorkflow workflow, IProject project) {
 		
 		GLLogger.debugTech("creating a diagram for this workflow", Genlab2GraphitiUtils.class);
@@ -60,7 +60,12 @@ public class Genlab2GraphitiUtils {
 			
 		}
 		
-		MappingObjects.register(operation.getDiagram().eResource().getURI(), workflow);
+		// associate diagram with the workflow
+		// TODO associate something ?
+		// MappingObjects.register(operation.getDiagram(), workflow);
+		// also associate the diagram file with the workflow
+		//MappingObjects.register(workflow.getAbsolutePath(), workflow);
+		//MappingObjects.register(workflow.getAbsolutePath()+"."+GraphitiDiagramTypeProvider.GRAPH_EXTENSION, workflow);
 		
 		// Dispose the editing domain to eliminate memory leak
 		editingDomain.dispose();

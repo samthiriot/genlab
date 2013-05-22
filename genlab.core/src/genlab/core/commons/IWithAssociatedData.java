@@ -15,5 +15,8 @@ public interface IWithAssociatedData {
 	public Object getObjectForKey(String key);
 	
 	public Object addObjectForKey(String key, Object object);
+
+	public Object addObjectForKey(String key, Object object, boolean raiseEvent);
+
 	
 }

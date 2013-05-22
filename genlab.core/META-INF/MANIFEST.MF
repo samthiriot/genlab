@@ -22,4 +22,5 @@ Export-Package: genlab.basics.flow,
  genlab.core.projects,
  genlab.core.usermachineinteraction
 Bundle-ClassPath: ext/xstream-1.4.4.jar,
- .
+ .,
+ ext/log4j-1.2.8.jar

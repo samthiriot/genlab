@@ -17,8 +17,6 @@ import org.eclipse.ui.navigator.CommonNavigator;
 
 public class Utils {
 
-	private Utils() {
-	}
 	
 	public static IProject findEclipseProjectInSelection(IStructuredSelection selection) {
 
@@ -115,5 +113,9 @@ public class Utils {
 		cn.selectReveal(new StructuredSelection(elem));
 		
 	}
+	
+	private Utils() {
+	}
+	
 
 }

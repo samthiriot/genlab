@@ -5,6 +5,7 @@ import genlab.basics.flow.SimpleGraphFlowType;
 import genlab.basics.javaTypes.graphs.IGenlabGraph;
 import genlab.core.algos.AlgoInstance;
 import genlab.core.algos.BasicAlgo;
+import genlab.core.algos.ExistingAlgoCategories;
 import genlab.core.algos.IAlgoExecution;
 import genlab.core.algos.IAlgoInstance;
 import genlab.core.algos.IGenlabWorkflow;
@@ -33,7 +34,7 @@ public abstract class AbstractGraphStreamGraphParser extends BasicAlgo {
 	);
 	
 	public AbstractGraphStreamGraphParser(String name, String desc) {
-		super(name, desc);
+		super(name, desc, ExistingAlgoCategories.PARSER_GRAPH.getTotalId());
 		inputs.add(PARAM_FILE);
 		outputs.add(OUTPUT_GRAPH);
 	}

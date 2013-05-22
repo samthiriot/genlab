@@ -2,6 +2,7 @@ package genlab.gui.graphiti.genlab2graphiti;
 
 import genlab.core.algos.IGenlabWorkflow;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
+import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -11,7 +12,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
-import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
@@ -43,9 +43,12 @@ public class AddAllClassesCommand extends RecordingCommand {
 		IDiagramTypeProvider dtp = GraphitiUi.getExtensionManager().createDiagramTypeProvider(
 				diagram,
 				GraphitiDiagramTypeProvider.PROVIDER_ID
-				); //$NON-NLS-1$
+				); 
+		
+		//((GraphitiFeatureProvider)dtp.getFeatureProvider()).getIndependanceSolver().
+		
         
-		IFolder diagramFolder = project.getFolder(workflow.getRelativePath()); //$NON-NLS-1$
+		IFolder diagramFolder = project.getFolder(project.getProjectRelativePath().append(workflow.getRelativePath())); //$NON-NLS-1$
 		IFile diagramFile = diagramFolder.getFile(
 				workflow.getFilename()+
 				"."+ //$NON-NLS-1$
@@ -54,9 +57,9 @@ public class AddAllClassesCommand extends RecordingCommand {
 		URI uri = URI.createPlatformResourceURI(diagramFile.getFullPath().toString(), true);
 		createdResource = editingDomain.getResourceSet().createResource(uri);
 		createdResource.getContents().add(diagram);
-
-		IFeatureProvider featureProvider = dtp.getFeatureProvider();
 	
+		MappingObjects.register(diagram, workflow);
+		
 		// add a link between the workflow and the diagram file
 		workflow.addObjectForKey(
 				Genlab2GraphitiUtils.KEY_WORKFLOW_TO_GRAPHITI_FILE, 

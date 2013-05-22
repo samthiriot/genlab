@@ -1,6 +1,5 @@
 package genlab.gui.graphiti.diagram;
 
-import genlab.core.IGenlabResource;
 import genlab.core.algos.ExistingAlgos;
 import genlab.core.algos.IAlgo;
 import genlab.core.algos.IAlgoInstance;
@@ -9,33 +8,38 @@ import genlab.gui.graphiti.features.AddIAlgoInstanceConnectionFeature;
 import genlab.gui.graphiti.features.CreateDomainObjectConnectionConnectionFeature;
 import genlab.gui.graphiti.features.CreateIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.DeleteIAlgoInstanceFeature;
+import genlab.gui.graphiti.features.LayoutIAlgoFeature;
 import genlab.gui.graphiti.features.RemoveIAlgoInstanceFeature;
-import genlab.gui.graphiti.features.ResizeIAlgoInstanceFeature;
 import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
 import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
 import genlab.gui.graphiti.patterns.DomainObjectPattern;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
+import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
-import org.eclipse.graphiti.features.IResizeShapeFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
+import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
-import org.eclipse.graphiti.features.context.IResizeShapeContext;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.pattern.DefaultFeatureProviderWithPatterns;
 
 public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns {
 
-	private final GenLabIndependenceSolver independenceSolver;
-
+	private GenLabIndependenceSolver independenceSolver;
+	
+	
 	public GraphitiFeatureProvider(IDiagramTypeProvider dtp) {
 		super(dtp);
 		GLLogger.debugTech("Graphiti feature provider instanciated: "+getClass().getCanonicalName(), getClass());
@@ -43,6 +47,17 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		
 		independenceSolver = new GenLabIndependenceSolver();
 		setIndependenceSolver(independenceSolver);
+		
+        
+	}
+	
+	public void _setIndependanceSolver(GenLabIndependenceSolver solver) {
+		this.independenceSolver = solver;
+		setIndependenceSolver(independenceSolver);
+	}
+	
+	public GenLabIndependenceSolver getIndependanceSolver() {
+		return this.independenceSolver;
 	}
 
 	@Override
@@ -57,6 +72,8 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		if (context.getNewObject() instanceof IAlgoInstance) {
 			return new AddIAlgoInstanceConnectionFeature(this);
 		}
+		
+		GLLogger.warnTech("cannot provide a feature for a wrong object: "+context.getNewObject().getClass().getCanonicalName(), getClass());
 		
 		return super.getAddFeature(context);
 	}
@@ -82,11 +99,14 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 	@Override
 	public IRemoveFeature getRemoveFeature(IRemoveContext context) {
 
-		IGenlabResource genlabObject = MappingObjects.getGenlabResourceFor(context.getPictogramElement());
-		if (genlabObject  instanceof IAlgoInstance) {
+		Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
+		
+		if (bo  instanceof IAlgoInstance) {
 			return new RemoveIAlgoInstanceFeature(this); // no remove for our object; everything displayed is real, everything real is displayed.
 		}
-		 
+		
+		GLLogger.warnTech("cannot provide a feature for a wrong object: "+bo, getClass());
+		
 		return super.getRemoveFeature(context);
 	}
 	
@@ -94,41 +114,132 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 	@Override
 	public IDeleteFeature getDeleteFeature(IDeleteContext context) {
 
-		IGenlabResource genlabObject = MappingObjects.getGenlabResourceFor(context.getPictogramElement());
-		if (genlabObject  instanceof IAlgoInstance) {
+		Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
+
+		if (bo instanceof IAlgoInstance) {
 			return new DeleteIAlgoInstanceFeature(this); 
 		}
+		
+		GLLogger.warnTech("cannot provide a feature for a wrong object: "+bo, getClass());
 		
 		return super.getDeleteFeature(context);
 	}
 
-	@Override
-	public IResizeShapeFeature getResizeShapeFeature(IResizeShapeContext context) {
-		
-		IGenlabResource genlabObject = MappingObjects.getGenlabResourceFor(context.getPictogramElement());
-		if (genlabObject  instanceof IAlgoInstance)
-			return new ResizeIAlgoInstanceFeature(this);
-		
-		return super.getResizeShapeFeature(context);
-	}
+
 
 	public GenLabIndependenceSolver getGenlabIndependenceSolver() {
 		return independenceSolver;
 	}
 
+	
+	
 
 	@Override
-	public void link(PictogramElement pictogramElement, Object businessObject) {
-		// TODO Auto-generated method stub
-		super.link(pictogramElement, businessObject);
+	public ILayoutFeature getLayoutFeature(ILayoutContext context) {
+		
+		Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
+		
+		if (bo instanceof IAlgoInstance) {
+			return new LayoutIAlgoFeature(this); 
+		}
+		
+		GLLogger.warnTech("cannot provide a feature for a wrong object: "+bo, getClass());
+		
+		
+		return super.getLayoutFeature(context);
 	}
+	
+	private class LinkCommand implements Command {
 
-	@Override
-	public void link(PictogramElement pictogramElement, Object[] businessObjects) {
-		// TODO Auto-generated method stub
-		super.link(pictogramElement, businessObjects);
+		private final GraphitiFeatureProvider dfp;
+		private final PictogramElement pictogramElement;
+		private final Object res;
+		
+		public LinkCommand(GraphitiFeatureProvider dfp, PictogramElement pictogramElement, Object res) {
+			this.dfp = dfp;
+			this.pictogramElement = pictogramElement;
+			this.res = res;
+		}
+
+		@Override
+		public boolean canExecute() {
+			return true;
+		}
+
+		@Override
+		public void execute() {
+			link(pictogramElement, res);
+		}
+
+		@Override
+		public boolean canUndo() {
+			return false;
+		}
+
+		@Override
+		public void undo() {
+		}
+
+		@Override
+		public void redo() {
+		}
+
+		@Override
+		public Collection<?> getResult() {
+			return null;
+		}
+
+		@Override
+		public Collection<?> getAffectedObjects() {
+			return null;
+		}
+
+		@Override
+		public String getLabel() {
+			return "internal linking of resources";
+		}
+
+		@Override
+		public String getDescription() {
+			return null;
+		}
+
+		@Override
+		public void dispose() {
+		}
+
+		@Override
+		public Command chain(Command command) {
+			return null;
+		}
+		
 	}
 	
 	
+	@Override
+	public Object getBusinessObjectForPictogramElement(PictogramElement pictogramElement) {
+		
+		Object res = super.getBusinessObjectForPictogramElement(pictogramElement);
+		
+		if (res == null) {
+			
+			// start of problem solving...
+			
+			// maybe this is a diagram, and diagrams have problems of mapping corrected by us
+			if (pictogramElement instanceof Diagram) {
+				res = MappingObjects.getGenlabResourceFor(pictogramElement);
+			}
+			
+			// store mapping
+			if (res != null)
+				TransactionUtil.getEditingDomain(pictogramElement).getCommandStack().execute(
+						new LinkCommand(this, pictogramElement, res)
+						);
+			
+		}
+		
+		return res;
+	}
+
 	
 }

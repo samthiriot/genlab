@@ -1,5 +1,5 @@
 import static org.junit.Assert.*;
-import genlab.basics.workflow.WorkflowFactory;
+import genlab.basics.workflow.GenlabFactory;
 import genlab.core.algos.IAlgoInstance;
 import genlab.core.algos.IGenlabWorkflow;
 import genlab.graphstream.algos.generators.WattsStrogatzAlgo;
@@ -33,7 +33,7 @@ public class TestReadWriteChain {
 	@Test
 	public void test() {
 
-		IGenlabWorkflow workflow =  WorkflowFactory.createWorkflow("test", "for unit testing", null);
+		IGenlabWorkflow workflow =  GenlabFactory.createWorkflow("test", "for unit testing", null);
 		
 		// add a generator
 		

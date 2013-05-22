@@ -1,7 +1,5 @@
 package genlab.gui.views;
 
-import genlab.core.usermachineinteraction.GLLogger;
-
 import java.io.File;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -15,7 +13,7 @@ import org.eclipse.jface.viewers.Viewer;
  * @author B12772
  *
  */
-class ProjectNavigatorContentProvider implements ITreeContentProvider {
+public class ProjectNavigatorContentProvider implements ITreeContentProvider {
 
 	public ProjectNavigatorContentProvider() {
 		

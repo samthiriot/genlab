@@ -1,9 +1,6 @@
 package genlab.gui;
 
-import genlab.gui.DEMO.OpenViewAction;
-import genlab.gui.DEMO.View;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
@@ -33,18 +30,21 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     // Actions - important to allocate these only in makeActions, and then use them
     // in the fill methods.  This ensures that the actions aren't recreated
     // when fillActionBars is called with FILL_PROXY.
+	
+	// file menu 
+	private IWorkbenchAction openNewWizard;
+    private IWorkbenchAction exportAction;
+    private IWorkbenchAction saveAction;
+    private IWorkbenchAction saveAllAction;
+    private IWorkbenchAction switchWorkspace;
     private IWorkbenchAction exitAction;
+    
+    // window menu
+    private IWorkbenchAction openPreferences;
     private IWorkbenchAction aboutAction;
-    private OpenViewAction openViewAction;
-    private Action messagePopupAction;
+    
     private IContributionItem viewShortListItem;
     private IContributionItem viewListItem;
-    private IWorkbenchAction switchWorkspace;
-    private IWorkbenchAction exportAction;
-
-    // window
-    private IWorkbenchAction openPreferences;
-    private IWorkbenchAction openNewWizard;
     
     
     public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
@@ -58,19 +58,10 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         // Registering also provides automatic disposal of the actions when
         // the window is closed.
 
-    	// file
-        exitAction = ActionFactory.QUIT.create(window);
-        register(exitAction);
-        
-        aboutAction = ActionFactory.ABOUT.create(window);
-        register(aboutAction);
-      
-        
-        openViewAction = new OpenViewAction(window, "Open Another Message View", View.ID);
-        register(openViewAction);
-        
-        messagePopupAction = new MessagePopupAction("Open Message", window);
-        register(messagePopupAction);
+    	// file menu
+
+        openNewWizard = ActionFactory.NEW.create(window);
+        register(openNewWizard);
         
         switchWorkspace = IDEActionFactory.OPEN_WORKSPACE.create(window);
         register(switchWorkspace);
@@ -78,16 +69,30 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         exportAction = ActionFactory.EXPORT.create(window);
         register(exportAction);
         
-        // window
+        saveAction = ActionFactory.SAVE.create(window);
+        register(saveAction);
+        
+        saveAllAction = ActionFactory.SAVE_ALL.create(window);
+        register(saveAllAction);
+        
+        exitAction = ActionFactory.QUIT.create(window);
+        register(exitAction);
+          
+        
+        // window menu
+        
         viewShortListItem =  ContributionItemFactory.VIEWS_SHORTLIST.create(window);
         viewListItem =  ContributionItemFactory.VIEWS_SHOW_IN.create(window);
        
         openPreferences = ActionFactory.PREFERENCES.create(window);
         register(openPreferences);
        
-        openNewWizard = ActionFactory.NEW.create(window);
-        register(openNewWizard);
-        
+        // help menu
+
+        aboutAction = ActionFactory.ABOUT.create(window);
+        register(aboutAction);
+      
+      
         
         //ActionFactory.NEW_EDITOR
         
@@ -108,13 +113,14 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         // File
         fileMenu.add(openNewWizard);
 
-        fileMenu.add(new Separator());
-        fileMenu.add(messagePopupAction);
-        fileMenu.add(openViewAction);
         
         fileMenu.add(new Separator());
 
         fileMenu.add(exportAction);
+        fileMenu.add(new Separator());
+        
+        fileMenu.add(saveAction);
+        fileMenu.add(saveAllAction);
         
         fileMenu.add(new Separator());
         fileMenu.add(switchWorkspace);
@@ -134,7 +140,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     protected void fillCoolBar(ICoolBarManager coolBar) {
         IToolBarManager toolbar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
         coolBar.add(new ToolBarContributionItem(toolbar, "main"));   
-        toolbar.add(openViewAction);
-        toolbar.add(messagePopupAction);
+        
     }
 }
