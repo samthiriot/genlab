@@ -9,6 +9,7 @@ import genlab.core.model.instance.WorkflowCheckResult;
 import genlab.core.model.meta.basics.algos.ConstantValueDouble;
 import genlab.core.model.meta.basics.algos.ConstantValueInteger;
 import genlab.core.projects.IGenlabProject;
+import genlab.gephi.algos.measure.GephiAveragePathLengthAlgo;
 import genlab.graphstream.algos.generators.WattsStrogatzAlgo;
 import genlab.graphstream.algos.measure.GraphStreamAPSP;
 import genlab.graphstream.algos.measure.GraphStreamConnectedComponents;
@@ -60,6 +61,7 @@ public class TestReadWriteChain {
 		ConstantValueDouble constDouble = new ConstantValueDouble();
 		GraphStreamConnectedComponents detectConnectedComponents = new GraphStreamConnectedComponents();
 		GraphStreamAPSP apsp = new GraphStreamAPSP();
+		GephiAveragePathLengthAlgo gephiLength = new GephiAveragePathLengthAlgo();
 		
 		// add a generator
 		IAlgoInstance wsAlgoInstance = wsAlgo.createInstance(workflow); 
@@ -122,6 +124,12 @@ public class TestReadWriteChain {
 				wsAlgoInstance.getOutputInstanceForOutput(wsAlgo.OUTPUT_GRAPH),
 				apspComponent.getInputInstanceForInput(apsp.INPUT_GRAPH)
 				);
+		
+		workflow.connect(
+				wsAlgoInstance.getOutputInstanceForOutput(wsAlgo.OUTPUT_GRAPH),
+				gephiLength.createInstance(workflow).getInputInstanceForInput(gephiLength.INPUT_GRAPH)
+				);
+		
 		
 		// check everything
 		WorkflowCheckResult checkInfo = workflow.checkForRun();

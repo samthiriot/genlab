@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.gephi.algos.measure.GephiAveragePathLengthAlgo"
+            id="genlab.gephi.algos.measure.GephiAveragePathLengthAlgo">
+      </algo>
+   </extension>
+
+</plugin>

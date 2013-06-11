@@ -1,0 +1,98 @@
+package genlab.gephi.algos.measure;
+
+import genlab.core.exec.IExecution;
+import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.ComputationProgressWithSteps;
+import genlab.core.model.exec.ComputationResult;
+import genlab.core.model.exec.ComputationState;
+import genlab.core.model.exec.IComputationProgress;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.meta.IInputOutput;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.gephi.utils.GephiConvertors;
+
+import java.util.Map;
+
+import org.gephi.project.api.Workspace;
+
+public abstract class GephiAbstractAlgoExecution extends AbstractAlgoExecution {
+
+	public GephiAbstractAlgoExecution(
+			IExecution exec, 
+			IAlgoInstance algoInst
+			) {
+		super(
+				exec, 
+				algoInst, 				
+				new ComputationProgressWithSteps()
+				);
+		
+	}
+
+	/**
+	 * Receives as parameters a progress (to be used to define the progress if possible),
+	 * a gsGraph that is already a clone of the input one,
+	 * and the genlab graph.
+	 * Should return a map between expected outputs and the corresponding object.
+	 * 
+	 * @param progress
+	 * @param gsGraph
+	 * @param genlabGraph
+	 * @return
+	 */
+	protected abstract Map<IInputOutput<?>,Object> analyzeGraph(
+			IComputationProgress progress, 
+			Workspace gsGraph, 
+			IGenlabGraph genlabGraph
+			);
+	
+
+	@Override
+	public void run() {
+		
+		// notify start
+		progress.setProgressMade(0);
+		progress.setProgressTotal(1);
+		progress.setComputationState(ComputationState.STARTED);
+		
+		ComputationResult result = new ComputationResult(algoInst, progress);
+		setResult(result);
+
+
+		if (noOutputIsUsed() && !exec.getExecutionForced()) {
+			
+			result.getMessages().warnUser("nobody is using the result of this computation; it will not be computed at all.", getClass());
+		
+		} else {
+		
+			// decode parameters
+			final IGenlabGraph glGraph = (IGenlabGraph) getInputValueForInput(GephiAbstractAlgo.INPUT_GRAPH);
+			
+			
+			Workspace workspace = GephiConvertors.loadIntoAGephiWorkspace(
+					glGraph, 
+					result.getMessages(), 
+					false, 
+					false, 
+					false
+					);
+			
+						
+			// analyze
+			Map<IInputOutput<?>,Object> stats = analyzeGraph(progress, workspace, glGraph);
+			
+			// use outputs
+			for (IInputOutput<?> out: stats.keySet()) {
+				Object value = stats.get(out);
+				result.setResult(out, value);	
+			}
+			
+		}
+		
+		progress.setProgressMade(1);
+		progress.setComputationState(ComputationState.FINISHED_OK);
+
+		setResult(result);
+	}
+
+}
