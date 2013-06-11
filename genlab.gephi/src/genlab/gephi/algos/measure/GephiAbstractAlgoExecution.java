@@ -10,6 +10,7 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.gephi.utils.GephiConvertors;
+import genlab.gephi.utils.GephiGraph;
 
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public abstract class GephiAbstractAlgoExecution extends AbstractAlgoExecution {
 	 */
 	protected abstract Map<IInputOutput<?>,Object> analyzeGraph(
 			IComputationProgress progress, 
-			Workspace gsGraph, 
+			GephiGraph gephiGraph, 
 			IGenlabGraph genlabGraph
 			);
 	
@@ -69,7 +70,7 @@ public abstract class GephiAbstractAlgoExecution extends AbstractAlgoExecution {
 			final IGenlabGraph glGraph = (IGenlabGraph) getInputValueForInput(GephiAbstractAlgo.INPUT_GRAPH);
 			
 			
-			Workspace workspace = GephiConvertors.loadIntoAGephiWorkspace(
+			final GephiGraph gephiGraph = GephiConvertors.loadIntoAGephiWorkspace(
 					glGraph, 
 					result.getMessages(), 
 					false, 
@@ -79,7 +80,7 @@ public abstract class GephiAbstractAlgoExecution extends AbstractAlgoExecution {
 			
 						
 			// analyze
-			Map<IInputOutput<?>,Object> stats = analyzeGraph(progress, workspace, glGraph);
+			Map<IInputOutput<?>,Object> stats = analyzeGraph(progress, gephiGraph , glGraph);
 			
 			// use outputs
 			for (IInputOutput<?> out: stats.keySet()) {

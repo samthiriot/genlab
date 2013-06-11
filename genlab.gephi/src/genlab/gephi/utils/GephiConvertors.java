@@ -57,12 +57,14 @@ public class GephiConvertors {
 		
 	}
 	
+	
+	
 	/**
 	 * Converts a genlab graph to a gephi one
 	 * @param gamaGraph
 	 * @return
 	 */
-	public static Workspace loadIntoAGephiWorkspace(
+	public static GephiGraph loadIntoAGephiWorkspace(
 			IGenlabGraph glGraph, 
 			ListOfMessages messages,
 			boolean copyGraphAttributes, 
@@ -225,8 +227,8 @@ public class GephiConvertors {
 
 		}
        
-        
-        return gephiCurrentWorkspace;
+		
+        return new GephiGraph(gephiCurrentWorkspace, gephiGraph, attributeModel, graphModel);
 	}
 	
 	private GephiConvertors() {
