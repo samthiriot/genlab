@@ -1,6 +1,6 @@
 package genlab.gui.graphiti.genlab2graphiti;
 
-import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.editors.GenlabDiagramEditor;
 import genlab.gui.listeners.WorkflowGUIEventsDispatcher;
@@ -31,7 +31,7 @@ public class Genlab2GraphitiUtils {
 
 	
 	// TODO remove old code for errors
-	public static void createDiagram(IGenlabWorkflow workflow, IProject project) {
+	public static void createDiagram(IGenlabWorkflowInstance workflow, IProject project) {
 		
 		GLLogger.debugTech("creating a diagram for this workflow", Genlab2GraphitiUtils.class);
 		

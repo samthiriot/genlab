@@ -4,13 +4,13 @@ import static org.junit.Assert.*;
 
 import java.util.HashMap;
 
-import genlab.basics.javaTypes.graphs.IGenlabGraph;
-import genlab.basics.workflow.GenlabFactory;
-import genlab.core.algos.IAlgoExecution;
-import genlab.core.algos.IAlgoInstance;
-import genlab.core.algos.IComputationResult;
-import genlab.core.algos.IGenlabWorkflow;
-import genlab.core.algos.IInputOutput;
+import genlab.core.model.exec.IAlgoExecution;
+import genlab.core.model.exec.IComputationResult;
+import genlab.core.model.instance.GenlabFactory;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.meta.IGenlabWorkflow;
+import genlab.core.model.meta.IInputOutput;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 
 import org.junit.After;
 import org.junit.AfterClass;

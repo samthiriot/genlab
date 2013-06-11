@@ -1,6 +1,6 @@
 package genlab.gui.graphiti.features;
 
-import genlab.core.algos.IAlgoInstance;
+import genlab.core.model.instance.IAlgoInstance;
 import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
 
 import org.eclipse.graphiti.datatypes.IDimension;

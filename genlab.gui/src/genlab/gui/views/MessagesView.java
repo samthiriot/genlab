@@ -409,6 +409,12 @@ public class MessagesView extends ViewPart  {
 				});
 				
 			}
+
+			@Override
+			public void messageAdded(ListOfMessages list, ITextMessage message) {
+				// TODO Auto-generated method stub
+				
+			}
 		};
 		
 		ListsOfMessages.getGenlabMessages().addListener(listener);

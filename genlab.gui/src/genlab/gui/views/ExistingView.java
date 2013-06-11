@@ -1,8 +1,8 @@
 package genlab.gui.views;
 
-import genlab.core.algos.ExistingAlgos;
-import genlab.core.algos.IAlgo;
-import genlab.core.algos.IInputOutput;
+import genlab.core.model.meta.ExistingAlgos;
+import genlab.core.model.meta.IAlgo;
+import genlab.core.model.meta.IInputOutput;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;

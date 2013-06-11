@@ -1,8 +1,9 @@
 package genlab.graphstream.utils;
 
-import genlab.basics.javaTypes.graphs.GraphDirectionality;
-import genlab.basics.javaTypes.graphs.GraphFactory;
-import genlab.basics.javaTypes.graphs.IGenlabGraph;
+import genlab.core.commons.ProgramException;
+import genlab.core.model.meta.basics.graphs.GraphDirectionality;
+import genlab.core.model.meta.basics.graphs.GraphFactory;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.MessageAudience;
 import genlab.core.usermachineinteraction.MessageLevel;
@@ -138,8 +139,7 @@ public class GraphstreamConvertors {
 
 		@Override
 		public void edgeRemoved(String sourceId, long timeId, String edgeId) {
-			messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
-					"an edge should have been removed"));
+			graph.removeEdge(edgeId);
 		}
 
 		@Override
@@ -201,6 +201,9 @@ public class GraphstreamConvertors {
 	 * @return
 	 */
 	public static Graph getGraphstreamGraphFromGenLabGraph(IGenlabGraph genlabGraph, ListOfMessages messages) {
+		
+		if (genlabGraph == null)
+			throw new ProgramException("input graph parameter can not be null");
 		
 		Graph g = new MultiGraph("tmpGraph", true, false);
 		

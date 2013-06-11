@@ -1,8 +1,7 @@
 package genlab.gui.graphiti.genlab2graphiti;
 
-import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
-import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -21,10 +20,10 @@ public class AddAllClassesCommand extends RecordingCommand {
 	private IProject project;
 	private TransactionalEditingDomain editingDomain;
 	private Resource createdResource;
-	private IGenlabWorkflow workflow;
+	private IGenlabWorkflowInstance workflow;
 	private Diagram diagram = null;
 
-	public AddAllClassesCommand(IProject project, TransactionalEditingDomain editingDomain, IGenlabWorkflow workflow) {
+	public AddAllClassesCommand(IProject project, TransactionalEditingDomain editingDomain, IGenlabWorkflowInstance workflow) {
 		super(editingDomain);
 		this.project = project;
 		this.editingDomain = editingDomain;

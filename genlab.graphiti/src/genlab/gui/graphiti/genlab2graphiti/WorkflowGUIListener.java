@@ -1,6 +1,7 @@
 package genlab.gui.graphiti.genlab2graphiti;
 
-import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.gui.listeners.IWorkflowGUIListener;
 
 public class WorkflowGUIListener implements IWorkflowGUIListener {
@@ -10,7 +11,7 @@ public class WorkflowGUIListener implements IWorkflowGUIListener {
 	}
 
 	@Override
-	public void workflowShown(IGenlabWorkflow workflow) {
+	public void workflowShown(IGenlabWorkflowInstance workflow) {
 		// TODO Auto-generated method stub
 		
 	}

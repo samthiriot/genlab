@@ -1,10 +1,11 @@
 package genlab.graphstream.algos.generators;
 
-import genlab.basics.javaTypes.graphs.IGenlabGraph;
-import genlab.core.algos.ComputationProgressWithSteps;
-import genlab.core.algos.ComputationResult;
-import genlab.core.algos.ComputationState;
-import genlab.core.algos.IAlgoInstance;
+import genlab.core.exec.IExecution;
+import genlab.core.model.exec.ComputationProgressWithSteps;
+import genlab.core.model.exec.ComputationResult;
+import genlab.core.model.exec.ComputationState;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.MessageAudience;
 import genlab.core.usermachineinteraction.MessageLevel;
 import genlab.core.usermachineinteraction.TextMessage;
@@ -15,23 +16,15 @@ import org.graphstream.algorithm.generator.WattsStrogatzGenerator;
 
 public class WattsStrogatzExecution extends AbstractGraphStreamGenerator {
 
-	protected final Integer size;
-	protected final Integer nei;
-	protected final Double p;
-	
 	
 	public WattsStrogatzExecution(
-			IAlgoInstance algoInst,
-			Integer size,
-			Integer nei,
-			Double p) {
+			IExecution exec,
+			IAlgoInstance algoInst) {
 		super(
+				exec,
 				algoInst, 
-				new ComputationProgressWithSteps(algoInst.getAlgo())
+				new ComputationProgressWithSteps()
 				);
-		this.size = size;
-		this.nei = nei;
-		this.p = p;
 	}
 
 	@Override
@@ -42,31 +35,45 @@ public class WattsStrogatzExecution extends AbstractGraphStreamGenerator {
 		progress.setProgressTotal(1);
 		progress.setComputationState(ComputationState.STARTED);
 		
-		ComputationResult result = new ComputationResult(algoInst.getAlgo(), progress);
+		ComputationResult result = new ComputationResult(algoInst, progress);
 		
-		// TODO state !
+		final Integer size = (Integer) getInputValueForInput(WattsStrogatzAlgo.PARAM_N);
+		final Integer nei = (Integer) getInputValueForInput(WattsStrogatzAlgo.PARAM_K);
+		final Double p = (Double) getInputValueForInput(WattsStrogatzAlgo.PARAM_P);
+			
+		try {
 		
-		result.addMessage(new TextMessage(MessageLevel.INFO, MessageAudience.USER, getClass(), "test of information"));
-		
-		BaseGenerator generator = new WattsStrogatzGenerator(size, nei, p);
-		
-		IGenlabGraph graph = GraphstreamConvertors.loadGraphWithGraphstreamFromGeneratorSource(
-				// TODO ???
-				"generatedTODO", 
-				generator, 
-				-1,
-				result.getMessages()
-				);
-		result.setResult(WattsStrogatzAlgo.OUTPUT_GRAPH, graph);
-		
-		progress.setProgressMade(1);
-		progress.setComputationState(ComputationState.FINISHED_OK);
-		
-		setResult(result);
-		
+			// TODO state !
+			
+			result.addMessage(new TextMessage(MessageLevel.INFO, MessageAudience.USER, getClass(), "test of information"));
+			
+			BaseGenerator generator = new WattsStrogatzGenerator(size, nei, p);
+			
+			IGenlabGraph graph = GraphstreamConvertors.loadGraphWithGraphstreamFromGeneratorSource(
+					// TODO ???
+					"generatedTODO", 
+					generator, 
+					-1,
+					result.getMessages()
+					);
+			result.setResult(WattsStrogatzAlgo.OUTPUT_GRAPH, graph);
+			
+			setResult(result);
+			progress.setProgressMade(1);
+			progress.setComputationState(ComputationState.FINISHED_OK);
+						
+		} catch (RuntimeException e) {
+			
+			e.printStackTrace();
+			
+			result.getMessages().errorUser("something went wrong during the execution", getClass());
+			result.getMessages().errorTech("exception catch when running "+e.getMessage(), getClass(), e);
+			
+			progress.setProgressMade(1);
+			progress.setComputationState(ComputationState.FINISHED_FAILURE);
+			
+		} 
 	}
-
 	
-
 
 }

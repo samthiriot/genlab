@@ -1,7 +1,8 @@
 package genlab.gui.views;
 
-import genlab.core.algos.IAlgoInstance;
-import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -29,8 +30,8 @@ public class WorkflowNavigatorContentProvider  implements ITreeContentProvider {
 	public Object[] getElements(Object inputElement) {
 		if (inputElement instanceof WorkflowRoot) {
 			return new Object[]{((WorkflowRoot)inputElement).workflow};
-		} else if (inputElement instanceof IGenlabWorkflow) {
-			IGenlabWorkflow workflow = (IGenlabWorkflow)inputElement;
+		} else if (inputElement instanceof IGenlabWorkflowInstance) {
+			IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance)inputElement;
 			return workflow.getAlgoInstances().toArray();
 		}
 		GLLogger.warnTech("can't provide children for this parent "+inputElement, getClass());
@@ -39,8 +40,8 @@ public class WorkflowNavigatorContentProvider  implements ITreeContentProvider {
 
 	@Override
 	public Object[] getChildren(Object parentElement) {
-		if (parentElement instanceof IGenlabWorkflow) {
-			IGenlabWorkflow workflow = (IGenlabWorkflow)parentElement;
+		if (parentElement instanceof IGenlabWorkflowInstance) {
+			IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance)parentElement;
 			return workflow.getAlgoInstances().toArray();
 		}
 		GLLogger.warnTech("can't provide children for this parent "+parentElement, getClass());
@@ -63,8 +64,8 @@ public class WorkflowNavigatorContentProvider  implements ITreeContentProvider {
 	public boolean hasChildren(Object element) {
 		if (element instanceof IAlgoInstance) {
 			return false;
-		} else if (element instanceof IGenlabWorkflow) {
-			return !((IGenlabWorkflow)element).getAlgoInstances().isEmpty();
+		} else if (element instanceof IGenlabWorkflowInstance) {
+			return !((IGenlabWorkflowInstance)element).getAlgoInstances().isEmpty();
 		}
 		return false;
 	}

@@ -17,7 +17,7 @@ import org.eclipse.ui.navigator.IPipelinedTreeContentProvider2;
  * @author B12772
  *
  */
-class ProjectNavigatorLabelProvider extends LabelProvider  {
+public class ProjectNavigatorLabelProvider extends LabelProvider  {
 
 	@Override
 	public String getText(Object element) {

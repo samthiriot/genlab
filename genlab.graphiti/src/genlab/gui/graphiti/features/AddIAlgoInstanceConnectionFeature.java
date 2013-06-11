@@ -1,9 +1,10 @@
 package genlab.gui.graphiti.features;
 
-import genlab.basics.workflow.GenlabWorkflow;
-import genlab.core.algos.AlgoInstance;
-import genlab.core.algos.IAlgoInstance;
-import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.GenlabWorkflowInstance;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
 
@@ -47,7 +48,7 @@ public class AddIAlgoInstanceConnectionFeature extends AbstractAddFeature {
 			// and to what it is added
 			if (context.getTargetContainer() instanceof Diagram) {
 				
-				IGenlabWorkflow workflow = (IGenlabWorkflow) getBusinessObjectForPictogramElement(
+				IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance) getBusinessObjectForPictogramElement(
 						context.getTargetContainer()
 						);
 				if (workflow == null) {
@@ -82,7 +83,7 @@ public class AddIAlgoInstanceConnectionFeature extends AbstractAddFeature {
 		AlgoInstance addedAlgo = (AlgoInstance) context.getNewObject();
 		Diagram targetDiagram = (Diagram) context.getTargetContainer();
 		
-		GenlabWorkflow workflow = (GenlabWorkflow)this.getBusinessObjectForPictogramElement(targetDiagram);
+		GenlabWorkflowInstance workflow = (GenlabWorkflowInstance)this.getBusinessObjectForPictogramElement(targetDiagram);
 		
 		addedAlgo._setWorkflow(workflow);
 		

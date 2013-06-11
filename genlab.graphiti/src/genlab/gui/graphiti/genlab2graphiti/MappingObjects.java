@@ -1,6 +1,6 @@
 package genlab.gui.graphiti.genlab2graphiti;
 
-import genlab.core.IGenlabResource;
+import genlab.core.model.IGenlabResource;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.HashMap;

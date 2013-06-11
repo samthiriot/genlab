@@ -1,8 +1,8 @@
 package genlab.gui.graphiti.diagram;
 
-import genlab.core.algos.ExistingAlgos;
-import genlab.core.algos.IAlgo;
-import genlab.core.algos.IAlgoInstance;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.meta.ExistingAlgos;
+import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.features.AddIAlgoInstanceConnectionFeature;
 import genlab.gui.graphiti.features.CreateDomainObjectConnectionConnectionFeature;

@@ -1,6 +1,6 @@
 package genlab.core.projects;
 
-import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.persistence.GenlabPersistence;
 
 import java.io.File;
@@ -21,7 +21,7 @@ public class GenlabProject implements IGenlabProject {
 	private transient String baseDirectory;
 	private Map<String,Object> key2object = new HashMap<String,Object>();
 	
-	private transient Collection<IGenlabWorkflow> workflows = new ArrayList<IGenlabWorkflow>();
+	private transient Collection<IGenlabWorkflowInstance> workflows = new ArrayList<IGenlabWorkflowInstance>();
 	private Collection<String> workflowPathes = new ArrayList<String>();
 
 	public GenlabProject(String baseDirectory) {
@@ -50,12 +50,12 @@ public class GenlabProject implements IGenlabProject {
 	}
 
 	@Override
-	public Collection<IGenlabWorkflow> getWorkflows() {
+	public Collection<IGenlabWorkflowInstance> getWorkflows() {
 		return Collections.unmodifiableCollection(workflows);
 	}
 
 	@Override
-	public void addWorkflow(IGenlabWorkflow workflow) {
+	public void addWorkflow(IGenlabWorkflowInstance workflow) {
 		if (!workflows.contains(workflow)) {
 			workflows.add(workflow);
 			workflowPathes.add(workflow.getRelativeFilename());
@@ -76,7 +76,7 @@ public class GenlabProject implements IGenlabProject {
 	}
 	
 	private Object readResolve() {
-		workflows = new ArrayList<IGenlabWorkflow>();
+		workflows = new ArrayList<IGenlabWorkflowInstance>();
 		return this;
 	}
 

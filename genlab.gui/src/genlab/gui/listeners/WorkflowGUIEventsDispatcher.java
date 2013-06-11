@@ -1,6 +1,7 @@
 package genlab.gui.listeners;
 
-import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
@@ -23,7 +24,7 @@ public class WorkflowGUIEventsDispatcher {
 	 * To be called each time a workflow is brought to front, so we can display the corresponding view
 	 * @param workflow
 	 */
-	public void workflowShown(IGenlabWorkflow workflow) {
+	public void workflowShown(IGenlabWorkflowInstance workflow) {
 		
 		
 		for (IWorkflowGUIListener l : listeners) {

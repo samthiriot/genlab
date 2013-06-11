@@ -1,10 +1,11 @@
 package genlab.core.persistence;
 
-import genlab.basics.workflow.GenlabWorkflow;
-import genlab.basics.workflow.WorkflowHooks;
-import genlab.core.algos.AlgoInstance;
-import genlab.core.algos.IGenlabWorkflow;
 import genlab.core.commons.FileUtils;
+import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.GenlabWorkflowInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.WorkflowHooks;
+import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.projects.GenlabProject;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -12,6 +13,8 @@ import genlab.core.usermachineinteraction.GLLogger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
@@ -26,8 +29,13 @@ public class GenlabPersistence {
 		return singleton;
 	}
 	
+	private static Map<String, IGenlabWorkflowInstance> filename2workflow = new HashMap<String, IGenlabWorkflowInstance>();
 
 	private XStream xstream; 
+	
+	public IGenlabWorkflowInstance getWorkflowForFilename(String filename) {
+		return filename2workflow.get(filename);
+	}
 	
 	private GenlabPersistence() {
 		
@@ -37,7 +45,7 @@ public class GenlabPersistence {
 			xstream = new XStream(new StaxDriver());
 	
 			xstream.alias("project", GenlabProject.class);
-			xstream.alias("workflow", GenlabWorkflow.class);
+			xstream.alias("workflow", GenlabWorkflowInstance.class);
 			xstream.alias("algoinstance", AlgoInstance.class);
 
 		} catch (Exception e) {
@@ -79,7 +87,7 @@ public class GenlabPersistence {
 		
 		if (saveWorkflows) {
 			// save workflows...
-			for (IGenlabWorkflow workflow : project.getWorkflows()) {
+			for (IGenlabWorkflowInstance workflow : project.getWorkflows()) {
 				GLLogger.debugTech("saving workflow: "+workflow, getClass());
 				try {
 					GenlabPersistence.getPersistence().saveWorkflow(workflow);
@@ -116,7 +124,7 @@ public class GenlabPersistence {
 	 * @param workflow
 	 * @param file
 	 */
-	public void saveWorkflow(IGenlabWorkflow workflow) {
+	public void saveWorkflow(IGenlabWorkflowInstance workflow) {
 		
 		// call hooks
 		GLLogger.debugTech("preparing to save workflow "+workflow+", calling hooks...", getClass());
@@ -135,6 +143,8 @@ public class GenlabPersistence {
 			GLLogger.errorTech("error while saving the workflow "+workflow+" as XML to "+filename, getClass(), e);
 
 		}
+
+		filename2workflow.put(filename, workflow);
 		
 		GLLogger.debugTech("workflow "+workflow+" saved, calling hooks...", getClass());
 		WorkflowHooks.getWorkflowHooks().notifyWorkflowSaved(workflow);
@@ -142,16 +152,18 @@ public class GenlabPersistence {
 		
 	}
 	
-	public IGenlabWorkflow readWorkflow(IGenlabProject project, String relativeFilename) {
+	public IGenlabWorkflowInstance readWorkflow(IGenlabProject project, String relativeFilename) {
 		
 		File f = new File(project.getBaseDirectory()+File.separator+relativeFilename);
 		GLLogger.debugTech("attempting to read a genlab workflow from: "+f.getAbsolutePath(), getClass());
 		
-		GenlabWorkflow workflow = (GenlabWorkflow)xstream.fromXML(f);
+		GenlabWorkflowInstance workflow = (GenlabWorkflowInstance)xstream.fromXML(f);
 		
 		// now define all the transient attributes
 		workflow._setProject(project);
 		workflow._setFilename(relativeFilename);
+		
+		filename2workflow.put(f.getAbsolutePath(), workflow);
 		
 		return workflow;
 		

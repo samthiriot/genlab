@@ -1,9 +1,10 @@
 package genlab.graphstream.algos.generators;
 
-import genlab.core.algos.AbstractAlgoExecution;
-import genlab.core.algos.ComputationProgressWithSteps;
-import genlab.core.algos.IAlgoInstance;
-import genlab.core.algos.IComputationProgress;
+import genlab.core.exec.IExecution;
+import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.ComputationProgressWithSteps;
+import genlab.core.model.exec.IComputationProgress;
+import genlab.core.model.instance.IAlgoInstance;
 
 
 /**
@@ -15,11 +16,12 @@ import genlab.core.algos.IComputationProgress;
  */
 public abstract class AbstractGraphStreamGenerator extends AbstractAlgoExecution {
 
-	public AbstractGraphStreamGenerator(IAlgoInstance algoInst, IComputationProgress progress) {
+	public AbstractGraphStreamGenerator(IExecution exec, IAlgoInstance algoInst, IComputationProgress progress) {
 		super(
+				exec,
 				algoInst, 
 				// a generator always has a progress with steps
-				new ComputationProgressWithSteps(algoInst.getAlgo())
+				new ComputationProgressWithSteps()
 				);
 	}
 

@@ -5,11 +5,11 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.util.HashMap;
 
-import genlab.basics.javaTypes.graphs.IGenlabGraph;
-import genlab.core.algos.IAlgoExecution;
-import genlab.core.algos.IAlgoInstance;
-import genlab.core.algos.IComputationResult;
-import genlab.core.algos.IInputOutput;
+import genlab.core.model.exec.IAlgoExecution;
+import genlab.core.model.exec.IComputationResult;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.meta.IInputOutput;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.graphstream.algos.readers.GraphStreamDGSParser;
 
 import org.junit.After;

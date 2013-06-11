@@ -3,7 +3,7 @@ package genlab.core.usermachineinteraction;
 import java.util.HashMap;
 import java.util.Map;
 
-import genlab.core.execution.IGenLabExecution;
+import genlab.core.model.exec.IGenLabExecution;
 
 public class ListsOfMessages {
 

@@ -1,11 +1,12 @@
 package genlab.graphstream.algos.readers;
 
-import genlab.core.algos.AbstractAlgoExecution;
-import genlab.core.algos.ComputationProgressWithSteps;
-import genlab.core.algos.ComputationResult;
-import genlab.core.algos.ComputationState;
-import genlab.core.algos.IAlgoInstance;
-import genlab.core.algos.WrongParametersException;
+import genlab.core.commons.WrongParametersException;
+import genlab.core.exec.IExecution;
+import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.ComputationProgressWithSteps;
+import genlab.core.model.exec.ComputationResult;
+import genlab.core.model.exec.ComputationState;
+import genlab.core.model.instance.IAlgoInstance;
 import genlab.graphstream.utils.GraphstreamConvertors;
 
 import java.io.File;
@@ -19,15 +20,20 @@ import org.graphstream.stream.file.FileSource;
 public class AbstractGraphstreamGraphParserExecution extends
 		AbstractAlgoExecution {
 	
-	protected final File file;
 	protected final FileSource filesource;
-	protected final String graphId;
 
-	public AbstractGraphstreamGraphParserExecution(IAlgoInstance algoInst, File file, FileSource filesource, String graphId) {
-		super(algoInst, new ComputationProgressWithSteps(algoInst.getAlgo()));
-		this.file = file;
+	
+	public AbstractGraphstreamGraphParserExecution(
+			IExecution exec,
+			IAlgoInstance algoInst, 
+			FileSource filesource
+			) {
+		super(
+				exec, 
+				algoInst, 
+				new ComputationProgressWithSteps()
+				);
 		this.filesource = filesource;
-		this.graphId = graphId;
 	}
 
 	@Override
@@ -38,7 +44,10 @@ public class AbstractGraphstreamGraphParserExecution extends
 		progress.setProgressTotal(1);
 		progress.setComputationState(ComputationState.STARTED);
 		
-		ComputationResult result = new ComputationResult(algoInst.getAlgo(), progress);
+		ComputationResult result = new ComputationResult(algoInst, progress);
+		
+		// decode parameters
+		final File file = (File) getInputValueForInput(AbstractGraphStreamGraphParser.PARAM_FILE);
 		
 		// init our sink which will process events from the filesource
 		GraphstreamConvertors.GenLabGraphSink ourSink = new GraphstreamConvertors.GenLabGraphSink("opened", result.getMessages());

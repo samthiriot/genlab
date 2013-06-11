@@ -1,6 +1,6 @@
 package genlab.gui.views;
 
-import genlab.core.IGenlabResource;
+import genlab.core.model.IGenlabResource;
 
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;

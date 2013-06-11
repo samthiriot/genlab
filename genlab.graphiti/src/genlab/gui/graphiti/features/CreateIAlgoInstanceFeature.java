@@ -1,8 +1,9 @@
 package genlab.gui.graphiti.features;
 
-import genlab.core.algos.IAlgo;
-import genlab.core.algos.IAlgoInstance;
-import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.IAlgo;
+import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -55,7 +56,7 @@ public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
 		// TODO should add this to the workflow !
 		
 		System.err.println("search for diag: "+context.getTargetContainer());
-		IGenlabWorkflow workflow = (IGenlabWorkflow)getBusinessObjectForPictogramElement(context.getTargetContainer());
+		IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance)getBusinessObjectForPictogramElement(context.getTargetContainer());
 		if (workflow == null)
 			GLLogger.warnTech("unable to find the workflow related to this diagram, problems ahead", getClass());
 		

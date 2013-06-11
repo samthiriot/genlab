@@ -57,6 +57,14 @@
             class="genlab.graphstream.algos.writers.GraphStreamTikzWriter"
             id="genlab.graphstream.algos.writers.GraphStreamTikzWriter">
       </algo>
+      <algo
+            class="genlab.graphstream.algos.measure.GraphStreamConnectedComponents"
+            id="genlab.graphstream.algos.measure.GraphStreamConnectedComponents">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.measure.GraphStreamAPSP"
+            id="genlab.graphstream.algos.measure.GraphStreamAPSP">
+      </algo>
    </extension>
 <!-- TODO
    <extension point="genlab.appli.algo" class="" name="graphML parser" id="genlab.graphstream.readers.GraphStreamGraphMLParser>

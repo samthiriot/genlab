@@ -1,7 +1,8 @@
 package genlab.gui.genlab2eclipse;
 
-import genlab.basics.workflow.IWorkflowListener;
-import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.IWorkflowListener;
+import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.projects.IGenlabProject;
 import genlab.gui.Utils;
 
@@ -21,29 +22,29 @@ public class WorkflowsListener implements IWorkflowListener {
 	}
 
 	@Override
-	public void workflowCreation(IGenlabWorkflow workflow) {
+	public void workflowCreation(IGenlabWorkflowInstance workflow) {
 		
 		
 	}
 
 	@Override
-	public void workflowOpened(IGenlabWorkflow workflow) {
+	public void workflowOpened(IGenlabWorkflowInstance workflow) {
 		
 		
 	}
 
 	@Override
-	public void workflowSaving(IGenlabWorkflow workflow) {
+	public void workflowSaving(IGenlabWorkflowInstance workflow) {
 		
 	}
 
 	@Override
-	public void workflowChanged(IGenlabWorkflow workflow) {
+	public void workflowChanged(IGenlabWorkflowInstance workflow) {
 		
 	}
 
 	@Override
-	public void workflowSaved(IGenlabWorkflow workflow) {
+	public void workflowSaved(IGenlabWorkflowInstance workflow) {
 		// if the workflow is saved, there may be a file to update
 		
 		// we have to refresh the folder which contains the parent

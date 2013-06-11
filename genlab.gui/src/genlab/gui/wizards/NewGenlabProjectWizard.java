@@ -1,6 +1,6 @@
 package genlab.gui.wizards;
 
-import genlab.basics.workflow.GenlabFactory;
+import genlab.core.model.instance.GenlabFactory;
 import genlab.core.projects.IGenlabProject;
 import genlab.gui.Utils;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;

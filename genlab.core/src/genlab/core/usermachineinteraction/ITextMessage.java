@@ -25,7 +25,7 @@ public interface ITextMessage extends Comparable<ITextMessage> {
 	
 	public int getCount();
 	
-	public Exception getException();
+	public Throwable getException();
 	
 	public Class getEmitter();
 	

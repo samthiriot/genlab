@@ -3,6 +3,21 @@
 <plugin>
    <extension-point id="genlab.core.algo" name="genlab.algo" schema="schema/genlab.core.algo.exsd"/>
    <extension-point id="genlab.core.workflow.listeners" name="listeners" schema="schema/genlab.core.workflow.listeners.exsd"/>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.core.model.meta.basics.algos.ConstantValueDouble"
+            id="genlab.core.algo.constants.double">
+      </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.ConstantValueInteger"
+            id="genlab.core.algo.constants.integer">
+      </algo>
+      <algo
+            class="genlab.core.model.meta.IGenlabWorkflow"
+            id="genlab.core.workflow">
+      </algo>
+   </extension>
 
 
 

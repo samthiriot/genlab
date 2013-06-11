@@ -1,7 +1,8 @@
 package genlab.gui.graphiti.genlab2graphiti;
 
-import genlab.basics.workflow.IWorkflowListener;
-import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.IWorkflowListener;
+import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
@@ -13,7 +14,7 @@ public class WorkflowListener implements IWorkflowListener {
 	}
 
 	@Override
-	public void workflowCreation(IGenlabWorkflow workflow) {
+	public void workflowCreation(IGenlabWorkflowInstance workflow) {
 
 		//Genlab2GraphitiUtils.createDiagram(workflow, workflow.getProject().);
 		
@@ -128,7 +129,7 @@ public class WorkflowListener implements IWorkflowListener {
 	}
 
 	@Override
-	public void workflowOpened(IGenlabWorkflow workflow) {
+	public void workflowOpened(IGenlabWorkflowInstance workflow) {
 
 		// retrieve diagram filename
 		String filename = (String) workflow.getObjectForKey(Genlab2GraphitiUtils.KEY_WORKFLOW_TO_GRAPHITI_FILE);
@@ -141,20 +142,20 @@ public class WorkflowListener implements IWorkflowListener {
 	}
 
 	@Override
-	public void workflowSaving(IGenlabWorkflow workflow) {
+	public void workflowSaving(IGenlabWorkflowInstance workflow) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void workflowChanged(IGenlabWorkflow workflow) {
-		// TODO Auto-generated method stub
+	public void workflowChanged(IGenlabWorkflowInstance workflow) {
+		// TODO Auto-generated IGenlabWorkflowInstance stub
 		
 		// TODO update graphiti when the workflow changes !
 	}
 
 	@Override
-	public void workflowSaved(IGenlabWorkflow workflow) {
+	public void workflowSaved(IGenlabWorkflowInstance workflow) {
 		// TODO Auto-generated method stub
 		
 	}

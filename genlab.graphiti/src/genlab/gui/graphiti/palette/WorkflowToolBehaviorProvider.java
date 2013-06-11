@@ -1,8 +1,8 @@
 package genlab.gui.graphiti.palette;
 
-import genlab.core.algos.AlgoCategory;
-import genlab.core.algos.ExistingAlgoCategories;
-import genlab.core.algos.IAlgo;
+import genlab.core.model.meta.AlgoCategory;
+import genlab.core.model.meta.ExistingAlgoCategories;
+import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.features.CreateIAlgoInstanceFeature;
 

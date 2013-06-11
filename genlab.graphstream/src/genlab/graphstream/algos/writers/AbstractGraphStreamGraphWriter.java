@@ -1,17 +1,16 @@
 package genlab.graphstream.algos.writers;
 
-import genlab.basics.flow.FileFlowType;
-import genlab.basics.flow.SimpleGraphFlowType;
-import genlab.basics.javaTypes.graphs.IGenlabGraph;
-import genlab.core.algos.AlgoInstance;
-import genlab.core.algos.BasicAlgo;
-import genlab.core.algos.ExistingAlgoCategories;
-import genlab.core.algos.IAlgo;
-import genlab.core.algos.IAlgoExecution;
-import genlab.core.algos.IAlgoInstance;
-import genlab.core.algos.IGenlabWorkflow;
-import genlab.core.algos.IInputOutput;
-import genlab.core.algos.InputOutput;
+import genlab.core.exec.IExecution;
+import genlab.core.model.exec.IAlgoExecution;
+import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.IInputOutputInstance;
+import genlab.core.model.meta.BasicAlgo;
+import genlab.core.model.meta.ExistingAlgoCategories;
+import genlab.core.model.meta.IAlgo;
+import genlab.core.model.meta.InputOutput;
+import genlab.core.model.meta.basics.flowtypes.FileFlowType;
+import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 
 import java.io.File;
 import java.util.Map;
@@ -42,19 +41,15 @@ public abstract class AbstractGraphStreamGraphWriter extends BasicAlgo implement
 		outputs.add(OUTPUT_FILE);
 	}
 	
-	@Override
-	public IAlgoInstance createInstance(IGenlabWorkflow workflow) {
-		return new AlgoInstance(this, workflow);
-	}
 	
 	protected abstract FileSink getGraphStreamFileSink();
 
 	@Override
-	public IAlgoExecution createExec(AlgoInstance algoInstance, Map<IInputOutput, Object> inputs) {
+	public IAlgoExecution createExec(IExecution execution, AlgoInstance algoInstance) {
 		
 		return new AbstractGraphstreamGraphWriterExecution(
+				execution,
 				algoInstance, 
-				PARAM_GRAPH.decodeFromParameters(inputs),
 				getGraphStreamFileSink()
 				);
 	}

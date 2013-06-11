@@ -8,10 +8,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeSet;
 
-import javax.swing.DebugGraphics;
-
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
@@ -59,7 +56,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 		put(MessageLevel.ERROR, Priority.ERROR);
 	}};
 	
-	{
+	static {
 		// init of LOG4J
 		if (RELAY_TO_LOG4J) {
 		    BasicConfigurator.configure();
@@ -86,13 +83,18 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 
 		if (RELAY_TO_LOG4J) {
 			
-			Logger.getLogger((e.getClass()==null?Object.class:e.getClass())).log(
+			final StringBuffer msg = new StringBuffer();
+			
+			// add the basic message
+			msg.append(e.getDate().toString())
+			.append(" - ")
+			.append(e.getMessage());
+			
+			// send it using Logger.
+			Logger.getLogger((e.getClass()==null?Object.class:e.getEmitter())).log(
 					messageLevel2log4jPriority.get(e.getLevel()),
-					(new StringBuffer())
-						.append(e.getDate().toString())
-						.append(" - ")
-						.append(e.getMessage())
-						.toString()
+					msg.toString(),
+					e.getException()
 					);
 		}
 		
@@ -121,6 +123,10 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	public boolean add(ITextMessage e) {
 
 		_add(e);
+		
+		for (IListOfMessagesListener l : new LinkedList<IListOfMessagesListener>(getListeners())) {
+			l.messageAdded(this, e);
+		}
 		
 		for (IListOfMessagesListener l : new LinkedList<IListOfMessagesListener>(getListeners())) {
 			l.contentChanged(this);
@@ -329,6 +335,18 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			);
 	}
 	
+	public void errorUser(String message, Class fromClass, Throwable e) {
+		add(
+				new TextMessage(
+						MessageLevel.ERROR, 
+						MessageAudience.USER, 
+						fromClass,
+						message, 
+						e
+						)
+			);
+	}
+	
 	public void errorUser(String message, Class fromClass) {
 		add(
 				new TextMessage(
@@ -340,6 +358,56 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 						)
 			);
 	}
+	public void traceTech(String message, String fromShort, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.TRACE, 
+						MessageAudience.DEVELOPER, 
+						fromShort,
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void traceTech(String message, Class fromClass) {
+		add(
+				new TextMessage(
+						MessageLevel.TRACE, 
+						MessageAudience.DEVELOPER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message
+						)
+			);
+	}
+	
+	public void traceTech(String message, String fromShort, Class fromClass, Throwable e) {
+		add(
+				new TextMessage(
+						MessageLevel.TRACE, 
+						MessageAudience.DEVELOPER, 
+						fromShort,
+						fromClass,
+						message,
+						e
+						)
+			);
+	}
+	
+	public void traceTech(String message, Class fromClass, Throwable e) {
+		add(
+				new TextMessage(
+						MessageLevel.TRACE, 
+						MessageAudience.DEVELOPER, 
+						fromClass.getSimpleName(),
+						fromClass,
+						message,
+						e
+						)
+			);
+	}
+	
 	public void debugTech(String message, String fromShort, Class fromClass) {
 		add(
 				new TextMessage(
@@ -364,7 +432,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			);
 	}
 	
-	public void debugTech(String message, String fromShort, Class fromClass, Exception e) {
+	public void debugTech(String message, String fromShort, Class fromClass, Throwable e) {
 		add(
 				new TextMessage(
 						MessageLevel.DEBUG, 
@@ -377,7 +445,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			);
 	}
 	
-	public void debugTech(String message, Class fromClass, Exception e) {
+	public void debugTech(String message, Class fromClass, Throwable e) {
 		add(
 				new TextMessage(
 						MessageLevel.DEBUG, 
@@ -414,7 +482,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			);
 	}
 	
-	public void warnTech(String message, String fromShort, Class fromClass, Exception e) {
+	public void warnTech(String message, String fromShort, Class fromClass, Throwable e) {
 		add(
 				new TextMessage(
 						MessageLevel.WARNING, 
@@ -427,7 +495,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			);
 	}
 	
-	public void warnTech(String message, Class fromClass, Exception e) {
+	public void warnTech(String message, Class fromClass, Throwable e) {
 		add(
 				new TextMessage(
 						MessageLevel.WARNING, 
@@ -512,7 +580,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			);
 	}
 	
-	public void errorTech(String message, String fromShort, Class fromClass, Exception e) {
+	public void errorTech(String message, String fromShort, Class fromClass, Throwable e) {
 		add(
 				new TextMessage(
 						MessageLevel.ERROR, 
@@ -525,7 +593,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			);
 	}
 	
-	public void errorTech(String message, Class fromClass, Exception e) {
+	public void errorTech(String message, Class fromClass, Throwable e) {
 		add(
 				new TextMessage(
 						MessageLevel.ERROR, 

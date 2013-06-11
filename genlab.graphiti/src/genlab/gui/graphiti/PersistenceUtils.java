@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
-import genlab.basics.workflow.GenlabWorkflow;
-import genlab.core.algos.AlgoInstance;
+import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.GenlabWorkflowInstance;
 import genlab.core.projects.GenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
@@ -28,7 +28,7 @@ public class PersistenceUtils {
 			xstream = new XStream(new StaxDriver());
 	
 			xstream.alias("project", GenlabProject.class);
-			xstream.alias("workflow", GenlabWorkflow.class);
+			xstream.alias("workflow", GenlabWorkflowInstance.class);
 			xstream.alias("algoinstance", AlgoInstance.class);
 
 		} catch (Exception e) {

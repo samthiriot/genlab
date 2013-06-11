@@ -3,7 +3,10 @@ package genlab.basics.javaTypes.graphs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import genlab.core.algos.WrongParametersException;
+import genlab.core.commons.WrongParametersException;
+import genlab.core.model.meta.basics.graphs.GraphDirectionality;
+import genlab.core.model.meta.basics.graphs.GraphFactory;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 
 import org.junit.After;
 import org.junit.AfterClass;

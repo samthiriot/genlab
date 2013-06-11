@@ -1,6 +1,6 @@
 package genlab.core.projects;
 
-import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
 
 import java.io.File;
 import java.util.Collection;
@@ -15,9 +15,9 @@ public interface IGenlabProject {
 
 	public void setAttachedObject(String key, Object o);
 	
-	public Collection<IGenlabWorkflow> getWorkflows();
+	public Collection<IGenlabWorkflowInstance> getWorkflows();
 	
-	public void addWorkflow(IGenlabWorkflow workflow);
+	public void addWorkflow(IGenlabWorkflowInstance workflow);
 	
 	public String getProjectSavingFilename();
 	

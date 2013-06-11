@@ -1,6 +1,6 @@
 package genlab.gui.graphiti.genlab2graphiti;
 
-import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;

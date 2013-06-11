@@ -1,8 +1,9 @@
 package genlab.gui.graphiti.genlab2graphiti;
 
-import genlab.core.IGenlabResource;
-import genlab.core.algos.IAlgoInstance;
-import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.model.IGenlabResource;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.HashMap;
@@ -73,7 +74,7 @@ public class GenLabIndependenceSolver implements IIndependenceSolver {
 	 * takes an ID as a parameter, then returns the corresponding instance.
 	 * @param workflow
 	 */
-	public void _resolveIdsFromWorkflow(IGenlabWorkflow workflow) {
+	public void _resolveIdsFromWorkflow(IGenlabWorkflowInstance workflow) {
 		GLLogger.debugTech("starting to match graphiti saved IDs and genlab workflow instances", getClass());
 		for (String key: objectIds) {
 			IAlgoInstance algoInstance = workflow.getAlgoInstanceForId(key);

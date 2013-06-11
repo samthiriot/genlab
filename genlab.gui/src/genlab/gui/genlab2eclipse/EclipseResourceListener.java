@@ -1,7 +1,7 @@
 package genlab.gui.genlab2eclipse;
 
-import genlab.core.algos.ExistingAlgos;
 import genlab.core.commons.FileUtils;
+import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.CoreException;
 /**
  * Listens for eclipse events related to resources, like opening projects.
  * 
+ * TODO change to: when a project is opened, read the project file if available
  * 
  * @see http://www.eclipse.org/articles/Article-Resource-deltas/resource-deltas.html
  * 

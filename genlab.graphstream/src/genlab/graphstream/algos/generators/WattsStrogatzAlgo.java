@@ -1,26 +1,16 @@
 package genlab.graphstream.algos.generators;
 
-import genlab.basics.flow.DoubleFlowType;
-import genlab.basics.flow.IntegerFlowType;
-import genlab.basics.flow.SimpleGraphFlowType;
-import genlab.basics.javaTypes.graphs.IGenlabGraph;
-import genlab.basics.workflow.IWorkflowListener;
-import genlab.core.algos.AbstractAlgoExecution;
-import genlab.core.algos.AlgoInstance;
-import genlab.core.algos.BasicAlgo;
-import genlab.core.algos.ComputationProgressWithSteps;
-import genlab.core.algos.ExistingAlgoCategories;
-import genlab.core.algos.IAlgo;
-import genlab.core.algos.IAlgoExecution;
-import genlab.core.algos.IAlgoInstance;
-import genlab.core.algos.IComputationProgress;
-import genlab.core.algos.IGenlabWorkflow;
-import genlab.core.algos.IInputOutput;
-import genlab.core.algos.InputOutput;
-
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import genlab.core.exec.IExecution;
+import genlab.core.model.exec.IAlgoExecution;
+import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.meta.BasicAlgo;
+import genlab.core.model.meta.ExistingAlgoCategories;
+import genlab.core.model.meta.IGenlabWorkflow;
+import genlab.core.model.meta.InputOutput;
+import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
+import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
+import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 
 public class WattsStrogatzAlgo extends BasicAlgo {
 
@@ -37,7 +27,7 @@ public class WattsStrogatzAlgo extends BasicAlgo {
 			new IntegerFlowType(), 
 			ALGO_NAME+".K", 
 			"K", 
-			"neighboors"
+			"neighboors (should be even)"
 	);
 	public static final InputOutput<Double> PARAM_P =  new InputOutput<Double>(
 			new DoubleFlowType(), 
@@ -69,20 +59,12 @@ public class WattsStrogatzAlgo extends BasicAlgo {
 		outputs.add(OUTPUT_GRAPH);
 	}
 		
-	@Override
-	public IAlgoInstance createInstance(IGenlabWorkflow workflow) {
-		return new AlgoInstance(this, workflow);
-	}
-
 
 	@Override
-	public IAlgoExecution createExec(AlgoInstance algoInstance,
-			Map<IInputOutput, Object> inputs) {
+	public IAlgoExecution createExec(IExecution exec, AlgoInstance algoInstance) {
 		return new WattsStrogatzExecution(
-				algoInstance, 
-				PARAM_N.decodeFromParameters(inputs), 
-				PARAM_K.decodeFromParameters(inputs), 
-				PARAM_P.decodeFromParameters(inputs)
+				exec,
+				algoInstance
 				);
 	}
 

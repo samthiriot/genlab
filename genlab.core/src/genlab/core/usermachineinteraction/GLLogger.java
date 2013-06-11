@@ -48,6 +48,24 @@ public class GLLogger {
 	public static void errorUser(String message, Class fromClass) {
 		ListsOfMessages.getGenlabMessages().errorUser(message, fromClass);
 	}
+	
+
+	public static void traceTech(String message, String fromShort, Class fromClass) {
+		ListsOfMessages.getGenlabMessages().traceTech(message, fromShort, fromClass);
+	}
+
+	public static void traceTech(String message, Class fromClass) {
+		ListsOfMessages.getGenlabMessages().traceTech(message, fromClass);
+	}
+	
+
+	public static void traceTech(String message, String fromShort, Class fromClass, Throwable e) {
+		ListsOfMessages.getGenlabMessages().traceTech(message, fromShort, fromClass, e);
+	}
+
+	public static void traceTech(String message, Class fromClass, Throwable e) {
+		ListsOfMessages.getGenlabMessages().traceTech(message, fromClass, e);
+	}
 
 	public static void debugTech(String message, String fromShort, Class fromClass) {
 		ListsOfMessages.getGenlabMessages().debugTech(message, fromShort, fromClass);
@@ -58,11 +76,11 @@ public class GLLogger {
 	}
 	
 
-	public static void debugTech(String message, String fromShort, Class fromClass, Exception e) {
+	public static void debugTech(String message, String fromShort, Class fromClass, Throwable e) {
 		ListsOfMessages.getGenlabMessages().debugTech(message, fromShort, fromClass, e);
 	}
 
-	public static void debugTech(String message, Class fromClass, Exception e) {
+	public static void debugTech(String message, Class fromClass, Throwable e) {
 		ListsOfMessages.getGenlabMessages().debugTech(message, fromClass, e);
 	}
 
@@ -70,17 +88,16 @@ public class GLLogger {
 	public static void warnTech(String message, String fromShort, Class fromClass) {
 		ListsOfMessages.getGenlabMessages().warnTech(message, fromShort, fromClass);
 	}
-
+	
 	public static void warnTech(String message, Class fromClass) {
 		ListsOfMessages.getGenlabMessages().warnTech(message, fromClass);
 	}
 
-
-	public static void warnTech(String message, String fromShort, Class fromClass, Exception e) {
+	public static void warnTech(String message, String fromShort, Class fromClass, Throwable e) {
 		ListsOfMessages.getGenlabMessages().warnTech(message, fromShort, fromClass, e);
 	}
 
-	public static void warnTech(String message, Class fromClass, Exception e) {
+	public static void warnTech(String message, Class fromClass, Throwable e) {
 		ListsOfMessages.getGenlabMessages().warnTech(message, fromClass, e);
 	}
 
@@ -108,11 +125,11 @@ public class GLLogger {
 		ListsOfMessages.getGenlabMessages().errorTech(message, fromClass);
 	}
 	
-	public static void errorTech(String message, String fromShort, Class fromClass, Exception e) {
+	public static void errorTech(String message, String fromShort, Class fromClass, Throwable e) {
 		ListsOfMessages.getGenlabMessages().errorTech(message, fromShort, fromClass, e);
 	}
 
-	public static void errorTech(String message, Class fromClass, Exception e) {
+	public static void errorTech(String message, Class fromClass, Throwable e) {
 		ListsOfMessages.getGenlabMessages().errorTech(message, fromClass, e);
 	}
 	

@@ -1,8 +1,9 @@
 package genlab.gui.views;
 
-import genlab.basics.workflow.IWorkflowListener;
-import genlab.basics.workflow.WorkflowHooks;
-import genlab.core.algos.IGenlabWorkflow;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.IWorkflowListener;
+import genlab.core.model.instance.WorkflowHooks;
+import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.Utils;
@@ -20,7 +21,7 @@ public class WorkflowNavigatorRefresher implements IWorkflowGUIListener, IWorkfl
 	}
 
 	@Override
-	public void workflowShown(IGenlabWorkflow workflow) {
+	public void workflowShown(IGenlabWorkflowInstance workflow) {
 		GLLogger.debugTech("a workflow was added, attempting to open the corresponding view", getClass());
 		Utils.setCommonNavigatorInput(
 				"genlab.gui.views.workflowexplorer", 
@@ -29,31 +30,31 @@ public class WorkflowNavigatorRefresher implements IWorkflowGUIListener, IWorkfl
 	}
 
 	@Override
-	public void workflowCreation(IGenlabWorkflow workflow) {
+	public void workflowCreation(IGenlabWorkflowInstance workflow) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void workflowChanged(IGenlabWorkflow workflow) {
+	public void workflowChanged(IGenlabWorkflowInstance workflow) {
 		GLLogger.debugTech("a workflow was added, attempting to open the corresponding view", getClass());
 		Utils.updateCommonNavigator("genlab.gui.views.workflowexplorer");
 	}
 
 	@Override
-	public void workflowOpened(IGenlabWorkflow workflow) {
+	public void workflowOpened(IGenlabWorkflowInstance workflow) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void workflowSaving(IGenlabWorkflow workflow) {
+	public void workflowSaving(IGenlabWorkflowInstance workflow) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void workflowSaved(IGenlabWorkflow workflow) {
+	public void workflowSaved(IGenlabWorkflowInstance workflow) {
 		// TODO Auto-generated method stub
 		
 	}
