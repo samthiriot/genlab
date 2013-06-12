@@ -1,51 +1,31 @@
 package genlab.igraph.natjna;
 
-import java.util.List;
-
 import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
-import com.sun.jna.TypeMapper;
+import com.sun.jna.ptr.PointerByReference;
 
-public class IGraphGraph extends Structure {
+/**
+ * Opaque type that actually reflect internal data from igraph.
+ * 
+ * @author Samuel Thiriot
+ *
+ */
+public class IGraphGraph {
 
-	public IGraphGraph() {
-		// TODO Auto-generated constructor stub
+	public final PointerByReference igraphPointer;
+	
+	public boolean directed;
+	
+	public IGraphGraph(PointerByReference igraphPointer, boolean directed) {
+		this.igraphPointer = igraphPointer;
+		this.directed = directed;
 	}
-
-	public IGraphGraph(TypeMapper mapper) {
-		super(mapper);
-		// TODO Auto-generated constructor stub
+	
+	final public PointerByReference getReference() {
+		return igraphPointer;
 	}
-
-	public IGraphGraph(int alignType) {
-		super(alignType);
-		// TODO Auto-generated constructor stub
-	}
-
-	public IGraphGraph(Pointer p) {
-		super(p);
-		// TODO Auto-generated constructor stub
-	}
-
-	public IGraphGraph(int alignType, TypeMapper mapper) {
-		super(alignType, mapper);
-		// TODO Auto-generated constructor stub
-	}
-
-	public IGraphGraph(Pointer p, int alignType) {
-		super(p, alignType);
-		// TODO Auto-generated constructor stub
-	}
-
-	public IGraphGraph(Pointer p, int alignType, TypeMapper mapper) {
-		super(p, alignType, mapper);
-		// TODO Auto-generated constructor stub
-	}
-
-	@Override
-	protected List getFieldOrder() {
-		// TODO Auto-generated method stub
-		return null;
+	
+	final public Pointer getPointer() {
+		return igraphPointer.getPointer();
 	}
 
 }

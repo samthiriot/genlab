@@ -29,3 +29,6 @@ Windows
 http://cran.r-project.org/web/packages/igraph/index.html
 MacOSX
 http://cran.r-project.org/web/packages/igraph/index.html
+
+igraph doc:
+http://igraph.sourceforge.net/doc/html/index.html

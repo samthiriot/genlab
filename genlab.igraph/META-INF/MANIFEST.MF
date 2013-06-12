@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Igraph
-Bundle-SymbolicName: genlab.igraph
+Bundle-SymbolicName: genlab.igraph;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: genlab.igraph.Activator
 Bundle-Vendor: Samuel Thiriot
@@ -11,3 +11,5 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
+Bundle-NativeCode: /ext/native/linux/x86_64/libigraph.so; osname="linux"; processor=x86_64
+
