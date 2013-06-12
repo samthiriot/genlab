@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Igraph
+Bundle-SymbolicName: genlab.igraph
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: genlab.igraph.Activator
+Bundle-Vendor: Samuel Thiriot
+Require-Bundle: org.eclipse.core.runtime,
+ genlab.core;bundle-version="0.0.1",
+ org.junit
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .

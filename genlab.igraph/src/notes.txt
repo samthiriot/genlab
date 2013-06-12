@@ -1,0 +1,31 @@
+
+GLay
+
+http://brainarray.mbni.med.umich.edu/glay/
+
+My question
+http://lists.gnu.org/archive/html/igraph-help/2012-01/msg00103.html
+
+Another question
+http://lists.gnu.org/archive/html/igraph-help/2009-07/msg00107.html
+
+Cytoscape module
+
+http://chianti.ucsd.edu/svn/csplugins/trunk/soc/ghuck/IgraphPlugin/src/cytoscape/plugins/igraph/IgraphPlugin.java
+http://chianti.ucsd.edu/svn/csplugins/trunk/soc/ghuck/IgraphPlugin/src/cytoscape/plugins/igraph/IgraphAPI.java
+http://chianti.ucsd.edu/svn/csplugins/trunk/soc/ghuck/IgraphPlugin/src/cytoscape/plugins/igraph/IsConnected.java
+
+
+JNA en général:
+
+Structure: ???
+https://jna.java.net/javadoc/com/sun/jna/Structure.html
+
+igraph binaries:
+Linux ?
+http://cran.r-project.org/doc/FAQ/R-FAQ.html#Are-there-Unix_002dlike-binaries-for-R_003f
+
+Windows
+http://cran.r-project.org/web/packages/igraph/index.html
+MacOSX
+http://cran.r-project.org/web/packages/igraph/index.html

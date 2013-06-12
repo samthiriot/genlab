@@ -100,7 +100,8 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 				System.err.println("average path length: "+algo.getPathLength());
 				System.err.println("diameter: "+algo.getDiameter());
 				
-				results.put(OUTPUT_, outputGraph);
+				results.put(OUTPUT_AVERAGE_PATH_LENGTH, algo.getPathLength());
+				results.put(OUTPUT_DIAMETER, algo.getDiameter());
 				
 				if (isUsed(OUTPUT_GRAPH) && param_betweeness_attribute != null ) {
 					
