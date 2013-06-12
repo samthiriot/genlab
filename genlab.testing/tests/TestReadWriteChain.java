@@ -1,4 +1,7 @@
 import static org.junit.Assert.assertTrue;
+
+import java.awt.font.ImageGraphicAttribute;
+
 import genlab.core.exec.Execution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.GenlabFactory;
@@ -15,6 +18,7 @@ import genlab.graphstream.algos.measure.GraphStreamAPSP;
 import genlab.graphstream.algos.measure.GraphStreamConnectedComponents;
 import genlab.graphstream.algos.writers.GraphStreamDGSWriter;
 import genlab.graphstream.algos.writers.GraphStreamGMLWriter;
+import genlab.igraph.algos.measure.IGraphAveragePathLengthAlgo;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -62,6 +66,7 @@ public class TestReadWriteChain {
 		GraphStreamConnectedComponents detectConnectedComponents = new GraphStreamConnectedComponents();
 		GraphStreamAPSP apsp = new GraphStreamAPSP();
 		GephiAveragePathLengthAlgo gephiLength = new GephiAveragePathLengthAlgo();
+		IGraphAveragePathLengthAlgo igraphLength = new IGraphAveragePathLengthAlgo();
 		
 		// add a generator
 		IAlgoInstance wsAlgoInstance = wsAlgo.createInstance(workflow); 
@@ -119,6 +124,12 @@ public class TestReadWriteChain {
 				analysisComponent.getOutputInstanceForOutput(detectConnectedComponents.OUTPUT_GRAPH),
 				writerInstance2.getInputInstanceForInput(writerGML.PARAM_GRAPH)
 				);
+
+		workflow.connect(
+				wsAlgoInstance.getOutputInstanceForOutput(wsAlgo.OUTPUT_GRAPH),
+				igraphLength.createInstance(workflow).getInputInstanceForInput(igraphLength.INPUT_GRAPH)
+				);
+		
 		
 		workflow.connect(
 				wsAlgoInstance.getOutputInstanceForOutput(wsAlgo.OUTPUT_GRAPH),
@@ -129,7 +140,6 @@ public class TestReadWriteChain {
 				wsAlgoInstance.getOutputInstanceForOutput(wsAlgo.OUTPUT_GRAPH),
 				gephiLength.createInstance(workflow).getInputInstanceForInput(gephiLength.INPUT_GRAPH)
 				);
-		
 		
 		// check everything
 		WorkflowCheckResult checkInfo = workflow.checkForRun();

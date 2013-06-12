@@ -1,5 +1,7 @@
 package genlab.igraph.natjna;
 
+import genlab.core.usermachineinteraction.GLLogger;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,7 +23,19 @@ public class IGraphRawLibrary {
 
 
 	//IGraphLibrary INSTANCE = (IGraphLibrary) Native.loadLibrary("igraph", IGraphLibrary.class);
+
+	static {
+
+    	try{
+    		System.setProperty("jna.library.path", "/home/B12772/workspaceJunoRCP/genlab/genlab.igraph/ext/native/linux/x86_64/;./genlab.igraph/ext/native/linux/x86_64/;../genlab.igraph/ext/native/linux/x86_64/;./ext/native/linux/x86_64/");
+    		System.err.println("jna.library.path="+System.getProperty("jna.library.path"));
+    	} catch(IllegalStateException ise){
+    		System.out.println("caught :"+ise);
+    	}
+	}
 	
+	public static boolean isAvailable = false;
+	public static Throwable problem = null;
 
 	public static class Igraph_vector_t extends Structure {
 		
@@ -71,7 +85,6 @@ public class IGraphRawLibrary {
 
 			public ByReference(IGraphRawLibrary rawlib) {
 				super(rawlib);
-				// TODO Auto-generated constructor stub
 			}}
 		
 		public int n;
@@ -100,7 +113,7 @@ public class IGraphRawLibrary {
 			os = new Igraph_vector_t();
 			is = new Igraph_vector_t();
 			
-			
+			/*
 			rawlib.igraph_vector_init(from, 0);
 			rawlib.igraph_vector_init(to, 0);
 			rawlib.igraph_vector_init(oi, 0);
@@ -109,7 +122,7 @@ public class IGraphRawLibrary {
 			rawlib.igraph_vector_init(is, 0);
 			
 			attr = new Pointer(Pointer.SIZE);
-			
+			*/
 			ensureAllocated();
 
 			n = 0;
@@ -412,15 +425,17 @@ int igraph_k_regular_game(igraph_t *graph,
 
     	// attempt to forbidd the use of system libraries
 
-    	
-    	try{
-    		System.setProperty("jna.library.path", "./ext/native/linux/x86_64/");
+		System.err.println("jna.library.path="+System.getProperty("jna.library.path"));
 
-    	} catch(IllegalStateException ise){
-    		System.out.println("caught :"+ise);
-    	}
-    	    	
-    	Native.register("igraph");
+		try {
+			Native.register("igraph");
+			isAvailable = true;
+			GLLogger.debugTech("registered native igraph", IGraphRawLibrary.class);
+		} catch (UnsatisfiedLinkError e) {
+			isAvailable = false;
+			problem = e;
+			GLLogger.errorTech("unable to register the native igraph library", IGraphRawLibrary.class, e);
+		}
     }
 
 }

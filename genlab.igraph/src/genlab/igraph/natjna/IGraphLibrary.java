@@ -21,6 +21,9 @@ public class IGraphLibrary {
 
 		GLLogger.debugTech("init igraph native library...", getClass());
 		
+		if (!IGraphRawLibrary.isAvailable) 
+			throw new ProgramException("unable to use the igraph native library");
+		
 		rawLib = new IGraphRawLibrary();
 		
 		retrieveVersion();

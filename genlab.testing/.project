@@ -3,6 +3,10 @@
 	<name>genlab.testing</name>
 	<comment></comment>
 	<projects>
+		<project>genlab.core</project>
+		<project>genlab.gephi</project>
+		<project>genlab.graphstream</project>
+		<project>genlab.igraph</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

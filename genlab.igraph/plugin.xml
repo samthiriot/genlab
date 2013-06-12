@@ -4,7 +4,7 @@
    <extension
          point="genlab.core.algo">
       <algo
-            class="genlab.igraph.algos.measure.AveragePathLengthAlgo"
+            class="genlab.igraph.algos.measure.IGraphAveragePathLengthAlgo"
             id="genlab.igraph.algos.measure.AveragePathLengthAlgo">
       </algo>
    </extension>

@@ -13,7 +13,7 @@ import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.igraph.natjna.IGraphGraph;
 
-public class AveragePathLengthAlgo extends AbstractIGraphMeasure {
+public class IGraphAveragePathLengthAlgo extends AbstractIGraphMeasure {
 
 	public static final InputOutput<Double> OUTPUT_LENGTH = new InputOutput<Double>(
 			new DoubleFlowType(), 
@@ -22,12 +22,12 @@ public class AveragePathLengthAlgo extends AbstractIGraphMeasure {
 			"average path length computed by the igraph library"
 	);
 	
-	public AveragePathLengthAlgo() {
+	public IGraphAveragePathLengthAlgo() {
 		super(
 				"average path length", 
 				"igraph implementation"
 				);
-		inputs.add(OUTPUT_LENGTH);
+		outputs.add(OUTPUT_LENGTH);
 	}
 
 	@Override
