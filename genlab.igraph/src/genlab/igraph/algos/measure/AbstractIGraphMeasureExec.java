@@ -1,4 +1,4 @@
-package genlab.graphstream.algos.measure;
+package genlab.igraph.algos.measure;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
@@ -7,53 +7,33 @@ import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
-import genlab.graphstream.utils.GraphstreamConvertors;
+import genlab.igraph.commons.IGraph2GenLabConvertor;
+import genlab.igraph.natjna.IGraphGraph;
 
-import java.util.Collections;
 import java.util.Map;
 
-import org.graphstream.graph.Graph;
+public abstract class AbstractIGraphMeasureExec extends AbstractAlgoExecution {
 
-public abstract class AbstractGraphstreamMeasureExecution extends
-		AbstractAlgoExecution {
-	
-	
-	public AbstractGraphstreamMeasureExecution(
-			IExecution exec,
+	public AbstractIGraphMeasureExec(
+			IExecution exec, 
 			IAlgoInstance algoInst
 			) {
-		
 		super(
 				exec, 
 				algoInst, 
 				new ComputationProgressWithSteps()
 				);
 		
-
-	
 	}
+	
+	protected abstract Map<IInputOutput<?>,Object> analyzeGraph(IComputationProgress progress, IGraphGraph igraphGraph, IGenlabGraph genlabGraph);
 
-	/**
-	 * Receives as parameters a progress (to be used to define the progress if possible),
-	 * a gsGraph that is already a clone of the input one,
-	 * and the genlab graph.
-	 * Should return a map between expected outputs and the corresponding object.
-	 * 
-	 * @param progress
-	 * @param gsGraph
-	 * @param genlabGraph
-	 * @return
-	 */
-	protected abstract Map<IInputOutput<?>,Object> analyzeGraph(IComputationProgress progress, Graph gsGraph, IGenlabGraph genlabGraph);
-	
-	
-	
+
 	@Override
 	public void run() {
-
+		
 		// notify start
 		progress.setProgressMade(0);
 		progress.setProgressTotal(1);
@@ -61,7 +41,7 @@ public abstract class AbstractGraphstreamMeasureExecution extends
 		
 		ComputationResult result = new ComputationResult(algoInst, progress);
 		setResult(result);
-
+		
 
 		if (noOutputIsUsed() && !exec.getExecutionForced()) {
 			
@@ -70,18 +50,12 @@ public abstract class AbstractGraphstreamMeasureExecution extends
 		} else {
 		
 			// decode parameters
-			final IGenlabGraph glGraph = (IGenlabGraph) getInputValueForInput(AbstractGraphStreamMeasure.INPUT_GRAPH);
+			final IGenlabGraph glGraph = (IGenlabGraph) getInputValueForInput(AbstractIGraphMeasure.INPUT_GRAPH);
 			
-			Graph gsGraph = GraphstreamConvertors.getGraphstreamGraphFromGenLabGraph(glGraph, result.getMessages());
-			
-			GraphstreamConvertors.GenLabGraphSink ourSink = new GraphstreamConvertors.GenLabGraphSink(
-					"opened", 
-					result.getMessages()
-					);
-			
+			IGraphGraph igraphGraph = IGraph2GenLabConvertor.getIGraphGraphForGenlabGraph(glGraph, result.getMessages());
 			
 			// analyze
-			Map<IInputOutput<?>,Object> stats = analyzeGraph(progress, gsGraph, glGraph);
+			Map<IInputOutput<?>,Object> stats = analyzeGraph(progress, igraphGraph, glGraph);
 			
 			// use outputs
 			for (IInputOutput<?> out: stats.keySet()) {

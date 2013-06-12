@@ -2,7 +2,6 @@ package genlab.igraph.natjna;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import genlab.igraph.natjna.IGraphRawLibrary.IGraphGraph;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -14,7 +13,10 @@ import com.sun.jna.Native;
 
 public class TestIGraphLibrary {
 
-	IGraphLibrary lib = null;
+	/**
+	 * instance to be tested
+	 */
+	private IGraphLibrary lib = null;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -57,10 +59,8 @@ public class TestIGraphLibrary {
 		
 		genlab.igraph.natjna.IGraphGraph g = lib.generateErdosRenyiGNP(100, 0.6);
 		
-		assertNotNull(g.igraphPointer);
 		assertEquals(100, lib.getVertexCount(g));
 		assertEquals(false, lib.isDirected(g));
-		
 		
 	}
 
@@ -69,7 +69,6 @@ public class TestIGraphLibrary {
 		
 		genlab.igraph.natjna.IGraphGraph g = lib.generateEmpty(100, false);
 		
-		assertNotNull(g.igraphPointer);
 		assertEquals(100, lib.getVertexCount(g));
 		assertEquals(false, lib.isDirected(g));
 		assertEquals(0, lib.getEdgeCount(g));
@@ -80,6 +79,19 @@ public class TestIGraphLibrary {
 	@Test
 	public void testWattsStrogatz() {
 
+		final int GRAPH_SIZE = 5000;
+
+		IGraphGraph g = lib.generateWattsStrogatz(GRAPH_SIZE, 1, 0.1, 2, false, false);
+		
+		assertEquals(GRAPH_SIZE, lib.getVertexCount(g));
+		//assertEquals(false, lib.isDirected(g));
+		
+		System.err.println(lib.computeAveragePathLength(g));
+
+		
+		//System.err.println(lib.computeAveragePathLength(g));
+		
+		/*
 		genlab.igraph.natjna.IGraphGraph g = lib.generateWattsStrogatz(500, 1, 0.1, 2, false, false);
 		
 		assertNotNull(g.igraphPointer);
@@ -87,7 +99,7 @@ public class TestIGraphLibrary {
 		assertEquals(false, lib.isDirected(g));
 		
 		System.err.println(lib.computeAveragePathLength(g));
-		
+		*/
 	}
 	
 	
@@ -121,23 +133,23 @@ public class TestIGraphLibrary {
 		assertEquals(6, lib.getEdgeCount(g));
 		
 		System.err.println("adding plenty of edges !");
-		for (int i=1; i<99; i++) {
+		for (int i=1; i<100; i++) {
 			lib.addEdge(g, 0, i);
 		}
 		
 		assertEquals(100, lib.getVertexCount(g));
 		assertEquals(false, lib.isDirected(g));
-		assertEquals(106, lib.getEdgeCount(g));
+		assertEquals(105, lib.getEdgeCount(g));
 		
 	}
 	
 	
 	@Test
 	public void testCopy() {
-		
+		/*
 		IGraphGraph from = new IGraphGraph();
 		IGraphGraph to = new IGraphGraph();
-
+*/
 		// TODO !
 		
 	}

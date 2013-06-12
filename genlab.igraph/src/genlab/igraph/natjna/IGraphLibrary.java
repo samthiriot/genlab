@@ -1,16 +1,15 @@
 package genlab.igraph.natjna;
 
-import javax.security.auth.callback.LanguageCallback;
+import java.util.HashMap;
+
+import genlab.core.commons.ProgramException;
+import genlab.core.commons.WrongParametersException;
+import genlab.core.usermachineinteraction.GLLogger;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.DoubleByReference;
-import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
-
-import genlab.core.commons.ProgramException;
-import genlab.core.usermachineinteraction.GLLogger;
-import genlab.igraph.natjna.IGraphGraph;
 
 public class IGraphLibrary {
 
@@ -58,8 +57,8 @@ public class IGraphLibrary {
 		return versionString;
 	}
 	
-	protected PointerByReference createEmptyGraph() {
-		return new PointerByReference((new IGraphRawLibrary.IGraphGraph()).getPointer());
+	protected IGraphRawLibrary.InternalGraphStruct createEmptyGraph() {
+		return new IGraphRawLibrary.InternalGraphStruct(rawLib);
 	}
 	
 	protected void checkIGraphResult(int code) {
@@ -72,12 +71,12 @@ public class IGraphLibrary {
 	
 	public IGraphGraph generateErdosRenyiGNP(int size, double proba, boolean directed, boolean allowLoops) {
 
-		PointerByReference graph = createEmptyGraph();
-		
+		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+				
 		GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
 		final int res = rawLib.igraph_erdos_renyi_game_gnp(
-				graph,
+				g,
 				size,
 				proba,
 				directed,
@@ -89,24 +88,25 @@ public class IGraphLibrary {
 		// detect errors
 		checkIGraphResult(res);
 		
-		IGraphGraph g = new IGraphGraph(graph, directed);
+		IGraphGraph result = new IGraphGraph(this, rawLib, g, directed);
 		
 		// basic checks
 		// TODO
 		
-		return g;
+		return result;
 		
 	}
 	
 
-	public IGraphGraph generateWattsStrogatz(int size, int dimension, double proba, int nei, boolean directed, boolean allowLoops) {
 	
-		PointerByReference graph = createEmptyGraph();
+	public IGraphGraph generateWattsStrogatz(int size, int dimension, double proba, int nei, boolean directed, boolean allowLoops) {
+		
+		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
 		
 		GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
 		int res = rawLib.igraph_watts_strogatz_game(
-				graph, 
+				g,
 				dimension, 
 				size, 
 				nei, 
@@ -120,22 +120,33 @@ public class IGraphLibrary {
 		// detect errors
 		checkIGraphResult(res);
 		
-		IGraphGraph g = new IGraphGraph(graph, directed);
+		IGraphGraph result = new IGraphGraph(this, rawLib, g, directed);
 		
-		// basic checks
-		// TODO
+		return result;
+	}
+	
+
+	public IGraphGraph copyGraph(IGraphGraph original) {
+
+		final IGraphRawLibrary.InternalGraphStruct theCopy = createEmptyGraph();
+
+		rawLib.igraph_copy(original.getStruct(), theCopy);
 		
-		return g;
+		IGraphGraph theCopyRes = new IGraphGraph(this, rawLib, theCopy, original.directed);
+		theCopyRes._setMapping(new HashMap<String, Integer>(original._getMapping()));
+		
+		return theCopyRes;
+		
 	}
 	
 	public IGraphGraph generateEmpty(int size, boolean directed) {
 	
-		PointerByReference graph = createEmptyGraph();
-		
+		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+				
 		GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
 		final int res = rawLib.igraph_empty(
-				graph, 
+				g, 
 				size, 
 				directed
 				);
@@ -145,12 +156,12 @@ public class IGraphLibrary {
 		// detect errors
 		checkIGraphResult(res);
 		
-		IGraphGraph g = new IGraphGraph(graph, directed);
+		IGraphGraph result = new IGraphGraph(this, rawLib, g, directed, size);
 		
 		// basic checks
 		// TODO
 		
-		return g;
+		return result;
 	}
 	
 	
@@ -160,9 +171,12 @@ public class IGraphLibrary {
 	
 	public void addEdge(IGraphGraph g, int from, int to) {
 		
+		if (from < 0 || to < 0)
+			throw new WrongParametersException("ids of nodes should be positive");
+		
 		// TODO check parameters
 		
-		final int res = rawLib.igraph_add_edge(g.igraphPointer.getPointer(), from, to);
+		final int res = rawLib.igraph_add_edge(g.getPointer(), from, to);
 		
 		checkIGraphResult(res);
 	}
@@ -170,6 +184,11 @@ public class IGraphLibrary {
 	
 	
 	public int getVertexCount(IGraphGraph g) {
+		
+		return rawLib.igraph_vcount(g.getPointer());
+	}
+	
+	public int getVertexCount(IGraphRawLibrary.InternalGraphStruct g) {
 		
 		return rawLib.igraph_vcount(g.getPointer());
 	}
@@ -208,5 +227,27 @@ public class IGraphLibrary {
 		
 	}
 	
+	public double computeAveragePathLength(IGraphRawLibrary.InternalGraphStruct g) {
+		
+		DoubleByReference res = new DoubleByReference();
+		
+		GLLogger.debugTech("calling igraph to compute average path length...", getClass());
+		GLLogger.debugTech("calling igraph", getClass());
+		final long startTime = System.currentTimeMillis();
+		
+		final int res2 = rawLib.igraph_average_path_length(g.getPointer(), res, g.directed, false);
+
+		final long duration = System.currentTimeMillis() - startTime;
+		GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+
+		checkIGraphResult(res2);
+		
+		final double length = res.getValue();
+		
+		return length;
+		
+	}
 	
+	
+
 }

@@ -27,5 +27,6 @@ Export-Package: com.sun.jna,
 Bundle-ClassPath: .,
  ext/xstream-1.4.4.jar,
  ext/log4j-1.2.8.jar,
- ext/jna-3.5.2.jar
+ ext/jna-3.5.2.jar,
+ ext/platform-3.5.2.jar
 Import-Package: com.sun.jna
