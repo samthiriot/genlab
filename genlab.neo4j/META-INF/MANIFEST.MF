@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Neo4j
+Bundle-SymbolicName: genlab.neo4j;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: genlab.neo4j.Activator
+Bundle-Vendor: Samuel Thiriot
+Require-Bundle: org.eclipse.core.runtime,
+ genlab.core;bundle-version="0.0.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: ext/neo4j-kernel-1.9.jar,
+ .
+Export-Package: genlab.neo4j.algos.writers,
+ org.neo4j.graphdb

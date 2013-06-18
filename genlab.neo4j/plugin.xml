@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.neo4j.algos.writers.Neo4jGraphWriterExecution"
+            id="genlab.neo4j.algos.writers.Neo4jGraphWriterExecution">
+      </algo>
+   </extension>
+
+</plugin>
