@@ -23,7 +23,7 @@ public abstract class BasicAlgo implements IAlgo {
 			String categoryId
 			) {
 		
-		this.id = getClass().getCanonicalName();
+		this.id = name.replaceAll("[-+.^:, ]","_");;
 		this.name = name;
 		this.description = description;
 		this.categoryId = categoryId;
@@ -62,6 +62,12 @@ public abstract class BasicAlgo implements IAlgo {
 	public final IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
 		return new AlgoInstance(this, workflow);
 	}
+	
+	@Override
+	public IAlgoInstance createInstance(String id, IGenlabWorkflowInstance workflow) {
+		return new AlgoInstance(this, workflow, id);
+	}
+
 	
 	@Override
 	public String toString() {

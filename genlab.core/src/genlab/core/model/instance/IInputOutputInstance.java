@@ -6,6 +6,8 @@ import genlab.core.model.meta.IInputOutput;
 
 public interface IInputOutputInstance {
 
+	public String getId();
+	
 	public IInputOutput<?> getMeta();
 	
 	public IAlgoInstance getAlgoInstance();

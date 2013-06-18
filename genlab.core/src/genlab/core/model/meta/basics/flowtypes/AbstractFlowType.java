@@ -15,6 +15,7 @@ public abstract class AbstractFlowType<JavaType> implements IFlowType<JavaType> 
 		this.name = name;
 		this.desc = desc;
 		
+		ExistingFlowTypes.registerType(this);
 	}
 
 	@Override

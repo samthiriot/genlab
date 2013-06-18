@@ -1,13 +1,5 @@
 package genlab.core.model.meta;
 
-import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IConnection;
-import genlab.core.model.instance.IInputOutputInstance;
-import genlab.core.model.instance.WorkflowCheckResult;
-import genlab.core.projects.IGenlabProject;
-
-import java.io.File;
-import java.util.Collection;
 
 /**
  * 

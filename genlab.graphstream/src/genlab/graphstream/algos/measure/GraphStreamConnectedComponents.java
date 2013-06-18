@@ -9,6 +9,7 @@ import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.graphstream.algorithm.ConnectedComponents;
-import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
@@ -67,7 +67,8 @@ public class GraphStreamConnectedComponents extends AbstractGraphStreamMeasure {
 			protected Map<IInputOutput<?>, Object> analyzeGraph(
 					IComputationProgress progress, 
 					Graph gsGraph,
-					IGenlabGraph genlabGraph
+					IGenlabGraph genlabGraph,
+					ListOfMessages messages
 					) {
 				
 				

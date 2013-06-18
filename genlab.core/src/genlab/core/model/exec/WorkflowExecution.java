@@ -73,6 +73,7 @@ public class WorkflowExecution extends AbstractAlgoExecution {
 		
 		GLLogger.traceTech("starting the execution of worklow "+workflowInstance, getClass());
 
+		
 		Runner r = new Runner(exec, progress, instance2execution.values());
 		r.run();
 		

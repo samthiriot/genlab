@@ -11,14 +11,21 @@ public abstract class InputOutputInstance implements IInputOutputInstance {
 
 	protected final IInputOutput<?> meta;
 	protected final IAlgoInstance algoInstance;
+	protected final String id;
 	
-	protected final Set<IConnection> connections = new HashSet<IConnection>();
+	protected final transient Set<IConnection> connections = new HashSet<IConnection>();
 	
 	public InputOutputInstance(IInputOutput<?> meta, IAlgoInstance algoInstance) {
 		
+		this.id = algoInstance.getId()+"."+meta.getId(); // TODO id ! 
 		this.meta = meta;
 		this.algoInstance = algoInstance;
 		
+	}
+	
+	@Override
+	public String getId() {
+		return id;
 	}
 
 	@Override

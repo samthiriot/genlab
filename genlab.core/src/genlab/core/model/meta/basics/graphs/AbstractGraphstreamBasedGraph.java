@@ -2,6 +2,7 @@ package genlab.core.model.meta.basics.graphs;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
+import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -334,14 +335,14 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 
 	@Override
 	public Map<String, Object> getEdgeAttributes(String vertexId) {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO edge attributtes !
+		return Collections.EMPTY_MAP;
 	}
 
 	@Override
 	public Map<String, Object> getGraphAttributes() {
-		
-		return null;
+		// TODO graph attributes !
+		return Collections.EMPTY_MAP;
 	}
 
 	

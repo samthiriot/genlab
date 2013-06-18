@@ -9,9 +9,11 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.WorkflowExecution;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
+import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
+import java.beans.PersistenceDelegate;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -32,6 +34,8 @@ import java.util.Set;
 public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 
 	protected Set<IAlgoInstance> algoInstances = new HashSet<IAlgoInstance>();
+	protected Set<Connection> connections = new HashSet<Connection>();
+	
 	private Map<String,IAlgoInstance> id2algoInstance = new HashMap<String, IAlgoInstance>();
 
 	public transient IGenlabProject project;
@@ -50,7 +54,17 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		this.project = project;
 		this.name = name;
 		this.description = description;
-		this.relativeFilename = relativeFilename;
+		this.relativeFilename = relativeFilename+GenlabPersistence.EXTENSION_WORKFLOW;
+		project.addWorkflow(this);
+		id2instance.put(id, this);
+	}
+	
+	public GenlabWorkflowInstance(String id, IGenlabProject project, String name, String description, String relativeFilename) {
+		this.id = id;
+		this.project = project;
+		this.name = name;
+		this.description = description;
+		this.relativeFilename = relativeFilename+GenlabPersistence.EXTENSION_WORKFLOW;
 		project.addWorkflow(this);
 		id2instance.put(id, this);
 	}
@@ -88,6 +102,10 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		return name;
 	}
 	
+	public String getDescription() {
+		return description;
+	}
+	
 	@Override
 	public File getFilePersisted() {
 		return null;
@@ -118,6 +136,10 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		return Collections.unmodifiableCollection(algoInstances);
 	}
 
+	@Override
+	public Collection<Connection> getConnections() {
+		return Collections.unmodifiableCollection(connections);
+	}
 
 
 	@Override
@@ -198,6 +220,12 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 
 
 	@Override
+	public void addConnection(Connection c) {
+		connections.add(c);
+
+	}
+
+	@Override
 	public IConnection connect(IInputOutputInstance from, IInputOutputInstance to) {
 	
 		// TODO check parameters for link creation !
@@ -224,6 +252,8 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		Connection res = new Connection(from, to);
 		from.addConnection(res);
 		to.addConnection(res);
+		
+		connections.add(res);
 		
 		// TODO add it to the workflow !
 		
@@ -311,6 +341,38 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		}
 		
 		// TODO checking of workflows
+	}
+
+	@Override
+	public boolean isConnected(IInputOutputInstance from,
+			IInputOutputInstance to) {
+
+		for (IConnection c : to.getConnections()) {
+			if (c.getFrom() == from)
+				return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public IConnection getConnection(IInputOutputInstance from,
+			IInputOutputInstance to) {
+		
+
+		for (IConnection c : to.getConnections()) {
+			if (c.getFrom() == from)
+				return c;
+		}
+		
+		return null;
+		
+	}
+
+	@Override
+	public void _setWorkflowInstance(IGenlabWorkflowInstance workflow) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

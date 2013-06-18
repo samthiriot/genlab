@@ -2,6 +2,7 @@ package genlab.igraph.natjna;
 
 import genlab.core.usermachineinteraction.GLLogger;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,31 +25,71 @@ public class IGraphRawLibrary {
 
 	//IGraphLibrary INSTANCE = (IGraphLibrary) Native.loadLibrary("igraph", IGraphLibrary.class);
 
+	private static final String[] librariesPathes = new String[] {
+		"./ext/native/linux/x86_64/",
+		"./genlab.igraph/ext/native/linux/x86_64/",
+		"../genlab.igraph/ext/native/linux/x86_64/"
+	};
+	
+	/**
+	 * Defines libraries in order to enable JNA to find OUR libraries, 
+	 * with an higher priority than system ones.
+	 */
+	private static final void defineLibraryPath() {
+		try{
+    		final String previousValue = System.getProperty("jna.library.path");
+    		StringBuffer sb = new StringBuffer();
+    		// add static libs
+    		for (String lib: librariesPathes) {
+    			sb.append(lib).append(File.pathSeparator);
+    		}
+    		// add previous value
+    		if (previousValue != null)
+    			sb.append(previousValue);
+
+    		// actually set the value
+    		System.setProperty("jna.library.path", sb.toString());
+    		
+    		GLLogger.debugTech(
+    				"initialized system property jna.library.path="+sb.toString(), 
+    				IGraphRawLibrary.class
+    				);
+    		
+    	} catch(IllegalStateException ise){
+    		GLLogger.errorTech(
+    				"error during the initialization of the system property jna.library.path", 
+    				IGraphRawLibrary.class
+    				);
+    	}
+	}
+	
 	static {
 
-    	try{
-    		System.setProperty("jna.library.path", "/home/B12772/workspaceJunoRCP/genlab/genlab.igraph/ext/native/linux/x86_64/;./genlab.igraph/ext/native/linux/x86_64/;../genlab.igraph/ext/native/linux/x86_64/;./ext/native/linux/x86_64/");
-    		System.err.println("jna.library.path="+System.getProperty("jna.library.path"));
-    	} catch(IllegalStateException ise){
-    		System.out.println("caught :"+ise);
-    	}
+    	defineLibraryPath();
 	}
 	
 	public static boolean isAvailable = false;
 	public static Throwable problem = null;
 
+
+	/**
+	 * Reflects the igraph internal igraph_vector_t structure.
+	 * Warning, it should first by initialized using the igraph init vector method.
+	 * @author B12772
+	 *
+	 */
 	public static class Igraph_vector_t extends Structure {
 		
-		public double stor_begin;
-		public double stor_end;
-		public double end;
+		public Pointer stor_begin;
+		public Pointer stor_end;
+		public Pointer end;
 
 		public static class ByReference extends Igraph_vector_t implements Structure.ByReference {}
 
 		public Igraph_vector_t() {
-			stor_begin = 0;
-			stor_end = 0;
-			end = 0;
+			stor_begin = new Pointer(Pointer.SIZE);
+			stor_end = new Pointer(Pointer.SIZE);
+			end = new Pointer(Pointer.SIZE);
 			ensureAllocated();
 //		    allocateMemory();
 
@@ -63,6 +104,34 @@ public class IGraphRawLibrary {
 		protected List getFieldOrder() {
 			return Arrays.asList(new String[] { "stor_begin", "stor_end", "end" });
 		}
+		
+		/*
+		BASE FUNCTION(igraph_vector,e)         (const TYPE(igraph_vector)* v, long int pos) {
+			assert(v != NULL);
+			assert(v->stor_begin != NULL);
+			return * (v->stor_begin + pos);
+		}
+		*/
+		/**
+		 * Returns the element with this index, supposing it is a integer.
+		 * Warning: if the vector was changed (memory copy)
+		 * and not update, something will become really wrong here.
+		 * @param idx
+		 * @return
+		 */
+		public double getInt(int idx) {
+			//Pointer p = stor_begin.getPointer(idx);
+			//return p.getInt(0);
+			return stor_begin.getInt(idx);
+		}
+		
+		public int[] asIntArray(int size) {
+			return stor_begin.getIntArray(0, size);
+		}
+		public double[] asDoubleArray(int size) {
+			return stor_begin.getDoubleArray(0, size);
+		}
+		
 	}
 
 
@@ -141,6 +210,11 @@ public class IGraphRawLibrary {
 	 * int igraph_vector_init      (igraph_vector_t* v, int long size);
      */
 	public native int igraph_vector_init (Igraph_vector_t v, int size);
+
+	/*
+	 * 
+     */
+	public native int igraph_vector_size (Igraph_vector_t v);
 
 	/*
 	 * igraph_version.h
@@ -418,16 +492,46 @@ int igraph_k_regular_game(igraph_t *graph,
 	public native int igraph_average_path_length(Pointer graph, DoubleByReference res,
 		       boolean directed, boolean unconn);
 
+	/*
+	 * int igraph_diameter(const igraph_t *graph, igraph_integer_t *pres, 
+		    igraph_integer_t *pfrom, igraph_integer_t *pto, 
+		    igraph_vector_t *path,
+		    igraph_bool_t directed, igraph_bool_t unconn);
+	 */
+	public native int igraph_diameter(Pointer graph, IntByReference pres, 
+			IntByReference pfrom,  IntByReference pto, 
+		    PointerByReference path,
+		    boolean directed, boolean unconn);
+	
+	/*
+	 * int igraph_is_connected(const igraph_t *graph, igraph_bool_t *res, 
+			igraph_connectedness_t mode);
+	 * mode: IGRAPH_WEAK=1, IGRAPH_STRONG=2 (ignored for undirected)
+	 */
+	public native int igraph_is_connected(Pointer graph, IntByReference res, 
+			int mode);
+	
+	/*
+	 * int igraph_clusters(const igraph_t *graph, igraph_vector_t *membership, 
+		    igraph_vector_t *csize, igraph_integer_t *no,
+		    igraph_connectedness_t mode);
+		    mode: IGRAPH_WEAK=1, IGRAPH_STRONG=2 (ignored for undirected)
+	 */
+	public native int igraph_clusters(Pointer graph, Igraph_vector_t membership, 
+			Igraph_vector_t csize, IntByReference no,
+		    int mode);
+	
     static {
     	
     	// debug: to check we can really load this library
     	// System.load("TODO absolute prefix/genlab/genlab.igraph/ext/native/linux/x86_64/libigraph.so");
 
-    	// attempt to forbidd the use of system libraries
-
-		System.err.println("jna.library.path="+System.getProperty("jna.library.path"));
-
 		try {
+			GLLogger.debugTech(
+					"attempting to register the native igraph library with parameters: " +
+					"jna.library.path="+System.getProperty("jna.library.path"), 
+					IGraphRawLibrary.class
+					);
 			Native.register("igraph");
 			isAvailable = true;
 			GLLogger.debugTech("registered native igraph", IGraphRawLibrary.class);

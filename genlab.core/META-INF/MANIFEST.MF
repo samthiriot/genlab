@@ -23,7 +23,8 @@ Export-Package: com.sun.jna,
  genlab.core.model.meta.basics.graphs,
  genlab.core.persistence,
  genlab.core.projects,
- genlab.core.usermachineinteraction
+ genlab.core.usermachineinteraction,
+ tests.genlab.core.persistence
 Bundle-ClassPath: .,
  ext/xstream-1.4.4.jar,
  ext/log4j-1.2.8.jar,

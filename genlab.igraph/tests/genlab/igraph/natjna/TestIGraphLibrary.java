@@ -81,14 +81,16 @@ public class TestIGraphLibrary {
 
 		final int GRAPH_SIZE = 5000;
 
-		IGraphGraph g = lib.generateWattsStrogatz(GRAPH_SIZE, 1, 0.1, 2, false, false);
+		IGraphGraph g = lib.generateWattsStrogatz(GRAPH_SIZE, 1, 0.35, 2, false, false);
 		
 		assertEquals(GRAPH_SIZE, lib.getVertexCount(g));
 		//assertEquals(false, lib.isDirected(g));
 		
 		System.err.println(lib.computeAveragePathLength(g));
+		System.err.println(lib.isConnected(g));
 
-		
+		System.err.println(lib.computeComponentsCount(g));
+
 		//System.err.println(lib.computeAveragePathLength(g));
 		
 		/*

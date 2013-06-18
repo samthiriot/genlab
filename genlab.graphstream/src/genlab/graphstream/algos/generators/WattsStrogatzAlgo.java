@@ -18,27 +18,27 @@ public class WattsStrogatzAlgo extends BasicAlgo {
 			
 	public static final InputOutput<Integer> PARAM_N = new InputOutput<Integer>(
 			new IntegerFlowType(), 
-			ALGO_NAME+".N", 
+			"N", 
 			"N", 
 			"number of vertices"
 	);
 	
 	public static final InputOutput<Integer> PARAM_K = new InputOutput<Integer>(
 			new IntegerFlowType(), 
-			ALGO_NAME+".K", 
+			"K", 
 			"K", 
 			"neighboors (should be even)"
 	);
 	public static final InputOutput<Double> PARAM_P =  new InputOutput<Double>(
 			new DoubleFlowType(), 
-			ALGO_NAME+".p", 
+			"p", 
 			"p", 
 			"rewiring probability"
 		);
 	
 	public static final InputOutput<IGenlabGraph> OUTPUT_GRAPH =  new InputOutput<IGenlabGraph>(
 			new SimpleGraphFlowType(), 
-			ALGO_NAME+".graph", 
+			"graph", 
 			"g", 
 			"resulting graph"
 		);

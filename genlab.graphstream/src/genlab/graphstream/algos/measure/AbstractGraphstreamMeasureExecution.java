@@ -10,6 +10,7 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.graphstream.utils.GraphstreamConvertors;
 
 import java.util.Collections;
@@ -47,7 +48,7 @@ public abstract class AbstractGraphstreamMeasureExecution extends
 	 * @param genlabGraph
 	 * @return
 	 */
-	protected abstract Map<IInputOutput<?>,Object> analyzeGraph(IComputationProgress progress, Graph gsGraph, IGenlabGraph genlabGraph);
+	protected abstract Map<IInputOutput<?>,Object> analyzeGraph(IComputationProgress progress, Graph gsGraph, IGenlabGraph genlabGraph, ListOfMessages messages);
 	
 	
 	
@@ -81,7 +82,7 @@ public abstract class AbstractGraphstreamMeasureExecution extends
 			
 			
 			// analyze
-			Map<IInputOutput<?>,Object> stats = analyzeGraph(progress, gsGraph, glGraph);
+			Map<IInputOutput<?>,Object> stats = analyzeGraph(progress, gsGraph, glGraph, result.getMessages());
 			
 			// use outputs
 			for (IInputOutput<?> out: stats.keySet()) {

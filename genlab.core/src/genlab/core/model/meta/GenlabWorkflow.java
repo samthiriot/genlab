@@ -62,4 +62,11 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 		return "meta.workflow";
 	}
 
+	@Override
+	public IAlgoInstance createInstance(String id,
+			IGenlabWorkflowInstance workflow) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

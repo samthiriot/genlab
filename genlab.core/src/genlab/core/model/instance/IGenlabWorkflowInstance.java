@@ -31,6 +31,13 @@ public interface IGenlabWorkflowInstance extends IAlgoInstance, IWithAssociatedD
 	
 	public void removeAlgoInstance(IAlgoInstance algoInstance);
 	
+	public boolean isConnected(IInputOutputInstance from, IInputOutputInstance to);
+	
+	public IConnection getConnection(IInputOutputInstance from, IInputOutputInstance to);
+	
+
+	public void addConnection(Connection c);
+
 	public IConnection connect(IInputOutputInstance from, IInputOutputInstance to);
 	
 	public File getFilePersisted();
@@ -51,6 +58,8 @@ public interface IGenlabWorkflowInstance extends IAlgoInstance, IWithAssociatedD
 	
 	public Collection<IAlgoInstance> getAlgoInstances();
 
+	public Collection<Connection> getConnections();
+	
 	public boolean containsAlgoInstance(IAlgoInstance algoInstance);
 	
 	public boolean containsAlgoInstance(String algoInstanceId);

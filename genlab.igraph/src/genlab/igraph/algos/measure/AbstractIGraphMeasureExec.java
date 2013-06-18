@@ -9,6 +9,7 @@ import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.commons.IGraph2GenLabConvertor;
 import genlab.igraph.natjna.IGraphGraph;
 
@@ -28,7 +29,12 @@ public abstract class AbstractIGraphMeasureExec extends AbstractAlgoExecution {
 		
 	}
 	
-	protected abstract Map<IInputOutput<?>,Object> analyzeGraph(IComputationProgress progress, IGraphGraph igraphGraph, IGenlabGraph genlabGraph);
+	protected abstract Map<IInputOutput<?>,Object> analyzeGraph(
+			IComputationProgress progress, 
+			IGraphGraph igraphGraph, 
+			IGenlabGraph genlabGraph,
+			ListOfMessages messages
+			);
 
 
 	@Override
@@ -54,8 +60,11 @@ public abstract class AbstractIGraphMeasureExec extends AbstractAlgoExecution {
 			
 			IGraphGraph igraphGraph = IGraph2GenLabConvertor.getIGraphGraphForGenlabGraph(glGraph, result.getMessages());
 			
+			// ask the lib to transmit its information as the result of OUR computations
+			igraphGraph.lib.setListOfMessages(result.getMessages());
+			
 			// analyze
-			Map<IInputOutput<?>,Object> stats = analyzeGraph(progress, igraphGraph, glGraph);
+			Map<IInputOutput<?>,Object> stats = analyzeGraph(progress, igraphGraph, glGraph, result.getMessages());
 			
 			// use outputs
 			for (IInputOutput<?> out: stats.keySet()) {
@@ -63,12 +72,13 @@ public abstract class AbstractIGraphMeasureExec extends AbstractAlgoExecution {
 				result.setResult(out, value);	
 			}
 			
+			igraphGraph.lib.setListOfMessages(null);
+			
 		}
 		
 		progress.setProgressMade(1);
 		progress.setComputationState(ComputationState.FINISHED_OK);
 
-		setResult(result);
 	}
 
 }

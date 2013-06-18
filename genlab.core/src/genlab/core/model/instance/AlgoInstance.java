@@ -2,7 +2,6 @@ package genlab.core.model.instance;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
-import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.usermachineinteraction.MessageLevel;
@@ -14,8 +13,7 @@ import java.util.Map;
 
 public class AlgoInstance implements IAlgoInstance {
 
-	private final String id;
-	private final String algoClassName;
+	private String id;
 	
 	private transient IAlgo algo;
 	private transient IGenlabWorkflowInstance workflow;
@@ -27,19 +25,14 @@ public class AlgoInstance implements IAlgoInstance {
 	// TODO improve algo parameters
 	private Map<String,Object> parameters = new HashMap<String, Object>();
 	
-	public AlgoInstance(IAlgo algo, IGenlabWorkflowInstance workflow) {
-		
+	public AlgoInstance(IAlgo algo, IGenlabWorkflowInstance workflow, String id) {
+
+		this.id = id;
 		this.algo = algo;
-		this.algoClassName = algo.getClass().getCanonicalName();
-		this.workflow = workflow;
 		
 		if (workflow != null) {
-			this.id = getAlgo()+"."+workflow.getName()+workflow.getAlgoInstances().size();
-			workflow.addAlgoInstance(this);
-		} else {
-			this.id = getAlgo()+"."+System.currentTimeMillis(); // TODO mechanism to generate ids
-
-		}
+			_setWorkflowInstance(workflow);
+		} 
 		// init in and outs
 		for (IInputOutput<?> input : algo.getInputs()) {
 			inputs2inputInstances.put(
@@ -53,6 +46,19 @@ public class AlgoInstance implements IAlgoInstance {
 					new OutputInstance(output, this)
 					);
 		}
+	}
+
+	public AlgoInstance(IAlgo algo, IGenlabWorkflowInstance workflow) {
+		this(
+				algo, 
+				workflow, 
+				(workflow==null?
+						algo.getId()+"."+System.currentTimeMillis()
+						:
+						workflow.getId()+".algos."+algo.getId()+"."+workflow.getAlgoInstances().size()
+						)
+
+				);
 	}
 
 	
@@ -99,11 +105,6 @@ public class AlgoInstance implements IAlgoInstance {
 	public void _setAlgo(IAlgo algo) {
 		this.algo = algo;
 	}
-	
-	private Object readResolve() {
-		algo = ExistingAlgos.getExistingAlgos().getAlgoForClass(algoClassName);
-		return this;
-	}
 
 
 	@Override
@@ -131,6 +132,15 @@ public class AlgoInstance implements IAlgoInstance {
 	
 	public Object getValueForParameter(String name) {
 		return parameters.get(name);
+	}
+	
+	public Map<String,Object> getParametersAndValues() {
+		return Collections.unmodifiableMap(parameters);
+	}
+	
+
+	public boolean hasParameters() {
+		return !parameters.isEmpty();
 	}
 
 	public void setValueForParameter(String name, Object value) {
@@ -176,6 +186,13 @@ public class AlgoInstance implements IAlgoInstance {
 
 	public String toString() {
 		return algo.getName()+"_"+algo.hashCode();
+	}
+
+
+	@Override
+	public void _setWorkflowInstance(IGenlabWorkflowInstance workflow) {
+		this.workflow = workflow;
+		workflow.addAlgoInstance(this);
 	}
 
 

@@ -12,7 +12,10 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 
 /**
- * discovers and publishes all the available algorithms
+ * discovers and publishes all the available algorithms.
+ * Limitation: requires the underlying framework to be able to access
+ * extension points. 
+ * 
  * @author Samuel Thiriot
  */
 public final class ExistingAlgos {
@@ -79,7 +82,31 @@ public final class ExistingAlgos {
 	
 	
 	public IAlgo getAlgoForClass(String canonicalName) {
-		return classname2algos.get(canonicalName);
+		
+		IAlgo algo = classname2algos.get(canonicalName);
+		
+		if (algo == null) {
+			// best effort: not declared through other ways (like extension points)
+			// but maybe we can still find it ?
+			try {
+				GLLogger.traceTech("unable to find this class from declared one; attempting to load it: "+canonicalName, getClass());
+				Class<IAlgo> c = (Class<IAlgo>) ClassLoader.getSystemClassLoader().loadClass(canonicalName);
+				if (c != null) {
+					GLLogger.traceTech("found this algo through dynamic loading: "+canonicalName, getClass());
+					algo = c.newInstance();
+					classname2algos.put(canonicalName, algo);	
+				}
+				
+			} catch (ClassNotFoundException e) {
+				GLLogger.warnTech("not able to load this class "+canonicalName, getClass(), e);
+			} catch (InstantiationException e) {
+				GLLogger.warnTech("not able to instanciate this class "+canonicalName, getClass(), e);
+			} catch (IllegalAccessException e) {
+				GLLogger.warnTech("not able to access this class "+canonicalName, getClass(), e);
+			}
+		}
+		
+		return algo;
 	}
 	
 	public Collection<IAlgo> getAlgos() {

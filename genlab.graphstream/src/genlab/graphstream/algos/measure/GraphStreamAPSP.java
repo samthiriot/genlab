@@ -11,9 +11,11 @@ import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -79,7 +81,8 @@ public class GraphStreamAPSP extends AbstractGraphStreamMeasure {
 			protected Map<IInputOutput<?>, Object> analyzeGraph(
 					final IComputationProgress progress, 
 					final Graph gsGraph,
-					IGenlabGraph genlabGraph
+					IGenlabGraph genlabGraph,
+					ListOfMessages messages
 					) {
 				
 				final long PROGRESS_DURATION_INITS = 1;
@@ -131,6 +134,7 @@ public class GraphStreamAPSP extends AbstractGraphStreamMeasure {
 				
 				
 				// then remove all the nodes out of the giant component (so the algo will be quicker, nice !)
+				/*
 				if (cc.getConnectedComponentsCount() > 1) {
 					Set<Node> nodesToRemove = new HashSet<Node>(gsGraph.getNodeSet());
 					nodesToRemove.removeAll(nodesInGiantCompoennt);
@@ -153,7 +157,7 @@ public class GraphStreamAPSP extends AbstractGraphStreamMeasure {
 							+ PROGRESS_secondTotal
 							);
 				}
-				
+				*/
 				// clear data of the componenets
 				cc.terminate();
 				
@@ -162,6 +166,10 @@ public class GraphStreamAPSP extends AbstractGraphStreamMeasure {
 				
 				// create and run the graphstream algorithm
 				APSP apsp = new APSP(gsGraph);
+				
+				if (genlabGraph.getDirectionality() == GraphDirectionality.MIXED)
+					messages.warnUser("graphstream APSP algorithm does not supports mixed network; the computations will assume the network is undirected.", getClass());
+		
 				apsp.setDirected(genlabGraph.getDirectionality() == GraphDirectionality.DIRECTED);
 				
 				getResult().getMessages().infoUser(
@@ -213,6 +221,9 @@ public class GraphStreamAPSP extends AbstractGraphStreamMeasure {
 							 APSPInfo info = n1.getAttribute(APSPInfo.ATTRIBUTE_NAME);
 							 //double length = info.getLengthTo(n2.getId());
 							 Path path = info.getShortestPathTo(n2.getId());
+							 if (path == null)
+								 continue; // ignore this one, there is not path
+							 
 							 int length = path.size();
 							 BigDecimal lengthBD = new BigDecimal(length);
 							 sum = sum.add(lengthBD);
@@ -233,15 +244,15 @@ public class GraphStreamAPSP extends AbstractGraphStreamMeasure {
 				progress.setCurrentTaskName("output");
 				
 				// post-processing
-				BigDecimal averagePathLength = sum.divide(count, RoundingMode.HALF_UP); 
+				MathContext mathContext = new MathContext(5, RoundingMode.HALF_UP);
+				BigDecimal averagePathLength = sum.divide(count, mathContext); 
 				double averagePathLengthDouble = averagePathLength.doubleValue();
 				
 				// use results
 				results.put(OUTPUT_AVERAGE_PATH_LENGTH, averagePathLengthDouble);
 				results.put(OUTPUT_DIAMETER, longest.doubleValue());
-				System.err.println("average path length: "+averagePathLengthDouble);
-				System.err.println("diameter: "+longest.doubleValue());
-				System.err.println("count: "+count.toPlainString());
+				System.err.println("graphstream/ average path length: "+averagePathLengthDouble);
+				System.err.println("graphstream/ diameter: "+longest.doubleValue());
 				
 				// TODO distribution of path length ???
 				

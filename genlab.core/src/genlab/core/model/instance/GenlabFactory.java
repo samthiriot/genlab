@@ -11,6 +11,8 @@ public class GenlabFactory {
 		
 		IGenlabWorkflowInstance workflow = new GenlabWorkflowInstance(project, name, desc, relativePath);
 		
+		project.addWorkflow(workflow);
+		
 		WorkflowHooks.getWorkflowHooks().notifyWorkflowCreation(workflow);
 		
 		GenlabPersistence.getPersistence().saveWorkflow(workflow);

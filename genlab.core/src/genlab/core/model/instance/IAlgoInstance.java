@@ -26,6 +26,8 @@ public interface IAlgoInstance extends IGenlabResource {
 	 */
 	public IGenlabWorkflowInstance getWorkflow();
 	
+	public void _setWorkflowInstance(IGenlabWorkflowInstance  workflow);
+	
 	public Collection<IInputOutputInstance> getInputInstances();
 
 	public Collection<IInputOutputInstance> getOutputInstances();

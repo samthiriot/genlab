@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -68,7 +69,10 @@ public class GenlabProject implements IGenlabProject {
 	}
 	
 	public Collection<String> getWorkflowPathes() {
-		return Collections.unmodifiableCollection(workflowPathes);
+		if (workflowPathes.isEmpty())
+			// quick return
+			return Collections.EMPTY_LIST;
+		return new LinkedList<String>(workflowPathes);
 	}
 
 	public void _setBaseDirectory(String baseDirectory) {
@@ -78,6 +82,11 @@ public class GenlabProject implements IGenlabProject {
 	private Object readResolve() {
 		workflows = new ArrayList<IGenlabWorkflowInstance>();
 		return this;
+	}
+
+	@Override
+	public Map<String, Object> getAttachedObjects() {
+		return Collections.unmodifiableMap(key2object);
 	}
 
 }

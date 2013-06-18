@@ -4,6 +4,7 @@ import genlab.core.model.instance.IGenlabWorkflowInstance;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Map;
 
 public interface IGenlabProject {
 	
@@ -12,6 +13,8 @@ public interface IGenlabProject {
 	public File getFolder();
 	
 	public Object getAttachedObject(String key);
+
+	public Map<String,Object> getAttachedObjects();
 
 	public void setAttachedObject(String key, Object o);
 	

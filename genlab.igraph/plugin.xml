@@ -7,6 +7,10 @@
             class="genlab.igraph.algos.measure.IGraphAveragePathLengthAlgo"
             id="genlab.igraph.algos.measure.AveragePathLengthAlgo">
       </algo>
+      <algo
+            class="genlab.igraph.algos.measure.IGraphComponentsAlgo"
+            id="genlab.igraph.algos.measure.IGraphComponentsAlgo">
+      </algo>
    </extension>
 
 </plugin>

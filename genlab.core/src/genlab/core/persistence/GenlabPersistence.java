@@ -2,13 +2,17 @@ package genlab.core.persistence;
 
 import genlab.core.commons.FileUtils;
 import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.Connection;
 import genlab.core.model.instance.GenlabWorkflowInstance;
+import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.instance.WorkflowHooks;
-import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.projects.GenlabProject;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.core.usermachineinteraction.ListOfMessages;
+import genlab.core.usermachineinteraction.ListsOfMessages;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,9 +25,20 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 public class GenlabPersistence {
 
-	public static final String FILENAME_PROJECT = "project.genlab";
+	public static final String EXTENSION_PROJECT = ".glp"; // GenLabProject
+	public static final String EXTENSION_WORKFLOW = ".glw"; // GenLabWorkflow
+	
+	public static final String FILENAME_PROJECT = "project"+EXTENSION_PROJECT;
+
+	public static final String XMLTAG_ID = "glid"; 
+
+	public static final String XMLTAG_PROJECT = "project"; 
+	public static final String XMLTAG_WORKFLOW = "workflow"; 
+	public static final String XMLTAG_ALGOINSTANCE = "algo"; 
+	public static final String XMLTAG_CONNECTIONINSTANCE = "connection"; 
 
 	private static GenlabPersistence singleton = new GenlabPersistence();
+
 	
 	public static GenlabPersistence getPersistence() {
 		return singleton;
@@ -32,6 +47,16 @@ public class GenlabPersistence {
 	private static Map<String, IGenlabWorkflowInstance> filename2workflow = new HashMap<String, IGenlabWorkflowInstance>();
 
 	private XStream xstream; 
+
+	/**
+	 * Stores the project currently saved or restored.
+	 */
+	private IGenlabProject currentProject = null;
+	
+	private String currentWorkflowRelativeName = null;
+
+	private GenlabWorkflowInstance currentWorkflowInstance = null;
+
 	
 	public IGenlabWorkflowInstance getWorkflowForFilename(String filename) {
 		return filename2workflow.get(filename);
@@ -44,22 +69,73 @@ public class GenlabPersistence {
 		try {
 			xstream = new XStream(new StaxDriver());
 	
-			xstream.alias("project", GenlabProject.class);
-			xstream.alias("workflow", GenlabWorkflowInstance.class);
-			xstream.alias("algoinstance", AlgoInstance.class);
+			xstream.alias(XMLTAG_PROJECT, GenlabProject.class);
+			
+			xstream.alias(XMLTAG_WORKFLOW, GenlabWorkflowInstance.class);
+			
+			xstream.registerConverter(new WorkflowConverter());
+			
+			xstream.registerConverter(new FlowTypeConverter());
+			
+			xstream.alias(XMLTAG_CONNECTIONINSTANCE, Connection.class);
+			xstream.registerConverter(new ConnectionConverter());
 
+			//xstream.alias("inputoutput", InputOutput.class);
+			//xstream.registerConverter(new InputOutputConverter());
+			
+			xstream.alias(XMLTAG_ALGOINSTANCE, AlgoInstance.class);
+			xstream.registerConverter(new AlgoInstanceConverter());
+			
 		} catch (Exception e) {
 			GLLogger.errorTech("error when initializing xstream persitence.", getClass(), e);
 		}
+		
 	}
+	
+	public ListOfMessages getMessages() {
+		return ListsOfMessages.getGenlabMessages();
+	}
+	
 	
 	public void saveProject(IGenlabProject project) {
 		this.saveProject(project, true);
 	}
 	
+	public IGenlabProject getCurrentProject() {
+		return currentProject;
+	}
+	
+	public String getCurrentWorkflowFilename() {
+		return currentWorkflowRelativeName;
+	}
+	
+	public GenlabWorkflowInstance getCurrentWorkflowInstance() {
+		return currentWorkflowInstance;
+	}
+	
+	public void setCurrentWorkflowInstance(GenlabWorkflowInstance  w) {
+		this.currentWorkflowInstance = w; 
+	}
+	
+	private Map<String,IInputOutputInstance> id2instance = new HashMap<String, IInputOutputInstance>();
+	
+	public void clearCurrentAlgoInstances() {
+		id2instance.clear();
+	}
+	
+	public void addCurrentIOInstance(IInputOutputInstance io) {
+		id2instance.put(io.getId(), io);
+	}
+	public IInputOutputInstance getCurrentIOInstance(String id) {
+		return id2instance.get(id);
+	}
+
+	
 	public void saveProject(IGenlabProject project, boolean saveWorkflows) {
 		
 		GLLogger.debugTech("preparing to save project "+project+"...", getClass());
+		
+		this.currentProject = project;
 		
 		// call hooks for each workflow
 		
@@ -82,6 +158,8 @@ public class GenlabPersistence {
 
 		}
 		
+		this.currentProject = null;
+		
 		// hooks
 		WorkflowHooks.getWorkflowHooks().notifyProjectSaved(project);
 		
@@ -101,10 +179,13 @@ public class GenlabPersistence {
 	
 	public IGenlabProject readProject(String baseDirectory) {
 		
+		
 		File f = new File(baseDirectory+File.separator+FILENAME_PROJECT);
 		GLLogger.debugTech("attempting to read a genlab project from: "+f.getAbsolutePath(), getClass());
 		
 		GenlabProject project = (GenlabProject)xstream.fromXML(f);
+		
+		this.currentProject = project;
 		
 		// readen, now complete the fields for transient files
 		
@@ -113,8 +194,13 @@ public class GenlabPersistence {
 		
 		// ... the sub workflows
 		for (String relativeWorkflowFilename : project.getWorkflowPathes()) {
+			this.currentWorkflowRelativeName = relativeWorkflowFilename;
 			readWorkflow(project, relativeWorkflowFilename);		
 		}
+		this.currentWorkflowRelativeName = null;
+		
+		this.currentProject = null;
+		
 		
 		return project;
 	}
@@ -192,6 +278,15 @@ public class GenlabPersistence {
 		} catch (com.thoughtworks.xstream.io.StreamException e) {
 			GLLogger.warnTech("was unable to load a persisted element from xml: "+absoluteFilename, getClass(), e);
 			return null;
+		}
+	}
+
+	public void addCurrentAlgoInstance(IAlgoInstance algoInstance) {
+		for (IInputOutputInstance input: algoInstance.getInputInstances()) {
+			addCurrentIOInstance(input);
+		}
+		for (IInputOutputInstance output: algoInstance.getOutputInstances()) {
+			addCurrentIOInstance(output);
 		}
 	}
 	

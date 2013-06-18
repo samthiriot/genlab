@@ -1,8 +1,6 @@
-import static org.junit.Assert.assertTrue;
-
-import java.awt.font.ImageGraphicAttribute;
-
+import static org.junit.Assert.*;
 import genlab.core.exec.Execution;
+import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.GenlabFactory;
 import genlab.core.model.instance.IAlgoInstance;
@@ -11,6 +9,7 @@ import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.WorkflowCheckResult;
 import genlab.core.model.meta.basics.algos.ConstantValueDouble;
 import genlab.core.model.meta.basics.algos.ConstantValueInteger;
+import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
 import genlab.gephi.algos.measure.GephiAveragePathLengthAlgo;
 import genlab.graphstream.algos.generators.WattsStrogatzAlgo;
@@ -19,6 +18,7 @@ import genlab.graphstream.algos.measure.GraphStreamConnectedComponents;
 import genlab.graphstream.algos.writers.GraphStreamDGSWriter;
 import genlab.graphstream.algos.writers.GraphStreamGMLWriter;
 import genlab.igraph.algos.measure.IGraphAveragePathLengthAlgo;
+import genlab.neo4j.algos.writers.Neo4jGraphWriter;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -48,13 +48,13 @@ public class TestReadWriteChain {
 	@Test
 	public void test() {
 		
-		IGenlabProject project = GenlabFactory.createProject("/tmp/toto");
+		IGenlabProject project = GenlabFactory.createProject("/tmp/project");
 
 		IGenlabWorkflowInstance workflow =  GenlabFactory.createWorkflow(
 				project,
 				"test", 
 				"for unit testing", 
-				"workflows"
+				"workflow"
 				);
 		
 		// algos available (meta model)
@@ -67,7 +67,7 @@ public class TestReadWriteChain {
 		GraphStreamAPSP apsp = new GraphStreamAPSP();
 		GephiAveragePathLengthAlgo gephiLength = new GephiAveragePathLengthAlgo();
 		IGraphAveragePathLengthAlgo igraphLength = new IGraphAveragePathLengthAlgo();
-		
+		Neo4jGraphWriter neo4j = new Neo4jGraphWriter();
 		// add a generator
 		IAlgoInstance wsAlgoInstance = wsAlgo.createInstance(workflow); 
 		
@@ -77,7 +77,7 @@ public class TestReadWriteChain {
 		
 		// add a detector
 		IAlgoInstance analysisComponent = detectConnectedComponents.createInstance(workflow);
-		IAlgoInstance apspComponent = apsp.createInstance(workflow);
+
 		
 		
 		
@@ -124,16 +124,22 @@ public class TestReadWriteChain {
 				analysisComponent.getOutputInstanceForOutput(detectConnectedComponents.OUTPUT_GRAPH),
 				writerInstance2.getInputInstanceForInput(writerGML.PARAM_GRAPH)
 				);
-
+	
+		
+		workflow.connect(
+				analysisComponent.getOutputInstanceForOutput(detectConnectedComponents.OUTPUT_GRAPH), 
+				neo4j.createInstance(workflow).getInputInstanceForInput(neo4j.PARAM_GRAPH)
+				);
+		
+		// length
+		workflow.connect(
+				wsAlgoInstance.getOutputInstanceForOutput(wsAlgo.OUTPUT_GRAPH),
+				apsp.createInstance(workflow).getInputInstanceForInput(apsp.INPUT_GRAPH)
+				);
+		
 		workflow.connect(
 				wsAlgoInstance.getOutputInstanceForOutput(wsAlgo.OUTPUT_GRAPH),
 				igraphLength.createInstance(workflow).getInputInstanceForInput(igraphLength.INPUT_GRAPH)
-				);
-		
-		
-		workflow.connect(
-				wsAlgoInstance.getOutputInstanceForOutput(wsAlgo.OUTPUT_GRAPH),
-				apspComponent.getInputInstanceForInput(apsp.INPUT_GRAPH)
 				);
 		
 		workflow.connect(
@@ -145,15 +151,23 @@ public class TestReadWriteChain {
 		WorkflowCheckResult checkInfo = workflow.checkForRun();
 		assertTrue("the workflow is not ready to run", checkInfo.isReady());
 		
+		// save it !
+		GenlabPersistence.getPersistence().saveProject(project);
+		
+		if (2==1*2)
+			return;
+			
 		// init execution context
 		Execution execCtxt = new Execution();
 		execCtxt.setExecutionForced(true);
+		
 		
 		// and now shift to execution
 		IAlgoExecution exec =  workflow.execute(execCtxt);
 		
 		exec.run();
 		
+		assertEquals(ComputationState.FINISHED_OK, exec.getProgress().getComputationState());
 		
 	}
 

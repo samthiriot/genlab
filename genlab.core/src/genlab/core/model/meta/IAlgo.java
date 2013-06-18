@@ -40,6 +40,7 @@ public interface IAlgo extends IGenlabResource {
 	 * @return
 	 */
 	public IAlgoInstance createInstance(IGenlabWorkflowInstance workflow);
+	public IAlgoInstance createInstance(String id, IGenlabWorkflowInstance workflow);
 
 
 	/**
