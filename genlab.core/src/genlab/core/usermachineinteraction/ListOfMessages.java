@@ -100,7 +100,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 		
 		synchronized (hashedMessages) {
 
-		ITextMessage messageJustBefore = sortedMessages.lower(e);
+			ITextMessage messageJustBefore = sortedMessages.lower(e);
 				
 			if (
 					messageJustBefore != null 
@@ -151,6 +151,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 */
 	public boolean addAll(Iterable<ITextMessage> others) {
 
+		// add messages
 		synchronized (hashedMessages) {
 
 			Iterator<ITextMessage> itOther = others.iterator();
@@ -159,9 +160,10 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 				this._add(itOther.next());
 			}
 			
-			
 
 		}
+		
+		// raise messages
 		synchronized (listeners) {
 			for (IListOfMessagesListener l : getListeners()) {
 				l.contentChanged(this);
@@ -192,7 +194,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 		
 		synchronized (hashedMessages) {
 
-		return sortedMessages.toArray(new ITextMessage[sortedMessages.size()]);
+		return hashedMessages.toArray(new ITextMessage[hashedMessages.size()]);
 		
 		}
 	}
@@ -222,7 +224,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	public int getSize() {
 		synchronized (hashedMessages) {
 
-			return sortedMessages.size();
+			return hashedMessages.size();
 		}
 	}
 	

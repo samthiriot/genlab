@@ -1,5 +1,7 @@
 package genlab.core.usermachineinteraction;
 
+import genlab.core.commons.UniqueTimestamp;
+
 import java.util.Date;
 
 /**
@@ -17,7 +19,7 @@ public interface ITextMessage extends Comparable<ITextMessage> {
 	
 	public String getMessage();
 	
-	public Long getTimestamp();
+	public UniqueTimestamp getTimestamp();
 	
 	public Date getDate();
 	

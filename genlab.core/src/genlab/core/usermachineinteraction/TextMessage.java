@@ -1,5 +1,7 @@
 package genlab.core.usermachineinteraction;
 
+import genlab.core.commons.UniqueTimestamp;
+
 import java.util.Date;
 
 public class TextMessage implements ITextMessage {
@@ -7,18 +9,17 @@ public class TextMessage implements ITextMessage {
 	public final MessageLevel level;
 	public final MessageAudience audience;
 	public final String message;
-	public final Long timestamp;
+	public final UniqueTimestamp timestamp;
 	protected int count = 1;
 	public final Throwable exception;
 	public final String fromShort;
 	public final Class emitter;
 	
-	
 	public TextMessage(MessageLevel level, MessageAudience audience, String fromShort, Class emitter, String message, Throwable exception) {
 		this.level = level;
 		this.audience = audience;
 		this.message = message;
-		this.timestamp = System.currentTimeMillis();
+		this.timestamp = new UniqueTimestamp();
 		this.exception = exception;
 		this.fromShort = fromShort;
 		this.emitter = emitter;
@@ -28,7 +29,7 @@ public class TextMessage implements ITextMessage {
 		this.level = level;
 		this.audience = audience;
 		this.message = message;
-		this.timestamp = System.currentTimeMillis();
+		this.timestamp = new UniqueTimestamp();
 		this.exception = null;
 		this.fromShort = fromShort;
 		this.emitter = emitter;
@@ -38,7 +39,7 @@ public class TextMessage implements ITextMessage {
 		this.level = level;
 		this.audience = audience;
 		this.message = message;
-		this.timestamp = System.currentTimeMillis();
+		this.timestamp = new UniqueTimestamp();
 		this.exception = exception;
 		this.fromShort = emitter.getSimpleName();
 		this.emitter = emitter;
@@ -48,7 +49,7 @@ public class TextMessage implements ITextMessage {
 		this.level = level;
 		this.audience = audience;
 		this.message = message;
-		this.timestamp = System.currentTimeMillis();
+		this.timestamp = new UniqueTimestamp();
 		this.exception = null;
 		this.fromShort = emitter.getSimpleName();
 		this.emitter = emitter;
@@ -70,7 +71,7 @@ public class TextMessage implements ITextMessage {
 	}
 
 	@Override
-	public final Long getTimestamp() {
+	public final UniqueTimestamp getTimestamp() {
 		return timestamp;
 	}
 
@@ -91,7 +92,7 @@ public class TextMessage implements ITextMessage {
 
 	@Override
 	public final Date getDate() {
-		return new Date(timestamp);
+		return new Date(timestamp.timestamp);
 	}
 	
 	@Override
