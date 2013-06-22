@@ -30,6 +30,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 
 /**
+ * DIsplays the messages as a table.
+ * 
  * TODO add exportation to a text file ?!
  * 
  * @author Samuel Thiriot
@@ -39,12 +41,16 @@ public class MessagesView extends ViewPart  {
 
 	public static final String ID = "genlab.gui.views.MessagesView";
 
-	
+	/**
+	 * Datetime format used to display the "when" column
+	 */
 	public static final DateFormat DATE_FORMAT = DateFormat.getTimeInstance(DateFormat.MEDIUM, Locale.getDefault()); 
 
 
 	private MyViewerComparator comparator = null;
 	private TableViewer viewer = null;
+	
+	private boolean refreshPending = false;
 	
 	public MessagesView() {
 	}
@@ -63,13 +69,14 @@ public class MessagesView extends ViewPart  {
 		}
 
 		@Override
-		public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-			// TODO Auto-generated method stub
+		public void inputChanged(Viewer pviewer, Object oldInput, Object newInput) {
 			// nothing to do (read only !)
 		}
 
 		@Override
 		public Object[] getElements(Object inputElement) {
+			//System.err.println("get elements called; "+list.getSize()+" vs. "+viewer.getTable().getItemCount());
+
 			return list.asArray();
 		}
 
@@ -154,6 +161,7 @@ public class MessagesView extends ViewPart  {
 		    	rc = p1.getMessage().compareTo(p2.getMessage());
 		      break;
 		    default:
+		    	System.err.println("default ! :-(");
 		      rc = 0;
 		    }
 		    // If descending order, flip the direction
@@ -384,12 +392,19 @@ public class MessagesView extends ViewPart  {
 					return;
 				}
 				
+				if (refreshPending)
+					return;
+				
+				refreshPending = true;
+				
 				final IListOfMessagesListener myThis = this;
 				
 				parent.getDisplay().asyncExec(new Runnable() {
 					
 					@Override
 					public void run() {
+						
+						refreshPending = false;
 						
 						if (parent.isDisposed()) {
 							ListsOfMessages.getGenlabMessages().removeListener(myThis);
@@ -405,6 +420,7 @@ public class MessagesView extends ViewPart  {
 								// TODO manage disposed exception
 							e.printStackTrace();
 						}
+						
 					}
 				});
 				

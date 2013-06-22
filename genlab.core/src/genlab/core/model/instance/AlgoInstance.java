@@ -1,5 +1,6 @@
 package genlab.core.model.instance;
 
+import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.meta.IAlgo;
@@ -32,6 +33,7 @@ public class AlgoInstance implements IAlgoInstance {
 		
 		if (workflow != null) {
 			_setWorkflowInstance(workflow);
+			workflow.addAlgoInstance(this);
 		} 
 		// init in and outs
 		for (IInputOutput<?> input : algo.getInputs()) {
@@ -144,6 +146,8 @@ public class AlgoInstance implements IAlgoInstance {
 	}
 
 	public void setValueForParameter(String name, Object value) {
+		if (!algo.hasParameter(name))
+			throw new WrongParametersException("wrong parameter "+name);
 		parameters.put(name, value);
 	}
 

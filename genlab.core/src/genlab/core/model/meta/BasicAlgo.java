@@ -3,9 +3,14 @@ package genlab.core.model.meta;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.parameters.Parameter;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 public abstract class BasicAlgo implements IAlgo {
@@ -16,7 +21,8 @@ public abstract class BasicAlgo implements IAlgo {
 	protected final String categoryId;
 	protected final Set<IInputOutput> outputs = new HashSet<IInputOutput>();
 	protected final Set<IInputOutput> inputs = new HashSet<IInputOutput>();
-			
+	protected final Map<String,Parameter<?>> parameters = new HashMap<String,Parameter<?>>();
+	
 	public BasicAlgo(
 			String name,
 			String description,
@@ -73,4 +79,26 @@ public abstract class BasicAlgo implements IAlgo {
 	public String toString() {
 		return name;
 	}
+	
+	@Override
+	public Collection<Parameter<?>> getParameters() {
+		return parameters.values();
+	}
+	
+
+	@Override
+	public Parameter<?> getParameter(String id) {
+		return parameters.get(id);
+	}
+
+	@Override
+	public boolean hasParameter(String id) {
+		return parameters.containsKey(id);
+	}
+	
+	protected void registerParameter(Parameter<?> p) {
+		this.parameters.put(p.getId(), p);
+	}
+
+
 }

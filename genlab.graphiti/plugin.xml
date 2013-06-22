@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+   <extension
+         point="org.eclipse.graphiti.ui.imageProviders">
+      <imageProvider
+            class="genlab.gui.graphiti.GraphitiImageProvider"
+            id="genlab.gui.graphiti.GraphitiImageProvider">
+      </imageProvider>
+   </extension>
 
    <extension
          point="org.eclipse.graphiti.ui.diagramTypes">
@@ -19,6 +26,9 @@
          <diagramType
                id="genlab.graphiti.diagtypes.workflow">
          </diagramType>
+         <imageProvider
+               id="genlab.gui.graphiti.GraphitiImageProvider">
+         </imageProvider>
       </diagramTypeProvider>
    </extension>
    <extension

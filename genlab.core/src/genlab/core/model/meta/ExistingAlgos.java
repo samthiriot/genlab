@@ -40,7 +40,7 @@ public final class ExistingAlgos {
 	
 	
 	public void declareAlgo(IAlgo algo) {
-		GLLogger.debugTech("detected available algorithm: "+algo.getName(), getClass());
+		GLLogger.debugTech("detected available algorithm: "+algo.getName()+" "+algo.getDescription(), getClass());
 		name2algos.put(algo.getName(), algo);
 		classname2algos.put(algo.getClass().getCanonicalName(), algo);
 	}
@@ -57,8 +57,7 @@ public final class ExistingAlgos {
 	    
 	    IConfigurationElement[] elements = reg.getConfigurationElementsFor(EXTENSION_POINT_ALGOS_ID);
 	    for (IConfigurationElement e : elements) {
-	    	GLLogger.debugTech("Evaluating extension: "+e.getName(), getClass());
-		    Object o;
+	    	Object o;
 			try {
 				o = e.createExecutableExtension("class");
 				if (o instanceof IAlgo) {

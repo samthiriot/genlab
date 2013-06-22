@@ -33,6 +33,8 @@ import java.util.Set;
  */
 public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 
+	public static GenlabWorkflowInstance currentTODO = null;
+	
 	protected Set<IAlgoInstance> algoInstances = new HashSet<IAlgoInstance>();
 	protected Set<Connection> connections = new HashSet<Connection>();
 	
@@ -54,9 +56,13 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		this.project = project;
 		this.name = name;
 		this.description = description;
-		this.relativeFilename = relativeFilename+GenlabPersistence.EXTENSION_WORKFLOW;
+		if (relativeFilename.endsWith(GenlabPersistence.EXTENSION_WORKFLOW))
+			this.relativeFilename = relativeFilename;
+		else
+			this.relativeFilename = relativeFilename+GenlabPersistence.EXTENSION_WORKFLOW;
 		project.addWorkflow(this);
 		id2instance.put(id, this);
+		currentTODO = this;
 	}
 	
 	public GenlabWorkflowInstance(String id, IGenlabProject project, String name, String description, String relativeFilename) {
@@ -64,7 +70,10 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		this.project = project;
 		this.name = name;
 		this.description = description;
-		this.relativeFilename = relativeFilename+GenlabPersistence.EXTENSION_WORKFLOW;
+		if (relativeFilename.endsWith(GenlabPersistence.EXTENSION_WORKFLOW))
+			this.relativeFilename = relativeFilename;
+		else
+			this.relativeFilename = relativeFilename+GenlabPersistence.EXTENSION_WORKFLOW;
 		project.addWorkflow(this);
 		id2instance.put(id, this);
 	}

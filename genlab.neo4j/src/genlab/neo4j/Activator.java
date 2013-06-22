@@ -1,5 +1,7 @@
 package genlab.neo4j;
 
+import genlab.core.usermachineinteraction.GLLogger;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -17,6 +19,8 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
+		GLLogger.infoTech("initializing the neo4j plugin for genlab...", getClass());
+
 	}
 
 	/*

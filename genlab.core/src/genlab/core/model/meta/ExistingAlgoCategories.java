@@ -78,6 +78,12 @@ public class ExistingAlgoCategories {
 			"graphs"
 			);
 	
+	public static final AlgoCategory CONSTANTS = new AlgoCategory(
+			null, 
+			"constants", 
+			"constant values", 
+			"constants"
+			);
 
 	private ExistingAlgoCategories() {
 		declareCategory(PARSER);
@@ -88,6 +94,8 @@ public class ExistingAlgoCategories {
 		declareCategory(WRITER_GRAPH);
 		declareCategory(ANALYSIS);
 		declareCategory(ANALYSIS_GRAPH);
+		declareCategory(CONSTANTS);
+
 	}
 
 	public AlgoCategory getCategoryForId(String id) {

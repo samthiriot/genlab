@@ -4,19 +4,21 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.GenlabWorkflowInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.meta.IGenlabWorkflow;
+import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.impl.AbstractAddFeature;
+import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
+import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -34,6 +36,10 @@ import org.eclipse.graphiti.util.IColorConstant;
  */
 public class AddIAlgoInstanceConnectionFeature extends AbstractAddFeature {
 
+	public static final int ANCHOR_WIDTH = 10;
+	public static final int ROUNDED = 20;
+	
+	
 	public AddIAlgoInstanceConnectionFeature(IFeatureProvider fp) {
 		super(fp);
 		
@@ -99,7 +105,8 @@ public class AddIAlgoInstanceConnectionFeature extends AbstractAddFeature {
 		
 		// create and set graphics algo
 		{
-			roundedRectangle = gaService.createRoundedRectangle(containerShape, 10, 10);
+			roundedRectangle = gaService.createRoundedRectangle(containerShape, ROUNDED, ROUNDED);
+			System.err.println("created rectangle: "+roundedRectangle);
 			roundedRectangle.setForeground(manageColor(IColorConstant.DARK_GRAY));
 			roundedRectangle.setBackground(manageColor(IColorConstant.WHITE));
 			roundedRectangle.setLineWidth(2);
@@ -108,6 +115,8 @@ public class AddIAlgoInstanceConnectionFeature extends AbstractAddFeature {
 					context.getX(), context.getY(), 
 					width, height
 					);
+			containerShape.setGraphicsAlgorithm(roundedRectangle);
+
 			// create link between the domain object and the graphical graphiti representation
 			link(containerShape, addedAlgo);
 		}
@@ -134,8 +143,53 @@ public class AddIAlgoInstanceConnectionFeature extends AbstractAddFeature {
 			link(shape, addedAlgo);
 		}
 		
+		// add connection points
+		// .. for inputs
+		int y = 20;
+		for (IInputOutputInstance input: addedAlgo.getInputInstances()) {
+			FixPointAnchor anchor = peCreateService.createFixPointAnchor(containerShape);
+			anchor.setActive(true);
+			anchor.setLocation(gaService.createPoint(-ANCHOR_WIDTH/2, y));
+			Ellipse ellipse = gaService.createEllipse(anchor);
+			ellipse.setForeground(manageColor(IColorConstant.DARK_GRAY));
+			ellipse.setBackground(manageColor(IColorConstant.WHITE));
+			ellipse.setLineWidth(2);
+			ellipse.setWidth(ANCHOR_WIDTH);
+			anchor.setReferencedGraphicsAlgorithm(roundedRectangle);
+			//anchor.setGraphicsAlgorithm(ellipse);
+			//anchor.setParent(containerShape);
+			link(anchor, input);
+			
+			gaService.setLocationAndSize(ellipse, 0, y, ANCHOR_WIDTH, ANCHOR_WIDTH);
+
+			y += 10;
+		}
+		// .. for outputs
+		y = 20;
+		for (IInputOutputInstance output: addedAlgo.getOutputInstances()) {
+			FixPointAnchor anchor = peCreateService.createFixPointAnchor(containerShape);
+			anchor.setActive(true);
+			anchor.setLocation(gaService.createPoint(width-ANCHOR_WIDTH/2, y));
+			Ellipse ellipse = gaService.createEllipse(anchor);
+			ellipse.setForeground(manageColor(IColorConstant.DARK_GRAY));
+			ellipse.setBackground(manageColor(IColorConstant.WHITE));
+			ellipse.setLineWidth(2);
+			ellipse.setWidth(ANCHOR_WIDTH);
+			anchor.setReferencedGraphicsAlgorithm(roundedRectangle);
+			//anchor.setGraphicsAlgorithm(ellipse);
+//			anchor.setParent(containerShape);
+			link(anchor, output);
+
+
+			gaService.setLocationAndSize(ellipse, width-ANCHOR_WIDTH, y, ANCHOR_WIDTH, ANCHOR_WIDTH);
+
+			y += 10;
+		}
+		
 		link(containerShape, addedAlgo);
 		
+	    layoutPictogramElement(containerShape);
+	      
 		return containerShape;
 	}
 	

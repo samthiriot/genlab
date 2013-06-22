@@ -81,6 +81,7 @@ public class Genlab2GraphitiUtils {
 					);
 			WorkflowGUIEventsDispatcher.workflowEvents.workflowShown(workflow);
 		} catch (PartInitException e) {
+			e.printStackTrace();
 			IStatus status = new Status(IStatus.ERROR, "org.eclipse.graphiti.examples.tutorial", e.getMessage(), e); //$NON-NLS-1$
 			ErrorDialog.openError(Display.getCurrent().getActiveShell(), "oops", e.getMessage(), status);
 		}

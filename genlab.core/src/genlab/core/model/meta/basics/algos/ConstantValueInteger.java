@@ -2,6 +2,7 @@ package genlab.core.model.meta.basics.algos;
 
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
+import genlab.core.parameters.IntParameter;
 
 public class ConstantValueInteger extends ConstantValue<Integer> {
 
@@ -13,7 +14,10 @@ public class ConstantValueInteger extends ConstantValue<Integer> {
 			);
 
 	public ConstantValueInteger() {
-		super(new IntegerFlowType(), OUTPUT);
+		super(new IntegerFlowType(), OUTPUT, "constant integer", "a constant integer value");
+		
+		registerParameter(new IntParameter(paramId, "value", "the value of this constant", 0));
+
 	}
 
 

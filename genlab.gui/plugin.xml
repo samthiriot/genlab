@@ -67,6 +67,15 @@
             name="Workflow explorer"
             restorable="true">
       </view>
+      <view
+            allowMultiple="true"
+            category="genlab.gui.views.categorygenlab"
+            class="genlab.gui.views.ParametersView"
+            icon="icons/gears.gif"
+            id="genlab.gui.views.ParametersView"
+            name="parameters"
+            restorable="false">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.commands">

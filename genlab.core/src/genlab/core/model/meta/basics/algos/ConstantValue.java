@@ -4,15 +4,10 @@ import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.BasicAlgo;
+import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.IFlowType;
 import genlab.core.model.meta.IInputOutput;
-import genlab.core.model.meta.InputOutput;
-
-import java.util.Map;
 
 /**
  * A constant value is a very simple algorithm that has a value as a parameter, no input values,
@@ -26,16 +21,19 @@ public class ConstantValue<JavaType> extends BasicAlgo {
 
 	private IInputOutput<JavaType> output;
 	
-	public ConstantValue(IFlowType<JavaType> type, IInputOutput<JavaType> output) {
+	public final String paramId ;
+			
+	public ConstantValue(IFlowType<JavaType> type, IInputOutput<JavaType> output, String name, String desc) {
 		super(
-				"constant", 
-				"a constant", 
-				"constants"
+				name, 
+				desc, 
+				ExistingAlgoCategories.CONSTANTS.getId()
 				);
 		
 		outputs.add(output);
 		this.output = output;
 		
+		paramId = getId()+".params.value";
 	}
 
 	@Override
@@ -48,15 +46,21 @@ public class ConstantValue<JavaType> extends BasicAlgo {
 		if (!inputs.isEmpty())
 			throw new ProgramException("a constant should not have inputs");
 		
+		Object value = (JavaType)algoInstance.getValueForParameter(paramId);
+		
+		if (value == null)
+			value = getParameter(paramId).getDefaultValue();
+		
 		return new ConstantValueExecution<JavaType>(
 				exec,
 				algoInstance,
-				(JavaType)algoInstance.getValueForParameter("value")
+				(JavaType)algoInstance.getValueForParameter(paramId)
 				);
 	}
 	
 	public IInputOutput<JavaType> getOutput() {
 		return output;
 	}
+
 
 }

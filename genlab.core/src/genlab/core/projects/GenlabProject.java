@@ -24,9 +24,28 @@ public class GenlabProject implements IGenlabProject {
 	
 	private transient Collection<IGenlabWorkflowInstance> workflows = new ArrayList<IGenlabWorkflowInstance>();
 	private Collection<String> workflowPathes = new ArrayList<String>();
+	private transient Map<String,IGenlabWorkflowInstance> id2workflow = new HashMap<String,IGenlabWorkflowInstance>();
 
+
+	protected static transient Map<String,GenlabProject> openedProjects = new HashMap<String, GenlabProject>();
+	
+	public static void registerOpenedProject(GenlabProject project) {
+		synchronized (openedProjects) {
+			openedProjects.put(project.getId(), project);
+		}
+	}
+	
+	public static GenlabProject getProject(String id) {
+		synchronized (openedProjects) {
+			return openedProjects.get(id);
+		}
+	}
+	
+	
 	public GenlabProject(String baseDirectory) {
 		this.baseDirectory = baseDirectory;
+		
+		registerOpenedProject(this);
 	}
 
 	@Override
@@ -60,7 +79,12 @@ public class GenlabProject implements IGenlabProject {
 		if (!workflows.contains(workflow)) {
 			workflows.add(workflow);
 			workflowPathes.add(workflow.getRelativeFilename());
+			id2workflow.put(workflow.getId(), workflow);
 		}
+	}
+	
+	public IGenlabWorkflowInstance getWorkflowForId(String id) {
+		return id2workflow.get(id);
 	}
 
 	@Override
@@ -87,6 +111,11 @@ public class GenlabProject implements IGenlabProject {
 	@Override
 	public Map<String, Object> getAttachedObjects() {
 		return Collections.unmodifiableMap(key2object);
+	}
+
+	@Override
+	public String getId() {
+		return baseDirectory;
 	}
 
 }

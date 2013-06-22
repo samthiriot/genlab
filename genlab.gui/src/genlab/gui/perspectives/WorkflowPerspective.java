@@ -25,13 +25,13 @@ public class WorkflowPerspective implements IPerspectiveFactory {
 		
 		// add a messages (console) view in the very bottom
 
+		
 		// add a folder at right...
 		IFolderLayout folderBottom = layout.createFolder("bottom folder", IPageLayout.BOTTOM, 0.8f, editorArea);
 		folderBottom.addView(MessagesView.ID);
 		
 		// add a folder at left...
 		IFolderLayout folderLeft = layout.createFolder("left folder", IPageLayout.LEFT, 0.15f, editorArea);
-		folderLeft.addPlaceholder(MessagesView.ID + ":*");
 		// add a navigator
 		folderLeft.addView("genlab.gui.views.projectexplorer");
 		folderLeft.addView(WorkflowView.ID);
@@ -40,7 +40,10 @@ public class WorkflowPerspective implements IPerspectiveFactory {
 		IFolderLayout folderRight = layout.createFolder("right folder", IPageLayout.RIGHT, 0.85f, editorArea);
 		folderRight.addView("genlab.gui.views.workflowexplorer");
 		folderRight.addView(ExistingView.ID);
-		
+
+		folderRight.addPlaceholder("genlab.gui.views.ParametersView:*");
+
+		//	dzdz
 		
 		//layout.getViewLayout("genlab.gui.views.projectexplorer").
 		
@@ -48,3 +51,4 @@ public class WorkflowPerspective implements IPerspectiveFactory {
 	
 
 }
+	

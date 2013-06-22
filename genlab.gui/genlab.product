@@ -3,6 +3,7 @@
 
 <product name="Genlab" uid="genlab.product" id="genlab.gui.product" application="genlab.gui.application" version="0.0.1" useFeatures="false" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
@@ -19,6 +20,7 @@
       </win>
    </launcher>
 
+
    <vm>
    </vm>
 
@@ -29,6 +31,7 @@
       <plugin id="genlab.graphiti"/>
       <plugin id="genlab.graphstream"/>
       <plugin id="genlab.gui"/>
+      <plugin id="genlab.igraph"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
       <plugin id="javax.xml"/>

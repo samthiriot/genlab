@@ -1,5 +1,7 @@
 package genlab.gui.wizards;
 
+import genlab.core.persistence.GenlabPersistence;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
@@ -18,7 +20,7 @@ public class NewWorkflowWizardFilePage extends WizardNewFileCreationPage {
 	
 		super(pageName, selection);
 		
-		setFileExtension("glworkflow");
+		setFileExtension(GenlabPersistence.EXTENSION_WORKFLOW.substring(1));
 	}
 	
 	public String getRelativePath() {
@@ -28,7 +30,7 @@ public class NewWorkflowWizardFilePage extends WizardNewFileCreationPage {
 		if (getFileName().endsWith(getFileExtension())) {
 			path = path.append(getFileName());
 		} else {
-			path = path.append(getFileName()+"."+getFileExtension());
+			path = path.append(getFileName()+getFileExtension());
 		}
 		
 		return path.toOSString();

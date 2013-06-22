@@ -8,6 +8,8 @@ import java.util.Map;
 
 public interface IGenlabProject {
 	
+	public String getId();
+	
 	public String getBaseDirectory();
 	
 	public File getFolder();
@@ -19,7 +21,7 @@ public interface IGenlabProject {
 	public void setAttachedObject(String key, Object o);
 	
 	public Collection<IGenlabWorkflowInstance> getWorkflows();
-	
+	public IGenlabWorkflowInstance getWorkflowForId(String id);
 	public void addWorkflow(IGenlabWorkflowInstance workflow);
 	
 	public String getProjectSavingFilename();

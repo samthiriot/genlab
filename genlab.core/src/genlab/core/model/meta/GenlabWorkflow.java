@@ -7,7 +7,9 @@ import genlab.core.model.exec.WorkflowExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.parameters.Parameter;
 
+import java.util.Collection;
 import java.util.Set;
 
 public class GenlabWorkflow implements IGenlabWorkflow {
@@ -67,6 +69,24 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 			IGenlabWorkflowInstance workflow) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Collection<Parameter<?>> getParameters() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Parameter<?> getParameter(String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasParameter(String id) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

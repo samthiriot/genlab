@@ -1,18 +1,20 @@
 package genlab.gui.graphiti.features;
 
+import genlab.core.model.instance.IInputOutputInstance;
+import genlab.core.usermachineinteraction.GLLogger;
+
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateConnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Connection;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreateConnectionFeature
 		implements ICreateConnectionFeature {
 
 	public CreateDomainObjectConnectionConnectionFeature(IFeatureProvider fp) {
-		super(fp, "DomainObjectConnection", "Creates a new DomainObjectConnection between two DomainObjects");
+		super(fp, "connection", "create a connection");
 	}
 
 	@Override
@@ -20,34 +22,70 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 		// TODO: check for right domain object instance below
 		// return getBusinessObjectForPictogramElement(context.getSourcePictogramElement()) instanceof <DomainObject>;
 
-		return true;
+		GLLogger.traceTech("event can start connection with source "+context.getSourceAnchor(), getClass());
+		try {
+			IInputOutputInstance from = (IInputOutputInstance)getBusinessObjectForPictogramElement(context.getSourceAnchor());
+			
+			return true;
+			
+		} catch (NullPointerException e) {
+			return false;
+		} catch (ClassCastException e) {
+			return false;
+		}
+		
 	}
 
 	@Override
 	public boolean canCreate(ICreateConnectionContext context) {
 		
-		PictogramElement sourcePictogramElement = context.getSourcePictogramElement();
-		PictogramElement targetPictogramElement = context.getTargetPictogramElement();
-
-		// TODO: check for right domain object instance below
-		// if (getBusinessObjectForPictogramElement(sourcePictogramElement) instanceof <DomainObject> && getBusinessObjectForPictogramElement(targetPictogramElement) instanceof <DomainObject>) {
-		//  	return true;
-		// }
+		// quick exit
+		if (context.getTargetAnchor() == null ||context.getSourceAnchor() == null)
+			return false;
 		
-		return sourcePictogramElement != null && targetPictogramElement != null;
+		try {
+			GLLogger.traceTech(
+							"event can create connection with source and target "+
+							context.getSourceAnchor()+
+							" and "+
+							context.getTargetAnchor(), 
+							getClass()
+							);
+
+			
+			IInputOutputInstance from = (IInputOutputInstance)getBusinessObjectForPictogramElement(context.getSourceAnchor());
+			IInputOutputInstance to = (IInputOutputInstance)getBusinessObjectForPictogramElement(context.getTargetAnchor());
+			
+			return from.getMeta().getType().getId().equals(to.getMeta().getType().getId());
+			
+		} catch (NullPointerException e) {
+			return false;
+		} catch (ClassCastException e) {
+			return false;
+		}
 	}
 
 	@Override
 	public Connection create(ICreateConnectionContext context) {
-		Connection newConnection = null;
+		
+		GLLogger.traceTech("event create connection with source and target "+context.getSourceAnchor()+" and "+context.getTargetAnchor(), getClass());
+		
+		IInputOutputInstance from = (IInputOutputInstance)getBusinessObjectForPictogramElement(context.getSourceAnchor());
+		IInputOutputInstance to = (IInputOutputInstance)getBusinessObjectForPictogramElement(context.getTargetAnchor());
+		
+		genlab.core.model.instance.IConnection genlabConnection = from.getAlgoInstance().getWorkflow().connect(from, to);
 
-		// TODO: create the domain object connection here
-		Object newDomainObjectConnetion = null;
+		// the corresponding graphiti object will be craeted in reaction to the workflow event !
 
 		AddConnectionContext addContext = new AddConnectionContext(context.getSourceAnchor(), context.getTargetAnchor());
-		addContext.setNewObject(newDomainObjectConnetion);
-		newConnection = (Connection) getFeatureProvider().addIfPossible(addContext);
+		addContext.setNewObject(genlabConnection);
+		
+		Connection c = (Connection) getFeatureProvider().addIfPossible(addContext);
+		
 
-		return newConnection;
+		//link(c, genlabConnection);
+		
+		return c;
+
 	}
 }

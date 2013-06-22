@@ -11,13 +11,17 @@ Require-Bundle: org.eclipse.ui,
  org.junit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: ext/gs-algo-1.1.2.jar,
+Bundle-ClassPath: .,
  ext/gs-core-1.1.2.jar,
- ext/gs-ui-1.1.2.jar,
- .
+ ext/gs-algo-1.1.2.jar,
+ ext/gs-ui-1.1.2.jar
 Export-Package: genlab.graphstream,
  genlab.graphstream.algos.generators,
  genlab.graphstream.algos.measure,
  genlab.graphstream.algos.readers,
  genlab.graphstream.algos.writers,
- genlab.graphstream.utils
+ genlab.graphstream.utils,
+ org.graphstream.algorithm,
+ org.graphstream.graph,
+ org.graphstream.stream,
+ org.graphstream.stream.file

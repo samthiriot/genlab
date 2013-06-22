@@ -1,14 +1,17 @@
 package genlab.gui.graphiti.diagram;
 
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IConnection;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.graphiti.features.AddConnectionFeature;
 import genlab.gui.graphiti.features.AddIAlgoInstanceConnectionFeature;
 import genlab.gui.graphiti.features.CreateDomainObjectConnectionConnectionFeature;
 import genlab.gui.graphiti.features.CreateIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.DeleteIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.LayoutIAlgoFeature;
+import genlab.gui.graphiti.features.OpenParametersFeature;
 import genlab.gui.graphiti.features.RemoveIAlgoInstanceFeature;
 import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
 import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
@@ -25,16 +28,26 @@ import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
+import org.eclipse.graphiti.features.IFeature;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.ILayoutContext;
+import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
+import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.pattern.DefaultFeatureProviderWithPatterns;
 
+/**
+ * TODO higlight everything that may be linked after first click
+ * 
+ * @author B12772
+ *
+ */
 public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns {
 
 	private GenLabIndependenceSolver independenceSolver;
@@ -67,13 +80,31 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 	
 	@Override
 	public IAddFeature getAddFeature(IAddContext context) {
+
+		System.err.println(context);
+
+		if (context.getNewObject() == null) {
+			// special case of an empty link
+			// TODO
+			return null;
+		}
+		System.err.println(context.getNewObject());
+
 		
-		// provide the add connection depending to the type 
+		// provide the add connection depending to the type
+		
+		// to add algo instance
 		if (context.getNewObject() instanceof IAlgoInstance) {
 			return new AddIAlgoInstanceConnectionFeature(this);
 		}
+
+		// to add connection
+		if (context.getNewObject() instanceof IConnection) {
+			IConnection c = (IConnection)context.getNewObject();
+			return new AddConnectionFeature(this);
+		}
 		
-		GLLogger.warnTech("cannot provide a feature for a wrong object: "+context.getNewObject().getClass().getCanonicalName(), getClass());
+		GLLogger.warnTech("cannot provide a feature for a wrong object: "+context.getNewObject(), getClass());
 		
 		return super.getAddFeature(context);
 	}
@@ -96,6 +127,22 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 	
 	
 	
+	@Override
+	public ICustomFeature[] getCustomFeatures(ICustomContext context) {
+		
+		ICustomFeature[] ret = super.getCustomFeatures(context);
+		List<ICustomFeature> retList = new ArrayList<ICustomFeature>();
+		// retrieve parent features
+		for (int i = 0; i < ret.length; i++) {
+			retList.add(ret[i]);
+		}
+		
+		// add mine
+		retList.add(new OpenParametersFeature(this));
+		
+		return retList.toArray(new ICustomFeature[retList.size()]);
+	}
+
 	@Override
 	public IRemoveFeature getRemoveFeature(IRemoveContext context) {
 
@@ -132,7 +179,22 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 	}
 
 	
-	
+	/**
+	 * provides drag and drop for anchors
+	 */
+	@Override
+	public IFeature[] getDragAndDropFeatures(IPictogramElementContext context) {
+		
+		GLLogger.traceTech("received event: drag drop: "+context.getPictogramElement(), getClass());
+		if (context.getPictogramElement() != null) {
+			Object o = getBusinessObjectForPictogramElement(context.getPictogramElement());
+			GLLogger.traceTech("received event: drag drop obj: "+o, getClass());
+			
+		}
+		
+	    // simply return all create connection features
+	    return getCreateConnectionFeatures();
+	} 
 
 	@Override
 	public ILayoutFeature getLayoutFeature(ILayoutContext context) {
