@@ -2,7 +2,6 @@ package genlab.gui.genlab2eclipse;
 
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IWorkflowListener;
-import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.projects.IGenlabProject;
 import genlab.gui.Utils;
 

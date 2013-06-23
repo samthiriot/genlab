@@ -186,6 +186,7 @@ public class AddIAlgoInstanceConnectionFeature extends AbstractAddFeature {
 			y += 10;
 		}
 		
+		
 		link(containerShape, addedAlgo);
 		
 	    layoutPictogramElement(containerShape);

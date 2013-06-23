@@ -15,7 +15,11 @@ public class MappingObjects {
 	private static Map<Object,IGenlabResource> graphiti2genlab = new HashMap<Object,IGenlabResource>(100);
 	
 	public static void register(Object graphitiObject, IGenlabResource genlabResource) {
-		GLLogger.debugTech("associating "+graphitiObject+" with "+genlabResource, MappingObjects.class);
+		
+		if (genlabResource == null || graphitiObject == null)
+			GLLogger.warnTech("associating "+graphitiObject+" with "+genlabResource, MappingObjects.class);
+		else
+			GLLogger.traceTech("associating "+graphitiObject+" with "+genlabResource, MappingObjects.class);
 		
 		if (graphitiObject instanceof Diagram) {
 			// specific treatment for Diagrams

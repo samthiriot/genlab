@@ -2,9 +2,10 @@ package genlab.core.model.instance;
 
 import java.util.Collection;
 
+import genlab.core.model.IGenlabResource;
 import genlab.core.model.meta.IInputOutput;
 
-public interface IInputOutputInstance {
+public interface IInputOutputInstance extends IGenlabResource {
 
 	public String getId();
 	

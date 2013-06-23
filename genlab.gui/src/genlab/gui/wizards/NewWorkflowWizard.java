@@ -3,6 +3,7 @@ package genlab.gui.wizards;
 import genlab.core.model.instance.GenlabFactory;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.IGenlabWorkflow;
+import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.Utils;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
@@ -52,10 +53,12 @@ public class NewWorkflowWizard extends Wizard implements IWorkbenchWizard {
 		
 		
 		IProject eclipseProject = Utils.findEclipseProjectInSelection(selection);
-				
+		IGenlabProject glProject = GenLab2eclipseUtils.getGenlabProjectForEclipseProject(eclipseProject);
+		if (glProject == null)
+			GLLogger.warnTech("unable to find glproject, trouble ahead...", getClass());
 		
 		IGenlabWorkflowInstance workflow = GenlabFactory.createWorkflow(
-				GenLab2eclipseUtils.getGenlabProjectForEclipseProject(eclipseProject), 
+				glProject, 
 				page1.getWorkflowName(), 
 				page1.getWorkflowDesc(), 
 				Utils.getPathRelativeToProject(eclipseProject, page2.getRelativePath().toString())

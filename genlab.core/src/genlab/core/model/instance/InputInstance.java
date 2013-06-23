@@ -15,5 +15,7 @@ public class InputInstance extends InputOutputInstance {
 			throw new ProgramException("this connection does not really ends on this output");
 		super.addConnection(c);
 	}
+
+
 	
 }

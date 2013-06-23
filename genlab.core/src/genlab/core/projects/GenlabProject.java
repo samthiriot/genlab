@@ -2,6 +2,7 @@ package genlab.core.projects;
 
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.persistence.GenlabPersistence;
+import genlab.core.usermachineinteraction.GLLogger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -22,8 +23,7 @@ public class GenlabProject implements IGenlabProject {
 	private transient String baseDirectory;
 	private Map<String,Object> key2object = new HashMap<String,Object>();
 	
-	private transient Collection<IGenlabWorkflowInstance> workflows = new ArrayList<IGenlabWorkflowInstance>();
-	private Collection<String> workflowPathes = new ArrayList<String>();
+	private Collection<String> workflowPathes = new LinkedList<String>();
 	private transient Map<String,IGenlabWorkflowInstance> id2workflow = new HashMap<String,IGenlabWorkflowInstance>();
 
 
@@ -71,13 +71,20 @@ public class GenlabProject implements IGenlabProject {
 
 	@Override
 	public Collection<IGenlabWorkflowInstance> getWorkflows() {
-		return Collections.unmodifiableCollection(workflows);
+		LinkedList<IGenlabWorkflowInstance> l = new LinkedList<IGenlabWorkflowInstance>();
+		for (String s: workflowPathes) {
+			IGenlabWorkflowInstance i = GenlabPersistence.getPersistence().getWorkflowForFilename(this.getBaseDirectory()+s);
+			if (i == null)
+				GLLogger.warnTech("unable to find a workflow for path "+s, getClass());
+			l.add(i);
+		}
+		
+		return l;
 	}
 
 	@Override
 	public void addWorkflow(IGenlabWorkflowInstance workflow) {
-		if (!workflows.contains(workflow)) {
-			workflows.add(workflow);
+		if (!workflowPathes.contains(workflow.getRelativeFilename())) {
 			workflowPathes.add(workflow.getRelativeFilename());
 			id2workflow.put(workflow.getId(), workflow);
 		}
@@ -104,7 +111,7 @@ public class GenlabProject implements IGenlabProject {
 	}
 	
 	private Object readResolve() {
-		workflows = new ArrayList<IGenlabWorkflowInstance>();
+		id2workflow = new HashMap<String,IGenlabWorkflowInstance>();
 		return this;
 	}
 

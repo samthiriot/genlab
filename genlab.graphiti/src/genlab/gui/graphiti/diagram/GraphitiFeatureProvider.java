@@ -58,7 +58,7 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		GLLogger.debugTech("Graphiti feature provider instanciated: "+getClass().getCanonicalName(), getClass());
 		addPattern(new DomainObjectPattern());
 		
-		independenceSolver = new GenLabIndependenceSolver();
+		independenceSolver = new GenLabIndependenceSolver(null);
 		setIndependenceSolver(independenceSolver);
 		
         
@@ -301,6 +301,18 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		}
 		
 		return res;
+	}
+
+	@Override
+	public void link(PictogramElement pictogramElement, Object businessObject) {
+		// TODO Auto-generated method stub
+		super.link(pictogramElement, businessObject);
+	}
+
+	@Override
+	public void link(PictogramElement pictogramElement, Object[] businessObjects) {
+		// TODO Auto-generated method stub
+		super.link(pictogramElement, businessObjects);
 	}
 
 	

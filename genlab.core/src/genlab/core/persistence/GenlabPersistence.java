@@ -45,6 +45,7 @@ public class GenlabPersistence {
 	}
 	
 	private static Map<String, IGenlabWorkflowInstance> filename2workflow = new HashMap<String, IGenlabWorkflowInstance>();
+	private static Map<String,GenlabProject> filename2project = new HashMap<String, GenlabProject>();
 
 	private XStream xstream; 
 
@@ -59,7 +60,52 @@ public class GenlabPersistence {
 
 	
 	public IGenlabWorkflowInstance getWorkflowForFilename(String filename) {
-		return filename2workflow.get(filename);
+		IGenlabWorkflowInstance workflow = filename2workflow.get(filename);
+		if (workflow == null) {
+			GLLogger.warnTech("was asked a workflow for file "+filename+", but it was not yet loaded :-(", getClass());
+		}
+		return workflow;
+	}
+	
+	/**
+	 * searches, for a given file, which project it belongs to, 
+	 * by searching a project as a parent of this. Returns 
+	 * null if none found.
+	 * @param f
+	 * @return
+	 */
+	public IGenlabProject searchProjectForFile(File f) {
+		
+		// search the file
+		File parentFile = f.getParentFile();
+		File testedFile = null;
+		
+		while (parentFile != null) {
+			// search the 
+			testedFile = new File(parentFile, FILENAME_PROJECT);
+			if (testedFile.exists()) {
+				GLLogger.traceTech("found a project file for this file: "+parentFile, getClass());
+				break;
+			}
+			parentFile = parentFile.getParentFile();
+		}
+		
+		// search the corresponding project
+		IGenlabProject project = filename2project.get(parentFile);
+		if (project == null) {
+			GLLogger.debugTech("this project was not yet loaded, will load it "+parentFile, getClass());
+			project = readProject(parentFile.getAbsolutePath());
+		}
+		if (project == null) {
+			GLLogger.warnTech("was unable to find or load a project for "+parentFile, getClass());
+		}
+		
+		return project;
+		
+	}
+	
+	public IGenlabProject searchProjectForFile(String filename) {
+		return searchProjectForFile(new File(filename));
 	}
 	
 	private GenlabPersistence() {
@@ -137,6 +183,7 @@ public class GenlabPersistence {
 		
 		this.currentProject = project;
 		
+		
 		// call hooks for each workflow
 		
 		//	TODO hooks for projects ?!
@@ -201,6 +248,7 @@ public class GenlabPersistence {
 		
 		this.currentProject = null;
 		
+		filename2project.put(baseDirectory, project);
 		
 		return project;
 	}
@@ -212,13 +260,21 @@ public class GenlabPersistence {
 	 */
 	public void saveWorkflow(IGenlabWorkflowInstance workflow) {
 		
+		// ensure it was registered
+		registerWorkflow(workflow);
+		
 		// call hooks
 		GLLogger.debugTech("preparing to save workflow "+workflow+", calling hooks...", getClass());
 		WorkflowHooks.getWorkflowHooks().notifyWorkflowSaving(workflow);
 		
-		
 		// save to xml
 		final String filename = workflow.getAbsolutePath();
+		
+		// create directories if necessary
+		String path = FileUtils.extractPath(filename);
+		(new File(path)).mkdirs();
+		
+		
 		GLLogger.debugTech("saving workflow as XML to "+filename, getClass());
 		try {
 			xstream.toXML(
@@ -238,10 +294,16 @@ public class GenlabPersistence {
 		
 	}
 	
+	public void registerWorkflow(IGenlabWorkflowInstance workflow) {
+		filename2workflow.put(workflow.getAbsolutePath(), workflow);
+	}
+	
 	public IGenlabWorkflowInstance readWorkflow(IGenlabProject project, String relativeFilename) {
 		
 		File f = new File(project.getBaseDirectory()+File.separator+relativeFilename);
 		GLLogger.debugTech("attempting to read a genlab workflow from: "+f.getAbsolutePath(), getClass());
+		
+		this.currentProject = project;
 		
 		GenlabWorkflowInstance workflow = (GenlabWorkflowInstance)xstream.fromXML(f);
 		
@@ -249,7 +311,9 @@ public class GenlabPersistence {
 		workflow._setProject(project);
 		workflow._setFilename(relativeFilename);
 		
-		filename2workflow.put(f.getAbsolutePath(), workflow);
+		registerWorkflow(workflow);
+		
+		this.currentProject = null;
 		
 		return workflow;
 		

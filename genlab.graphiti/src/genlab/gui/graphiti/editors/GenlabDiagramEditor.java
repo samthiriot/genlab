@@ -1,31 +1,26 @@
 package genlab.gui.graphiti.editors;
 
-import java.io.File;
-
+import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.persistence.GenlabPersistence;
+import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.PersistenceUtils;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
 import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
+import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
 import genlab.gui.graphiti.genlab2graphiti.Genlab2GraphitiUtils;
 import genlab.gui.graphiti.genlab2graphiti.GenlabDomainModelChangeListener;
 import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
-import genlab.gui.listeners.IWorkflowGUIListener;
+
+import java.io.File;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.common.ui.URIEditorInput;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
-import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
-import org.eclipse.graphiti.ui.editor.EditorInputAdapter;
-import org.eclipse.graphiti.ui.editor.IDiagramEditorInput;
-import org.eclipse.graphiti.ui.internal.services.GraphitiUiInternal;
-import org.eclipse.graphiti.ui.internal.util.ReflectionUtil;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
@@ -79,40 +74,67 @@ public class GenlabDiagramEditor extends DiagramEditor {
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		super.init(site, input);
 
+		GLLogger.debugTech("a graphiti editor was opened, attempting to link it with genlab resources...", getClass());
+		
 		// retrieve file
+		
 		IFile file = null;
 		if (input instanceof IAdaptable) {
 			file = (IFile) ((IAdaptable) input).getAdapter(IFile.class);
 		}
-		
 		if (file==null) {
 			GLLogger.errorTech("unable to detect the file linked with this editor; thus the workflow will not be found !", getClass());
 			return;
 		}
 		
-		String filename = 
-			file.getLocation().toOSString()
-			;
+		String filename = file.getLocation().toOSString();
 		
 		filename = filename.substring(
 				0, 
 				filename.length()-GraphitiDiagramTypeProvider.GRAPH_EXTENSION.length()-1
 				);
 		
-		GLLogger.debugTech("found file: "+filename, getClass());
+		{
+			File fTest = new File(filename);
+			if (fTest.exists() && fTest.isFile() && fTest.canRead()) {
+				GLLogger.debugTech("found file for the workflow: "+filename, getClass());		
+			} else {
+				GLLogger.errorTech("this file does not exists; so this editor will not work properly: "+filename, getClass());
+			}
+		}
 		
 		// load the corresponding workflow
-		
-
-		System.err.println("hihihi");
-
-		System.err.println(getDiagramTypeProvider().getDiagram());
-		System.err.println(filename);
+		IGenlabProject project = GenlabPersistence.getPersistence().searchProjectForFile(filename);
+		System.err.println("project : "+project);
 		
 		IGenlabWorkflowInstance workflow = GenlabPersistence.getPersistence().getWorkflowForFilename(filename);
 		System.err.println(workflow);
 
-		MappingObjects.register(getDiagramTypeProvider(), workflow);
+		MappingObjects.register(getDiagramTypeProvider().getDiagram(), workflow);
+		
+		// retrieve our mapping file
+		/*
+		GLLogger.debugTech("initializing xstream for persistence...", getClass());
+		GraphitiFeatureProvider dfp = (GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider();
+
+		GenLabIndependenceSolver independanceSolver = (GenLabIndependenceSolver)PersistenceUtils.getPersistenceUtils().loadAsXml(
+				workflow.getAbsolutePath()+Genlab2GraphitiUtils.EXTENSION_FILE_MAPPING
+				);
+		
+		if (independanceSolver != null) {
+			independanceSolver._resolveIdsFromWorkflow(workflow);
+			dfp._setIndependanceSolver(independanceSolver);	
+		} else {
+			GLLogger.warnTech("unable to read the independance solver from file", getClass());
+		}
+		*/
+		
+		// OR, just start to match objects ???
+		GraphitiFeatureProvider dfp = (GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider();
+
+		dfp.getIndependanceSolver()._setWorkflowInstance(workflow);
+		
+		
 	}
 	
 	/**

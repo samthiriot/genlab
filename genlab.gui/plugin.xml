@@ -215,7 +215,7 @@
                      type="org.eclipse.core.resources.IProject">
                </adapt>
                <test
-                     property="org.eclipse.core.resources.projectNatureNOT"
+                     property="org.eclipse.core.resources.projectNature"
                      value="genlab.gui.genlabProjectNature">
                </test>
             </and>

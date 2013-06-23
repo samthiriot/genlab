@@ -1,7 +1,6 @@
 package genlab.gui.graphiti.diagram;
 
 import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.PersistenceUtils;
@@ -70,21 +69,25 @@ public class GraphitiDiagramTypeProvider extends AbstractDiagramTypeProvider {
 		
 		super.init(diagram, diagramEditor);
 		
+		/*
 		if(diagramEditor instanceof GenlabDiagramEditor) {
 			
 			GLLogger.debugTech("init of the diagram, attempting to reuse the independance solver from genlab workflow", getClass());
 			
 			GenlabDiagramEditor nonEmfDiagramEditor = (GenlabDiagramEditor) diagramEditor;
 			
-			
 			DiagramEditorInput editorInput = (DiagramEditorInput) nonEmfDiagramEditor.getEditorInput();
 			
 			GraphitiFeatureProvider dfp = (GraphitiFeatureProvider)getFeatureProvider();
 			
 			// retrieve our workflow
+			// ... attempt to load it from the mapping
 			IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance)MappingObjects.getGenlabResourceFor(diagram);
 			if (workflow == null) {
 				workflow = GenlabPersistence.getPersistence().getWorkflowForFilename(nonEmfDiagramEditor.getFilename());
+			}
+			if (workflow == null) {
+				workflow =  (IGenlabWorkflowInstance) getFeatureProvider().getBusinessObjectForPictogramElement(diagram); 
 			}
 			//IGenlabWorkflow workflow = (IGenlabWorkflow)dfp.getBusinessObjectForPictogramElement(diagram);
 			if (workflow == null) {
@@ -108,5 +111,6 @@ public class GraphitiDiagramTypeProvider extends AbstractDiagramTypeProvider {
 			}
 			
 		}
+		*/
 	}
 }

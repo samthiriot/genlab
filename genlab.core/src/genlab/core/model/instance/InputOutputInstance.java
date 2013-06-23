@@ -29,6 +29,11 @@ public abstract class InputOutputInstance implements IInputOutputInstance {
 	}
 
 	@Override
+	public String getName() {
+		return id;
+	}
+	
+	@Override
 	public IInputOutput<?> getMeta() {
 		return meta;
 	}

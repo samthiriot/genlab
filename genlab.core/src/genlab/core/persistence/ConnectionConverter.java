@@ -1,16 +1,10 @@
 package genlab.core.persistence;
 
 import genlab.core.commons.WrongParametersException;
-import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.Connection;
-import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IInputOutputInstance;
-import genlab.core.model.meta.ExistingAlgos;
-import genlab.core.model.meta.IAlgo;
-import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -35,7 +29,10 @@ public class ConnectionConverter extends Decoder implements Converter {
 	public void marshal(Object value, HierarchicalStreamWriter writer, MarshallingContext ctxt) {
 		
 		final Connection c = (Connection)value;
-		
+
+		writer.startNode("glid");
+		writer.setValue(c.getId());
+		writer.endNode();
 
 		writer.startNode("from");
 		writer.setValue(c.getFrom().getId());
@@ -57,6 +54,7 @@ public class ConnectionConverter extends Decoder implements Converter {
 				ctxt,
 				new LinkedList<IEventBasedXmlParser>() {{
 					add(new StoreExpectedParser(new HashMap<String, Boolean>() {{
+						put("glid", true);
 						put("from", true);
 						put("to", true);
 					}}));
@@ -65,6 +63,9 @@ public class ConnectionConverter extends Decoder implements Converter {
 				);
 		
 
+		String id = (String)data.get("glid");
+		if (id == null)
+			throw new WrongParametersException("no glid defined: "+(String)data.get("glid"));
 		IInputOutputInstance aFrom = GenlabPersistence.getPersistence().getCurrentIOInstance((String)data.get("from"));
 		if (aFrom == null)
 			throw new WrongParametersException("unable to use this algo instance which was not yet declared: "+(String)data.get("from"));
@@ -72,7 +73,7 @@ public class ConnectionConverter extends Decoder implements Converter {
 		if (aTo == null)
 			throw new WrongParametersException("unable to use this algo instance which was not yet declared: "+(String)data.get("to"));
 		
-		Connection c = new Connection(aFrom, aTo);
+		Connection c = new Connection(id, aFrom, aTo);
 		
 		return c;
 	}

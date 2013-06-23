@@ -35,6 +35,7 @@ public interface IGenlabWorkflowInstance extends IAlgoInstance, IWithAssociatedD
 	
 	public IConnection getConnection(IInputOutputInstance from, IInputOutputInstance to);
 	
+	public void removeConnection(IConnection c);
 
 	public void addConnection(Connection c);
 

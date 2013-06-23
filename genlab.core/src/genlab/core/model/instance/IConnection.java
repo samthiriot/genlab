@@ -1,6 +1,8 @@
 package genlab.core.model.instance;
 
-public interface IConnection {
+import genlab.core.model.IGenlabResource;
+
+public interface IConnection extends IGenlabResource {
 
 	public IInputOutputInstance getFrom();
 	

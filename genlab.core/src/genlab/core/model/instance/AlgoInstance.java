@@ -189,7 +189,7 @@ public class AlgoInstance implements IAlgoInstance {
 	}
 
 	public String toString() {
-		return algo.getName()+"_"+algo.hashCode();
+		return id;
 	}
 
 

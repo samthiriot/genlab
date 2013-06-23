@@ -1,5 +1,7 @@
 package genlab.gui.genlab2eclipse;
 
+import genlab.core.usermachineinteraction.GLLogger;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
@@ -23,6 +25,8 @@ public class GenLabWorkflowProjectNature implements IProjectNature {
 
 	@Override
 	public void configure() throws CoreException {
+		
+		GLLogger.debugTech("configuring this project (create directories)", getClass());
 		
 		// create default subdirectories (well, not mandatory, but that's a way to help users)
 		project.getFolder("workflows").create(false, false, null);

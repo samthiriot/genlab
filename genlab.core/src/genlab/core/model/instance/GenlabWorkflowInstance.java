@@ -13,7 +13,6 @@ import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
-import java.beans.PersistenceDelegate;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -60,7 +59,6 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 			this.relativeFilename = relativeFilename;
 		else
 			this.relativeFilename = relativeFilename+GenlabPersistence.EXTENSION_WORKFLOW;
-		project.addWorkflow(this);
 		id2instance.put(id, this);
 		currentTODO = this;
 	}
@@ -99,6 +97,22 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 
 	@Override
 	public void removeAlgoInstance(IAlgoInstance algoInstance) {
+		
+		GLLogger.debugTech("removing algo instance "+algoInstance, getClass());
+		
+		// TODO first remove all connections !
+		for (IInputOutputInstance io: algoInstance.getInputInstances()) {
+				for (IConnection c : io.getConnections()) {
+					removeConnection(c);
+				}
+		}
+		for (IInputOutputInstance io: algoInstance.getOutputInstances()) {
+			for (IConnection c : io.getConnections()) {
+				removeConnection(c);
+			}
+		}
+	
+		
 		id2algoInstance.remove(algoInstance.getId());
 		algoInstances.remove(algoInstance);
 
@@ -231,7 +245,6 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	@Override
 	public void addConnection(Connection c) {
 		connections.add(c);
-
 	}
 
 	@Override
@@ -383,7 +396,13 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public void removeConnection(IConnection c) {
+		GLLogger.debugTech("removing connection "+c, getClass());
 
+		if (!connections.remove(c))
+			GLLogger.warnTech("was unable to remove connection "+c, getClass());
+	}
 
 	
 }

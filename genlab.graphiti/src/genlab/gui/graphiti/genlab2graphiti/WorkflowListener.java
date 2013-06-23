@@ -2,7 +2,6 @@ package genlab.gui.graphiti.genlab2graphiti;
 
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IWorkflowListener;
-import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
@@ -127,7 +126,7 @@ public class WorkflowListener implements IWorkflowListener {
         }
          */
 	}
-
+	
 	@Override
 	public void workflowOpened(IGenlabWorkflowInstance workflow) {
 
@@ -137,7 +136,6 @@ public class WorkflowListener implements IWorkflowListener {
 		GLLogger.debugTech("opening the graphiti diagram for this workflow, which should be there: "+filename, getClass()); 
 		
 		MappingObjects.register(workflow.getAbsolutePath(), workflow);
-		
 		
 	}
 

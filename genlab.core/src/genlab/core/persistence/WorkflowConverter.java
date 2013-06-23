@@ -131,7 +131,7 @@ public class WorkflowConverter extends Decoder implements Converter {
 						public Object processSubnode(String name, HierarchicalStreamReader reader,
 								UnmarshallingContext ctxt) {
 
-							GLLogger.debugTech("decoding connections for this workflow", getClass());
+							GLLogger.debugTech("decoding connections for this workflow", WorkflowConverter.class);
 							
 							final Collection<IConnection> connections = new LinkedList<IConnection>();
 							
@@ -139,7 +139,7 @@ public class WorkflowConverter extends Decoder implements Converter {
 								reader.moveDown();
 
 								if (reader.getNodeName() != GenlabPersistence.XMLTAG_CONNECTIONINSTANCE) {
-									GLLogger.warnTech("ignored tag in algo: "+reader.getNodeName(), getClass());
+									GLLogger.warnTech("ignored tag in algo: "+reader.getNodeName(), WorkflowConverter.class);
 									continue;
 								}
 								IConnection connection = (IConnection) ctxt.convertAnother(reader, Connection.class);
