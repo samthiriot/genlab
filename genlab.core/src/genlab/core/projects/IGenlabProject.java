@@ -22,6 +22,8 @@ public interface IGenlabProject {
 	
 	public Collection<IGenlabWorkflowInstance> getWorkflows();
 	public IGenlabWorkflowInstance getWorkflowForId(String id);
+	public IGenlabWorkflowInstance getWorkflowForFilename(String relativePath);
+
 	public void addWorkflow(IGenlabWorkflowInstance workflow);
 	
 	public String getProjectSavingFilename();

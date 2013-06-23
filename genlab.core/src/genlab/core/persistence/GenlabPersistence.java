@@ -319,19 +319,20 @@ public class GenlabPersistence {
 		GenlabWorkflowInstance workflow = null;
 		
 		// first of all: maybe it already exists ?
-		workflow = (GenlabWorkflowInstance) project.getWorkflowForId(relativeFilename);
+		workflow = (GenlabWorkflowInstance) project.getWorkflowForFilename(relativeFilename);
 		
 		if (workflow != null) {
 			GLLogger.debugTech("workflow "+relativeFilename+" already loaded; ", getClass());
 			return workflow;
 		}
 		
-		//
 		
 		File f = new File(project.getBaseDirectory()+File.separator+relativeFilename);
 		GLLogger.debugTech("attempting to read a genlab workflow from: "+f.getAbsolutePath(), getClass());
 		
 		this.currentProject = project;
+		
+		clearCurrentAlgoInstances();
 		
 		workflow = (GenlabWorkflowInstance)xstream.fromXML(f);
 		
@@ -346,6 +347,8 @@ public class GenlabPersistence {
 		
 		this.currentProject = null;
 		
+		clearCurrentAlgoInstances();
+
 		return workflow;
 		
 	}

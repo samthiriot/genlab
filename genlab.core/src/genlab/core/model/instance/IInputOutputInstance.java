@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import genlab.core.model.IGenlabResource;
 import genlab.core.model.meta.IInputOutput;
+import genlab.core.parameters.IParameterConstraint;
 
 public interface IInputOutputInstance extends IGenlabResource {
 
@@ -18,6 +19,12 @@ public interface IInputOutputInstance extends IGenlabResource {
 	public void removeConnection(IConnection c);
 	
 	public Collection<IConnection> getConnections();
+	
+	/**
+	 * Returns, if any, the constraints on these parameters
+	 * @return
+	 */
+	public IParameterConstraint<?> getParametersConstraints();
 	
 	
 }

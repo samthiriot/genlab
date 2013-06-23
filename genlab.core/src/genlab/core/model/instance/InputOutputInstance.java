@@ -1,6 +1,7 @@
 package genlab.core.model.instance;
 
 import genlab.core.model.meta.IInputOutput;
+import genlab.core.parameters.IParameterConstraint;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -12,6 +13,8 @@ public abstract class InputOutputInstance implements IInputOutputInstance {
 	protected final IInputOutput<?> meta;
 	protected final IAlgoInstance algoInstance;
 	protected final String id;
+	
+	protected IParameterConstraint<?> paramConstraint = null;
 	
 	protected final transient Set<IConnection> connections = new HashSet<IConnection>();
 	
@@ -56,6 +59,16 @@ public abstract class InputOutputInstance implements IInputOutputInstance {
 	@Override
 	public Collection<IConnection> getConnections() {
 		return Collections.unmodifiableCollection(connections);
+	}
+
+
+	@Override
+	public IParameterConstraint<?> getParametersConstraints() {
+		return paramConstraint;
+	}
+	
+	public void setParametersConstraints(IParameterConstraint<?> pc) {
+		this.paramConstraint = pc;
 	}
 
 }

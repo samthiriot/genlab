@@ -25,7 +25,8 @@ public class GenlabProject implements IGenlabProject {
 	
 	private final Collection<String> workflowPathes = new LinkedList<String>();
 	private transient Map<String,IGenlabWorkflowInstance> id2workflow = null;
-	
+	private transient Map<String,IGenlabWorkflowInstance> path2workflow = null;
+
 	/**
 	 * Stores, for each path, the corresponding project.
 	 * Ensures we do not open the same twice.
@@ -113,6 +114,16 @@ public class GenlabProject implements IGenlabProject {
 		
 		return id2workflow;
 	}
+	
+	protected Map<String,IGenlabWorkflowInstance> getFile2Workflow() {
+		
+		if (path2workflow == null) {
+			path2workflow = new HashMap<String,IGenlabWorkflowInstance>();
+			GLLogger.debugTech("init path2workflow "+super.toString(), getClass());
+		}
+		
+		return path2workflow;
+	}
 
 	@Override
 	public void addWorkflow(IGenlabWorkflowInstance workflow) {
@@ -120,6 +131,7 @@ public class GenlabProject implements IGenlabProject {
 		if (id2workflow == null || !id2workflow.containsKey(workflow.getId())) {
 			workflowPathes.add(workflow.getRelativeFilename());
 			getId2Workflow().put(workflow.getId(), workflow);
+			getFile2Workflow().put(workflow.getRelativeFilename(), workflow);
 		}
 		GLLogger.debugTech("I ("+super.toString()+") now contain these workflows: "+id2workflow, getClass());
 	}
@@ -153,6 +165,14 @@ public class GenlabProject implements IGenlabProject {
 	@Override
 	public String getId() {
 		return baseDirectory;
+	}
+
+	@Override
+	public IGenlabWorkflowInstance getWorkflowForFilename(String relativePath) {
+		if (path2workflow == null)
+			return null;
+		
+		return path2workflow.get(relativePath);
 	}
 
 

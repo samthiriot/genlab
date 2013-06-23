@@ -74,6 +74,8 @@ public class ConnectionConverter extends Decoder implements Converter {
 			throw new WrongParametersException("unable to use this algo instance which was not yet declared: "+(String)data.get("to"));
 		
 		Connection c = new Connection(id, aFrom, aTo);
+		aFrom.addConnection(c);
+		aTo.addConnection(c);
 		
 		return c;
 	}

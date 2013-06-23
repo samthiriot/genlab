@@ -60,7 +60,7 @@ public class IGraphAveragePathLengthAlgo extends AbstractIGraphMeasure {
 				Map<IInputOutput<?>, Object> results = new HashMap<IInputOutput<?>, Object>();
 				
 				// average path length
-				if (isUsed(OUTPUT_AVERAGE_PATH_LENGTH)) {
+				if (isUsed(OUTPUT_AVERAGE_PATH_LENGTH) ||  exec.getExecutionForced()) {
 					double averagePathLength = igraphGraph.lib.computeAveragePathLength(igraphGraph);
 					results.put(OUTPUT_AVERAGE_PATH_LENGTH, averagePathLength);
 				} else {
@@ -68,7 +68,7 @@ public class IGraphAveragePathLengthAlgo extends AbstractIGraphMeasure {
 				}
 				
 				// diameter
-				if (isUsed(OUTPUT_DIAMETER)) {
+				if (isUsed(OUTPUT_DIAMETER) ||  exec.getExecutionForced()) {
 					int diameter = igraphGraph.lib.computeDiameter(igraphGraph);
 					results.put(OUTPUT_AVERAGE_PATH_LENGTH, diameter);
 				} else {

@@ -9,5 +9,6 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="genlab.igraph/ext/native/linux/x86_64"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="ext/jna-3.5.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

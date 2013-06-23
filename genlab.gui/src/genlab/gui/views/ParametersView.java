@@ -134,6 +134,10 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 					sp.setMinimum(p.getMinValue());
 				if (p.getMaxValue() != null)
 					sp.setMaximum(p.getMaxValue());
+				
+				// TODO remove
+				sp.setMaximum(50000);
+
 				if (p.getStep() != null)
 					sp.setIncrement(p.getStep());
 

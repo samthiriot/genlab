@@ -1,9 +1,6 @@
 package genlab.core.model.meta;
 
 import genlab.core.commons.WrongParametersException;
-import genlab.core.model.instance.IInputOutputInstance;
-
-import java.util.Map;
 
 /**
  * An input, or output, of an algo.
@@ -21,6 +18,7 @@ public interface IInputOutput<JavaType> {
 	public String getDesc();
 	
 	public IFlowType<JavaType> getType();
+	
 	
 	/**
 	 * 	for this given Input or output type, checks that this flow type is described into values with a relevant type

@@ -1,6 +1,7 @@
 package genlab.core.model.meta;
 
 import genlab.core.commons.WrongParametersException;
+import genlab.core.parameters.IParameterConstraint;
 
 public class InputOutput<JavaType> implements IInputOutput<JavaType> {
 
@@ -48,5 +49,6 @@ public class InputOutput<JavaType> implements IInputOutput<JavaType> {
 	public String toString() {
 		return id;
 	}
+
 
 }

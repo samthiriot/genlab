@@ -72,6 +72,8 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		if (id2instance.containsKey(id))
 			throw new WrongParametersException(" workflow instance with id "+id+" already exists ...");
 		id2instance.put(id, this);
+		
+		// TODO remove
 		currentTODO = this;
 		
 		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
@@ -102,6 +104,9 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		
 		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
 
+
+		// TODO remove
+		currentTODO = this;
 	}
 
 	@Override
@@ -286,6 +291,10 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 			throw new ProgramException("project can not be null");
 		
 		project.addWorkflow(this);
+		
+
+		// TODO remove
+		currentTODO = this;
 		
 	    return this;
 	}
