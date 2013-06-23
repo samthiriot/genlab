@@ -1,5 +1,6 @@
 package genlab.core.persistence;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
@@ -7,15 +8,23 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 
 public class StoreExpectedParser implements IEventBasedXmlParser {
 
+	
 	private Map<String,Boolean> key2mandatory;
 	private Map<String,Object> key2value;
 	
+	/**
+	 * If object is boolean true, value is decoded as string 
+	 * and is mandatory. If boolean and false, decoded as string 
+	 * and optional. It instance of class, delegation to this class.
+	 * @param key2mandatory
+	 */
 	public StoreExpectedParser(Map<String,Boolean> key2mandatory) {
 
 		this.key2mandatory = key2mandatory;
@@ -34,9 +43,11 @@ public class StoreExpectedParser implements IEventBasedXmlParser {
 	public Object processSubnode(String name, HierarchicalStreamReader reader,
 			UnmarshallingContext ctxt) {
 
-		final Object value = reader.getValue();
+		Object value = null;
+		
+		value = reader.getValue();
 		key2value.put(name, value);
-
+		
 		return value;
 	}
 
@@ -59,7 +70,7 @@ public class StoreExpectedParser implements IEventBasedXmlParser {
 			if (key2mandatory.get(s) && !key2value.containsKey(s)) {
 				notFound.add(s);
 				m.errorTech("not found an expected attribute or value: "+s, getClass());
-			}
+			} 
 		}
 		if (!notFound.isEmpty())
 			throw new WrongParametersException("not found expected attribute or nodes: "+notFound);

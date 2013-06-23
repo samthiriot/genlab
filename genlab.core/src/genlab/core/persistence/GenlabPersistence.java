@@ -91,11 +91,13 @@ public class GenlabPersistence {
 		}
 		
 		// search the corresponding project
-		IGenlabProject project = filename2project.get(parentFile);
+		IGenlabProject project = filename2project.get(testedFile.getAbsolutePath());
+		/*
 		if (project == null) {
 			GLLogger.debugTech("this project was not yet loaded, will load it "+parentFile, getClass());
 			project = readProject(parentFile.getAbsolutePath());
 		}
+		*/
 		if (project == null) {
 			GLLogger.warnTech("was unable to find or load a project for "+parentFile, getClass());
 		}
@@ -225,12 +227,24 @@ public class GenlabPersistence {
 	}
 	
 	public IGenlabProject readProject(String baseDirectory) {
+	
+		// first attempt to find it already loaded
+		GenlabProject project = filename2project.get(baseDirectory);
+		if (project != null) {
+			GLLogger.debugTech("project already loaded,  return existing state", getClass());
+			return project;
+		}
 		
+		project = GenlabProject.getProject(baseDirectory);
+		if (project != null) {
+			GLLogger.debugTech("project already loaded,  return existing state", getClass());
+			return project;
+		}
 		
-		File f = new File(baseDirectory+File.separator+FILENAME_PROJECT);
+		final File f = new File(baseDirectory+File.separator+FILENAME_PROJECT);
 		GLLogger.debugTech("attempting to read a genlab project from: "+f.getAbsolutePath(), getClass());
 		
-		GenlabProject project = (GenlabProject)xstream.fromXML(f);
+		project = (GenlabProject)xstream.fromXML(f);
 		
 		this.currentProject = project;
 		
@@ -238,17 +252,19 @@ public class GenlabPersistence {
 		
 		// ... the base directory
 		project._setBaseDirectory(baseDirectory);
-		
+    	GenlabProject.registerOpenedProject(project);
+
 		// ... the sub workflows
 		for (String relativeWorkflowFilename : project.getWorkflowPathes()) {
 			this.currentWorkflowRelativeName = relativeWorkflowFilename;
-			readWorkflow(project, relativeWorkflowFilename);		
+			IGenlabWorkflowInstance workflow = readWorkflow(project, relativeWorkflowFilename);
+			project.addWorkflow(workflow);
 		}
 		this.currentWorkflowRelativeName = null;
 		
 		this.currentProject = null;
 		
-		filename2project.put(baseDirectory, project);
+		filename2project.put(f.getAbsolutePath(), project);
 		
 		return project;
 	}
@@ -300,18 +316,33 @@ public class GenlabPersistence {
 	
 	public IGenlabWorkflowInstance readWorkflow(IGenlabProject project, String relativeFilename) {
 		
+		GenlabWorkflowInstance workflow = null;
+		
+		// first of all: maybe it already exists ?
+		workflow = (GenlabWorkflowInstance) project.getWorkflowForId(relativeFilename);
+		
+		if (workflow != null) {
+			GLLogger.debugTech("workflow "+relativeFilename+" already loaded; ", getClass());
+			return workflow;
+		}
+		
+		//
+		
 		File f = new File(project.getBaseDirectory()+File.separator+relativeFilename);
 		GLLogger.debugTech("attempting to read a genlab workflow from: "+f.getAbsolutePath(), getClass());
 		
 		this.currentProject = project;
 		
-		GenlabWorkflowInstance workflow = (GenlabWorkflowInstance)xstream.fromXML(f);
+		workflow = (GenlabWorkflowInstance)xstream.fromXML(f);
 		
+		// ... the base directory
+
 		// now define all the transient attributes
 		workflow._setProject(project);
 		workflow._setFilename(relativeFilename);
 		
 		registerWorkflow(workflow);
+		//project.addWorkflow(workflow);
 		
 		this.currentProject = null;
 		

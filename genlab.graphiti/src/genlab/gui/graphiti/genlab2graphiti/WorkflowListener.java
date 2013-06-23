@@ -5,6 +5,8 @@ import genlab.core.model.instance.IWorkflowListener;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
+import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
+import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
 
 public class WorkflowListener implements IWorkflowListener {
 
@@ -131,11 +133,13 @@ public class WorkflowListener implements IWorkflowListener {
 	public void workflowOpened(IGenlabWorkflowInstance workflow) {
 
 		// retrieve diagram filename
+		/*
 		String filename = (String) workflow.getObjectForKey(Genlab2GraphitiUtils.KEY_WORKFLOW_TO_GRAPHITI_FILE);
 		
 		GLLogger.debugTech("opening the graphiti diagram for this workflow, which should be there: "+filename, getClass()); 
+		*/
 		
-		MappingObjects.register(workflow.getAbsolutePath(), workflow);
+		//  TODO remove ? MappingObjects.register(workflow.getAbsolutePath(), workflow);
 		
 	}
 

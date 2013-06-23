@@ -14,15 +14,11 @@ import genlab.gui.graphiti.features.LayoutIAlgoFeature;
 import genlab.gui.graphiti.features.OpenParametersFeature;
 import genlab.gui.graphiti.features.RemoveIAlgoInstanceFeature;
 import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
-import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
 import genlab.gui.graphiti.patterns.DomainObjectPattern;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import org.eclipse.emf.common.command.Command;
-import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
@@ -38,7 +34,6 @@ import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.pattern.DefaultFeatureProviderWithPatterns;
 
@@ -211,73 +206,9 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		return super.getLayoutFeature(context);
 	}
 	
-	private class LinkCommand implements Command {
-
-		private final GraphitiFeatureProvider dfp;
-		private final PictogramElement pictogramElement;
-		private final Object res;
-		
-		public LinkCommand(GraphitiFeatureProvider dfp, PictogramElement pictogramElement, Object res) {
-			this.dfp = dfp;
-			this.pictogramElement = pictogramElement;
-			this.res = res;
-		}
-
-		@Override
-		public boolean canExecute() {
-			return true;
-		}
-
-		@Override
-		public void execute() {
-			link(pictogramElement, res);
-		}
-
-		@Override
-		public boolean canUndo() {
-			return false;
-		}
-
-		@Override
-		public void undo() {
-		}
-
-		@Override
-		public void redo() {
-		}
-
-		@Override
-		public Collection<?> getResult() {
-			return null;
-		}
-
-		@Override
-		public Collection<?> getAffectedObjects() {
-			return null;
-		}
-
-		@Override
-		public String getLabel() {
-			return "internal linking of resources";
-		}
-
-		@Override
-		public String getDescription() {
-			return null;
-		}
-
-		@Override
-		public void dispose() {
-		}
-
-		@Override
-		public Command chain(Command command) {
-			return null;
-		}
-		
-	}
 	
 	
+	/*
 	@Override
 	public Object getBusinessObjectForPictogramElement(PictogramElement pictogramElement) {
 		
@@ -285,6 +216,7 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		
 		if (res == null) {
 			
+			System.err.println("should be removed !");
 			// start of problem solving...
 			
 			// maybe this is a diagram, and diagrams have problems of mapping corrected by us
@@ -302,6 +234,7 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		
 		return res;
 	}
+	*/
 
 	@Override
 	public void link(PictogramElement pictogramElement, Object businessObject) {

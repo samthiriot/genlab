@@ -1,21 +1,18 @@
 package genlab.core.persistence;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-
 import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.Connection;
 import genlab.core.model.instance.GenlabWorkflowInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
-import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.core.usermachineinteraction.ListOfMessages;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -161,6 +158,9 @@ public class WorkflowConverter extends Decoder implements Converter {
 	
 		final IGenlabProject project = GenlabPersistence.getPersistence().getCurrentProject();
 		final String filename = GenlabPersistence.getPersistence().getCurrentWorkflowFilename();
+		
+		if (project == null || filename == null)
+			throw new ProgramException("project or filename should not be null");
 		
 		GenlabWorkflowInstance workflow = new GenlabWorkflowInstance(
 				(String)readen.get("id"),

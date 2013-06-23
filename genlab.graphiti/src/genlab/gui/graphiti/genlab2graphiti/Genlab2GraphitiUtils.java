@@ -2,19 +2,24 @@ package genlab.gui.graphiti.genlab2graphiti;
 
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
 import genlab.gui.graphiti.editors.GenlabDiagramEditor;
 import genlab.gui.listeners.WorkflowGUIEventsDispatcher;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.emf.common.command.Command;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IFileEditorInput;
@@ -29,6 +34,100 @@ public class Genlab2GraphitiUtils {
 
 // TODO remove 	public static final String KEY_WORKFLOW_TO_INDEPENDANCE_SOLVER = "graphiti_independance_solver";
 
+	private static class LinkCommand implements Command {
+
+		private final GraphitiFeatureProvider dfp;
+		private final PictogramElement pictogramElement;
+		private final Object res;
+		
+		public LinkCommand(GraphitiFeatureProvider dfp, PictogramElement pictogramElement, Object res) {
+			this.dfp = dfp;
+			this.pictogramElement = pictogramElement;
+			this.res = res;
+		}
+
+		@Override
+		public boolean canExecute() {
+			return true;
+		}
+
+		@Override
+		public void execute() {
+			dfp.link(pictogramElement, res);
+		}
+
+		@Override
+		public boolean canUndo() {
+			return false;
+		}
+
+		@Override
+		public void undo() {
+		}
+
+		@Override
+		public void redo() {
+		}
+
+		@Override
+		public Collection<?> getResult() {
+			return null;
+		}
+
+		@Override
+		public Collection<?> getAffectedObjects() {
+			return null;
+		}
+
+		@Override
+		public String getLabel() {
+			return "internal linking of resources";
+		}
+
+		@Override
+		public String getDescription() {
+			return null;
+		}
+
+		@Override
+		public void dispose() {
+		}
+
+		@Override
+		public Command chain(Command command) {
+			return null;
+		}
+		
+	}
+	
+	/**
+	 * Applies the grapĥiti link() in the relevant context (that is, a transaction and bla bla bla)
+	 * @param dfp
+	 * @param pictogramElement
+	 * @param businessObject
+	 */
+	public static void linkInTransaction(GraphitiFeatureProvider dfp, PictogramElement pictogramElement, Object businessObject) {
+		// retrieve resources
+		//final ResourceSetImpl resourceSet = new ResourceSetImpl();
+	    
+		final ResourceSet resourceSet = pictogramElement.eResource().getResourceSet();
+		
+        TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(resourceSet);
+        if (editingDomain == null) {
+        	// Not yet existing, create one
+        	editingDomain = TransactionalEditingDomain.Factory.INSTANCE.createEditingDomain(resourceSet);
+        }
+
+		editingDomain.getCommandStack().execute(
+				new LinkCommand(
+						dfp, 
+						pictogramElement, 
+						businessObject
+						)
+				);
+
+        
+	}
 	
 	// TODO remove old code for errors
 	public static void createDiagram(IGenlabWorkflowInstance workflow, IProject project) {

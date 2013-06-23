@@ -2,12 +2,8 @@ package genlab.gui.graphiti.features;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
-import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
 
-import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;

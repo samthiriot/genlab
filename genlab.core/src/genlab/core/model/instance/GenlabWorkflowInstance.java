@@ -3,6 +3,7 @@ package genlab.core.model.instance;
 import genlab.core.commons.FileUtils;
 import genlab.core.commons.GenLabException;
 import genlab.core.commons.NotImplementedException;
+import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
@@ -34,7 +35,6 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 
 	public static GenlabWorkflowInstance currentTODO = null;
 	
-	protected Set<IAlgoInstance> algoInstances = new HashSet<IAlgoInstance>();
 	protected Set<Connection> connections = new HashSet<Connection>();
 	
 	private Map<String,IAlgoInstance> id2algoInstance = new HashMap<String, IAlgoInstance>();
@@ -51,6 +51,9 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	protected static final Map<String,GenlabWorkflowInstance> id2instance = new HashMap<String, GenlabWorkflowInstance>(); 
 	
 	public GenlabWorkflowInstance(IGenlabProject project, String name, String description, String relativeFilename) {
+		
+		GLLogger.debugTech("creating worklow instance "+id+" "+super.toString(), getClass());
+		
 		this.id = "genlab.workflow."+name;
 		this.project = project;
 		this.name = name;
@@ -59,11 +62,24 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 			this.relativeFilename = relativeFilename;
 		else
 			this.relativeFilename = relativeFilename+GenlabPersistence.EXTENSION_WORKFLOW;
+		
+		if (project == null)
+			throw new ProgramException("project can not be null");
+		
+		project.addWorkflow(this);
+		
+		// remove that later (unicity is not at a static level, only project)
+		if (id2instance.containsKey(id))
+			throw new WrongParametersException(" workflow instance with id "+id+" already exists ...");
 		id2instance.put(id, this);
 		currentTODO = this;
+		
+		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
 	}
 	
 	public GenlabWorkflowInstance(String id, IGenlabProject project, String name, String description, String relativeFilename) {
+		
+		GLLogger.debugTech("creating worklow instance "+id+" "+super.toString(), getClass());
 		this.id = id;
 		this.project = project;
 		this.name = name;
@@ -72,8 +88,20 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 			this.relativeFilename = relativeFilename;
 		else
 			this.relativeFilename = relativeFilename+GenlabPersistence.EXTENSION_WORKFLOW;
+		
+		if (project == null)
+			throw new ProgramException("project can not be null");
+		
 		project.addWorkflow(this);
+		
+		// remove that later (unicity is not at a static level, only project)
+		if (id2instance.containsKey(id))
+			throw new WrongParametersException(" workflow instance with id "+id+" already exists ...");
+		
 		id2instance.put(id, this);
+		
+		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
+
 	}
 
 	@Override
@@ -84,15 +112,23 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 
 	@Override
 	public void addAlgoInstance(IAlgoInstance algoInstance) {
-		
+				
 		if (id2algoInstance.containsKey(algoInstance.getId())) {
 			if (id2algoInstance.get(algoInstance.getId()).equals(algoInstance))
 				return; // silent version
 			throw new GenLabException("Another instance was already added with this id: "+algoInstance.getId());
 		}
+		GLLogger.debugTech("added  an algo instance to this workflow : "+algoInstance, getClass());
+
 		id2algoInstance.put(algoInstance.getId(), algoInstance);
-		algoInstances.add(algoInstance);
+		
+		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
+
 		WorkflowHooks.getWorkflowHooks().notifyWorkflowChange(this);
+		
+		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
+
+		
 	}
 
 	@Override
@@ -114,9 +150,13 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	
 		
 		id2algoInstance.remove(algoInstance.getId());
-		algoInstances.remove(algoInstance);
+
+		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
 
 		WorkflowHooks.getWorkflowHooks().notifyWorkflowChange(this);
+		
+		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
+
 	}
 
 
@@ -156,7 +196,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 
 	@Override
 	public Collection<IAlgoInstance> getAlgoInstances() {
-		return Collections.unmodifiableCollection(algoInstances);
+		return id2algoInstance.values();
 	}
 
 	@Override
@@ -189,6 +229,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	
 	public void _setProject(IGenlabProject project) {
 		this.project = project;
+		project.addWorkflow(this);
 	}
 	
 	public void _setFilename(String relativefilename) {
@@ -197,7 +238,8 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 
 	@Override
 	public boolean containsAlgoInstance(IAlgoInstance algoInstance) {
-		return algoInstances.contains(algoInstance);
+		IAlgoInstance a = id2algoInstance.get(algoInstance.getId());
+		return (a != null && a == algoInstance);
 	}
 
 	@Override
@@ -237,7 +279,14 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	}
 
     private Object readResolve() {
+    	
     	id2instance.put(id, this);
+    	
+    	if (project == null)
+			throw new ProgramException("project can not be null");
+		
+		project.addWorkflow(this);
+		
 	    return this;
 	}
 
@@ -257,7 +306,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		if (from == null || to == null)
 			throw new WrongParametersException("cannot connect to null");
 		
-		if (!algoInstances.contains(from.getAlgoInstance()) || !algoInstances.contains(to.getAlgoInstance()))
+		if (!id2algoInstance.containsKey(from.getAlgoInstance().getId()) && !id2algoInstance.containsKey(to.getAlgoInstance().getId()))
 			throw new WrongParametersException("this instance of the algorithm does not belongs the workflow");
 		
 		if (!from.getAlgoInstance().getAlgo().getOuputs().contains(from.getMeta()))
@@ -356,7 +405,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		
 		// first, deleguate checking for each result
 		
-		for (IAlgoInstance subInstance : algoInstances) {
+		for (IAlgoInstance subInstance : id2algoInstance.values()) {
 			
 			subInstance.checkForRun(res);
 			

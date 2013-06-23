@@ -1,11 +1,11 @@
 package genlab.core.projects;
 
+import genlab.core.commons.WrongParametersException;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,15 +23,32 @@ public class GenlabProject implements IGenlabProject {
 	private transient String baseDirectory;
 	private Map<String,Object> key2object = new HashMap<String,Object>();
 	
-	private Collection<String> workflowPathes = new LinkedList<String>();
-	private transient Map<String,IGenlabWorkflowInstance> id2workflow = new HashMap<String,IGenlabWorkflowInstance>();
-
-
+	private final Collection<String> workflowPathes = new LinkedList<String>();
+	private transient Map<String,IGenlabWorkflowInstance> id2workflow = null;
+	
+	/**
+	 * Stores, for each path, the corresponding project.
+	 * Ensures we do not open the same twice.
+	 */
+	protected static Map<String,GenlabProject> path2project = new HashMap<String, GenlabProject>();
+	
 	protected static transient Map<String,GenlabProject> openedProjects = new HashMap<String, GenlabProject>();
 	
 	public static void registerOpenedProject(GenlabProject project) {
 		synchronized (openedProjects) {
+			
+			if (project.getBaseDirectory() == null)
+				throw new WrongParametersException("projects should have a valid base directory");
+			
+			if (path2project.containsKey(project.getBaseDirectory()))
+				throw new WrongParametersException("a project was already created for this path "+project.getBaseDirectory());
+			
+			if (openedProjects.containsKey(project.getId()))
+				throw new WrongParametersException("a project was already created for this id "+project.getId());
+			
 			openedProjects.put(project.getId(), project);
+			path2project.put(project.getBaseDirectory(),project);
+
 		}
 	}
 	
@@ -43,9 +60,14 @@ public class GenlabProject implements IGenlabProject {
 	
 	
 	public GenlabProject(String baseDirectory) {
+		
+		GLLogger.debugTech("creating project instance "+baseDirectory+" "+super.toString(), getClass());
+		
 		this.baseDirectory = baseDirectory;
 		
 		registerOpenedProject(this);
+		
+		GLLogger.debugTech("I ("+super.toString()+") now contain these workflows: "+id2workflow, getClass());
 	}
 
 	@Override
@@ -81,17 +103,29 @@ public class GenlabProject implements IGenlabProject {
 		
 		return l;
 	}
+	
+	protected Map<String,IGenlabWorkflowInstance> getId2Workflow() {
+		
+		if (id2workflow == null) {
+			id2workflow = new HashMap<String,IGenlabWorkflowInstance>();
+			GLLogger.debugTech("init id2workflow "+super.toString(), getClass());
+		}
+		
+		return id2workflow;
+	}
 
 	@Override
 	public void addWorkflow(IGenlabWorkflowInstance workflow) {
-		if (!workflowPathes.contains(workflow.getRelativeFilename())) {
+		GLLogger.debugTech("adding a sub workflow "+workflow+" to this project: "+this, getClass());
+		if (id2workflow == null || !id2workflow.containsKey(workflow.getId())) {
 			workflowPathes.add(workflow.getRelativeFilename());
-			id2workflow.put(workflow.getId(), workflow);
+			getId2Workflow().put(workflow.getId(), workflow);
 		}
+		GLLogger.debugTech("I ("+super.toString()+") now contain these workflows: "+id2workflow, getClass());
 	}
 	
 	public IGenlabWorkflowInstance getWorkflowForId(String id) {
-		return id2workflow.get(id);
+		return getId2Workflow().get(id);
 	}
 
 	@Override
@@ -110,10 +144,6 @@ public class GenlabProject implements IGenlabProject {
 		this.baseDirectory = baseDirectory;
 	}
 	
-	private Object readResolve() {
-		id2workflow = new HashMap<String,IGenlabWorkflowInstance>();
-		return this;
-	}
 
 	@Override
 	public Map<String, Object> getAttachedObjects() {
@@ -124,5 +154,7 @@ public class GenlabProject implements IGenlabProject {
 	public String getId() {
 		return baseDirectory;
 	}
+
+
 
 }

@@ -1,8 +1,5 @@
 package genlab.gui.views;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
@@ -11,6 +8,9 @@ import genlab.core.parameters.IntParameter;
 import genlab.core.parameters.Parameter;
 import genlab.core.projects.GenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -22,7 +22,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -177,6 +176,16 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 			}
 			
 			widget2param.put(createdWidget, param);
+		}
+		
+		{
+			Label label = new Label(form.getBody(), SWT.NULL);
+			label.setText("(changes are saved automatically)");
+			// TODO italic (or smaller ?)
+			label.setBackground(form.getBackground());
+			GridData d = new GridData(GridData.END | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL);
+			d.horizontalSpan = layout.numColumns;
+			label.setLayoutData(d);
 		}
 		
 		form.layout(true);

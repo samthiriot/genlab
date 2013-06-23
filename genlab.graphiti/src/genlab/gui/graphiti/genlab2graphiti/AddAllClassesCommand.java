@@ -57,7 +57,8 @@ public class AddAllClassesCommand extends RecordingCommand {
 		createdResource = editingDomain.getResourceSet().createResource(uri);
 		createdResource.getContents().add(diagram);
 	
-		MappingObjects.register(diagram, workflow);
+		
+		//  TODO remove ? MappingObjects.register(diagram, workflow);
 		
 		// add a link between the workflow and the diagram file
 		workflow.addObjectForKey(

@@ -1,16 +1,15 @@
 package genlab.core.persistence;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.instance.Connection;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -79,13 +78,31 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 				reader, 
 				ctxt,
 				new LinkedList<IEventBasedXmlParser>() {{
-					add(new StoreExpectedParser(new HashMap<String, Boolean>() {{
-						put(GenlabPersistence.XMLTAG_ID, true);
-						put("algoClassName", true);
-						put("parameters", false);
-					}}));
-										
-				}}
+					add(
+							new StoreExpectedParser(
+									new HashMap<String, Boolean>() {{
+										put(GenlabPersistence.XMLTAG_ID, true);
+										put("algoClassName", true);
+									}}
+							)
+					);
+					add(new ProcessOnlySubnode("parameters") {
+						
+						@Override
+						public Object processSubnode(String name, HierarchicalStreamReader reader,
+								UnmarshallingContext ctxt) {
+							
+							reader.moveDown();
+							if (!reader.getNodeName().equals("m"))
+								throw new WrongParametersException("malformed xml: 'm' expected");
+
+							Map<String,Object> map = (Map<String, Object>) ctxt.convertAnother(reader, HashMap.class);
+
+							reader.moveUp();
+							return map;
+						}
+					});
+					}}
 				);
 		
 		
@@ -100,6 +117,13 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 		
 		IAlgoInstance i = algo.createInstance((String)data.get(GenlabPersistence.XMLTAG_ID), null);
 				
+		if (data.get("parameters") != null) {
+			
+			Map<String,Object> m = (Map<String, Object>)data.get("parameters");;
+			for (String s : m.keySet()) {
+				i.setValueForParameter(s, m.get(s));
+			}
+		}
 		return i;
 	}
 

@@ -60,6 +60,10 @@ public class GenLabSaveParticipant implements ISaveParticipant {
 		} 
 		
 		IGenlabProject genlabProject = GenLab2eclipseUtils.getGenlabProjectForEclipseProject(context.getProject());
+		if (genlabProject == null) {
+			GLLogger.warnTech("unable to find the genlab project for saving...", getClass());
+			return;
+		}
 		GenlabPersistence.getPersistence().saveProject(genlabProject);
 		
 		

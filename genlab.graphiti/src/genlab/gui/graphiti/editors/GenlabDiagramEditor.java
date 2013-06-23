@@ -1,17 +1,13 @@
 package genlab.gui.graphiti.editors;
 
-import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.graphiti.PersistenceUtils;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
 import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
-import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
 import genlab.gui.graphiti.genlab2graphiti.Genlab2GraphitiUtils;
 import genlab.gui.graphiti.genlab2graphiti.GenlabDomainModelChangeListener;
-import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
 
 import java.io.File;
 
@@ -19,7 +15,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -110,7 +105,14 @@ public class GenlabDiagramEditor extends DiagramEditor {
 		IGenlabWorkflowInstance workflow = GenlabPersistence.getPersistence().getWorkflowForFilename(filename);
 		System.err.println(workflow);
 
-		MappingObjects.register(getDiagramTypeProvider().getDiagram(), workflow);
+		// OR, just start to match objects ???
+		GraphitiFeatureProvider dfp = (GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider();
+
+		Genlab2GraphitiUtils.linkInTransaction(dfp, getDiagramTypeProvider().getDiagram(), workflow);
+		
+		dfp.getIndependanceSolver()._setWorkflowInstance(workflow);
+	
+	//  TODO remove ? MappingObjects.register(getDiagramTypeProvider().getDiagram(), workflow);
 		
 		// retrieve our mapping file
 		/*
@@ -129,11 +131,7 @@ public class GenlabDiagramEditor extends DiagramEditor {
 		}
 		*/
 		
-		// OR, just start to match objects ???
-		GraphitiFeatureProvider dfp = (GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider();
-
-		dfp.getIndependanceSolver()._setWorkflowInstance(workflow);
-		
+			
 		
 	}
 	
@@ -202,12 +200,14 @@ public class GenlabDiagramEditor extends DiagramEditor {
         }
 		
 		// save the mapping between genlab and graphiti
+		/*
         monitor.subTask("saving the genlab-graphiti mapping");
         PersistenceUtils.getPersistenceUtils().persistAsXml(
 				((GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider()).getIndependanceSolver(),
 				workflow.getAbsolutePath()+Genlab2GraphitiUtils.EXTENSION_FILE_MAPPING
 				);
-        
+        */
+		
         // don't only save the workflow, but also the whole project (???)
         monitor.subTask("saving Genlab project");
 		GenlabPersistence.getPersistence().saveProject(workflow.getProject(), false);

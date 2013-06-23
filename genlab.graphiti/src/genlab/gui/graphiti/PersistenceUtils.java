@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
 import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.Connection;
 import genlab.core.model.instance.GenlabWorkflowInstance;
 import genlab.core.projects.GenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -30,6 +31,8 @@ public class PersistenceUtils {
 			xstream.alias("project", GenlabProject.class);
 			xstream.alias("workflow", GenlabWorkflowInstance.class);
 			xstream.alias("algoinstance", AlgoInstance.class);
+			xstream.alias("connection", Connection.class);
+
 
 		} catch (Exception e) {
 			GLLogger.errorTech("error when initializing xstream persitence.", getClass(), e);

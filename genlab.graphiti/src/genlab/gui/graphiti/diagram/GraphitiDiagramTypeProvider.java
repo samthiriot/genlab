@@ -1,14 +1,7 @@
 package genlab.gui.graphiti.diagram;
 
-import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.persistence.GenlabPersistence;
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.graphiti.PersistenceUtils;
-import genlab.gui.graphiti.editors.GenlabDiagramEditor;
-import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
-import genlab.gui.graphiti.genlab2graphiti.Genlab2GraphitiUtils;
 import genlab.gui.graphiti.genlab2graphiti.GenlabNotificationService;
-import genlab.gui.graphiti.genlab2graphiti.MappingObjects;
 import genlab.gui.graphiti.palette.WorkflowToolBehaviorProvider;
 
 import java.util.Arrays;
@@ -18,7 +11,6 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.notification.INotificationService;
 import org.eclipse.graphiti.platform.IDiagramEditor;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
-import org.eclipse.graphiti.ui.editor.DiagramEditorInput;
 
 public class GraphitiDiagramTypeProvider extends AbstractDiagramTypeProvider {
 
