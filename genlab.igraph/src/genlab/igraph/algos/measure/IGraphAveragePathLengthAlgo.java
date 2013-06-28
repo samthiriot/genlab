@@ -18,16 +18,16 @@ import genlab.igraph.natjna.IGraphGraph;
 public class IGraphAveragePathLengthAlgo extends AbstractIGraphMeasure {
 
 	public static final InputOutput<Double> OUTPUT_AVERAGE_PATH_LENGTH = new InputOutput<Double>(
-			new DoubleFlowType(), 
-			"TODO.averagePathLength", 
+			DoubleFlowType.SINGLETON, 
+			"out_averagePathLength", 
 			"average path length", 
 			"average path length computed by the igraph library. " +
 			"When the graph is disconnected, the average path length in each component is returned."
 	);
 	
 	public static final InputOutput<Integer> OUTPUT_DIAMETER = new InputOutput<Integer>(
-			new IntegerFlowType(), 
-			"TODO.diameter", 
+			IntegerFlowType.SINGLETON, 
+			"out_diameter", 
 			"diameter", 
 			"diameter computed by the igraph library. " +
 			"When the graph is disconnected, the longest path of all the components is used."

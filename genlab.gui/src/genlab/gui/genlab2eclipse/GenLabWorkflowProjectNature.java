@@ -46,6 +46,7 @@ public class GenLabWorkflowProjectNature implements IProjectNature {
 
 	@Override
 	public void setProject(IProject project) {
+		System.err.println("nature: received project : "+project);
 		this.project = project;
 	}
 

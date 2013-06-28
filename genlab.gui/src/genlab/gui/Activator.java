@@ -45,9 +45,11 @@ public class Activator extends AbstractUIPlugin {
 		
 		// add a save participant, and hook it, so our data will be save along with the eclipse's one.
 		GLLogger.infoTech("registering a save participant...", getClass());
-		ISaveParticipant saveParticipant = new GenLabSaveParticipant();
-		ISavedState lastState = ResourcesPlugin.getWorkspace().addSaveParticipant(PLUGIN_ID, saveParticipant);
-		
+		ISavedState lastState = ResourcesPlugin.getWorkspace().addSaveParticipant(
+				PLUGIN_ID, 
+				new GenLabSaveParticipant()
+				);
+
 		// listen for workspace events, so we will load the corresponding genlab resources.
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(
 				new EclipseResourceListener(),

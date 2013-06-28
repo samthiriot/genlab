@@ -9,6 +9,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -19,9 +21,9 @@ public abstract class BasicAlgo implements IAlgo {
 	protected final String description;
 	protected final String id;
 	protected final String categoryId;
-	protected final Set<IInputOutput> outputs = new HashSet<IInputOutput>();
-	protected final Set<IInputOutput> inputs = new HashSet<IInputOutput>();
-	protected final Map<String,Parameter<?>> parameters = new HashMap<String,Parameter<?>>();
+	protected final Set<IInputOutput> outputs = new LinkedHashSet<IInputOutput>();
+	protected final Set<IInputOutput> inputs = new LinkedHashSet<IInputOutput>();
+	protected final Map<String,Parameter<?>> parameters = new LinkedHashMap<String,Parameter<?>>();
 	
 	public BasicAlgo(
 			String name,

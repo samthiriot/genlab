@@ -70,5 +70,10 @@ public abstract class InputOutputInstance implements IInputOutputInstance {
 	public void setParametersConstraints(IParameterConstraint<?> pc) {
 		this.paramConstraint = pc;
 	}
+	
+	@Override
+	public String toString() {
+		return id;
+	}
 
 }

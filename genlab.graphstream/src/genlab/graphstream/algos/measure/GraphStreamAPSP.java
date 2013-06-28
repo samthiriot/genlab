@@ -44,16 +44,16 @@ public class GraphStreamAPSP extends AbstractGraphStreamMeasure {
 
 
 	public static final InputOutput<Double> OUTPUT_AVERAGE_PATH_LENGTH = new InputOutput<Double>(
-			new DoubleFlowType(), 
-			"TODO.average_path_length", 
+			DoubleFlowType.SINGLETON, 
+			"out_average_path_length", 
 			"average path length", 
 			"the average length of the shortest pathes"
 	);
 	
 
 	public static final InputOutput<Double> OUTPUT_DIAMETER = new InputOutput<Double>(
-			new DoubleFlowType(), 
-			"TODO.diameter", 
+			DoubleFlowType.SINGLETON, 
+			"out_diameter", 
 			"diameter", 
 			"the diameter, that is the longest shortest path in the graph. "
 	);

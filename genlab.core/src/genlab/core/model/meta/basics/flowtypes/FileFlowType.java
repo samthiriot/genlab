@@ -6,8 +6,9 @@ import java.io.File;
 
 public class FileFlowType extends AbstractFlowType<File> {
 
-	
-	public FileFlowType() {
+	public static FileFlowType SINGLETON = new FileFlowType();
+
+	protected FileFlowType() {
 		super(
 				"core.types.file",
 				"file", 

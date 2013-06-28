@@ -4,7 +4,9 @@ import genlab.core.commons.WrongParametersException;
 
 public class DoubleFlowType extends AbstractFlowType<Double> {
 
-	public DoubleFlowType() {
+	public static DoubleFlowType SINGLETON = new DoubleFlowType();
+	
+	protected DoubleFlowType() {
 		super(
 				"core.types.double",
 				"double", 

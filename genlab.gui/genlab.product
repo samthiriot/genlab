@@ -8,12 +8,14 @@
    </configIni>
 
    <launcherArgs>
+      <vmArgs>-Dosgi.requiredJavaVersion=1.5 -Dhelp.lucene.tokenizer=standard -XX:MaxPermSize=256m -Xms40m -Xmx512m</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
    <windowImages/>
 
-   <launcher>
+
+   <launcher name="genlab">
       <solaris/>
       <win useIco="false">
          <bmp/>
@@ -23,6 +25,7 @@
 
    <vm>
    </vm>
+
 
    <plugins>
       <plugin id="com.ibm.icu"/>

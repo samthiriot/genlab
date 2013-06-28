@@ -84,6 +84,13 @@ public class ExistingAlgoCategories {
 			"constant values", 
 			"constants"
 			);
+	
+	public static final AlgoCategory EXPLORATION = new AlgoCategory(
+			null, 
+			"exploration", 
+			"exploration algos", 
+			"exploration"
+			);
 
 	private ExistingAlgoCategories() {
 		declareCategory(PARSER);
@@ -95,6 +102,7 @@ public class ExistingAlgoCategories {
 		declareCategory(ANALYSIS);
 		declareCategory(ANALYSIS_GRAPH);
 		declareCategory(CONSTANTS);
+		declareCategory(EXPLORATION);
 
 	}
 

@@ -44,7 +44,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		// no file linking
 		// TODO not working...
 		PlatformUI.getPreferenceStore().setValue(ResourcesPlugin.PREF_DISABLE_LINKING, true); 
-
+		PlatformUI.getPreferenceStore().setValue(ResourcesPlugin.PREF_AUTO_REFRESH, true);
 
 	}
 	

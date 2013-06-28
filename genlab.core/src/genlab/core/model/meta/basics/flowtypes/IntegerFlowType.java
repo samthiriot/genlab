@@ -4,7 +4,9 @@ import genlab.core.commons.WrongParametersException;
 
 public class IntegerFlowType extends AbstractFlowType<Integer> {
 
-	public IntegerFlowType() {
+	public static IntegerFlowType SINGLETON = new IntegerFlowType();
+
+	protected IntegerFlowType() {
 		super(
 				"core.types.integer",
 				"integer", 

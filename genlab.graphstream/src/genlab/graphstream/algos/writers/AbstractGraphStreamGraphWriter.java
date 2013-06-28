@@ -21,15 +21,15 @@ public abstract class AbstractGraphStreamGraphWriter extends BasicAlgo implement
 
 	
 	public static final InputOutput<IGenlabGraph> PARAM_GRAPH = new InputOutput<IGenlabGraph>(
-			new SimpleGraphFlowType(), 
-			"TODO.graph", 
+			SimpleGraphFlowType.SINGLETON, 
+			"param_graph", 
 			"graph", 
 			"the graph to save"
 	);
 	
 	public static final InputOutput<File> OUTPUT_FILE = new InputOutput<File>(
-			new FileFlowType(), 
-			"TODO.file", 
+			FileFlowType.SINGLETON, 
+			"out_file", 
 			"file", 
 			"the file to save the thing to"
 	);

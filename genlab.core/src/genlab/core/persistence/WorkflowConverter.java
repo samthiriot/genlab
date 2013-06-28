@@ -141,9 +141,9 @@ public class WorkflowConverter extends Decoder implements Converter {
 								}
 								IConnection connection = (IConnection) ctxt.convertAnother(reader, Connection.class);
 								if (connection == null)
-									throw new ProgramException("connection should not be null");
-								
-								connections.add(connection);
+									GLLogger.warnTech("a connection was not loaded", getClass());
+								else 
+									connections.add(connection);
 								
 								reader.moveUp();
 

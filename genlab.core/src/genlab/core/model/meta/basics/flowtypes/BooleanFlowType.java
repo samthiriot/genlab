@@ -4,7 +4,9 @@ import genlab.core.commons.WrongParametersException;
 
 public class BooleanFlowType extends AbstractFlowType<Boolean> {
 
-	public BooleanFlowType() {
+	public static BooleanFlowType SINGLETON = new BooleanFlowType();
+
+	protected BooleanFlowType() {
 		super(
 				"core.types.boolean",
 				"boolean", 

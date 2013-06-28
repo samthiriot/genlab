@@ -12,6 +12,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  ext/native/linux/x86_64/,
+ ext/native/windows/x86/,
  ext/jna-3.5.2.jar
 Bundle-NativeCode: /ext/native/linux/x86_64/libigraph.so; osname="linux"; processor=x86_64
 Export-Package: genlab.igraph,

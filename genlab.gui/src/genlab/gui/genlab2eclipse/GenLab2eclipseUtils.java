@@ -8,6 +8,12 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 
+/**
+ * Maps genlab resources with eclipse ones.
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class GenLab2eclipseUtils {
 
 	private static Map<URI, IGenlabProject> eclipseProject2genlabProject = new HashMap<URI, IGenlabProject>();

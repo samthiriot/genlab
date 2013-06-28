@@ -25,20 +25,20 @@ public class GraphStreamConnectedComponents extends AbstractGraphStreamMeasure {
 
 
 	public static final InputOutput<Integer> OUTPUT_COUNT = new InputOutput<Integer>(
-			new IntegerFlowType(), 
-			"TODO.count", 
+			IntegerFlowType.SINGLETON, 
+			"out_count", 
 			"count", 
 			"the number of components found in the graph"
 	);
 	public static final InputOutput<Integer> OUTPUT_GIANT_COMPONENT_SIZE = new InputOutput<Integer>(
-			new IntegerFlowType(), 
-			"TODO.giantComponentSize", 
+			IntegerFlowType.SINGLETON, 
+			"out_giantComponentSize", 
 			"giant component size", 
 			"the number of vertices found in the giant component"
 	);
 	public static final InputOutput<IGenlabGraph> OUTPUT_GRAPH = new InputOutput<IGenlabGraph>(
-			new SimpleGraphFlowType(), 
-			"TODO.graph", 
+			SimpleGraphFlowType.SINGLETON, 
+			"out_graph", 
 			"graph", 
 			"the graph analyzed, with some data added as attributes"
 	);

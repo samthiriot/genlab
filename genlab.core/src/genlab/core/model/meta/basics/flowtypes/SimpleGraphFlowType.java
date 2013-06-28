@@ -5,7 +5,9 @@ import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 
 public class SimpleGraphFlowType extends AbstractFlowType<IGenlabGraph> {
 
-	public SimpleGraphFlowType() {
+	public static SimpleGraphFlowType SINGLETON = new SimpleGraphFlowType();
+
+	protected SimpleGraphFlowType() {
 		super(
 				"core.types.simplegraph",
 				"Graph(simple)",

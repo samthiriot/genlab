@@ -34,23 +34,23 @@ import org.openide.util.Lookup;
 public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 
 	public static final InputOutput<IGenlabGraph> OUTPUT_GRAPH = new InputOutput<IGenlabGraph>(
-			new SimpleGraphFlowType(), 
-			"TODO.graph", 
+			SimpleGraphFlowType.SINGLETON, 
+			"out_graph", 
 			"graph", 
 			"the graph with betweeness"
 	);
 	
 	public static final InputOutput<Double> OUTPUT_AVERAGE_PATH_LENGTH = new InputOutput<Double>(
-			new DoubleFlowType(), 
-			"TODO.average_path_length", 
+			DoubleFlowType.SINGLETON, 
+			"out_average_path_length", 
 			"average path length", 
 			"the average length of the shortest pathes"
 	);
 	
 
 	public static final InputOutput<Double> OUTPUT_DIAMETER = new InputOutput<Double>(
-			new DoubleFlowType(), 
-			"TODO.diameter", 
+			DoubleFlowType.SINGLETON, 
+			"out_diameter", 
 			"diameter", 
 			"the diameter, that is the longest shortest path in the graph. "
 	);

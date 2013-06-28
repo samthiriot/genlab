@@ -12,7 +12,7 @@ public class OutputInstance extends InputOutputInstance {
 	@Override
 	public void addConnection(IConnection c) {
 		if (c.getFrom() != this)
-			throw new ProgramException("this connection does not really start on this output");
+			throw new ProgramException("this connection does not really start on this output: "+c.getFrom()+" != "+this);
 		super.addConnection(c);
 	}
 	

@@ -25,8 +25,8 @@ public class IGraphComponentsAlgo extends AbstractIGraphMeasure {
 
 
 	public static final InputOutput<Boolean> OUTPUT_ISCONNECTED = new InputOutput<Boolean>(
-			new BooleanFlowType(), 
-			"TODO.isConnected", 
+			BooleanFlowType.SINGLETON, 
+			"out_isConnected", 
 			"is connected", 
 			"connectivity stored by the igraph library" +
 			"TODO"
@@ -34,8 +34,8 @@ public class IGraphComponentsAlgo extends AbstractIGraphMeasure {
 	
 
 	public static final InputOutput<Integer> OUTPUT_SIZE_GIANT_CLUSTER = new InputOutput<Integer>(
-			new IntegerFlowType(), 
-			"TODO.giant cluster size", 
+			IntegerFlowType.SINGLETON, 
+			"out_giantclustersize", 
 			"giant cluster", 
 			"size of the biggest (giant) cluster" +
 			"TODO"

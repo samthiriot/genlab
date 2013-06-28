@@ -31,7 +31,8 @@ public class EclipseResourceListener implements IResourceChangeListener {
 	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 		
-		 if (
+		System.err.println("event : "+event);
+		if (
 				 event == null 
 				 || event.getDelta() == null
 				 )
@@ -59,10 +60,12 @@ public class EclipseResourceListener implements IResourceChangeListener {
 			        // before loading a project, we need to detect all the possible algo instances provided by plugins
 			        ExistingAlgos.getExistingAlgos();
 			        
+			        // read the genlab project 
 			        IGenlabProject genlabProject = GenlabPersistence.getPersistence().readProject(
 			        		FileUtils.extractPath(resource.getLocation().toOSString())
 			        		);
 			        
+			        // ... and associate it with this eclipse project
 			        GenLab2eclipseUtils.registerEclipseProjectForGenlabProject(
 			        		resource.getProject(), 
 			        		genlabProject

@@ -17,15 +17,15 @@ import org.graphstream.stream.file.FileSource;
 public abstract class AbstractGraphStreamGraphParser extends BasicAlgo {
 
 	public static final InputOutput<File> PARAM_FILE = new InputOutput<File>(
-			new FileFlowType(), 
-			"TODO.file", 
+			FileFlowType.SINGLETON, 
+			"param_file", 
 			"file", 
 			"the file to read the graph from"
 	);
 	
 	public static final InputOutput<IGenlabGraph> OUTPUT_GRAPH = new InputOutput<IGenlabGraph>(
-			new SimpleGraphFlowType(), 
-			"TODO.graph", 
+			SimpleGraphFlowType.SINGLETON, 
+			"out_graph", 
 			"graph", 
 			"the graph loaded from the file"
 	);

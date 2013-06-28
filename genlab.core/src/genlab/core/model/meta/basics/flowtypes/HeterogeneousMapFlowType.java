@@ -5,6 +5,7 @@ import genlab.core.model.meta.basics.vectorsHeterogeneous.IHeterogeneousMap;
 
 public class HeterogeneousMapFlowType extends AbstractFlowType<IHeterogeneousMap> {
 
+	
 	public HeterogeneousMapFlowType() {
 		super(
 				"core.types.vectorHeterogeneous",
@@ -19,10 +20,10 @@ public class HeterogeneousMapFlowType extends AbstractFlowType<IHeterogeneousMap
 			try {
 				return (IHeterogeneousMap)value;
 			} catch (ClassCastException e) {
-				throw new WrongParametersException("unable to decode integer from "+value);
+				throw new WrongParametersException("unable to decode an IHeterogeneousMap from "+value);
 			}
 		else
-			throw new WrongParametersException("unable to decode heterogeneous vector from "+value);
+			throw new WrongParametersException("unable to decode an heterogeneous map from "+value);
 		
 	}
 

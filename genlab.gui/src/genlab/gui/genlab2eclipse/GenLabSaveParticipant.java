@@ -42,7 +42,7 @@ public class GenLabSaveParticipant implements ISaveParticipant {
 	@Override
 	public void rollback(ISaveContext context) {
 		// TODO Auto-generated method stub
-
+		System.err.println("rollback !");
 	}
 
 	@Override

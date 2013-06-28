@@ -9,8 +9,8 @@ import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 public abstract class AbstractGraphStreamMeasure extends BasicAlgo {
 
 	public static final InputOutput<IGenlabGraph> INPUT_GRAPH = new InputOutput<IGenlabGraph>(
-			new SimpleGraphFlowType(), 
-			"TODO.graph", 
+			SimpleGraphFlowType.SINGLETON, 
+			"in_graph", 
 			"graph", 
 			"the graph to analyze"
 	);

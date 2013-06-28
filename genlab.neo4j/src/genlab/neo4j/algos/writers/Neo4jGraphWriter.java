@@ -12,8 +12,8 @@ import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 public class Neo4jGraphWriter extends BasicAlgo {
 
 	public static final InputOutput<IGenlabGraph> PARAM_GRAPH = new InputOutput<IGenlabGraph>(
-			new SimpleGraphFlowType(), 
-			"TODO.graph", 
+			SimpleGraphFlowType.SINGLETON, 
+			"in_graph", 
 			"graph", 
 			"the graph to save"
 	);

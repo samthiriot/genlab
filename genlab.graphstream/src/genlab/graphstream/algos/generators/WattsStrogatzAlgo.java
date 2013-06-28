@@ -17,27 +17,27 @@ public class WattsStrogatzAlgo extends BasicAlgo {
 	public static final String ALGO_NAME = "watts-strogatz beta generator";
 			
 	public static final InputOutput<Integer> PARAM_N = new InputOutput<Integer>(
-			new IntegerFlowType(), 
+			IntegerFlowType.SINGLETON,
 			"N", 
 			"N", 
 			"number of vertices"
 	);
 	
 	public static final InputOutput<Integer> PARAM_K = new InputOutput<Integer>(
-			new IntegerFlowType(), 
+			IntegerFlowType.SINGLETON,
 			"K", 
 			"K", 
 			"neighboors (should be even)"
 	);
 	public static final InputOutput<Double> PARAM_P =  new InputOutput<Double>(
-			new DoubleFlowType(), 
+			DoubleFlowType.SINGLETON,
 			"p", 
 			"p", 
 			"rewiring probability"
 		);
 	
 	public static final InputOutput<IGenlabGraph> OUTPUT_GRAPH =  new InputOutput<IGenlabGraph>(
-			new SimpleGraphFlowType(), 
+			SimpleGraphFlowType.SINGLETON, 
 			"graph", 
 			"g", 
 			"resulting graph"
