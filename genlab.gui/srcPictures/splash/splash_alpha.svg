@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="splash_alpha.svg"
+   inkscape:export-filename="/tmp/splash.bmp.png"
+   inkscape:export-xdpi="169.9299"
+   inkscape:export-ydpi="169.9299">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <inkscape:perspective
+       id="perspective2834"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective2896"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="1"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.979899"
+     inkscape:cx="147.86707"
+     inkscape:cy="886.51565"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1005"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="140.61169"
+       y="49.745171"
+       id="text2816"
+       inkscape:export-filename="/home/B12772/workspaceJunoRCP/genlab/genlab.gui/splash.bmp.png"
+       inkscape:export-xdpi="169.9299"
+       inkscape:export-ydpi="169.9299"><tspan
+         sodipodi:role="line"
+         id="tspan2818"
+         x="140.61169"
+         y="49.745171"
+         style="font-size:48px">GenLab</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="143.62186"
+       y="70.00914"
+       id="text2820"
+       inkscape:export-filename="/home/B12772/workspaceJunoRCP/genlab/genlab.gui/splash.bmp.png"
+       inkscape:export-xdpi="169.9299"
+       inkscape:export-ydpi="169.9299"><tspan
+         sodipodi:role="line"
+         id="tspan2822"
+         x="143.62186"
+         y="70.00914"
+         style="font-size:14px"><tspan
+   style="font-size:14px;fill:#808080"
+   id="tspan2856">lab</tspan>oratory for the <tspan
+   style="font-size:14px;fill:#808080"
+   id="tspan2860">gen</tspan>eration </tspan><tspan
+         sodipodi:role="line"
+         x="143.62186"
+         y="87.50914"
+         style="font-size:14px"
+         id="tspan2854">of synthetic populations</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:50.53696060000000045px;font-style:normal;font-weight:normal;fill:#808080;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="263.83899"
+       y="64.273239"
+       id="text3826"
+       transform="scale(1.182824,0.84543432)"
+       inkscape:export-filename="/home/B12772/workspaceJunoRCP/genlab/genlab.gui/splash.bmp.png"
+       inkscape:export-xdpi="169.9299"
+       inkscape:export-ydpi="169.9299"><tspan
+         sodipodi:role="line"
+         id="tspan3828"
+         x="263.83899"
+         y="64.273239"
+         style="font-size:56px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#808080;font-family:Times New Roman;-inkscape-font-specification:'Times New Roman,'">α</tspan></text>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3871"
+       style="font-size:10px;font-style:normal;font-weight:normal;fill:#808080;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       transform="translate(-6,4)"
+       inkscape:export-filename="/home/B12772/workspaceJunoRCP/genlab/genlab.gui/splash.bmp.png"
+       inkscape:export-xdpi="169.9299"
+       inkscape:export-ydpi="169.9299"><flowRegion
+         id="flowRegion3873"><rect
+           id="rect3875"
+           width="119.198"
+           height="121.72338"
+           x="19.192898"
+           y="6.3492212"
+           style="fill:#808080" /></flowRegion><flowPara
+         id="flowPara3877"
+         style="font-size:8px;text-align:justify;text-anchor:start;fill:#808080">synthetic populations . population resizing . network generation . populations matching . multi-scale populations . complex networks . reproductible research . open-source . model coupling . plugin-oriented . agent-based modeling . micro modeling . social simulation . igraph . graphstream . gephi . yang . </flowPara></flowRoot>    <rect
+       style="fill:none;stroke:#000000;stroke-width:0.94501566999999997;stroke-opacity:1"
+       id="rect3893"
+       width="359.66928"
+       height="140.46619"
+       x="0.45727909"
+       y="0.7658903"
+       inkscape:export-filename="/home/B12772/workspaceJunoRCP/genlab/genlab.gui/splash.bmp.png"
+       inkscape:export-xdpi="169.9299"
+       inkscape:export-ydpi="169.9299" />
+  </g>
+</svg>

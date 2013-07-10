@@ -14,7 +14,11 @@
 
    <windowImages/>
 
-
+   <splash
+      location="genlab.gui"
+      startupProgressRect="273,193,385,18"
+      startupMessageRect="273,210,386,20"
+      startupForegroundColor="000000" />
    <launcher name="genlab">
       <solaris/>
       <win useIco="false">
@@ -29,6 +33,7 @@
 
    <plugins>
       <plugin id="com.ibm.icu"/>
+      <plugin id="genlab.algog.core"/>
       <plugin id="genlab.core"/>
       <plugin id="genlab.gephi"/>
       <plugin id="genlab.graphiti"/>
@@ -208,5 +213,9 @@
       <plugin id="org.w3c.dom.svg"/>
    </plugins>
 
+   <configurations>
+      <plugin id="org.eclipse.core.runtime.compatibility" autoStart="true" startLevel="0" />
+      <plugin id="org.eclipse.equinox.p2.discovery.compatibility" autoStart="true" startLevel="0" />
+   </configurations>
 
 </product>

@@ -13,6 +13,34 @@
       </application>
    </extension>
    <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="genlab.gui.application"
+            name="Genlab">
+         <property
+               name="appName"
+               value="Genlab">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="000000">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="273,210,386,40">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="273,183,386,15">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+      </product>
+   </extension>
+   <extension
          point="org.eclipse.ui.perspectives">
       <perspective
             class="genlab.gui.perspectives.WorkflowPerspective"
@@ -113,18 +141,6 @@
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
             sequence="CTRL+X">
       </key>
-   </extension>
-   <extension
-         id="product"
-         point="org.eclipse.core.runtime.products">
-      <product
-            application="genlab.gui.application"
-            name="Genlab">
-         <property
-               name="appName"
-               value="Genlab">
-         </property>
-      </product>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
