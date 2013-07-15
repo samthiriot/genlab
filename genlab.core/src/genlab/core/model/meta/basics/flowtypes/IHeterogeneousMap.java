@@ -1,4 +1,4 @@
-package genlab.core.model.meta.basics.vectorsHeterogeneous;
+package genlab.core.model.meta.basics.flowtypes;
 
 import java.util.Collection;
 import java.util.Map;
@@ -25,6 +25,7 @@ public interface IHeterogeneousMap {
 	
 	public Map<String,Object> getKeyToValue();
 	
+	public void put(String key, Object value);
 		
 	
 }

@@ -8,5 +8,10 @@ public interface IConnection extends IGenlabResource {
 	
 	public IInputOutputInstance getTo();
 	
+	/**
+	 * Convenience method that relies on from data
+	 * @return
+	 */
+	public IGenlabWorkflowInstance getWorkflow();
 	
 }

@@ -1,6 +1,7 @@
 package genlab.gephi.algos.measure;
 
 import genlab.core.exec.IExecution;
+import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.AlgoInstance;
@@ -118,6 +119,10 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 							   param_betweeness_attribute,
 							   centrality
 							   );
+					   if (cancelled == true) {
+						   progress.setComputationState(ComputationState.FINISHED_CANCEL);
+						   return null;
+					   }
 					}
 					
 					results.put(OUTPUT_GRAPH, outputGraph);
@@ -127,6 +132,7 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 				return results;
 				
 			}
+
 
 		};
 	}

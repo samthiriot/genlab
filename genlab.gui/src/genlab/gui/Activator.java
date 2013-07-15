@@ -1,19 +1,16 @@
 package genlab.gui;
 
-import java.io.File;
-
+import genlab.core.exec.TaskManagers;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.genlab2eclipse.EclipseResourceListener;
 import genlab.gui.genlab2eclipse.GenLabSaveParticipant;
+import genlab.gui.genlab2eclipse.StartupTasksDisplayer;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.ISaveParticipant;
 import org.eclipse.core.resources.ISavedState;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.internal.splash.SplashHandlerFactory;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -39,9 +36,17 @@ public class Activator extends AbstractUIPlugin {
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext context) throws Exception {
+		
 		super.start(context);
 		GLLogger.infoTech("initializing the Graphical User Interface plugin for genlab...", getClass());
 		plugin = this;
+		
+		// monitor loading tasks
+		GLLogger.infoTech("listen for loading informations and display them", getClass());
+		// ask genlab to transmit info on inits
+		TaskManagers.getTaskManagers().startupTasks.addListener(StartupTasksDisplayer.singleton);
+		// and register it for eclipse
+		
 		
 		// add a save participant, and hook it, so our data will be save along with the eclipse's one.
 		GLLogger.infoTech("registering a save participant...", getClass());

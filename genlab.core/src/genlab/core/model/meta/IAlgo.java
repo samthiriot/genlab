@@ -62,6 +62,10 @@ public interface IAlgo extends IGenlabResource {
 	 */
 	public String getCategoryId();
 	
+	/**
+	 * Returns the list of parameters (not inputs: parameters)
+	 * @return
+	 */
 	public Collection<Parameter<?>> getParameters();
 	
 	public Parameter<?> getParameter(String id);

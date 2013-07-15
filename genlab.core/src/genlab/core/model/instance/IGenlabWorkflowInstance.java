@@ -1,10 +1,6 @@
 package genlab.core.model.instance;
 
 import genlab.core.commons.IWithAssociatedData;
-import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IConnection;
-import genlab.core.model.instance.IInputOutputInstance;
-import genlab.core.model.instance.WorkflowCheckResult;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.projects.IGenlabProject;
 
@@ -43,6 +39,8 @@ public interface IGenlabWorkflowInstance extends IAlgoInstance, IWithAssociatedD
 	
 	public File getFilePersisted();
 	
+	public void _notifyAlgoChanged(IAlgoInstance ai);
+	
 	public String getRelativePath();
 	
 	public String getRelativeFilename();
@@ -63,15 +61,31 @@ public interface IGenlabWorkflowInstance extends IAlgoInstance, IWithAssociatedD
 	
 	public boolean containsAlgoInstance(IAlgoInstance algoInstance);
 	
-	public boolean containsAlgoInstance(String algoInstanceId);
+	public boolean containsAlgoInstanceId(String algoInstanceId);
+	
+	public boolean containsAlgoInstanceName(String algoInstanceName);
+
+	
+	/**
+	 * Returns the count of algo instances existing for this algo
+	 * in this workflow. Notably used to increment the default 
+	 * name of algo instances.
+	 * @param algo
+	 * @return
+	 */
+	public int getCountOfAlgo(IAlgo algo);
 
 	public IAlgoInstance getAlgoInstanceForId(String algoInstanceId);
 	
+	public IAlgoInstance getAlgoInstanceForName(String algoInstanceName);
+
 	/**
 	 * Checks that everybody is ready for run. 
 	 * @return
 	 */
 	public WorkflowCheckResult checkForRun();
 	
+	public void addListener(IWorkflowContentListener l);
+	public void removeListener(IWorkflowContentListener l);
 	
 }

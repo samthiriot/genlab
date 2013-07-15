@@ -19,7 +19,8 @@ public interface IInputOutput<JavaType> {
 	
 	public IFlowType<JavaType> getType();
 	
-	
+	public boolean acceptsMultipleInputs();
+		
 	/**
 	 * 	for this given Input or output type, checks that this flow type is described into values with a relevant type
 	 * and other constraints respected. Also adds some transtyping possibilities

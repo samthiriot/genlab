@@ -5,7 +5,8 @@ Bundle-SymbolicName: genlab.graphiti; singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: genlab.gui.graphiti.Activator
 Bundle-Vendor: Samuel Thiriot
-Require-Bundle: org.eclipse.ui,
+Require-Bundle: org.eclipse.core.runtime.compatibility;bundle-version="3.2.200",
+ org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.graphiti,
  org.eclipse.graphiti.ui,
@@ -20,18 +21,17 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.navigator,
  org.eclipse.ui.views,
  org.eclipse.ui.views.log,
- genlab.core,
  org.eclipse.graphiti.ui.capabilities,
  org.eclipse.gef,
  org.eclipse.emf.common.ui,
  org.eclipse.emf.transaction.ui,
  org.eclipse.graphiti.export.batik;bundle-version="0.9.2",
- org.eclipse.core.runtime.compatibility;bundle-version="3.2.200",
  org.eclipse.core.runtime.compatibility.auth;bundle-version="3.2.300",
  org.eclipse.equinox.p2.discovery.compatibility;bundle-version="1.0.101",
  org.eclipse.graphiti.tools.newprojectwizard;bundle-version="0.9.2",
  org.eclipse.graphiti.examples.common;bundle-version="0.9.2",
  org.eclipse.ui.views.properties.tabbed;bundle-version="3.5.300",
+ genlab.core,
  genlab.gui;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy

@@ -25,17 +25,19 @@ public class GraphitiDiagramTypeProvider extends AbstractDiagramTypeProvider {
 
 	private IToolBehaviorProvider[] toolBehaviorProviders;
 
+	public static GraphitiDiagramTypeProvider lastInstanceCreated = null;
 
 	public GraphitiDiagramTypeProvider() {
 		super();
 		GLLogger.debugTech("Graphiti diagram provider instanciated for graphtype "+GRAPH_TYPE_ID, getClass());
 		
 		// add feature provider
-		setFeatureProvider(new GraphitiFeatureProvider(this));
+		setFeatureProvider(GraphitiFeatureProvider.getOrCreateFor(this));
 		
 		// create our behavior providers to return them later
 		toolBehaviorProviders = new IToolBehaviorProvider[] { new WorkflowToolBehaviorProvider(this) };
 		
+		lastInstanceCreated = this;
 		
 	}
 	

@@ -2,11 +2,14 @@ package genlab.gui.graphiti.diagram;
 
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.features.AddConnectionFeature;
-import genlab.gui.graphiti.features.AddIAlgoInstanceConnectionFeature;
+import genlab.gui.graphiti.features.AddIAlgoInstanceFeature;
+import genlab.gui.graphiti.features.AlgoDirectEditingFeature;
+import genlab.gui.graphiti.features.AlgoUpdateFeature;
 import genlab.gui.graphiti.features.CreateDomainObjectConnectionConnectionFeature;
 import genlab.gui.graphiti.features.CreateIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.DeleteIAlgoInstanceFeature;
@@ -17,25 +20,37 @@ import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
 import genlab.gui.graphiti.patterns.DomainObjectPattern;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
+import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeature;
 import org.eclipse.graphiti.features.ILayoutFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
+import org.eclipse.graphiti.features.context.IDirectEditingContext;
 import org.eclipse.graphiti.features.context.ILayoutContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
+import org.eclipse.graphiti.features.context.IUpdateContext;
 import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.internal.ExternalPictogramLink;
+import org.eclipse.graphiti.mm.Property;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.pattern.DefaultFeatureProviderWithPatterns;
+import org.eclipse.graphiti.services.Graphiti;
 
 /**
  * TODO higlight everything that may be linked after first click
@@ -47,16 +62,30 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 
 	private GenLabIndependenceSolver independenceSolver;
 	
+	private static Map<IDiagramTypeProvider,GraphitiFeatureProvider> type2provider = new HashMap<IDiagramTypeProvider, GraphitiFeatureProvider>();
 	
-	public GraphitiFeatureProvider(IDiagramTypeProvider dtp) {
+	
+	public static GraphitiFeatureProvider getOrCreateFor(IDiagramTypeProvider dtp) {
+		GraphitiFeatureProvider res = type2provider.get(dtp);
+		if (res == null) {
+			res = new GraphitiFeatureProvider(dtp);
+			type2provider.put(dtp, res);
+		}
+		return res;
+	}
+	
+	protected GraphitiFeatureProvider(IDiagramTypeProvider dtp) {
 		super(dtp);
+		
+		type2provider.put(dtp, this);
+
+        
 		GLLogger.debugTech("Graphiti feature provider instanciated: "+getClass().getCanonicalName(), getClass());
 		addPattern(new DomainObjectPattern());
 		
-		independenceSolver = new GenLabIndependenceSolver(null);
+		independenceSolver = GenLabIndependenceSolver.singleton;
 		setIndependenceSolver(independenceSolver);
-		
-        
+
 	}
 	
 	public void _setIndependanceSolver(GenLabIndependenceSolver solver) {
@@ -90,7 +119,7 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		
 		// to add algo instance
 		if (context.getNewObject() instanceof IAlgoInstance) {
-			return new AddIAlgoInstanceConnectionFeature(this);
+			return new AddIAlgoInstanceFeature(this);
 		}
 
 		// to add connection
@@ -206,47 +235,95 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		return super.getLayoutFeature(context);
 	}
 	
-	
-	
-	/*
-	@Override
-	public Object getBusinessObjectForPictogramElement(PictogramElement pictogramElement) {
-		
-		Object res = super.getBusinessObjectForPictogramElement(pictogramElement);
-		
-		if (res == null) {
-			
-			System.err.println("should be removed !");
-			// start of problem solving...
-			
-			// maybe this is a diagram, and diagrams have problems of mapping corrected by us
-			if (pictogramElement instanceof Diagram) {
-				res = MappingObjects.getGenlabResourceFor(pictogramElement);
+
+	private static class StringTransformer {
+		private final static String marker = "__independentN"; //$NON-NLS-1$
+
+		String[] decode(String value) {
+			if (!value.startsWith(marker)) {
+				return new String[] { value };
+			} else {
+				value = value.substring(marker.length(), value.length());
+				return value.split(marker);
 			}
+		}
+
+		String encode(String[] segments) {
+			if (segments.length == 1) {
+				return segments[0];
+			}
+			StringBuffer sb = new StringBuffer();
+			for (String string : segments) {
+				sb.append(marker);
+				sb.append(string);
+			}
+			return sb.toString();
+		}
+	}
+	static StringTransformer st = new StringTransformer();
+
+	public static String[] getValues(String value) {
+		if (value.length() == 0) {
+			return new String[0];
+		} else {
+			return st.decode(value);
+		}
+	}
+	
+	@Override
+	public PictogramElement getPictogramElementForBusinessObject(Object businessObject) {
+		
+		if (businessObject instanceof IGenlabWorkflowInstance) {
+			// specific case which is really not well managed by parent graphiti classes
 			
-			// store mapping
-			if (res != null)
-				TransactionUtil.getEditingDomain(pictogramElement).getCommandStack().execute(
-						new LinkCommand(this, pictogramElement, res)
+			String keyForBusinessObject = getIndependenceSolver().getKeyForBusinessObject(businessObject);
+
+			Diagram diagram = getDiagramTypeProvider().getDiagram();
+			if (diagram != null) {
+				Property property = Graphiti.getPeService().getProperty(
+						getDiagramTypeProvider().getDiagram(), 
+						ExternalPictogramLink.KEY_INDEPENDENT_PROPERTY
 						);
-			
+				if (property != null && Arrays.asList(getValues(property.getValue())).contains(keyForBusinessObject)) {
+					return diagram;
+				}	
+			}
+						
+		} 
+		
+		
+		return super.getPictogramElementForBusinessObject(businessObject);
+		
+	}
+
+	@Override
+    public IDirectEditingFeature getDirectEditingFeature(
+    			IDirectEditingContext context
+    			) {
+		
+		
+		PictogramElement pe = context.getPictogramElement();
+		Object bo = getBusinessObjectForPictogramElement(pe);
+		if (bo instanceof IAlgoInstance) {
+		    return new AlgoDirectEditingFeature(this);
 		}
 		
-		return res;
+		return super.getDirectEditingFeature(context);
 	}
-	*/
-
-	@Override
-	public void link(PictogramElement pictogramElement, Object businessObject) {
-		// TODO Auto-generated method stub
-		super.link(pictogramElement, businessObject);
-	}
-
-	@Override
-	public void link(PictogramElement pictogramElement, Object[] businessObjects) {
-		// TODO Auto-generated method stub
-		super.link(pictogramElement, businessObjects);
-	}
-
 	
+
+    @Override
+    public IUpdateFeature getUpdateFeature(IUpdateContext context) {
+        PictogramElement pictogramElement = context.getPictogramElement();
+        if (pictogramElement instanceof ContainerShape) {
+            Object bo = getBusinessObjectForPictogramElement(pictogramElement);
+            if (bo instanceof IAlgoInstance) {
+                return new AlgoUpdateFeature(this);
+            }
+        }
+        return super.getUpdateFeature(context);
+    }
+ 
+     
+
 }

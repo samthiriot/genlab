@@ -7,13 +7,11 @@ import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.graphstream.utils.GraphstreamConvertors;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.graphstream.graph.Graph;
@@ -21,7 +19,8 @@ import org.graphstream.graph.Graph;
 public abstract class AbstractGraphstreamMeasureExecution extends
 		AbstractAlgoExecution {
 	
-	
+	protected boolean cancelled = false;
+
 	public AbstractGraphstreamMeasureExecution(
 			IExecution exec,
 			IAlgoInstance algoInst
@@ -97,5 +96,16 @@ public abstract class AbstractGraphstreamMeasureExecution extends
 
 		setResult(result);
 	}
+	
+	@Override
+	public void kill() {
+		cancelled = true;				
+	}
+
+	@Override
+	public void cancel() {
+		cancelled = true;
+	}
+	
 
 }

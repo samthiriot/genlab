@@ -62,7 +62,10 @@ public class GenlabPersistence {
 	public IGenlabWorkflowInstance getWorkflowForFilename(String filename) {
 		IGenlabWorkflowInstance workflow = filename2workflow.get(filename);
 		if (workflow == null) {
-			GLLogger.warnTech("was asked a workflow for file "+filename+", but it was not yet loaded :-(", getClass());
+			GLLogger.warnTech(
+					"was asked a workflow for file "+filename+", but it was not yet loaded :-(", 
+					getClass()
+					);
 		}
 		return workflow;
 	}
@@ -76,13 +79,15 @@ public class GenlabPersistence {
 	 */
 	public IGenlabProject searchProjectForFile(File f) {
 		
-		// search the file
-		File parentFile = f.getParentFile();
+		// search for the file
+		File parentFile = f;
 		File testedFile = null;
 		
 		while (parentFile != null) {
 			// search the 
 			testedFile = new File(parentFile, FILENAME_PROJECT);
+			GLLogger.traceTech("attempting to load a project file from file: "+testedFile, getClass());
+
 			if (testedFile.exists()) {
 				GLLogger.traceTech("found a project file for this file: "+parentFile, getClass());
 				break;
@@ -92,12 +97,11 @@ public class GenlabPersistence {
 		
 		// search the corresponding project
 		IGenlabProject project = filename2project.get(testedFile.getAbsolutePath());
-		/*
 		if (project == null) {
 			GLLogger.debugTech("this project was not yet loaded, will load it "+parentFile, getClass());
 			project = readProject(parentFile.getAbsolutePath());
 		}
-		*/
+
 		if (project == null) {
 			GLLogger.warnTech("was unable to find or load a project for "+parentFile, getClass());
 		}

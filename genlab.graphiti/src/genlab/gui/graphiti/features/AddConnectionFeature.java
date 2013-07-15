@@ -1,6 +1,7 @@
 package genlab.gui.graphiti.features;
 
 import genlab.core.model.instance.IConnection;
+import genlab.core.usermachineinteraction.GLLogger;
 
 import org.eclipse.graphiti.features.IAddFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -35,7 +36,7 @@ public class AddConnectionFeature extends AbstractAddFeature implements
 	@Override
 	public PictogramElement add(IAddContext context) {
 		
-		System.err.println("trululu");
+		GLLogger.traceTech("adding a pictogram element for context: "+context, getClass());
 		
 		IConnection genlabConnection = (IConnection)context.getNewObject();
 		
@@ -71,6 +72,7 @@ public class AddConnectionFeature extends AbstractAddFeature implements
 		
 		return polyline;
 	}
+
 
 
 }

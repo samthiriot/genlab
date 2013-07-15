@@ -13,7 +13,7 @@ public class ConstantValueDouble extends ConstantValue<Double> {
 			"an output which is constant"
 			);
 	
-	protected ConstantValueDouble() {
+	public ConstantValueDouble() {
 		super(DoubleFlowType.SINGLETON, OUTPUT, "constant double", "a constant double value");
 		
 		registerParameter(new DoubleParameter(paramId, "value", "the value of this constant", 0.0));

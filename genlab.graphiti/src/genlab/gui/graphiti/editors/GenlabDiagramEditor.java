@@ -6,6 +6,7 @@ import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
 import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
+import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
 import genlab.gui.graphiti.genlab2graphiti.Genlab2GraphitiUtils;
 import genlab.gui.graphiti.genlab2graphiti.GenlabDomainModelChangeListener;
 
@@ -110,28 +111,9 @@ public class GenlabDiagramEditor extends DiagramEditor {
 
 		Genlab2GraphitiUtils.linkInTransaction(dfp, getDiagramTypeProvider().getDiagram(), workflow);
 		
-		dfp.getIndependanceSolver()._setWorkflowInstance(workflow);
-	
-	//  TODO remove ? MappingObjects.register(getDiagramTypeProvider().getDiagram(), workflow);
+		GenLabIndependenceSolver.singleton.registerWorkflow(workflow);
 		
-		// retrieve our mapping file
-		/*
-		GLLogger.debugTech("initializing xstream for persistence...", getClass());
-		GraphitiFeatureProvider dfp = (GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider();
-
-		GenLabIndependenceSolver independanceSolver = (GenLabIndependenceSolver)PersistenceUtils.getPersistenceUtils().loadAsXml(
-				workflow.getAbsolutePath()+Genlab2GraphitiUtils.EXTENSION_FILE_MAPPING
-				);
 		
-		if (independanceSolver != null) {
-			independanceSolver._resolveIdsFromWorkflow(workflow);
-			dfp._setIndependanceSolver(independanceSolver);	
-		} else {
-			GLLogger.warnTech("unable to read the independance solver from file", getClass());
-		}
-		*/
-		
-			
 		
 	}
 	

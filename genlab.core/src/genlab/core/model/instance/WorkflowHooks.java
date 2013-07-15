@@ -42,6 +42,9 @@ public class WorkflowHooks {
 		return listeners;
 	}
 
+	/**
+	 * Detects listener registered using extension points.
+	 */
 	private void detectFromExtensionPoints() {
 		
 		GLLogger.debugTech("detecting workflow listeners from plugins...", getClass());

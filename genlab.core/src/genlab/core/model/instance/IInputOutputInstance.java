@@ -26,5 +26,8 @@ public interface IInputOutputInstance extends IGenlabResource {
 	 */
 	public IParameterConstraint<?> getParametersConstraints();
 	
+	public boolean acceptsConnectionFrom(IInputOutputInstance from);
+	public boolean acceptsConnectionTo(IInputOutputInstance to);
+	
 	
 }

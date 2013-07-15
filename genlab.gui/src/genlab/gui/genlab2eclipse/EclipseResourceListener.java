@@ -6,6 +6,7 @@ import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -28,10 +29,30 @@ public class EclipseResourceListener implements IResourceChangeListener {
 	public EclipseResourceListener() {
 	}
 
+	protected void openProjectFromDirectory(IProject eclipseProject, String directoryRelativePath) {
+		
+		GLLogger.traceTech("attempting to open a project from directory : "+directoryRelativePath, getClass());
+		
+		// before loading a project, we need to detect all the possible algo instances provided by plugins
+        ExistingAlgos.getExistingAlgos();
+        // (if already loaded, it will not load them again)
+        
+		// read the genlab project 
+        IGenlabProject genlabProject = GenlabPersistence.getPersistence().readProject(
+        		directoryRelativePath
+        		);
+        
+        // ... and associate it with this eclipse project
+        GenLab2eclipseUtils.registerEclipseProjectForGenlabProject(
+        		eclipseProject, 
+        		genlabProject
+        		);
+        		
+	}
+	
 	@Override
 	public void resourceChanged(IResourceChangeEvent event) {
 		
-		System.err.println("event : "+event);
 		if (
 				 event == null 
 				 || event.getDelta() == null
@@ -44,40 +65,53 @@ public class EclipseResourceListener implements IResourceChangeListener {
 				
 			    public boolean visit(IResourceDelta delta) throws CoreException {
 			
+					System.err.println("visiting delta: "+delta);
+
 			    	final IResource resource = delta.getResource();
 			        
+			    	// stay there if the filename project is added (that means: project creation)
 			    	if (
-			    			(delta.getKind() != IResourceDelta.ADDED)
-			    			||
-			    			(resource.getType() != IResource.FILE)
-			    			||
-			    			(!resource.getName().equals(GenlabPersistence.FILENAME_PROJECT))
-			    			)
-			    		return true;
+			    			(
+			    					// when created
+			    					(delta.getKind() == IResourceDelta.ADDED) 
+			    					|| 
+			    					// when project loaded during workspace resume
+			    					(delta.getKind() == IResourceDelta.CHANGED))
+			    			&&
+			    			(resource.getType() == IResource.FILE)
+			    			&&
+			    			(resource.getName().equals(GenlabPersistence.FILENAME_PROJECT))
+			    			) {
+			    		
+			    		GLLogger.debugTech("a project file was added; attempting to load the corresponding project...", getClass());
+						   
+			    		openProjectFromDirectory(
+			    				resource.getProject(),
+			    				FileUtils.extractPath(resource.getLocation().toOSString())
+			    				);
+			    		
+			    		return false;
+			    	}
 			    	
-			        GLLogger.debugTech("attempting to load the project", getClass());
-			   
-			        // before loading a project, we need to detect all the possible algo instances provided by plugins
-			        ExistingAlgos.getExistingAlgos();
+			    	// also stay there if the root changes (typically, restoration of an eclipse project)
+			    	/*
+			    	if (
+			    			(delta.getKind() == IResourceDelta.CHANGED)
+			    			&&
+			    			(resource.getType() == IResource.ROOT)
+			    			) {
+			    		GLLogger.debugTech("a workspace root was added; attempting to load the corresponding project...", getClass());
+
+			    		return false;
+			    	}
+			    	*/
+			    	
 			        
-			        // read the genlab project 
-			        IGenlabProject genlabProject = GenlabPersistence.getPersistence().readProject(
-			        		FileUtils.extractPath(resource.getLocation().toOSString())
-			        		);
-			        
-			        // ... and associate it with this eclipse project
-			        GenLab2eclipseUtils.registerEclipseProjectForGenlabProject(
-			        		resource.getProject(), 
-			        		genlabProject
-			        		);
-			        		
-			       
 			        return true;
 			    }
 			 });
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			GLLogger.warnTech("catched an exception during an eclipse resource event: "+e.getMessage(), getClass(), e);
 		}
 		 
 	}

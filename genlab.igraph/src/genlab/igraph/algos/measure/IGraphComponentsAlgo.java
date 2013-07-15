@@ -85,6 +85,8 @@ public class IGraphComponentsAlgo extends AbstractIGraphMeasure {
 				
 				return results;
 			}
+
+		
 		};
 	}
 

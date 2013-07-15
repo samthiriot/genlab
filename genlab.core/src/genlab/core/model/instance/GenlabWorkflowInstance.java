@@ -20,11 +20,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * 
+ * Not thread safe. 
  * 
  * Nota: for persistence, always use the Persistence genlab class to ensure integrity.
  * 
@@ -49,6 +50,8 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	private Map<String,Object> key2object = new HashMap<String, Object>();
 	
 	protected static final Map<String,GenlabWorkflowInstance> id2instance = new HashMap<String, GenlabWorkflowInstance>(); 
+	
+	private LinkedList<IWorkflowContentListener> listeners = new LinkedList<IWorkflowContentListener>();
 	
 	public GenlabWorkflowInstance(IGenlabProject project, String name, String description, String relativeFilename) {
 		
@@ -130,35 +133,63 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
 
 		WorkflowHooks.getWorkflowHooks().notifyWorkflowChange(this);
-		
+		for (IWorkflowContentListener l: new LinkedList<IWorkflowContentListener>(listeners)) {
+			try {
+				l.notifyAlgoAdded(algoInstance);
+			} catch (RuntimeException e) {
+				GLLogger.warnTech("an error was catched during the dispatching of the event", getClass(), e);
+			}
+		}
 		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
 
 		
 	}
 
+	public void _notifyAlgoChanged(IAlgoInstance ai) {
+		
+		WorkflowHooks.getWorkflowHooks().notifyWorkflowChange(this);
+		for (IWorkflowContentListener l: new LinkedList<IWorkflowContentListener>(listeners)) {
+			try {
+				l.notifyAlgoChanged(ai);
+			} catch (RuntimeException e) {
+				GLLogger.warnTech("an error was catched during the dispatching of the event", getClass(), e);
+			}
+		}
+	}
+	
 	@Override
 	public void removeAlgoInstance(IAlgoInstance algoInstance) {
 		
 		GLLogger.debugTech("removing algo instance "+algoInstance, getClass());
 		
 		// TODO first remove all connections !
+		GLLogger.traceTech("removing input connections...", getClass());
 		for (IInputOutputInstance io: algoInstance.getInputInstances()) {
 				for (IConnection c : io.getConnections()) {
 					removeConnection(c);
 				}
 		}
+		GLLogger.traceTech("removing output connections...", getClass());
 		for (IInputOutputInstance io: algoInstance.getOutputInstances()) {
 			for (IConnection c : io.getConnections()) {
 				removeConnection(c);
 			}
 		}
 	
-		
+		GLLogger.traceTech("actual removal of the algo instance...", getClass());
 		id2algoInstance.remove(algoInstance.getId());
 
 		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
 
+		GLLogger.traceTech("now notifying listeners of removal", getClass());
 		WorkflowHooks.getWorkflowHooks().notifyWorkflowChange(this);
+		for (IWorkflowContentListener l: new LinkedList<IWorkflowContentListener>(listeners)) {
+			try {
+				l.notifyAlgoRemoved(algoInstance);
+			} catch (RuntimeException e) {
+				GLLogger.warnTech("an error was catched during the dispatching of the event", getClass());
+			}
+		}
 		
 		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
 
@@ -248,7 +279,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	}
 
 	@Override
-	public boolean containsAlgoInstance(String algoInstanceId) {
+	public boolean containsAlgoInstanceId(String algoInstanceId) {
 		return id2algoInstance.containsKey(algoInstanceId);
 	}
 
@@ -303,6 +334,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	@Override
 	public void addConnection(Connection c) {
 		connections.add(c);
+		
 	}
 
 	@Override
@@ -315,6 +347,13 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		if (from == null || to == null)
 			throw new WrongParametersException("cannot connect to null");
 		
+		if (!from.acceptsConnectionTo(to))
+			throw new WrongParametersException("connection to this node is not accepted");
+		
+		if (!to.acceptsConnectionFrom(from))
+			throw new WrongParametersException("connection from this node is not accepted");
+		
+		
 		if (!id2algoInstance.containsKey(from.getAlgoInstance().getId()) && !id2algoInstance.containsKey(to.getAlgoInstance().getId()))
 			throw new WrongParametersException("this instance of the algorithm does not belongs the workflow");
 		
@@ -323,10 +362,6 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		
 		if (!to.getAlgoInstance().getAlgo().getInputs().contains(to.getMeta()))
 			throw new WrongParametersException("this input does not belong this algo");
-		
-		if (!from.getMeta().getType().equals(to.getMeta().getType())) {
-			throw new WrongParametersException("unable to connect "+from.getMeta().getType()+" with "+to.getMeta().getType());
-		}
 		
 		// actually create it
 		Connection res = new Connection(from, to);
@@ -337,7 +372,15 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		
 		// TODO add it to the workflow !
 		
+		// notify of change
 		WorkflowHooks.getWorkflowHooks().notifyWorkflowChange(this);
+		for (IWorkflowContentListener l: new LinkedList<IWorkflowContentListener>(listeners)) {
+			try {
+				l.notifyConnectionAdded(res);
+			} catch (RuntimeException e) {
+				GLLogger.warnTech("an error was catched during the dispatching of the event", getClass());
+			}
+		}
 		
 		return res;
 	}
@@ -456,11 +499,66 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	}
 	
 	public void removeConnection(IConnection c) {
+		
 		GLLogger.debugTech("removing connection "+c, getClass());
 
 		if (!connections.remove(c))
 			GLLogger.warnTech("was unable to remove connection "+c, getClass());
+		else {
+			GLLogger.traceTech("notifying listeners of the removal of this connection..;", getClass());
+			WorkflowHooks.getWorkflowHooks().notifyWorkflowChange(this);
+			for (IWorkflowContentListener l: new LinkedList<IWorkflowContentListener>(listeners)) {
+				try {
+					l.notifyConnectionRemoved(c);
+				} catch (RuntimeException e) {
+					GLLogger.warnTech("an error was catched during the dispatching of the event", getClass());
+				}
+			}
+		}
 	}
 
+	@Override
+	public void addListener(IWorkflowContentListener l) {
+		if (!listeners.contains(l))
+			listeners.add(l);
+	}
+
+	@Override
+	public void removeListener(IWorkflowContentListener l) {
+		listeners.remove(l);
+	}
+
+	@Override
+	public boolean containsAlgoInstanceName(String algoInstanceName) {
+		
+		return getAlgoInstanceForName(algoInstanceName) != null;
+	}
+	
+
+	@Override
+	public IAlgoInstance getAlgoInstanceForName(String algoInstanceName) {
+		for (IAlgoInstance ai: id2algoInstance.values()) {
+			if (algoInstanceName.equals(ai.getName()))
+					return ai;
+		}
+		return null;
+	}
+
+	@Override
+	public void setName(String novelName) {
+		this.name = novelName;
+	}
+
+	@Override
+	public int getCountOfAlgo(IAlgo algo) {
+		int nb = 0;
+		for (IAlgoInstance ai: id2algoInstance.values()) {
+			if (ai.getAlgo().equals(algo))
+				nb++;
+		}
+		return nb;
+	}
+
+	
 	
 }

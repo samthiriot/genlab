@@ -9,6 +9,7 @@ import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.commons.IGraph2GenLabConvertor;
 import genlab.igraph.natjna.IGraphGraph;
@@ -79,6 +80,16 @@ public abstract class AbstractIGraphMeasureExec extends AbstractAlgoExecution {
 		progress.setProgressMade(1);
 		progress.setComputationState(ComputationState.FINISHED_OK);
 
+	}
+	
+	@Override
+	public void kill() {
+		GLLogger.infoUser("sorry, for technical reasons, an igraph execution can not be cancelled", getClass());
+	}
+
+	@Override
+	public void cancel() {
+		GLLogger.infoUser("sorry, for technical reasons, an igraph execution can not be cancelled", getClass());
 	}
 
 }

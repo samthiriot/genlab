@@ -1,4 +1,5 @@
-package genlab.core.model.meta.basics.vectorsHeterogeneous;
+package genlab.core.model.meta.basics.flowtypes;
+
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,6 +46,11 @@ public class HeterogeneousMap implements IHeterogeneousMap {
 	@Override
 	public Map<String, Object> getKeyToValue() {
 		return Collections.unmodifiableMap(key2value);
+	}
+
+	@Override
+	public void put(String key, Object value) {
+		key2value.put(key, value);
 	}
 
 }

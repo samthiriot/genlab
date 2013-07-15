@@ -1,6 +1,7 @@
 package genlab.graphstream.algos.measure;
 
 import genlab.core.exec.IExecution;
+import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.AlgoInstance;
@@ -76,7 +77,8 @@ public class GraphStreamAPSP extends AbstractGraphStreamMeasure {
 			AlgoInstance algoInstance) {
 		
 		return new AbstractGraphstreamMeasureExecution(execution, algoInstance) {
-			
+						
+
 			@Override
 			protected Map<IInputOutput<?>, Object> analyzeGraph(
 					final IComputationProgress progress, 
@@ -211,6 +213,12 @@ public class GraphStreamAPSP extends AbstractGraphStreamMeasure {
 				
 				// ... for each node,
 				for (Node n1: nodesInGiantCompoennt) {
+					
+					if (cancelled) {
+						progress.setComputationState(ComputationState.FINISHED_CANCEL);
+						return null;
+					}
+					
 					// ... and each other node
 					for (Node n2: nodesInGiantCompoennt) {
 						
@@ -261,6 +269,7 @@ public class GraphStreamAPSP extends AbstractGraphStreamMeasure {
 				
 				return results;
 			}
+
 		};
 	}
 

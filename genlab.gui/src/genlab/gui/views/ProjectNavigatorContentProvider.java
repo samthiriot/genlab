@@ -1,5 +1,7 @@
 package genlab.gui.views;
 
+import genlab.core.usermachineinteraction.GLLogger;
+
 import java.io.File;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -32,17 +34,15 @@ public class ProjectNavigatorContentProvider implements ITreeContentProvider {
 	@Override
 	public Object[] getElements(Object inputElement) {
 		
-		System.err.println("project navigator: get elements");
 		// get children :-)
 		if (inputElement instanceof IWorkspaceRoot) {
 			IWorkspaceRoot workspaceRoot = (IWorkspaceRoot)inputElement;
 			return workspaceRoot.getProjects();
 		} 
 		
-		System.err.println("oops ! is in getElements but not a project...");
+		GLLogger.warnTech("oops, getElement called for something which is not a project: "+inputElement, getClass());
 		
-		
-		return null;
+		return new Object[0];
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class ProjectNavigatorContentProvider implements ITreeContentProvider {
 				||
 				(
 					element instanceof File &&
-					((File)element).isDirectory()
+					((File)element).isDirectory() 
 					)
 				);
 	}

@@ -3,13 +3,16 @@ package genlab.core.model.exec;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.ExecutionTask;
 import genlab.core.exec.IExecution;
+import genlab.core.model.instance.Connection;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IInputOutput;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,11 +33,13 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	
 	protected final IExecution exec;
 	
-	private Map<IInputOutputInstance,ConnectionExec> input2connection = new HashMap<IInputOutputInstance, ConnectionExec>();
+	/**
+	 * For each input, associates it with the incoming connections for this input.
+	 */
+	private Map<IInputOutputInstance,Collection<ConnectionExec>> input2connection = new HashMap<IInputOutputInstance, Collection<ConnectionExec>>();
 
 	private Set<IInputOutputInstance> inputsNotAvailable = null;
 
-	
 	
 	/**
 	 * During init, creates the input executable connections
@@ -75,10 +80,12 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 					this
 					);
 			
-			input2connection.put(
-					input, 
-					cEx
-					);
+			Collection<ConnectionExec> conns = input2connection.get(input);
+			if (conns == null) {
+				conns = new LinkedList<ConnectionExec>();
+				input2connection.put(input, conns);
+			}
+			conns.add(cEx);
 			
 			addPrerequire(fromExec);
 		}
@@ -106,9 +113,17 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 
 	protected Object getInputValueForInput(IInputOutputInstance input) {
 		
-		ConnectionExec c = input2connection.get(input);
-		if (c == null)
+		Collection<ConnectionExec> cs = input2connection.get(input);
+		if (cs == null)
 			throw new ProgramException("unable to find the executable connection for this input: "+input);
+		
+		if (cs.isEmpty())
+			throw new ProgramException("unable to find the executable connection for this input: "+input);
+		
+		if (cs.size() > 1)
+			throw new ProgramException("there are several conncetions for this input: "+input);
+		
+		final ConnectionExec c = cs.iterator().next();
 		
 		return input.getMeta().decodeFromParameters(c.getValue());
 	}
@@ -120,9 +135,33 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 				);
 		
 	}
+
+	protected Map<IConnection,Object> getInputValuesForInput(IInputOutputInstance input) {
+		
+		Collection<ConnectionExec> cs = input2connection.get(input);
+		if (cs == null)
+			throw new ProgramException("unable to find the executable connection for this input: "+input);
+		
+		if (cs.isEmpty())
+			throw new ProgramException("unable to find the executable connection for this input: "+input);
+		
+		Map<IConnection,Object> map = new HashMap<IConnection, Object>();
+		for (ConnectionExec ce : cs) {
+			map.put(
+					ce.c, 
+					input.getMeta().decodeFromParameters(ce.getValue())
+					);
+		}
+		
+		
+		return map;
+	}
 	
-	protected ConnectionExec getConnectionExecForInputInstance(IInputOutputInstance input) {
-		return input2connection.get(input);
+	protected Map<IConnection,Object> getInputValuesForInput(IInputOutput<?> input) {
+
+		return getInputValuesForInput(
+				getAlgoInstance().getInputInstanceForInput(input)
+				);
 	}
 	
 	public IExecution getExecution() {
@@ -169,5 +208,11 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		}
 		return true;
 	}
+	
+	@Override
+	public String getName() {
+		return "execution of "+algoInst.getName();
+	}
+	
 	
 }

@@ -3,7 +3,13 @@ package genlab.core.exec;
 
 import java.util.Collection;
 
-public interface IExecutionTask extends Runnable {
+/**
+ * A task
+ * 
+ * @author Samuel Thiriot
+ *
+ */
+public interface IExecutionTask extends ITask, Runnable  {
 
 	/**
 	 * returns the set of execution tasks that should be ran before this one.
@@ -20,11 +26,16 @@ public interface IExecutionTask extends Runnable {
 	public void run();
 	
 	/**
-	 * Returns true if the execution task is so costless than it would be more costly to create a thread to run it than 
-	 * running it directly. This case is rare.
+	 * Returns true if the execution task is so costless than it would be more costly to create a 
+	 * thread to run it than running it directly. This case is rare.
 	 * @return
 	 */
 	public boolean isCostless();
+	
+	/**
+	 * Kills the task. Cancellation should be tried first.
+	 */
+	public void kill();
 	
 		
 }

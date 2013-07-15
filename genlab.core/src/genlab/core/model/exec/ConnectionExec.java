@@ -15,9 +15,9 @@ import genlab.core.usermachineinteraction.GLLogger;
  */
 public class ConnectionExec implements IComputationProgressSimpleListener {
 
-	private IConnection c;
-	private IAlgoExecution from;
-	private IAlgoExecution to;
+	public final IConnection c;
+	public final IAlgoExecution from;
+	public final IAlgoExecution to;
 	
 	private IExecution exec;
 	
@@ -69,6 +69,7 @@ public class ConnectionExec implements IComputationProgressSimpleListener {
 		to.notifyInputAvailable(c.getTo());
 		
 	}
+	
 	
 
 }

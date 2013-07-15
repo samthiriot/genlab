@@ -5,7 +5,6 @@ import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
-import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.IInputOutput;
 
@@ -58,6 +57,22 @@ public class ConstantValueExecution<JavaType> extends AbstractAlgoExecution {
 	@Override
 	public boolean isCostless() {
 		return true;
+	}
+
+	@Override
+	public void kill() {
+		// nothing to do (not a long task)
+		
+	}
+
+	@Override
+	public void cancel() {
+		// nothing to do (not a long task)
+	}
+
+	@Override
+	public String getName() {
+		return "execute constant";
 	}
 
 }

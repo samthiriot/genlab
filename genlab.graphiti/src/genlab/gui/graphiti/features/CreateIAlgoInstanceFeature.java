@@ -3,8 +3,8 @@ package genlab.gui.graphiti.features;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.IAlgo;
-import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICreateContext;
@@ -37,7 +37,7 @@ public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
 	}
 
 	@Override
-	public Object[] create(ICreateContext context) {
+	public Object[] create(final ICreateContext context) {
 		/*
 		// ask for the algo name
 		String newClassName = UIUtils.askString(
@@ -55,16 +55,32 @@ public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
 
 		// TODO should add this to the workflow !
 		
-		System.err.println("search for diag: "+context.getTargetContainer());
-		IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance)getBusinessObjectForPictogramElement(context.getTargetContainer());
+		IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance)getBusinessObjectForPictogramElement(
+				context.getTargetContainer()
+				);
 		if (workflow == null)
 			GLLogger.warnTech("unable to find the workflow related to this diagram, problems ahead", getClass());
 		
+		// create the instance 
 		IAlgoInstance algoInstance = algo.createInstance(workflow);
+				
+		// transmit the position info to the workflow listener, which will then actually create the instance
+		WorkflowListener.lastInstance.transmitLastUIParameters(
+				algoInstance,
+				new WorkflowListener.UIInfos() {{ 
+					x = context.getX(); 
+					y = context.getY();
+					width = context.getWidth();
+					height = context.getHeight();
+				}}
+				);
 		
-		addGraphicalRepresentation(context, algoInstance);
+		// add to the workflow
+		workflow.addAlgoInstance(algoInstance);
+		
+		// the graphical representation will be created by reaction to workflow listener
+		//addGraphicalRepresentation(context, algoInstance);
 
-		
 		return new Object[]{algoInstance};
 		
 		

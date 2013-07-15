@@ -164,4 +164,18 @@ public class Neo4jGraphWriterExecution extends AbstractAlgoExecution {
 
 	}
 
+	@Override
+	public void kill() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cancel() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+
 }

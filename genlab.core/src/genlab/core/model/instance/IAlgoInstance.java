@@ -12,6 +12,14 @@ public interface IAlgoInstance extends IGenlabResource {
 
 	public String getId();
 	
+	/**
+	 * The name of an algo instance is provided by the user, 
+	 * and helps him to understand its role in the workflow
+	 */
+	public String getName();
+
+	public void setName(String novelName);
+	
 	public IAlgo getAlgo();
 	
 	/**

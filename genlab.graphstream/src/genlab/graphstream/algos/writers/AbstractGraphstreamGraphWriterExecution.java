@@ -62,6 +62,7 @@ public class AbstractGraphstreamGraphWriterExecution extends
 						GraphstreamConvertors.getGraphstreamGraphFromGenLabGraph(inputGraph, result.getMessages()), 
 						tmpFile.getAbsolutePath()
 						);
+				
 	
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -81,6 +82,18 @@ public class AbstractGraphstreamGraphWriterExecution extends
 			progress.setComputationState(ComputationState.FINISHED_FAILURE);
 			// TODO store info exception
 		}
+	}
+
+	@Override
+	public void kill() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cancel() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	

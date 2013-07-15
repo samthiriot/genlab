@@ -26,7 +26,7 @@ public class Connection implements IConnection {
 			throw new WrongParametersException("can not create loops");
 		
 		// always compliant types
-		if (!from.getMeta().getType().compliantWith(to.getMeta().getType()))
+		if (!to.getMeta().getType().compliantWith(from.getMeta().getType()))
 			throw new WrongParametersException("types not compliant: "+from.getMeta().getType()+" and "+to.getMeta().getType());
 		
 	}
@@ -68,4 +68,7 @@ public class Connection implements IConnection {
 		return id;
 	}
 
+	public IGenlabWorkflowInstance getWorkflow() {
+		return from.getAlgoInstance().getWorkflow();
+	}
 }

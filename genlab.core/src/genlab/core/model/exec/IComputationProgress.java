@@ -100,4 +100,7 @@ public interface IComputationProgress {
 	 */
 	public void setCurrentTaskName(String name);
 	
+
+	public String getCurrentTaskName();
+	
 }

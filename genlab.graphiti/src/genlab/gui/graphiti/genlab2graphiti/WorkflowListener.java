@@ -1,6 +1,29 @@
 package genlab.gui.graphiti.genlab2graphiti;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.graphiti.features.IUpdateFeature;
+import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
+import org.eclipse.graphiti.features.impl.IIndependenceSolver;
+import org.eclipse.graphiti.internal.ExternalPictogramLink;
+import org.eclipse.graphiti.mm.Property;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
+
+import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.Connection;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.IWorkflowContentListener;
 import genlab.core.model.instance.IWorkflowListener;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -8,12 +31,39 @@ import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
 import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
 
-public class WorkflowListener implements IWorkflowListener {
+/**
+ * Listens all the genlab worflows (is registered as a listener using an extension point)
+ * and update the graphiti diagram accordingly. Each time a workflow is opened/added,
+ * this listener observes it. 
+ * 
+ * @author Samuel Thiriot
+ *
+ */
+public class WorkflowListener implements IWorkflowListener, IWorkflowContentListener {
 
 	public WorkflowListener() {
-		// TODO Auto-generated constructor stub
+		lastInstance = this;
 	}
+	
+	public static WorkflowListener lastInstance = null;
 
+	public static class UIInfos {
+		public int x, y, width, height;
+			
+	}
+	
+	private Map<Object, UIInfos> objectCreated2infos = new HashMap<Object, WorkflowListener.UIInfos>();
+	
+	/**
+	 * Enables the transmission of the last informations from UI
+	 * like position, size. So when something is created into the
+	 * workflow, we still have some insights on what the user 
+	 * asked for
+	 */
+	public void transmitLastUIParameters(Object o, UIInfos infos) {
+		objectCreated2infos.put(o, infos);
+	}
+	
 	@Override
 	public void workflowCreation(IGenlabWorkflowInstance workflow) {
 
@@ -29,108 +79,14 @@ public class WorkflowListener implements IWorkflowListener {
 				GenLab2eclipseUtils.getEclipseProjectForGenlabProject(workflow.getProject())
 				);
 		
+		workflow.addListener(this);
 		
-		// create diagram
-		/*
-		Diagram diagram = Graphiti.getPeCreateService().createDiagram(
-				GraphitiDiagramTypeProvider.GRAPH_TYPE, 
-				workflow.getName(), 
-				true
-				);
-		*/
-		/*
-		
-		// retrieve services
-		IPeService peService = Graphiti.getPeService();
-		IPeCreateService peCreateService = Graphiti.getPeCreateService();
-		IGaService gaService = Graphiti.getGaService();
-		
-		// retrieve resources
-		final ResourceSetImpl resourceSet = new ResourceSetImpl();
-	        
-        TransactionalEditingDomain editingDomain1 = TransactionUtil.getEditingDomain(resourceSet);
-        if (editingDomain1 == null) {
-            // Not yet existing, create one
-            editingDomain1 = TransactionalEditingDomain.Factory.INSTANCE.createEditingDomain(resourceSet);
-        }
-        final TransactionalEditingDomain editingDomain = editingDomain1;
-        DiagramEditorInput editorInput = new DiagramEditorInput(
-       		 	org.eclipse.emf.common.util.URI.createFileURI(
-       		 			(new File("/tmp/test.diagram")
-       		 			).getAbsolutePath()), 
-       		 	GraphitiDiagramTypeProvider.GRAPH_TYPE
-        		);
-		 
-		 try {
-			 PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(
-					 editorInput, 
-					 DiagramEditor.DIAGRAM_EDITOR_ID);
-		 } catch (PartInitException e) {
-			 e.printStackTrace();
-			 GLLogger.errorTech("unable to create editor...",e);
-		 }
-		
-		/* 
-        diagram.setVisible(true);
-        Color c1 = Graphiti.getGaService().manageColor(diagram, 249, 238, 227);
-        Color c2 = Graphiti.getGaService().manageColor(diagram, IColorConstant.WHITE);
-        Rectangle r = Graphiti.getGaService().createRectangle(diagram);
-        r.setBackground(c2);
-        r.setForeground(c1);
-        r.setFilled(true);
-        r.setHeight(1000);
-        r.setWidth(1000);
-        r.setLineStyle(LineStyle.SOLID);
-        r.setLineVisible(true);
-        r.setLineWidth(1);
-        r.setX(0);
-        r.setY(0);
-        */
-        
-/*
-        final Resource resource =  PlatformUI.getPreferenceStore().setValue(name, value) rs.createResource(uri);
-        resource.getContents().add(diagram);
-        IRunnableWithProgress op = new IRunnableWithProgress() {
-            public void run(IProgressMonitor monitor) throws InvocationTargetException {
-                try {
-                    resource.save(Collections.emptyMap());
-                    final IFile file = workspace.getRoot().getFile(new Path(uri.toPlatformString(true)));
-                    BasicNewResourceWizard.selectAndReveal(file, PlatformUI.getWorkbench().getActiveWorkbenchWindow());
-
-                    Display.getDefault().getActiveShell().getDisplay().asyncExec(new Runnable() {
-                        public void run() {
-                            final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-                            try {
-                                IDE.openEditor(page, file, true);
-                            } catch (final PartInitException e) {
-                            	e.printStackTrace();
-                            }
-                        }
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } finally {
-                    monitor.done();
-                }
-            }
-        };
-       
-        try {
-        	PlatformUI.getWorkbench().getActiveWorkbenchWindow().run( true, false, op);
-        } catch (InterruptedException e) {
-        	GLLogger.errorTech("error while creating graph editor",e);
-        } catch (InvocationTargetException e) {
-        	e.printStackTrace();
-            Throwable realException = e.getTargetException();
-            MessageDialog.openError(Display.getDefault().getActiveShell(), "Error", realException.getMessage());
-    		GLLogger.errorTech("error while creating graph editor",e);
-
-        }
-         */
 	}
 	
 	@Override
 	public void workflowOpened(IGenlabWorkflowInstance workflow) {
+
+		workflow.addListener(this);
 
 		// retrieve diagram filename
 		/*
@@ -145,15 +101,113 @@ public class WorkflowListener implements IWorkflowListener {
 
 	@Override
 	public void workflowSaving(IGenlabWorkflowInstance workflow) {
-		// TODO Auto-generated method stub
 
+		
 	}
 
 	@Override
 	public void workflowChanged(IGenlabWorkflowInstance workflow) {
-		// TODO Auto-generated IGenlabWorkflowInstance stub
+		
+		/*
+		GLLogger.debugTech("the genlab workflow changed; will update the graphiti diagram accordingly", getClass());
+		
+		
+		if (dfp == null) {
+			GLLogger.errorTech("unable to retrieve a feature provider; unable to maintain synchronicity between genlab an graphiti", getClass());
+			return;
+		}
+		
+		Diagram diagram = (Diagram) dfp.getPictogramElementForBusinessObject(workflow);
+		if (diagram == null) {
+			GLLogger.errorTech("unable to retrieve the diagram; unable to maintain synchronicity between genlab an graphiti", getClass());
+			return;
+		}
+		
+		
+		// ensure all the instances in workflow exist in the diagram
+		for (IAlgoInstance instance: workflow.getAlgoInstances()) {
+			
+			PictogramElement e = dfp.getPictogramElementForBusinessObject(instance);
+			if (e == null) {
+				
+				try {
+					GLLogger.debugTech("the instance "+instance+" has no graphiti counterpart; let's create it", getClass());
+					
+					AddContext ctxt = new AddContext();
+					ctxt.setTargetContainer(diagram);
+					ctxt.setNewObject(instance);
+					
+					UIInfos uiInfos = objectCreated2infos.get(instance);
+					if (uiInfos != null) {
+						ctxt.setHeight(uiInfos.height);
+						ctxt.setWidth(uiInfos.width);
+						ctxt.setX(uiInfos.x);
+						ctxt.setY(uiInfos.y);
+						objectCreated2infos.remove(instance); // should not be of use anymore
+					}
+					
+					dfp.addIfPossible(ctxt);
+				} catch (RuntimeException e2) {
+					GLLogger.errorTech("unable to create a graphical representation for algo instance: "+instance+"; the graphical representation is no more consistant with the actual data", getClass(), e2);
+				}
+			}
+			
+		}
+		
+		// ensure each connection is displayed
+		for (Connection c : workflow.getConnections()) {
+			
+			PictogramElement e = dfp.getPictogramElementForBusinessObject(c);
+			if (e == null) {
+				
+				try {
+					GLLogger.debugTech("the connection "+c+" has no graphiti counterpart; let's create it", getClass());
+					
+					Anchor anchorFrom = (Anchor) dfp.getPictogramElementForBusinessObject(c.getFrom());
+					Anchor anchorTo = (Anchor) dfp.getPictogramElementForBusinessObject(c.getTo());
+					
+					AddConnectionContext addContext = new AddConnectionContext(
+							anchorFrom, 
+							anchorTo
+							);
+					addContext.setNewObject(c);
+					
+					dfp.addIfPossible(addContext);
+				} catch (RuntimeException e2) {
+					GLLogger.errorTech("unable to create a graphical representation for connection: "+c+"; the graphical representation is no more consistant with the actual data", getClass(), e2);
+				}
+			}
+		}
+		
+		// reverse: has each diagram object a counterpart ?
+		//diagram.getChildren()
+		Collection<PictogramElement> allContainedPictogramElements = Graphiti.getPeService().getAllContainedPictogramElements(
+				diagram
+				);
+		for (PictogramElement pe : allContainedPictogramElements) {
+			Property property = Graphiti.getPeService().getProperty(pe, ExternalPictogramLink.KEY_INDEPENDENT_PROPERTY);
+			if (property != null) {
+				List<String> values = Arrays.asList(GraphitiFeatureProvider.getValues(property.getValue()));
+				
+				Object bo = dfp.getBusinessObjectForPictogramElement(pe);
+				
+				
+				
+			}
+		}
+		
 		
 		// TODO update graphiti when the workflow changes !
+		
+		
+		// let's build the list of all the objects expected
+		
+		// iterate accross all the elements in the diagram,
+		// in order to remove things in the diag but not in the actual workflow
+		
+		*/
+		
+		// updates are catched by the other listener !
 	}
 
 	@Override
@@ -166,6 +220,140 @@ public class WorkflowListener implements IWorkflowListener {
 	public void projectSaved(IGenlabProject project) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void notifyConnectionAdded(IConnection c) {
+		
+		final GraphitiFeatureProvider dfp = (GraphitiFeatureProvider) GraphitiDiagramTypeProvider.lastInstanceCreated.getFeatureProvider();
+
+		PictogramElement e = dfp.getPictogramElementForBusinessObject(c);
+		if (e == null) {
+			
+			try {
+				GLLogger.debugTech("the connection "+c+" has no graphiti counterpart; let's create it", getClass());
+				
+				Anchor anchorFrom = (Anchor) dfp.getPictogramElementForBusinessObject(c.getFrom());
+				Anchor anchorTo = (Anchor) dfp.getPictogramElementForBusinessObject(c.getTo());
+				
+				AddConnectionContext addContext = new AddConnectionContext(
+						anchorFrom, 
+						anchorTo
+						);
+				addContext.setNewObject(c);
+				
+				dfp.addIfPossible(addContext);
+			} catch (RuntimeException e2) {
+				GLLogger.errorTech("unable to create a graphical representation for connection: "+c+"; the graphical representation is no more consistant with the actual data", getClass(), e2);
+			}
+		}
+	}
+
+	@Override
+	public void notifyConnectionRemoved(IConnection c) {
+
+		final GraphitiFeatureProvider dfp = (GraphitiFeatureProvider) GraphitiDiagramTypeProvider.lastInstanceCreated.getFeatureProvider();
+
+		PictogramElement e = dfp.getPictogramElementForBusinessObject(c);
+		if (e != null) {
+			
+			try {
+				GLLogger.debugTech("the connection "+c+" has a graphiti counterpart, which has to be removed", getClass());
+				
+				Graphiti.getPeService().deletePictogramElement(e);
+				
+			} catch (RuntimeException e2) {
+				GLLogger.errorTech("unable to delete the graphical representation for connection: "+c+"; the graphical representation is no more consistant with the actual data", getClass(), e2);
+			}
+		}
+	}
+
+	@Override
+	public void notifyAlgoAdded(IAlgoInstance instance) {
+		
+		final GraphitiFeatureProvider dfp = (GraphitiFeatureProvider) GraphitiDiagramTypeProvider.lastInstanceCreated.getFeatureProvider();
+
+		Diagram diagram = (Diagram) dfp.getPictogramElementForBusinessObject(instance.getWorkflow());
+		if (diagram == null) {
+			GLLogger.errorTech("unable to retrieve the diagram; unable to maintain synchronicity between genlab an graphiti", getClass());
+			return;
+		}
+		
+		PictogramElement e = dfp.getPictogramElementForBusinessObject(instance);
+		if (e == null) {
+			
+			try {
+				GLLogger.debugTech("the instance "+instance+" has no graphiti counterpart; let's create it", getClass());
+				
+				AddContext ctxt = new AddContext();
+				ctxt.setTargetContainer(diagram);
+				ctxt.setNewObject(instance);
+				
+				UIInfos uiInfos = objectCreated2infos.get(instance);
+				if (uiInfos != null) {
+					ctxt.setHeight(uiInfos.height);
+					ctxt.setWidth(uiInfos.width);
+					ctxt.setX(uiInfos.x);
+					ctxt.setY(uiInfos.y);
+					objectCreated2infos.remove(instance); // should not be of use anymore
+				}
+				
+				dfp.addIfPossible(ctxt);
+			} catch (RuntimeException e2) {
+				GLLogger.errorTech("unable to create a graphical representation for algo instance: "+instance+"; the graphical representation is no more consistant with the actual data", getClass(), e2);
+			}
+		}
+		
+	}
+
+	@Override
+	public void notifyAlgoRemoved(IAlgoInstance ai) {
+		
+		final GraphitiFeatureProvider dfp = (GraphitiFeatureProvider) GraphitiDiagramTypeProvider.lastInstanceCreated.getFeatureProvider();
+
+		PictogramElement e = dfp.getPictogramElementForBusinessObject(ai);
+		if (e != null) {
+			
+			try {
+				GLLogger.debugTech("the algo instance "+ai+" has a graphiti counterpart, which has to be removed", getClass());
+				
+				Graphiti.getPeService().deletePictogramElement(e);
+				
+			} catch (RuntimeException e2) {
+				GLLogger.errorTech("unable to delete the graphical representation for algo instance: "+ai+"; the graphical representation is no more consistant with the actual data", getClass(), e2);
+			}
+		}
+	}
+
+	@Override
+	public void notifyAlgoChanged(IAlgoInstance ai) {
+		
+		// notably called when an algo instance is renamed
+		
+		final GraphitiFeatureProvider dfp = (GraphitiFeatureProvider) GraphitiDiagramTypeProvider.lastInstanceCreated.getFeatureProvider();
+
+		PictogramElement e = dfp.getPictogramElementForBusinessObject(ai);
+		if (e != null) {
+			
+			try {
+				GLLogger.debugTech("the algo instance "+ai+" has a graphiti counterpart, which has changed", getClass());
+				
+				UpdateContext uc = new UpdateContext(e);
+				IUpdateFeature uf = dfp.getUpdateFeature(uc);
+				if (uf == null) {
+					GLLogger.warnTech("unable to find an update feature for this algo instance; graphic dysplay is no more in sync", getClass());
+					return;
+				}
+				if (!uf.canExecute(uc)) {
+					GLLogger.warnTech("unable to execute an update feature for this algo instance; graphic dysplay is no more in sync", getClass());
+					return;
+				}
+				uf.execute(uc);
+				
+			} catch (RuntimeException e2) {
+				GLLogger.errorTech("unable to delete the graphical representation for algo instance: "+ai+"; the graphical representation is no more consistant with the actual data", getClass(), e2);
+			}
+		}
 	}
 
 }

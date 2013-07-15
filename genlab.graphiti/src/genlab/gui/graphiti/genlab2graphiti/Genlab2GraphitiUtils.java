@@ -53,6 +53,7 @@ public class Genlab2GraphitiUtils {
 
 		@Override
 		public void execute() {
+			GLLogger.debugTech("linking in "+dfp+" "+pictogramElement+" with "+res, getClass());
 			dfp.link(pictogramElement, res);
 		}
 

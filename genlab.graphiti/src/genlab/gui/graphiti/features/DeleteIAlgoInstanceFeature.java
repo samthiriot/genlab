@@ -18,17 +18,16 @@ public class DeleteIAlgoInstanceFeature extends DefaultDeleteFeature {
 	@Override
 	public void delete(IDeleteContext context) {
 		
+		IAlgoInstance algoInstance = (IAlgoInstance) getBusinessObjectForPictogramElement(context.getPictogramElement());
+
 		// delete graphiti objects
 		super.delete(context);
 		
 		GLLogger.debugTech("IAlgoInstance removed from the diagram, removing it from genlab as well", getClass());
 		
 		// delete the corresponding IAlgoInstance
-		IAlgoInstance algoInstance = (IAlgoInstance) getBusinessObjectForPictogramElement(context.getPictogramElement());
 		algoInstance.delete();
 		
-		// TODO !!!
-		throw new ProgramException("not yet implemented, sorry");
 		/*
 		IGenlabWorkflow workflow = (IGenlabWorkflow) MappingObjects.removeGenlabResourceFor(context.getPictogramElement());
 		MappingObjects.removeGenlabResourceFor(workflow.getAbsolutePath());

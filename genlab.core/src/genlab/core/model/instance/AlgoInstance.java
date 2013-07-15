@@ -12,12 +12,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Most of the time, an algo instance can be infered automatically 
+ * from the algo: it just stores values for the inputs and outputs
+ * of its algo, and just deleguates the execution to the algo type.
+ *  
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class AlgoInstance implements IAlgoInstance {
 
-	private String id;
+	protected String id;
+	protected String name;
+
 	
-	private transient IAlgo algo;
-	private transient IGenlabWorkflowInstance workflow;
+	protected transient IAlgo algo;
+	protected transient IGenlabWorkflowInstance workflow;
 	
 	private Map<IInputOutput<?>,IInputOutputInstance> inputs2inputInstances = new HashMap<IInputOutput<?>, IInputOutputInstance>();
 	private Map<IInputOutput<?>,IInputOutputInstance> outputs2outputInstances = new HashMap<IInputOutput<?>, IInputOutputInstance>();
@@ -26,21 +37,24 @@ public class AlgoInstance implements IAlgoInstance {
 	// TODO improve algo parameters
 	private Map<String,Object> parameters = new HashMap<String, Object>();
 	
+	
 	public AlgoInstance(IAlgo algo, IGenlabWorkflowInstance workflow, String id) {
 
 		this.id = id;
 		this.algo = algo;
+		this.name = algo.getName() + " " + (workflow.getCountOfAlgo(algo)+1); 
 		
-		if (workflow != null) {
-			_setWorkflowInstance(workflow);
-			workflow.addAlgoInstance(this);
-		} 
 		// init in and outs
 		for (IInputOutput<?> input : algo.getInputs()) {
+			InputInstance i = new InputInstance(input, this);
+			
+			i.setAcceptMultipleInputs(input.acceptsMultipleInputs());
+			
 			inputs2inputInstances.put(
 					input, 
-					new InputInstance(input, this)
+					i
 					);
+			
 		}
 		for (IInputOutput<?> output : algo.getOuputs()) {
 			outputs2outputInstances.put(
@@ -48,6 +62,12 @@ public class AlgoInstance implements IAlgoInstance {
 					new OutputInstance(output, this)
 					);
 		}
+		
+
+		if (workflow != null) {
+			_setWorkflowInstance(workflow);
+			//workflow.addAlgoInstance(this);
+		} 
 	}
 
 	public AlgoInstance(IAlgo algo, IGenlabWorkflowInstance workflow) {
@@ -89,7 +109,7 @@ public class AlgoInstance implements IAlgoInstance {
 
 	@Override
 	public String getName() {
-		return algo.getName();
+		return name;
 	}
 
 	@Override
@@ -100,8 +120,6 @@ public class AlgoInstance implements IAlgoInstance {
 	
 	public void _setWorkflow(IGenlabWorkflowInstance workflow) {
 		this.workflow = workflow;
-		if (workflow != null)
-			workflow.addAlgoInstance(this);
 	}
 	
 	public void _setAlgo(IAlgo algo) {
@@ -196,8 +214,20 @@ public class AlgoInstance implements IAlgoInstance {
 	@Override
 	public void _setWorkflowInstance(IGenlabWorkflowInstance workflow) {
 		this.workflow = workflow;
-		workflow.addAlgoInstance(this);
 	}
 
+	@Override
+	public void setName(String novelName) {
+		
+		if (name.equals(novelName))
+			return;
+		
+		this.name = novelName;
+		
+		if (workflow != null)
+			workflow._notifyAlgoChanged(this);
+		
+	}
+	
 
 }

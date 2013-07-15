@@ -8,7 +8,7 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 
 /**
- * Represents an atom execution. 
+ * Represents an atomic execution of an algo 
  * Once created, it can run of its own, meaning it stored its parameters.
  * 
  * @author Samuel Thiriot

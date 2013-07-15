@@ -74,6 +74,18 @@ public class WattsStrogatzExecution extends AbstractGraphStreamGenerator {
 			
 		} 
 	}
+
+	@Override
+	public void kill() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cancel() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 
 }

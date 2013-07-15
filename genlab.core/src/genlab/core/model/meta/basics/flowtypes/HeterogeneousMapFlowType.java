@@ -1,12 +1,12 @@
 package genlab.core.model.meta.basics.flowtypes;
 
 import genlab.core.commons.WrongParametersException;
-import genlab.core.model.meta.basics.vectorsHeterogeneous.IHeterogeneousMap;
 
 public class HeterogeneousMapFlowType extends AbstractFlowType<IHeterogeneousMap> {
 
-	
-	public HeterogeneousMapFlowType() {
+	public static HeterogeneousMapFlowType SINGLETON = new HeterogeneousMapFlowType();
+
+	protected HeterogeneousMapFlowType() {
 		super(
 				"core.types.vectorHeterogeneous",
 				"heterogeneous vector", 

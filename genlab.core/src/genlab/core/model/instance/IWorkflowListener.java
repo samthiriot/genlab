@@ -2,6 +2,12 @@ package genlab.core.model.instance;
 
 import genlab.core.projects.IGenlabProject;
 
+/**
+ * Describes listeners interested in the lifecycle of workflows
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public interface IWorkflowListener {
 
 	public void workflowCreation(IGenlabWorkflowInstance workflow);

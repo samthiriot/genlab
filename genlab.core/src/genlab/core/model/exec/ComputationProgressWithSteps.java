@@ -24,6 +24,8 @@ public class ComputationProgressWithSteps implements IComputationProgress {
 	private IAlgo algo = null;
 	private ComputationState state = null;
 	
+	private String currentTaskName = "";
+	
 	protected Collection<IComputationProgressSimpleListener> listeners = new LinkedList<IComputationProgressSimpleListener>();
 	
 	public ComputationProgressWithSteps() {
@@ -195,7 +197,13 @@ public class ComputationProgressWithSteps implements IComputationProgress {
 
 	@Override
 	public void setCurrentTaskName(String name) {
-		GLLogger.infoUser("task is now: "+name, getClass());
+		this.currentTaskName = name;
+	}
+
+
+	@Override
+	public String getCurrentTaskName() {
+		return currentTaskName;
 	}
 
 

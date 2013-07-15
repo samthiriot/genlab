@@ -6,6 +6,7 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
+import genlab.core.model.meta.IConstantAlgo;
 import genlab.core.model.meta.IFlowType;
 import genlab.core.model.meta.IInputOutput;
 
@@ -17,7 +18,7 @@ import genlab.core.model.meta.IInputOutput;
  *
  * @param <JavaType>
  */
-public class ConstantValue<JavaType> extends BasicAlgo {
+public class ConstantValue<JavaType> extends BasicAlgo implements IConstantAlgo {
 
 	private IInputOutput<JavaType> output;
 	
@@ -59,6 +60,11 @@ public class ConstantValue<JavaType> extends BasicAlgo {
 	}
 	
 	public IInputOutput<JavaType> getOutput() {
+		return output;
+	}
+
+	@Override
+	public IInputOutput getConstantOuput() {
 		return output;
 	}
 

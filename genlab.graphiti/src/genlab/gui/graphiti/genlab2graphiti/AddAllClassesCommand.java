@@ -15,6 +15,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 
+// TODO to delete
 public class AddAllClassesCommand extends RecordingCommand {
 
 	private IProject project;

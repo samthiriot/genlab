@@ -23,6 +23,7 @@ public interface IExecution {
 	 * @return
 	 */
 	public boolean getExecutionForced();
+	
 	public void setExecutionForced(boolean f);
 	
 }

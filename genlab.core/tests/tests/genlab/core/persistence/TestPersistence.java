@@ -113,8 +113,8 @@ public class TestPersistence {
 		// check algo instances
 		for (IAlgoInstance a : workflow.getAlgoInstances()) {
 			assertTrue(workflow.containsAlgoInstance(a));
-			assertTrue(workflow.containsAlgoInstance(a.getId()));
-			assertTrue(workflowReaden.containsAlgoInstance(a.getId()));
+			assertTrue(workflow.containsAlgoInstanceId(a.getId()));
+			assertTrue(workflowReaden.containsAlgoInstanceId(a.getId()));
 			final IAlgoInstance aReaden = workflowReaden.getAlgoInstanceForId(a.getId());
 			assertNotNull(aReaden);
 			assertEquals(a.getId(), aReaden.getId());

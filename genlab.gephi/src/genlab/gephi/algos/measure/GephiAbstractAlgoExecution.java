@@ -18,6 +18,8 @@ import org.gephi.project.api.Workspace;
 
 public abstract class GephiAbstractAlgoExecution extends AbstractAlgoExecution {
 
+	protected boolean cancelled = false;
+	
 	public GephiAbstractAlgoExecution(
 			IExecution exec, 
 			IAlgoInstance algoInst
@@ -96,4 +98,14 @@ public abstract class GephiAbstractAlgoExecution extends AbstractAlgoExecution {
 		setResult(result);
 	}
 
+
+	@Override
+	public void kill() {
+		cancelled = true;
+	}
+
+	@Override
+	public void cancel() {
+		cancelled = true;
+	}
 }

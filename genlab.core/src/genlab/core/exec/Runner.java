@@ -289,4 +289,13 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		
 	}
 
+	public void cancel() {
+		cancelTasks();
+		
+	}
+	
+	public void kill() {
+		// TODO
+		cancelTasks();
+	}
 }

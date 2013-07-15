@@ -117,8 +117,7 @@ public class NewWorkflowWizardDescPage extends WizardPage implements Listener  {
 		{
 			String desc = inputDesc.getText().trim();
 			if (desc.isEmpty()) {
-				valid = false;
-				setMessage("Add a description to facilitate the use of your project");
+				setMessage("Tip: add a description for this workflow to facilitate its use.");
 			}
 				
 		}

@@ -13,6 +13,10 @@
             class="genlab.core.model.meta.basics.algos.ConstantValueInteger"
             id="genlab.core.algo.constants.integer">
       </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.HeterogeneousMapMultiplexor"
+            id="genlab.core.model.meta.basics.algos.HeterogeneousMapMultiplexor">
+      </algo>
    </extension>
 
 

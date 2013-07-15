@@ -91,6 +91,13 @@ public class ExistingAlgoCategories {
 			"exploration algos", 
 			"exploration"
 			);
+	
+	public static final AlgoCategory CASTING = new AlgoCategory(
+			null, 
+			"conversions", 
+			"conversion algorithms", 
+			"conversion"
+			);
 
 	private ExistingAlgoCategories() {
 		declareCategory(PARSER);
@@ -103,7 +110,7 @@ public class ExistingAlgoCategories {
 		declareCategory(ANALYSIS_GRAPH);
 		declareCategory(CONSTANTS);
 		declareCategory(EXPLORATION);
-
+		declareCategory(CASTING);
 	}
 
 	public AlgoCategory getCategoryForId(String id) {

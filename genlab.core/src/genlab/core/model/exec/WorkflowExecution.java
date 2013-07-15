@@ -21,6 +21,8 @@ public class WorkflowExecution extends AbstractAlgoExecution {
 	// the roots that can be ran independantly
 	protected Set<IAlgoInstance> roots = null;
 
+	protected Runner r = null;
+	
 	
 	
 	public WorkflowExecution(IExecution exec, IGenlabWorkflowInstance workflowInstance) {
@@ -74,7 +76,7 @@ public class WorkflowExecution extends AbstractAlgoExecution {
 		GLLogger.traceTech("starting the execution of worklow "+workflowInstance, getClass());
 
 		
-		Runner r = new Runner(exec, progress, instance2execution.values());
+		r = new Runner(exec, progress, instance2execution.values());
 		r.run();
 		
 		// plan the execution time
@@ -96,6 +98,42 @@ public class WorkflowExecution extends AbstractAlgoExecution {
 		
 		
 		
+	}
+
+
+
+	@Override
+	public void cancel() {
+		if (r == null)
+				return;
+		
+		GLLogger.debugTech("attempts to cancel this execution", getClass());
+		
+		r.cancel();
+	}
+
+
+
+	@Override
+	public void kill() {
+		if (r == null)
+			return;
+		
+		GLLogger.debugTech("attempts to kill this execution", getClass());
+		
+		r.kill();
+	}
+
+
+
+	@Override
+	public String getName() {
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("workflow execution: ");
+		sb.append(workflowInstance.getName());
+		
+		return sb.toString();
 	}
 
 

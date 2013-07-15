@@ -30,9 +30,9 @@ public final class ExistingAlgos {
 	
 	private static final String EXTENSION_POINT_ALGOS_ID = "genlab.core.algo";
 
-	private Map<String,IAlgo> name2algos = new HashMap<String,IAlgo>();
-	private Map<String,IAlgo> classname2algos = new HashMap<String,IAlgo>();
-
+	private Map<String,IAlgo> name2algos = new HashMap<String,IAlgo>(50);
+	private Map<String,IAlgo> classname2algos = new HashMap<String,IAlgo>(50);
+	private Map<String,IConstantAlgo> name2constantAlgo = new HashMap<String, IConstantAlgo>(30);
 	
 	private ExistingAlgos() {
 		detectedFromExtensionPoints();
@@ -43,6 +43,10 @@ public final class ExistingAlgos {
 		GLLogger.debugTech("detected available algorithm: "+algo.getName()+" "+algo.getDescription(), getClass());
 		name2algos.put(algo.getName(), algo);
 		classname2algos.put(algo.getClass().getCanonicalName(), algo);
+		
+		if (algo instanceof IConstantAlgo) {
+			name2constantAlgo.put(algo.getName(), (IConstantAlgo) algo);
+		}
 	}
 	
 	
@@ -110,5 +114,9 @@ public final class ExistingAlgos {
 	
 	public Collection<IAlgo> getAlgos() {
 		return name2algos.values();
+	}
+	
+	public Collection<IConstantAlgo> getConstantAlgos() {
+		return name2constantAlgo.values();
 	}
  }

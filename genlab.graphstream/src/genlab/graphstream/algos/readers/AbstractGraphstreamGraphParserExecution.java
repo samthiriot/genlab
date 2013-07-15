@@ -22,6 +22,7 @@ public class AbstractGraphstreamGraphParserExecution extends
 	
 	protected final FileSource filesource;
 
+	protected boolean cancelled = false;
 	
 	public AbstractGraphstreamGraphParserExecution(
 			IExecution exec,
@@ -45,6 +46,7 @@ public class AbstractGraphstreamGraphParserExecution extends
 		progress.setComputationState(ComputationState.STARTED);
 		
 		ComputationResult result = new ComputationResult(algoInst, progress);
+		setResult(result);
 		
 		// decode parameters
 		final File file = (File) getInputValueForInput(AbstractGraphStreamGraphParser.PARAM_FILE);
@@ -69,6 +71,10 @@ public class AbstractGraphstreamGraphParserExecution extends
 			filesource.begin(is);
 			while (filesource.nextEvents()) {
 				// nothing to do
+				if (cancelled) {
+					progress.setComputationState(ComputationState.FINISHED_CANCEL);
+					return;
+				}
 			}
 			filesource.end();
 		} catch (IOException e) {
@@ -87,7 +93,16 @@ public class AbstractGraphstreamGraphParserExecution extends
 		progress.setProgressMade(1);
 		progress.setComputationState(ComputationState.FINISHED_OK);
 
-		setResult(result);
+	}
+
+	@Override
+	public void kill() {
+		cancelled = true;
+	}
+
+	@Override
+	public void cancel() {
+		cancelled = true;
 	}
 
 }
