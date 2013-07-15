@@ -151,7 +151,15 @@ public class AlgoInstance implements IAlgoInstance {
 	}
 	
 	public Object getValueForParameter(String name) {
-		return parameters.get(name);
+		
+		Object res = parameters.get(name);
+		
+		if (res == null) {
+			// find default value
+			res = algo.getParameter(name).getDefaultValue();
+		}
+		
+		return res;
 	}
 	
 	public Map<String,Object> getParametersAndValues() {
@@ -164,9 +172,17 @@ public class AlgoInstance implements IAlgoInstance {
 	}
 
 	public void setValueForParameter(String name, Object value) {
+		
 		if (!algo.hasParameter(name))
 			throw new WrongParametersException("wrong parameter "+name);
-		parameters.put(name, value);
+		final Object previousValue = parameters.get(name); 
+		
+		if ((previousValue == null) || (!previousValue.equals(value))) {
+			parameters.put(name, value);
+			if (workflow != null)
+				workflow._notifyAlgoChanged(this);
+		}
+		
 	}
 
 

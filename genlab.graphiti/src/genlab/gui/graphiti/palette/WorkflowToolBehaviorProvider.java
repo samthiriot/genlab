@@ -6,6 +6,7 @@ import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.features.CreateIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.OpenParametersFeature;
+import genlab.gui.graphiti.features.SeeInfoFeature;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,6 +58,20 @@ public class WorkflowToolBehaviorProvider extends DefaultToolBehaviorProvider {
 			cc.setInnerPictogramElement(pe);
 			
 			OpenParametersFeature feature = new OpenParametersFeature(getFeatureProvider());
+			ContextButtonEntry button = new ContextButtonEntry(feature, cc);
+			button.setText(feature.getName());
+			button.setDescription(feature.getDescription());
+			button.setIconId(feature.getImageId());
+			data.getGenericContextButtons().add(0, button);
+
+		}
+		
+		// add the "view infos" feature to the generic pad
+		{
+			CustomContext cc = new CustomContext(new PictogramElement[] {pe});
+			cc.setInnerPictogramElement(pe);
+			
+			SeeInfoFeature feature = new SeeInfoFeature(getFeatureProvider());
 			ContextButtonEntry button = new ContextButtonEntry(feature, cc);
 			button.setText(feature.getName());
 			button.setDescription(feature.getDescription());

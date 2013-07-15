@@ -89,4 +89,12 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 		return false;
 	}
 
+	@Override
+	public String getHTMLDescription() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
+
 }

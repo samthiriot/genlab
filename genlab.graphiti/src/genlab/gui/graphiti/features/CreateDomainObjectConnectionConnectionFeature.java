@@ -1,22 +1,16 @@
 package genlab.gui.graphiti.features;
 
-import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.graphiti.Utils;
 import genlab.gui.graphiti.editors.IntuitiveObjectCreation;
 import genlab.gui.graphiti.editors.IntuitiveObjectCreation.ProposalObjectCreation;
 import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
 
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.ICreateConnectionContext;
-import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
-import org.eclipse.graphiti.features.context.impl.CreateConnectionContext;
-import org.eclipse.graphiti.features.context.impl.CreateContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateConnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
@@ -35,7 +29,7 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 		// TODO: check for right domain object instance below
 		// return getBusinessObjectForPictogramElement(context.getSourcePictogramElement()) instanceof <DomainObject>;
 
-		GLLogger.traceTech("event can start connection with source "+context.getSourceAnchor(), getClass());
+		//GLLogger.traceTech("event can start connection with source "+context.getSourceAnchor(), getClass());
 		try {
 			IInputOutputInstance from = (IInputOutputInstance)getBusinessObjectForPictogramElement(context.getSourceAnchor());
 			
@@ -69,6 +63,7 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 		
 		
 		try {
+			/*
 			GLLogger.traceTech(
 							"event can create connection with source and target "+
 							context.getSourceAnchor()+
@@ -76,7 +71,7 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 							context.getTargetAnchor(), 
 							getClass()
 							);
-
+			*/
 	
 			// there is always a source (but it may become a dest !)
 			Anchor source = context.getSourceAnchor();
@@ -213,10 +208,10 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 				WorkflowListener.lastInstance.transmitLastUIParameters(
 						addInstance, 
 						new WorkflowListener.UIInfos() {{
-							x = context.getTargetLocation().getX() - 100;
+							x = context.getTargetLocation().getX();
 							y = context.getTargetLocation().getY();
-							width = 100;
-							height = 100;
+							width = 30;
+							height = 30;
 						}}
 						);
 				
@@ -251,14 +246,5 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 
 	}
 
-	@Override
-	public void canceledAttaching(ICreateConnectionContext context) {
-		// TODO Auto-generated method stub
-		super.canceledAttaching(context);
-		GLLogger.warnTech("cancelled attaching : "+context, getClass());
-		
-	}
-	
-	
 	
 }

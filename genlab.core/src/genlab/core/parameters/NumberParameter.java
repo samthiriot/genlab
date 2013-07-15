@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NumberParameter<Type extends Number> extends Parameter<Type> {
+public abstract class NumberParameter<Type extends Number> extends Parameter<Type> {
 
 	protected Type minValue = null;
 	protected Type maxValue = null;
@@ -59,5 +59,6 @@ public class NumberParameter<Type extends Number> extends Parameter<Type> {
 		this.step = step;
 	}
 
+	
 	
 }

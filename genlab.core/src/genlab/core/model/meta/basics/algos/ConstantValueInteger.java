@@ -3,6 +3,7 @@ package genlab.core.model.meta.basics.algos;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.parameters.IntParameter;
+import genlab.core.parameters.Parameter;
 
 public class ConstantValueInteger extends ConstantValue<Integer> {
 
@@ -14,10 +15,19 @@ public class ConstantValueInteger extends ConstantValue<Integer> {
 			);
 
 	public ConstantValueInteger() {
-		super(IntegerFlowType.SINGLETON, OUTPUT, "constant integer", "a constant integer value");
+		super(
+				IntegerFlowType.SINGLETON, 
+				OUTPUT, 
+				"constant integer", 
+				"a constant integer value",
+				null
+				);
 		
-		registerParameter(new IntParameter(paramId, "value", "the value of this constant", 0));
+	}
 
+	@Override
+	protected Parameter<Integer> createConstantParameter() {
+		return new IntParameter(paramId, "value", "the value of this constant", 0);
 	}
 
 

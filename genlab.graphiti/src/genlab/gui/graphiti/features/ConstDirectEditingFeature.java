@@ -1,9 +1,12 @@
 package genlab.gui.graphiti.features;
 
+import genlab.core.commons.WrongParametersException;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.IConstantAlgo;
+import genlab.core.parameters.Parameter;
 import genlab.core.usermachineinteraction.GLLogger;
+
+import java.util.Map;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IDirectEditingContext;
@@ -17,9 +20,9 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
  * @author Samuel Thiriot
  *
  */
-public class AlgoDirectEditingFeature extends AbstractDirectEditingFeature {
+public class ConstDirectEditingFeature extends AbstractDirectEditingFeature {
 
-	public AlgoDirectEditingFeature(IFeatureProvider fp) {
+	public ConstDirectEditingFeature(IFeatureProvider fp) {
 		super(fp);
 
 	}
@@ -37,8 +40,15 @@ public class AlgoDirectEditingFeature extends AbstractDirectEditingFeature {
         
 		Object bo = getBusinessObjectForPictogramElement(pe);
 
-		return (bo != null && bo instanceof IAlgoInstance && !(bo instanceof IConstantAlgo));
+		if (bo == null)
+			return false;
 		
+		if (!(bo instanceof IAlgoInstance))
+			return false;
+		
+		IAlgoInstance ai = (IAlgoInstance)bo;
+		
+		return (ai.getAlgo() instanceof IConstantAlgo);
     }
     
 	@Override
@@ -53,13 +63,16 @@ public class AlgoDirectEditingFeature extends AbstractDirectEditingFeature {
 			return null;
 		}
 		
-		IAlgoInstance algo = (IAlgoInstance)bo;
+		IAlgoInstance ai = (IAlgoInstance)bo;
+		IConstantAlgo algo = (IConstantAlgo) ai.getAlgo();
 		
-		return algo.getName();
+		return ai.getValueForParameter(algo.getConstantParameter().getId()).toString();
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
     public String checkValueValid(String value, IDirectEditingContext context) {
+		
 		
 		PictogramElement pe = context.getPictogramElement();
         
@@ -72,29 +85,47 @@ public class AlgoDirectEditingFeature extends AbstractDirectEditingFeature {
 		
 		value = value.trim();
 		
-		IAlgoInstance algo = (IAlgoInstance)bo;
-		IGenlabWorkflowInstance workflow = algo.getWorkflow();
+		IAlgoInstance ai = (IAlgoInstance)bo;
 		
-		if (value.length() < 1)
-            return "The name can not be empty.";
-		if (value.contains("\n"))
-			return "Line breakes are not allowed in class names.";
- 		if (!workflow.getAlgoInstanceForName(value).equals(algo))
-			return "This name is already used";
+		IConstantAlgo algo = (IConstantAlgo) ai.getAlgo();
+		
+		Parameter param = algo.getConstantParameter();
+		
+		Object valueCasted = null;
+		try {
+			valueCasted = param.parseFromString(value);
+		} catch (WrongParametersException e) {
+			return e.getMessage();
+		}
+		
+		Map<String,Object> params = param.check(valueCasted);
+		
+		if (!params.isEmpty()) {
+			return params.keySet().iterator().next();
+		}
 		
         // null means, that the value is valid
 		return null;
 	}
 	 
-
+	@SuppressWarnings("rawtypes")
 	public void setValue(String value, IDirectEditingContext context) {
 		
 		// set the new name for the MOF class
 		PictogramElement pe = context.getPictogramElement();
 		
 		IAlgoInstance ai = (IAlgoInstance)getBusinessObjectForPictogramElement(pe);
-		ai.setName(value.trim());
-	
+
+		IConstantAlgo algo = (IConstantAlgo) ai.getAlgo();
+
+		value = value.trim();
+		
+		
+		Parameter param = algo.getConstantParameter();
+		
+		ai.setValueForParameter(param.getId(), param.parseFromString(value));
+		
+		
         // Explicitly update the shape to display the new value in the diagram
 		// Note, that this might not be necessary in future versions of Graphiti
         // (currently in discussion)

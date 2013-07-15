@@ -83,6 +83,13 @@ public final class ExistingAlgos {
 		return name2algos.keySet();
 	}
 	
+	public IAlgo getAlgoForId(String id) {
+		for (IAlgo a : classname2algos.values()) {
+			if (a.getId().equals(id))
+				return a;
+		}
+		return null;
+	}
 	
 	public IAlgo getAlgoForClass(String canonicalName) {
 		

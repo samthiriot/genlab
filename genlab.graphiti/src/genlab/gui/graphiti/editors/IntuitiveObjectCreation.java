@@ -1,5 +1,8 @@
 package genlab.gui.graphiti.editors;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IConstantAlgo;
@@ -36,25 +39,36 @@ public class IntuitiveObjectCreation {
 	}
 	
 	/**
+	 * Cache for the searching of an input constant for a given output
+	 */
+	protected static Map<IInputOutput<?>,ProposalObjectCreation> cacheOutput2ProposalAutoInput = new HashMap<IInputOutput<?>, ProposalObjectCreation>(30);
+	
+	/**
 	 * Provides a constant that provides an output of this type.
 	 * @param output
 	 * @return
 	 */
 	public static ProposalObjectCreation getAutoInputForOutput(IInputOutput<?> output) {
 	
-		ProposalObjectCreation res = null;
+		ProposalObjectCreation res = cacheOutput2ProposalAutoInput.get(output);
 		
-		GLLogger.debugTech("searching a relevant constant for an output : "+output.getType(), IntuitiveObjectCreation.class);
+		if (!cacheOutput2ProposalAutoInput.containsKey(output)) {
 		
-		IFlowType<?> searchedType = output.getType();
-		
-		for (IConstantAlgo algo: ExistingAlgos.getExistingAlgos().getConstantAlgos()) {
-			if (searchedType.compliantWith(algo.getConstantOuput().getType())) {
-				// found !
-				GLLogger.traceTech("found a constant that exports type "+searchedType+": "+algo, IntuitiveObjectCreation.class);
-				res = new ProposalObjectCreation(algo, algo.getConstantOuput());
-				break;
+			GLLogger.debugTech("searching a relevant constant for an output : "+output.getType(), IntuitiveObjectCreation.class);
+			
+			IFlowType<?> searchedType = output.getType();
+			
+			for (IConstantAlgo algo: ExistingAlgos.getExistingAlgos().getConstantAlgos()) {
+				if (searchedType.compliantWith(algo.getConstantOuput().getType())) {
+					// found !
+					GLLogger.traceTech("found a constant that exports type "+searchedType+": "+algo, IntuitiveObjectCreation.class);
+					res = new ProposalObjectCreation(algo, algo.getConstantOuput());
+					break;
+				}
 			}
+			
+			cacheOutput2ProposalAutoInput.put(output, res);
+			
 		}
 		
 		return res;

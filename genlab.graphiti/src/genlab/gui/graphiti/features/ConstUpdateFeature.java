@@ -1,8 +1,8 @@
 package genlab.gui.graphiti.features;
 
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IConstantAlgo;
+import genlab.gui.graphiti.UIUtils;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
@@ -20,9 +20,9 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
  * @author Samuel Thiriot
  *
  */
-public class AlgoUpdateFeature extends AbstractUpdateFeature {
+public class ConstUpdateFeature extends AbstractUpdateFeature {
 
-	public AlgoUpdateFeature(IFeatureProvider fp) {
+	public ConstUpdateFeature(IFeatureProvider fp) {
 		super(fp);
 	}
 
@@ -32,7 +32,7 @@ public class AlgoUpdateFeature extends AbstractUpdateFeature {
 		PictogramElement pe = context.getPictogramElement();
 		
 		Object bo = getBusinessObjectForPictogramElement(pe);
-		
+	
 		if (bo == null)
 			return false;
 		
@@ -41,8 +41,7 @@ public class AlgoUpdateFeature extends AbstractUpdateFeature {
 		
 		IAlgoInstance ai = (IAlgoInstance)bo;
 		
-		return !(ai.getAlgo() instanceof IConstantAlgo);
-		
+		return (ai.getAlgo() instanceof IConstantAlgo);
 	}
 
 	@Override
@@ -54,23 +53,27 @@ public class AlgoUpdateFeature extends AbstractUpdateFeature {
 		
 		IAlgoInstance ai = (IAlgoInstance)bo;
 		
-		// check name
+		IConstantAlgo algo = (IConstantAlgo) ai.getAlgo();
+		
+		// check value
 		{
-			String displayedName = null;
+			String displayedValue = null;
 			
 			if (pe instanceof ContainerShape) {
 	            ContainerShape cs = (ContainerShape) pe;
 	            for (Shape shape : cs.getChildren()) {
 	                if (shape.getGraphicsAlgorithm() instanceof Text) {
 	                    Text text = (Text) shape.getGraphicsAlgorithm();
-	                    displayedName = text.getValue();
+	                    displayedValue = text.getValue();
 	                    break;
 	                }
 	            }
 	        }
 			
-			if (!displayedName.equals(ai.getName()))
-		            return Reason.createTrueReason("Name is out of date");
+			String theoreticalValue = ai.getValueForParameter(algo.getConstantParameter().getId()).toString();
+			
+			if (!displayedValue.equals(theoreticalValue))
+		            return Reason.createTrueReason("Value is out of date");
 		}
 		
 		return Reason.createFalseReason();
@@ -86,24 +89,31 @@ public class AlgoUpdateFeature extends AbstractUpdateFeature {
 		
 		IAlgoInstance ai = (IAlgoInstance)bo;
 		
-		// replace name (first occurence of text)
-		boolean replacedName = false;
-		{			
-			if (pe instanceof ContainerShape) {
-	            ContainerShape cs = (ContainerShape) pe;
-	            for (Shape shape : cs.getChildren()) {
-	                if (shape.getGraphicsAlgorithm() instanceof Text) {
-	                    Text text = (Text) shape.getGraphicsAlgorithm();
-	                    text.setValue(ai.getName());
-	                    replacedName = true;
-	                    break;
-	                }
-	            }
-	        }
-			
-		}
 		
-		return replacedName;
+		IConstantAlgo algo = (IConstantAlgo) ai.getAlgo();
+		
+		// replace value
+		String theoreticalValue = ai.getValueForParameter(algo.getConstantParameter().getId()).toString();
+
+		
+		if (pe instanceof ContainerShape) {
+            ContainerShape cs = (ContainerShape) pe;
+            for (Shape shape : cs.getChildren()) {
+                if (shape.getGraphicsAlgorithm() instanceof Text) {
+                    Text text = (Text) shape.getGraphicsAlgorithm();
+                    if (!text.getValue().equals(theoreticalValue)) {
+                    	UIUtils.setValueInTransaction(text, theoreticalValue);
+                    	layoutPictogramElement(pe);
+                        return true;
+                    } else {
+                    	return false;
+                    }
+                   
+                }
+            }
+        }
+		
+		return false;
 	}
 
 }

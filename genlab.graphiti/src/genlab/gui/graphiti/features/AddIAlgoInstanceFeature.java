@@ -5,6 +5,7 @@ import genlab.core.model.instance.GenlabWorkflowInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IInputOutputInstance;
+import genlab.core.model.meta.IConstantAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -50,7 +51,11 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 	public boolean canAdd(IAddContext context) {
 		
 		// check what is added
-		if (context.getNewObject() instanceof IAlgoInstance) {
+		if (
+				(context.getNewObject() instanceof IAlgoInstance)
+				&& 
+				!(context.getNewObject() instanceof IConstantAlgo)
+				) {
 			
 			// and to what it is added
 			if (context.getTargetContainer() instanceof Diagram) {

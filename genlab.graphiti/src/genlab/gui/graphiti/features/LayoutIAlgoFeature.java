@@ -2,8 +2,10 @@ package genlab.gui.graphiti.features;
 
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.meta.IConstantAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 
+import org.eclipse.core.commands.operations.ICompositeOperation;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ILayoutContext;
@@ -50,7 +52,15 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
 	    	return false;
 	       
 	    Object genlabObj = getBusinessObjectForPictogramElement(pe);
-	    return (genlabObj != null) && (genlabObj instanceof IAlgoInstance);
+	    if (genlabObj == null) 
+	    	return false;
+	   
+	    if (!(genlabObj instanceof IAlgoInstance))
+	    	return false; 
+	    
+	    IAlgoInstance ai = (IAlgoInstance)genlabObj;
+	    
+	    return !(ai.getAlgo() instanceof IConstantAlgo);
 	}
 
 	/**

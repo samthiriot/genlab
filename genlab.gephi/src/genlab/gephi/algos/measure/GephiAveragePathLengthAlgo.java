@@ -59,7 +59,8 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 	public GephiAveragePathLengthAlgo() {
 		super(
 				"Gephi Brandes", 
-				"computes the average path length"
+				"computes the average path length",
+				loadHtmlDescription("./genlab.gephi/html/brandes.html")
 				);
 		
 		outputs.add(OUTPUT_AVERAGE_PATH_LENGTH);

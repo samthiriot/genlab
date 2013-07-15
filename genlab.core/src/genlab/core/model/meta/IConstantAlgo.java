@@ -1,5 +1,7 @@
 package genlab.core.model.meta;
 
+import genlab.core.parameters.Parameter;
+
 import java.util.Set;
 
 /**
@@ -15,5 +17,11 @@ public interface IConstantAlgo extends IAlgo {
 	 * @return
 	 */
 	public IInputOutput getConstantOuput();
+	
+	/**
+	 * Returns the parameter that stores the constant value
+	 * @return
+	 */
+	public Parameter<?> getConstantParameter();
 	
 }

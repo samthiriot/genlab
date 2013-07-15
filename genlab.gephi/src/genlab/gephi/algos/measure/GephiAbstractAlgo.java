@@ -15,10 +15,11 @@ public abstract class GephiAbstractAlgo extends BasicAlgo {
 			"the graph to analyze"
 	);
 	
-	public GephiAbstractAlgo(String name, String description) {
+	public GephiAbstractAlgo(String name, String description, String longHtmlDescription) {
 		super(
 				name, 
 				description, 
+				longHtmlDescription,
 				ExistingAlgoCategories.ANALYSIS_GRAPH.getTotalId()
 				);
 		

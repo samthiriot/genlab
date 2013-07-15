@@ -46,6 +46,7 @@ public abstract class Parameter<Type extends Object> {
 	 */
 	public abstract Map<String,Boolean> check(Type value);
 	
+	public abstract Type parseFromString(String value);
 		
 
 }

@@ -105,6 +105,15 @@
             name="parameters"
             restorable="false">
       </view>
+      <view
+            allowMultiple="false"
+            category="genlab.gui.views.categorygenlab"
+            class="genlab.gui.views.AlgoInfoView"
+            icon="icons/question.gif"
+            id="genlab.gui.views.AlgoInfoView"
+            name="Algorithm information"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.commands">

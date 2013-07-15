@@ -4,7 +4,9 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.parameters.Parameter;
+import genlab.core.usermachineinteraction.GLLogger;
 
+import java.io.FileInputStream;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,6 +21,8 @@ public abstract class BasicAlgo implements IAlgo {
 
 	protected final String name;
 	protected final String description;
+	protected final String longHtmlDescription;
+
 	protected final String id;
 	protected final String categoryId;
 	protected final Set<IInputOutput> outputs = new LinkedHashSet<IInputOutput>();
@@ -28,13 +32,27 @@ public abstract class BasicAlgo implements IAlgo {
 	public BasicAlgo(
 			String name,
 			String description,
+			String longHtmlDescription,
 			String categoryId
 			) {
 		
 		this.id = name.replaceAll("[-+.^:, ]","_");;
 		this.name = name;
 		this.description = description;
+
+		this.longHtmlDescription = longHtmlDescription;
+		if (longHtmlDescription == null)
+			GLLogger.warnTech("this algo has no detailed description: "+id, getClass());
 		this.categoryId = categoryId;
+	}
+	
+	public BasicAlgo(
+			String name,
+			String description,
+			String categoryId
+			) {
+		
+		this(name, description, null, categoryId);
 	}
 
 	@Override
@@ -102,5 +120,31 @@ public abstract class BasicAlgo implements IAlgo {
 		this.parameters.put(p.getId(), p);
 	}
 
+	@Override
+	public String getHTMLDescription() {
+		return longHtmlDescription;
+	}
+	
+	public final static String markerFile = "___fromFile/";
+	
+	protected static String loadHtmlDescription(String pathFile) {
+		
+		return markerFile+pathFile;
+		
+	}
+
+	protected static String buildHtmlDescription(
+			String name,
+			String shortDescription,
+			String plugin,
+			String authorsGenlab,
+			String pluginOriginal,
+			String authorsOriginal,
+			String description
+			) {
+		StringBuffer sb = new StringBuffer();
+		
+		return sb.toString();
+	}
 
 }

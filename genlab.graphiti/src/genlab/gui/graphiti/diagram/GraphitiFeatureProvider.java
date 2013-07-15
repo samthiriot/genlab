@@ -5,17 +5,23 @@ import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
+import genlab.core.model.meta.IConstantAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.features.AddConnectionFeature;
+import genlab.gui.graphiti.features.AddIAlgoConstFeature;
 import genlab.gui.graphiti.features.AddIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.AlgoDirectEditingFeature;
 import genlab.gui.graphiti.features.AlgoUpdateFeature;
+import genlab.gui.graphiti.features.ConstDirectEditingFeature;
+import genlab.gui.graphiti.features.ConstUpdateFeature;
 import genlab.gui.graphiti.features.CreateDomainObjectConnectionConnectionFeature;
 import genlab.gui.graphiti.features.CreateIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.DeleteIAlgoInstanceFeature;
+import genlab.gui.graphiti.features.LayoutConstFeature;
 import genlab.gui.graphiti.features.LayoutIAlgoFeature;
 import genlab.gui.graphiti.features.OpenParametersFeature;
 import genlab.gui.graphiti.features.RemoveIAlgoInstanceFeature;
+import genlab.gui.graphiti.features.SeeInfoFeature;
 import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
 import genlab.gui.graphiti.patterns.DomainObjectPattern;
 
@@ -55,7 +61,7 @@ import org.eclipse.graphiti.services.Graphiti;
 /**
  * TODO higlight everything that may be linked after first click
  * 
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns {
@@ -64,7 +70,27 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 	
 	private static Map<IDiagramTypeProvider,GraphitiFeatureProvider> type2provider = new HashMap<IDiagramTypeProvider, GraphitiFeatureProvider>();
 	
+	protected CreateDomainObjectConnectionConnectionFeature createConnection = new CreateDomainObjectConnectionConnectionFeature(this);
 	
+	protected AddConnectionFeature addConnection = new AddConnectionFeature(this);
+	protected AddIAlgoConstFeature addConstant = new AddIAlgoConstFeature(this);
+	protected AddIAlgoInstanceFeature addAlgo = new AddIAlgoInstanceFeature(this);
+	
+	protected RemoveIAlgoInstanceFeature removeAlgo = new RemoveIAlgoInstanceFeature(this);
+	protected DeleteIAlgoInstanceFeature deleteAlgo = new DeleteIAlgoInstanceFeature(this);
+
+	protected LayoutIAlgoFeature layoutAlgo = new LayoutIAlgoFeature(this);
+	protected LayoutConstFeature layoutConst = new LayoutConstFeature(this);
+	
+	protected ConstDirectEditingFeature directEditConst = new ConstDirectEditingFeature(this);
+	protected AlgoDirectEditingFeature directEditAlgo = new AlgoDirectEditingFeature(this);
+
+	protected ConstUpdateFeature updateConst = new ConstUpdateFeature(this);
+	protected AlgoUpdateFeature updateAlgo = new AlgoUpdateFeature(this);
+	
+	protected OpenParametersFeature customOpenParam = new OpenParametersFeature(this);
+	protected SeeInfoFeature customViewInfo = new SeeInfoFeature(this);
+
 	public static GraphitiFeatureProvider getOrCreateFor(IDiagramTypeProvider dtp) {
 		GraphitiFeatureProvider res = type2provider.get(dtp);
 		if (res == null) {
@@ -99,33 +125,33 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 
 	@Override
 	public ICreateConnectionFeature[] getCreateConnectionFeatures() {
-		return new ICreateConnectionFeature[] {new CreateDomainObjectConnectionConnectionFeature(this)};
+		return new ICreateConnectionFeature[] { createConnection };
 	}
 	
 	@Override
 	public IAddFeature getAddFeature(IAddContext context) {
-
-		System.err.println(context);
 
 		if (context.getNewObject() == null) {
 			// special case of an empty link
 			// TODO
 			return null;
 		}
-		System.err.println(context.getNewObject());
-
 		
 		// provide the add connection depending to the type
 		
 		// to add algo instance
 		if (context.getNewObject() instanceof IAlgoInstance) {
-			return new AddIAlgoInstanceFeature(this);
+			IAlgoInstance ai = (IAlgoInstance)context.getNewObject();
+			if (ai.getAlgo() instanceof IConstantAlgo)
+				return addConstant;
+			else 
+				return addAlgo;
 		}
 
 		// to add connection
 		if (context.getNewObject() instanceof IConnection) {
 			IConnection c = (IConnection)context.getNewObject();
-			return new AddConnectionFeature(this);
+			return addConnection;
 		}
 		
 		GLLogger.warnTech("cannot provide a feature for a wrong object: "+context.getNewObject(), getClass());
@@ -135,6 +161,8 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 	
 	@Override
 	public ICreateFeature[] getCreateFeatures() {
+		
+		GLLogger.debugTech("creating the list of create features...", getClass());
 		
 		List<IAlgo> algos = new ArrayList(ExistingAlgos.getExistingAlgos().getAlgos());
 		
@@ -162,7 +190,8 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		}
 		
 		// add mine
-		retList.add(new OpenParametersFeature(this));
+		retList.add(customOpenParam);
+		retList.add(customViewInfo);
 		
 		return retList.toArray(new ICustomFeature[retList.size()]);
 	}
@@ -173,7 +202,7 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
 		
 		if (bo  instanceof IAlgoInstance) {
-			return new RemoveIAlgoInstanceFeature(this); // no remove for our object; everything displayed is real, everything real is displayed.
+			return removeAlgo; // no remove for our object; everything displayed is real, everything real is displayed.
 		}
 		
 		GLLogger.warnTech("cannot provide a feature for a wrong object: "+bo, getClass());
@@ -188,7 +217,7 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
 
 		if (bo instanceof IAlgoInstance) {
-			return new DeleteIAlgoInstanceFeature(this); 
+			return deleteAlgo; 
 		}
 		
 		GLLogger.warnTech("cannot provide a feature for a wrong object: "+bo, getClass());
@@ -209,12 +238,14 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 	@Override
 	public IFeature[] getDragAndDropFeatures(IPictogramElementContext context) {
 		
+		/*
 		GLLogger.traceTech("received event: drag drop: "+context.getPictogramElement(), getClass());
 		if (context.getPictogramElement() != null) {
 			Object o = getBusinessObjectForPictogramElement(context.getPictogramElement());
 			GLLogger.traceTech("received event: drag drop obj: "+o, getClass());
 			
 		}
+		*/
 		
 	    // simply return all create connection features
 	    return getCreateConnectionFeatures();
@@ -226,7 +257,12 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		Object bo = getBusinessObjectForPictogramElement(context.getPictogramElement());
 		
 		if (bo instanceof IAlgoInstance) {
-			return new LayoutIAlgoFeature(this); 
+			IAlgoInstance ai = (IAlgoInstance)bo;
+			if (ai.getAlgo() instanceof IConstantAlgo) {
+				return layoutConst;
+			} else {
+				return layoutAlgo;
+			}
 		}
 		
 		GLLogger.warnTech("cannot provide a feature for a wrong object: "+bo, getClass());
@@ -305,7 +341,12 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		PictogramElement pe = context.getPictogramElement();
 		Object bo = getBusinessObjectForPictogramElement(pe);
 		if (bo instanceof IAlgoInstance) {
-		    return new AlgoDirectEditingFeature(this);
+			IAlgoInstance ai = (IAlgoInstance)bo;
+			if (ai.getAlgo() instanceof IConstantAlgo) {
+				return directEditConst;
+			} else {
+				return directEditAlgo; 
+			}
 		}
 		
 		return super.getDirectEditingFeature(context);
@@ -318,7 +359,12 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
         if (pictogramElement instanceof ContainerShape) {
             Object bo = getBusinessObjectForPictogramElement(pictogramElement);
             if (bo instanceof IAlgoInstance) {
-                return new AlgoUpdateFeature(this);
+            	IAlgoInstance ai = (IAlgoInstance)bo;
+    			if (ai.getAlgo() instanceof IConstantAlgo) {
+    				return updateConst;
+    			} else {
+                    return updateAlgo;
+    			}
             }
         }
         return super.getUpdateFeature(context);

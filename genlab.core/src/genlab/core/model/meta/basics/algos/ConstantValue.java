@@ -1,5 +1,7 @@
 package genlab.core.model.meta.basics.algos;
 
+import org.eclipse.core.runtime.Plugin;
+
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
@@ -9,6 +11,7 @@ import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.IConstantAlgo;
 import genlab.core.model.meta.IFlowType;
 import genlab.core.model.meta.IInputOutput;
+import genlab.core.parameters.Parameter;
 
 /**
  * A constant value is a very simple algorithm that has a value as a parameter, no input values,
@@ -18,25 +21,38 @@ import genlab.core.model.meta.IInputOutput;
  *
  * @param <JavaType>
  */
-public class ConstantValue<JavaType> extends BasicAlgo implements IConstantAlgo {
+public abstract class ConstantValue<JavaType> extends BasicAlgo implements IConstantAlgo {
 
 	private IInputOutput<JavaType> output;
 	
 	public final String paramId ;
 			
-	public ConstantValue(IFlowType<JavaType> type, IInputOutput<JavaType> output, String name, String desc) {
+	public final Parameter<JavaType> parameterValue;
+	
+	public ConstantValue(IFlowType<JavaType> type, IInputOutput<JavaType> output, String name, String desc, String longHtmlDescription) {
 		super(
 				name, 
 				desc, 
+				longHtmlDescription,
 				ExistingAlgoCategories.CONSTANTS.getId()
 				);
+
+		paramId = getId()+".params.value";
+
+		this.parameterValue = createConstantParameter();
+		registerParameter(this.parameterValue);
 		
 		outputs.add(output);
 		this.output = output;
 		
-		paramId = getId()+".params.value";
 	}
 
+	
+	/**
+	 * should return the parameter used to tune the value of the constant
+	 */
+	protected abstract Parameter<JavaType> createConstantParameter();
+	
 	@Override
 	public IAlgoExecution createExec(
 			IExecution exec,
@@ -66,6 +82,11 @@ public class ConstantValue<JavaType> extends BasicAlgo implements IConstantAlgo 
 	@Override
 	public IInputOutput getConstantOuput() {
 		return output;
+	}
+
+	@Override
+	public Parameter<?> getConstantParameter() {
+		return parameterValue;
 	}
 
 

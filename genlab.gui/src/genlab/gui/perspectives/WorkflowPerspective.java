@@ -40,6 +40,7 @@ public class WorkflowPerspective implements IPerspectiveFactory {
 		IFolderLayout folderRight = layout.createFolder("right folder", IPageLayout.RIGHT, 0.85f, editorArea);
 		folderRight.addView("genlab.gui.views.workflowexplorer");
 		folderRight.addView(ExistingView.ID);
+		folderRight.addView("genlab.gui.views.AlgoInfoView");
 
 		folderRight.addPlaceholder("genlab.gui.views.ParametersView:*");
 

@@ -30,6 +30,12 @@ public interface IAlgo extends IGenlabResource {
 	
 	public String getDescription();
 	
+	/**
+	 * Returns a long HTML description.
+	 * @return
+	 */
+	public String getHTMLDescription();
+
 	
 	public Set<IInputOutput> getInputs();
 	

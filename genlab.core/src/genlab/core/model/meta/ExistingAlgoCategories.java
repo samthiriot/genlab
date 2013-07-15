@@ -78,6 +78,13 @@ public class ExistingAlgoCategories {
 			"graphs"
 			);
 	
+	public static final AlgoCategory ANALYSIS_GRAPH_AVERAGEPATHLENGTH = new AlgoCategory(
+			ANALYSIS_GRAPH, 
+			"average path length", 
+			"analyse the average path length in graphs", 
+			"average_path_length"
+			);
+	
 	public static final AlgoCategory CONSTANTS = new AlgoCategory(
 			null, 
 			"constants", 

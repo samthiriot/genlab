@@ -351,7 +351,7 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 				uf.execute(uc);
 				
 			} catch (RuntimeException e2) {
-				GLLogger.errorTech("unable to delete the graphical representation for algo instance: "+ai+"; the graphical representation is no more consistant with the actual data", getClass(), e2);
+				GLLogger.errorTech("unable to update the graphical representation for algo instance: "+ai+"; the graphical representation is no more consistant with the actual data", getClass(), e2);
 			}
 		}
 	}
