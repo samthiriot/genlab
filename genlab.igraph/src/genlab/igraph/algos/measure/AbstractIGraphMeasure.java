@@ -5,6 +5,10 @@ import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.igraph.Activator;
+
+import org.eclipse.core.runtime.Plugin;
+import org.osgi.framework.Bundle;
 
 public abstract class AbstractIGraphMeasure extends BasicAlgo {
 
@@ -18,16 +22,23 @@ public abstract class AbstractIGraphMeasure extends BasicAlgo {
 	
 	public AbstractIGraphMeasure(
 			String name, 
-			String description
+			String description,
+			String longDescription
 			) {
 		super(
 				name, 
 				description, 
-				ExistingAlgoCategories.ANALYSIS_GRAPH.getTotalId()
+				longDescription,
+				ExistingAlgoCategories.ANALYSIS_GRAPH.getTotalId(),
+				"/icons/igraph.gif"
 				);
 		
 		inputs.add(INPUT_GRAPH);
 	}
 
+	@Override
+	public Bundle getBundle() {
+		return Activator.getDefault().getBundle();
+	}
 
 }

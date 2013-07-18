@@ -4,9 +4,9 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests"/>
-	<classpathentry kind="lib" path="ext/gs-core-1.1.2.jar"/>
 	<classpathentry kind="lib" path="ext/xstream-1.4.4.jar"/>
 	<classpathentry kind="lib" path="ext/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="ext/jna-3.5.2.jar"/>
+	<classpathentry kind="lib" path="/genlab.graphstream.corejar/ext/gs-core-1.1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

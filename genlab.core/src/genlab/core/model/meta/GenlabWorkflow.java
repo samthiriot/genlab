@@ -95,6 +95,13 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 		return null;
 	}
 
+	@Override
+	public String getImagePath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 	
 
 }

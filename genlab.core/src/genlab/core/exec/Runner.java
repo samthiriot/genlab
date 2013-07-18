@@ -2,10 +2,11 @@ package genlab.core.exec;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.model.exec.ComputationState;
+import genlab.core.model.exec.ExecutionHooks;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.exec.IComputationProgressSimpleListener;
-import genlab.core.usermachineinteraction.GLLogger;
+import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,9 +43,17 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	
 	boolean cancel = false;
 	
+	private ListOfMessages messages = null;
+	
 	public Runner(IExecution execution, IComputationProgress progress, Collection<IAlgoExecution> allTasks) {
+		
 		this.progress = progress;
-		all.addAll(allTasks);	
+		all.addAll(allTasks);
+		
+		messages = execution.getListOfMessages();
+		
+		ExecutionHooks.singleton.notifyParentTaskAdded(execution);
+		
 	}
 
 	protected Collection<IAlgoExecution> detectRoots() {
@@ -114,7 +123,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			
 		}
 		
-		GLLogger.traceTech(sb.toString(), getClass());
+		messages.traceTech(sb.toString(), getClass());
 		
 	}
 	
@@ -122,13 +131,13 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	
 	protected boolean attemptToDoSomething() {
 		
-		GLLogger.debugTech("attempting to do something", getClass());
+		messages.debugTech("attempting to do something", getClass());
 		
 		printState();
 		
 		// are there enough resources ?
 		if (exec2thread.size() >= MAX_THREADS) {
-			GLLogger.debugTech("all threads used, wait...", getClass());
+			messages.debugTech("all threads used, wait...", getClass());
 			return false;	// threads limit reached, do nothing.
 		}
 		
@@ -138,7 +147,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		synchronized (all) {
 			
 			if (ready.isEmpty()) {
-				GLLogger.debugTech("nothing ready, wait...", getClass());
+				messages.debugTech("nothing ready, wait...", getClass());
 				if (running.isEmpty()) {
 					// TODO wait, nothing is gonna happen there ?
 					
@@ -158,10 +167,10 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		}
 		
 		if (t==null) {
-			GLLogger.debugUser("running task "+e+" (no thread, it is costless)", getClass());
+			messages.debugUser("running task "+e+" (no thread, it is costless)", getClass());
 			e.run();
 		} else {
-			GLLogger.debugUser("starting a thread for task "+e+": "+t, getClass());
+			messages.debugUser("starting a thread for task "+e+": "+t, getClass());
 			final IAlgoExecution e2 = e;
 			
 			t.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
@@ -172,12 +181,12 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 					e2.getProgress().setComputationState(ComputationState.FINISHED_FAILURE);
 
 					arg1.printStackTrace();
-					e2.getResult().getMessages().errorUser(
+					messages.errorUser(
 							"this algorithm ended with an error: "+arg1.getMessage(), 
 							getClass(), 
 							arg1
 							);
-					GLLogger.warnTech(
+					messages.warnTech(
 							"an algorithm raised an error that was not properly catched at its level: "+e2+", "+arg1.getClass(), 
 							getClass(),
 							arg1
@@ -210,7 +219,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		while (!cancel) {
 			synchronized (all) {
 				if (running.isEmpty() && ready.isEmpty() && notReady.isEmpty()) {
-					GLLogger.infoTech("all tasks done", getClass());
+					messages.infoUser("all tasks done", getClass());
 					return;
 				}
 			}
@@ -258,7 +267,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			cancelTasks();
 		case FINISHED_OK:
 		case FINISHED_CANCEL:
-			GLLogger.debugTech("task finished: "+e+" ("+progress.getDurationMs()+" ms)", getClass());
+			messages.debugTech("task finished: "+e+" ("+progress.getDurationMs()+" ms)", getClass());
 			synchronized (all) {
 				running.remove(e);
 				done.add(e);
@@ -269,7 +278,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			
 		// a task was waiting for dependancy, and received all inputs
 		case READY:
-			GLLogger.debugTech("task is now ready: "+e, getClass());
+			messages.debugTech("task is now ready: "+e, getClass());
 			synchronized (all) {
 				notReady.remove(e);
 				ready.add(e);

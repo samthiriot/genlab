@@ -18,6 +18,7 @@ Require-Bundle: org.eclipse.ui,
  genlab.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: genlab.gui.genlab2eclipse,
+Export-Package: genlab.gui.algos,
+ genlab.gui.genlab2eclipse,
  genlab.gui.listeners,
  genlab.gui.views

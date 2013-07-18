@@ -50,7 +50,7 @@ public class AbstractGraphstreamGraphWriterExecution extends
 			progress.setProgressTotal(1);
 			progress.setComputationState(ComputationState.STARTED);
 			
-			ComputationResult result = new ComputationResult(algoInst, progress);
+			ComputationResult result = new ComputationResult(algoInst, progress, exec.getListOfMessages());
 	
 			File tmpFile = null;
 			

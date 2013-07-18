@@ -40,6 +40,10 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 		writer.startNode("algoClassName");
 		writer.setValue(algo.getAlgo().getClass().getCanonicalName());
 		writer.endNode();
+		
+		writer.startNode("algoName");
+		writer.setValue(algo.getName());
+		writer.endNode();
 	
 		// TODO in the future can of extensible inputs / outputs
 		/*
@@ -81,6 +85,8 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 									new HashMap<String, Boolean>() {{
 										put(GenlabPersistence.XMLTAG_ID, true);
 										put("algoClassName", true);
+										put("algoName", true);
+
 									}}
 							)
 					);
@@ -108,13 +114,16 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 		GLLogger.traceTech("looking for class name "+algoClassName, getClass());
 		
 		final IAlgo algo = ExistingAlgos.getExistingAlgos().getAlgoForClass(algoClassName);
-		GLLogger.traceTech("found the corresponding available algo: "+algo, getClass());
 		if (algo == null)
 			throw new WrongParametersException("error during the loading of the project: unable to find the algo for class "+algoClassName+"");
 			// TODO user friendly message
-		
+		GLLogger.traceTech("found the corresponding available algo: "+algo, getClass());
+
 		IAlgoInstance i = algo.createInstance((String)data.get(GenlabPersistence.XMLTAG_ID), null);
-				
+		
+		final String algoName = (String) data.get("algoName");
+		i.setName(algoName);
+		
 		if (data.get("parameters") != null) {
 			
 			Map<String,Object> m = (Map<String, Object>)data.get("parameters");;

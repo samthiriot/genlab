@@ -538,7 +538,7 @@ int igraph_k_regular_game(igraph_t *graph,
 		} catch (UnsatisfiedLinkError e) {
 			isAvailable = false;
 			problem = e;
-			GLLogger.errorTech("unable to register the native igraph library", IGraphRawLibrary.class, e);
+			GLLogger.errorTech("unable to register the native igraph library: "+e.getMessage(), IGraphRawLibrary.class, e);
 		}
     }
 

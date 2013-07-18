@@ -128,7 +128,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		return input.getMeta().decodeFromParameters(c.getValue());
 	}
 	
-	protected Object getInputValueForInput(IInputOutput<?> input) {
+	public Object getInputValueForInput(IInputOutput<?> input) {
 		
 		return getInputValueForInput(
 				getAlgoInstance().getInputInstanceForInput(input)
@@ -170,7 +170,26 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 
 	@Override
 	public void notifyInputAvailable(IInputOutputInstance to) {
-		inputsNotAvailable.remove(to);
+		
+		if (to.getMeta().acceptsMultipleInputs()) {
+			// this input accepts / expects several connection; so we have to check for all these connections !
+			
+			boolean allConnectionsProvidedValue = true;
+			
+			for (ConnectionExec c: input2connection.get(to)) {
+				if (c.getValue() == null) {
+					allConnectionsProvidedValue = false;
+				}
+			}
+			
+			if (allConnectionsProvidedValue)
+				inputsNotAvailable.remove(to);
+			
+		} else
+			// this input only accepts one connection; so we can assume it is satisfied :-)
+			inputsNotAvailable.remove(to);
+		
+		// maybe now we have all the required inputs ?
 		if (inputsNotAvailable.isEmpty()) {
 			exec.getListOfMessages().debugTech("all inputs are available, now ready to run !", getClass());
 			progress.setComputationState(ComputationState.READY);

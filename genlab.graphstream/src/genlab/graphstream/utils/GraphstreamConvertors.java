@@ -126,8 +126,12 @@ public class GraphstreamConvertors {
 		public void nodeAttributeChanged(String sourceId, long timeId,
 				String nodeId, String attribute, Object oldValue,
 				Object newValue) {
+			
+			// TODO graph.setVertexAttribute(nodeId, attribute, newValue);
+			
 			messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
 					"the attribute '"+attribute+"' of a node changed."));
+					
 		}
 
 		@Override
@@ -166,7 +170,7 @@ public class GraphstreamConvertors {
 		
 	}
 	
-	public static IGenlabGraph loadGraphWithGraphstreamFromGeneratorSource(String graphId, BaseGenerator generator, int maxLinks, ListOfMessages messages) {
+	public static IGenlabGraph loadGraphWithGraphstreamFromGeneratorSource(String graphId, BaseGenerator generator, int maxNodes, ListOfMessages messages, boolean countIterations) {
 
 
 			GenLabGraphSink ourSink = new GenLabGraphSink(graphId, messages);
@@ -175,7 +179,7 @@ public class GraphstreamConvertors {
 
 			// load the graph
 
-			if ( maxLinks < 0 ) {
+			if ( maxNodes < 0 ) {
 				generator.begin();
 				while (generator.nextEvents()) {
 					// nothing to do
@@ -183,8 +187,14 @@ public class GraphstreamConvertors {
 				generator.end();
 			} else {
 				generator.begin();
-				for ( int i = 0; i < maxLinks; i++ ) {
-					generator.nextEvents();
+				if (countIterations) {
+					for (int i = 0; i < maxNodes;  i++ ) {
+						generator.nextEvents();
+					}
+				} else {
+					while (ourSink.graph.getVerticesCount() <= maxNodes) {
+						generator.nextEvents();
+					}
 				}
 				generator.end();
 			}

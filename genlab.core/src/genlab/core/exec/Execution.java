@@ -1,15 +1,29 @@
 package genlab.core.exec;
 
+import genlab.core.commons.UniqueTimestamp;
 import genlab.core.usermachineinteraction.ListOfMessages;
+import genlab.core.usermachineinteraction.ListsOfMessages;
 
 public class Execution implements IExecution {
 
-	private ListOfMessages messages = new ListOfMessages();
+	private final ListOfMessages messages;
 	
 	private boolean forceExecution = false;
 	
+	private final UniqueTimestamp stamp;
+	
+	
 	public Execution() {
-		// TODO Auto-generated constructor stub
+		
+		// init stamp 
+		stamp = new UniqueTimestamp();
+		
+		// create messages 
+		messages = new ListOfMessages();
+		
+		// and register them !
+		ListsOfMessages.registerListOfMessages(getId(), messages);
+		
 	}
 
 	@Override
@@ -27,5 +41,11 @@ public class Execution implements IExecution {
 	public void setExecutionForced(boolean f) {
 		this.forceExecution = f;		
 	}
+
+	@Override
+	public String getId() {
+		return "execution_"+stamp.toString();
+	} 
+
 
 }

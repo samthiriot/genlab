@@ -28,8 +28,7 @@ public class IGraphComponentsAlgo extends AbstractIGraphMeasure {
 			BooleanFlowType.SINGLETON, 
 			"out_isConnected", 
 			"is connected", 
-			"connectivity stored by the igraph library" +
-			"TODO"
+			"returns true if the graph is strongly connected"
 	);
 	
 
@@ -37,14 +36,14 @@ public class IGraphComponentsAlgo extends AbstractIGraphMeasure {
 			IntegerFlowType.SINGLETON, 
 			"out_giantclustersize", 
 			"giant cluster", 
-			"size of the biggest (giant) cluster" +
-			"TODO"
+			"size of the biggest (giant) cluster"
 	);
 	
 	public IGraphComponentsAlgo() {
 		super(
-				"components", 
-				"components processing igraph implementation"
+				"components (igraph)", 
+				"components processing igraph implementation",
+				loadHtmlDescription("/genlab.igraph/html/components.html")
 				);
 		outputs.add(OUTPUT_ISCONNECTED);
 		outputs.add(OUTPUT_SIZE_GIANT_CLUSTER);

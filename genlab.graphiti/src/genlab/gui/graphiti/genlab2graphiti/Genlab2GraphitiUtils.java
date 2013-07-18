@@ -32,8 +32,6 @@ public class Genlab2GraphitiUtils {
 	public static final String KEY_WORKFLOW_TO_GRAPHITI_FILE = "graphiti_file";
 	public static final String EXTENSION_FILE_MAPPING = ".mapping";
 
-// TODO remove 	public static final String KEY_WORKFLOW_TO_INDEPENDANCE_SOLVER = "graphiti_independance_solver";
-
 	private static class LinkCommand implements Command {
 
 		private final GraphitiFeatureProvider dfp;
@@ -53,7 +51,7 @@ public class Genlab2GraphitiUtils {
 
 		@Override
 		public void execute() {
-			GLLogger.debugTech("linking in "+dfp+" "+pictogramElement+" with "+res, getClass());
+			//GLLogger.debugTech("linking in "+dfp+" "+pictogramElement+" with "+res, getClass());
 			dfp.link(pictogramElement, res);
 		}
 

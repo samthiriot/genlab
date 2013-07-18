@@ -1,27 +1,35 @@
 package genlab.gui.views;
 
+import genlab.core.commons.FileUtils;
+import genlab.core.model.doc.AvailableInfo;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.parameters.Parameter;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.VisualResources;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.core.internal.registry.osgi.OSGIUtils;
+import javax.swing.JOptionPane;
+
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.part.ViewPart;
-import org.osgi.framework.Bundle;
 
 /**
  * This view displays informations on a given algo
+ * 
+ * TODO read http://www.codeproject.com/Articles/128145/Run-Jetty-Web-Server-Within-Your-Application
  * 
  * @author Samuel Thiriot
  */ 
@@ -78,11 +86,15 @@ public class AlgoInfoView extends ViewPart implements IPropertyChangeListener {
 		if (browser == null || browser.isDisposed()) 
 			return;
 		
-		final String desc = algo.getHTMLDescription();
-		if (desc == null) {
-			GLLogger.warnUser("no information provided for this algorithm, sorry", getClass());
+		if (!AvailableInfo.getAvailableInfo().hasAlgoDoc(algo.getId())) {
+			GLLogger.warnTech("no information available for this algo "+algo.getId(), getClass());
 			return;
 		}
+		
+		browser.setText(AvailableInfo.getAvailableInfo().generateHtmlDoc(algo.getId()));
+		
+		/*
+		
 		
 		if (desc.startsWith(BasicAlgo.markerFile)) {
 			
@@ -106,6 +118,7 @@ public class AlgoInfoView extends ViewPart implements IPropertyChangeListener {
 			GLLogger.debugTech("displaying html stored in Java", getClass());
 			browser.setText(algo.getHTMLDescription());
 		}
+		*/
 	}
 	
 	
@@ -115,8 +128,35 @@ public class AlgoInfoView extends ViewPart implements IPropertyChangeListener {
 			browser = new Browser(parent, SWT.SIMPLE | SWT.READ_ONLY);
 		} catch (RuntimeException e) {
 			GLLogger.errorTech("unable to initialize a browser: "+e.getMessage(), getClass(), e);
+			return;
 		}
 		
+
+	    browser.addLocationListener(new LocationListener() {
+	        
+	    	public void changing(LocationEvent event) {
+	    		
+		        if (event.location.startsWith("http")){
+		        	// for web links
+		        	
+		        	event.doit = false;
+		        	
+		        	String url = event.location;
+		    		
+		        	GLLogger.debugTech("attempting to oepn URL: "+url, getClass());
+		        	
+		        	// ... open with an external browser
+		        	VisualResources.openUrl(url);
+		        	 
+		        } 
+	        } 
+
+
+			public void changed(LocationEvent event) {
+			    
+			}
+	    });
+
 	}
 
 	@Override

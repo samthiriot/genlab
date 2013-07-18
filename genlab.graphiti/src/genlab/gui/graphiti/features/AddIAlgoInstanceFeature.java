@@ -7,11 +7,13 @@ import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IConstantAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.graphiti.GraphitiImageProvider;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.impl.AbstractAddFeature;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
+import org.eclipse.graphiti.mm.algorithms.Image;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
@@ -147,9 +149,6 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 			// TODO remove
 			roundedRectangle.setParentGraphicsAlgorithm(invisibleRectangle);
 			
-			// TODO remove
-			//containerShape.setGraphicsAlgorithm(invisibleRectangle);
-			
 			// create link between the domain object and the graphical graphiti representation
 			link(containerShape, addedAlgo);
 		}
@@ -170,6 +169,23 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 			
 			
 		}
+		
+		// add icon
+		{
+			String image = addedAlgo.getAlgo().getImagePath();
+			if (image != null) {
+				String id = GraphitiImageProvider.getImageIdForAlgo(addedAlgo.getAlgo());
+				Image img = gaService.createImage(invisibleRectangle, id);
+				gaService.setLocationAndSize(
+						img, 
+						LayoutIAlgoFeature.ANCHOR_WIDTH/2+5 , 
+						6, 
+						16, 
+						16
+						);
+			}
+		}
+		
 		// add text
 		{
 			Shape shape = peCreateService.createShape(containerShape, false);
@@ -181,9 +197,9 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 			text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
 			gaService.setLocationAndSize(
 					text, 
-					LayoutIAlgoFeature.INVISIBLE_RECT_MARGIN_HORIZ+LayoutIAlgoFeature.ANCHOR_WIDTH/2, 
+					LayoutIAlgoFeature.TITLE_TEXT_LEFT,
 					LayoutIAlgoFeature.ANCHOR_WIDTH/2, 
-					width-LayoutIAlgoFeature.INVISIBLE_RECT_MARGIN_HORIZ-LayoutIAlgoFeature.ANCHOR_WIDTH/2, 
+					width-LayoutIAlgoFeature.INVISIBLE_RECT_MARGIN_HORIZ-LayoutIAlgoFeature.ANCHOR_WIDTH-LayoutIAlgoFeature.TITLE_TEXT_LEFT, 
 					20
 					);
 			

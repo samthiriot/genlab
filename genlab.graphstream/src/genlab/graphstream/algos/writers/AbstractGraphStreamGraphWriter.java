@@ -11,13 +11,15 @@ import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.FileFlowType;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.graphstream.Activator;
+import genlab.graphstream.algos.GraphStreamAlgo;
 
 import java.io.File;
 import java.util.Map;
 
 import org.graphstream.stream.file.FileSink;
 
-public abstract class AbstractGraphStreamGraphWriter extends BasicAlgo implements IAlgo {
+public abstract class AbstractGraphStreamGraphWriter extends GraphStreamAlgo {
 
 	
 	public static final InputOutput<IGenlabGraph> PARAM_GRAPH = new InputOutput<IGenlabGraph>(
@@ -39,6 +41,7 @@ public abstract class AbstractGraphStreamGraphWriter extends BasicAlgo implement
 
 		inputs.add(PARAM_GRAPH);
 		outputs.add(OUTPUT_FILE);
+		
 	}
 	
 	

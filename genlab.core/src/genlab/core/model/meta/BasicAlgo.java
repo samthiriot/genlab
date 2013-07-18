@@ -1,21 +1,23 @@
 package genlab.core.model.meta;
 
+import genlab.core.commons.NotImplementedException;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.parameters.Parameter;
 import genlab.core.usermachineinteraction.GLLogger;
 
-import java.io.FileInputStream;
+import java.io.File;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+
+import org.eclipse.core.runtime.FileLocator;
+import org.osgi.framework.Bundle;
 
 public abstract class BasicAlgo implements IAlgo {
 
@@ -29,11 +31,17 @@ public abstract class BasicAlgo implements IAlgo {
 	protected final Set<IInputOutput> inputs = new LinkedHashSet<IInputOutput>();
 	protected final Map<String,Parameter<?>> parameters = new LinkedHashMap<String,Parameter<?>>();
 	
+	protected String absoluteImagePath = null;
+	
+	
+	protected String imageRelativePath = null;
+	
 	public BasicAlgo(
 			String name,
 			String description,
 			String longHtmlDescription,
-			String categoryId
+			String categoryId,
+			String imagePath
 			) {
 		
 		this.id = name.replaceAll("[-+.^:, ]","_");;
@@ -44,17 +52,30 @@ public abstract class BasicAlgo implements IAlgo {
 		if (longHtmlDescription == null)
 			GLLogger.warnTech("this algo has no detailed description: "+id, getClass());
 		this.categoryId = categoryId;
+		
+		this.imageRelativePath = imagePath;
 	}
 	
+
 	public BasicAlgo(
 			String name,
 			String description,
 			String categoryId
 			) {
 		
-		this(name, description, null, categoryId);
+		this(name, description, null, categoryId, null);
 	}
 
+	/**
+	 * Should be overriden and implemented if an image is provided
+	 * @return
+	 */
+	public Bundle getBundle() {
+		throw new NotImplementedException();
+	}
+	
+	
+	
 	@Override
 	public final String getName() {
 		return name;
@@ -145,6 +166,29 @@ public abstract class BasicAlgo implements IAlgo {
 		StringBuffer sb = new StringBuffer();
 		
 		return sb.toString();
+	}
+	
+	@Override
+	public String getImagePath() {
+		
+		if (absoluteImagePath == null && imageRelativePath != null) {
+			File file = null;
+			try {
+				// Resolve the URL
+				URL basicUrl = getBundle().getEntry(imageRelativePath);
+				URL resolvedURL = FileLocator.toFileURL(basicUrl);
+				file = new File (resolvedURL.getFile ());
+				absoluteImagePath = file.getAbsolutePath();
+			} catch (Exception e) {
+				// Something sensible if an error occurs
+				GLLogger.errorTech("unable to resolve file : "+imageRelativePath+"; the image will not be available for this algo", getClass());
+				absoluteImagePath = null;
+				
+			}
+		}
+		
+		
+		return absoluteImagePath;
 	}
 
 }

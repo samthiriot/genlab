@@ -1,5 +1,6 @@
 package genlab.gui.graphiti.features;
 
+import genlab.core.model.doc.AvailableInfo;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.GraphitiImageProvider;
@@ -49,7 +50,12 @@ public class SeeInfoFeature extends AbstractCustomFeature {
 		
 		final Object value = getBusinessObjectForPictogramElement(context.getInnerPictogramElement());
 		
-		return (value instanceof IAlgoInstance);
+		if (!(value instanceof IAlgoInstance))
+			return false;
+		
+		IAlgoInstance ai = (IAlgoInstance)value;
+		
+		return AvailableInfo.getAvailableInfo().hasAlgoDoc(ai.getAlgo().getId());
 		
 	}
 

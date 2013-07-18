@@ -8,6 +8,9 @@ import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.neo4j.Activator;
+
+import org.osgi.framework.Bundle;
 
 public class Neo4jGraphWriter extends BasicAlgo {
 
@@ -22,14 +25,21 @@ public class Neo4jGraphWriter extends BasicAlgo {
 	public Neo4jGraphWriter() {
 		super(
 				"neo4j database", 
-				"adds or append a graph into a neo4j database", 
-				ExistingAlgoCategories.WRITER_GRAPH.getId()
+				"adds or append a graph into a neo4j database",
+				null,
+				ExistingAlgoCategories.WRITER_GRAPH.getTotalId(),
+				"/icons/neo4j.gif"
 				);
 		
 		inputs.add(PARAM_GRAPH);
 
 	}
-
+	
+	@Override
+	public Bundle getBundle() {
+		return Activator.getDefault().getBundle();
+	}
+	
 	@Override
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {

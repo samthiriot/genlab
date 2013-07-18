@@ -28,11 +28,11 @@
          </property>
          <property
                name="startupMessageRect"
-               value="273,210,386,40">
+               value="273,210,386,20">
          </property>
          <property
                name="startupProgressRect"
-               value="273,183,386,15">
+               value="273,193,385,18">
          </property>
          <property
                name="preferenceCustomization"
@@ -55,13 +55,13 @@
             name="Genlab">
       </category>
       <view
-            allowMultiple="false"
+            allowMultiple="true"
             category="genlab.gui.views.categorygenlab"
             class="genlab.gui.views.MessagesView"
             icon="icons/console_view.gif"
             id="genlab.gui.views.MessagesView"
             name="MessagesView"
-            restorable="true">
+            restorable="false">
       </view>
       <view
             allowMultiple="false"
@@ -112,6 +112,24 @@
             icon="icons/question.gif"
             id="genlab.gui.views.AlgoInfoView"
             name="Algorithm information"
+            restorable="true">
+      </view>
+      <view
+            allowMultiple="true"
+            category="genlab.gui.views.categorygenlab"
+            class="genlab.gui.views.ConsoleView"
+            icon="icons/console_view.gif"
+            id="genlab.gui.views.ConsoleView"
+            name="Console View"
+            restorable="false">
+      </view>
+      <view
+            allowMultiple="false"
+            category="genlab.gui.views.categorygenlab"
+            class="genlab.gui.views.MessagesViewGeneral"
+            icon="icons/console_view.gif"
+            id="genlab.gui.views.MessagesViewGeneral"
+            name="MessagesViewGeneral"
             restorable="true">
       </view>
    </extension>
@@ -314,6 +332,34 @@
       <listener
             class="genlab.gui.genlab2eclipse.WorkflowsListener">
       </listener>
+   </extension>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.gui.algos.GraphicalConsoleAlgo"
+            id="genlab.gui.algos.GraphicalConsoleAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <library
+            description="default Graphical User Interface for GenLab "
+            id="genlab.gui.doc.libraries.gui"
+            name="Genlab GUI">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </original_author_id>
+      </library>
+      <docalgo
+            algo_id="genlab.gui.algos.GraphicalConsoleAlgo"
+            description="d"
+            library_id="genlab.core.doc.library.core"
+            memory_complexity="O(n)"
+            time_complexity="O(n) with n the number of inputs">
+      </docalgo>
    </extension>
 
 </plugin>

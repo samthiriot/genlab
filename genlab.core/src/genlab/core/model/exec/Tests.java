@@ -42,8 +42,9 @@ public class Tests {
 
 		GLLogger.infoUser("start run !", Tests.class);
 
-		execution.run();
+		Thread t = new Thread(execution);
+		t.start();
 
-		GLLogger.infoUser("done.", Tests.class);
+		GLLogger.infoUser("launched.", Tests.class);
 	}
 }

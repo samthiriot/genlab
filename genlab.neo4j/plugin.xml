@@ -4,9 +4,38 @@
    <extension
          point="genlab.core.algo">
       <algo
-            class="genlab.neo4j.algos.writers.Neo4jGraphWriterExecution"
-            id="genlab.neo4j.algos.writers.Neo4jGraphWriterExecution">
+            class="genlab.neo4j.algos.writers.Neo4jGraphWriter"
+            id="genlab.neo4j.algos.writers.Neo4jGraphWriter">
       </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <author
+            id="genlab.neo4j.doc.authors.neo4jinc"
+            name="Neo Technology, Inc."
+            url="http://www.neo4j.org">
+      </author>
+      <library
+            description="Neo4j is an open-source, high-performance, enterprise-grade NOSQL graph database."
+            id="genlab.neo4j.doc.library.neo4j"
+            licence_name="GNU General Public License v3"
+            name="Neo4j Community"
+            url="http://www.neo4j.org">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.neo4j.doc.authors.neo4jinc">
+         </original_author_id>
+         <more_info
+               content="the wikipedia page on neo4j"
+               url="http://en.wikipedia.org/wiki/Neo4j">
+         </more_info>
+      </library>
+      <docalgo
+            algo_id="genlab.neo4j.algos.writers.Neo4jGraphWriter"
+            library_id="genlab.neo4j.doc.library.neo4j">
+      </docalgo>
    </extension>
 
 </plugin>

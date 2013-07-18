@@ -1,5 +1,6 @@
 package genlab.gui.views;
 
+import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.IListOfMessagesListener;
 import genlab.core.usermachineinteraction.ITextMessage;
 import genlab.core.usermachineinteraction.ListOfMessages;
@@ -11,6 +12,8 @@ import java.io.StringWriter;
 import java.text.DateFormat;
 import java.util.Locale;
 
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
@@ -30,420 +33,61 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 
 /**
- * DIsplays the messages as a table.
+ * Displays messages as a table. 
+ * Once created an initialized, this view will wait for the property PROPERTY_MESSAGES_ID.
+ * If PROPERTY_VALUE_GLOBAL is provided as a value, the global messages from 
+ * genlab are listened. Else, the view will attempt to find the messages provided. 
  * 
  * TODO add exportation to a text file ?!
  * 
  * @author Samuel Thiriot
  *
  */
-public class MessagesView extends ViewPart  {
+public class MessagesView extends MessagesViewGeneral implements IPropertyChangeListener  {
 
 	public static final String ID = "genlab.gui.views.MessagesView";
 
-	/**
-	 * Datetime format used to display the "when" column
-	 */
-	public static final DateFormat DATE_FORMAT = DateFormat.getTimeInstance(DateFormat.MEDIUM, Locale.getDefault()); 
-
-
-	private MyViewerComparator comparator = null;
-	private TableViewer viewer = null;
+	public static final String PROPERTY_MESSAGES_ID = "message_to_observe";
 	
-	private boolean refreshPending = false;
 	
 	public MessagesView() {
+		addPartPropertyListener(this);
 	}
-
-	private class MessagesContentProvider implements IStructuredContentProvider {
-
-		private final ListOfMessages list;
-		
-		public MessagesContentProvider(ListOfMessages list) {
-			this.list = list;
-		}
-		
-		@Override
-		public void dispose() {
-			
-		}
-
-		@Override
-		public void inputChanged(Viewer pviewer, Object oldInput, Object newInput) {
-			// nothing to do (read only !)
-		}
-
-		@Override
-		public Object[] getElements(Object inputElement) {
-			//System.err.println("get elements called; "+list.getSize()+" vs. "+viewer.getTable().getItemCount());
-
-			return list.asArray();
-		}
-
-		
-	}
+ 
 	
-	/**
-	 * Basic label provider that manages colors
-	 * 
-	 * @author Samuel Thiriot
-	 *
-	 */
-	protected class ColorColumnProvider extends ColumnLabelProvider {
+	protected void listenMessages() {
 		
-		  @Override
-		  public Color getForeground(Object element) {
-			    ITextMessage message = (ITextMessage)element;
-			    
-			    switch (message.getLevel()) {
-			    case DEBUG:
-			    case TRACE:
-			    	return VisualResources.COLOR_GRAY;
-			    case ERROR:
-			    	return VisualResources.COLOR_RED;
-			    default:
-			    	return null;
-			    }
-			    
-		  }
-
-	}
-	
-	/**
-	 * Provides comparison for sorting.
-	 *
-	 */
-	public class MyViewerComparator extends ViewerComparator {
+		String value = (String)getPartProperty(PROPERTY_MESSAGES_ID);
 		
-		  private int propertyIndex;
-		  private static final int DESCENDING = 1;
-		  private int direction = DESCENDING;
-
-		  public MyViewerComparator() {
-		    this.propertyIndex = 2; // sort by date by default
-		    direction = DESCENDING;
-		  }
-
-		  public int getDirection() {
-		    return direction == 1 ? SWT.DOWN : SWT.UP;
-		  }
-
-		  public void setColumn(int column) {
-		    if (column == this.propertyIndex) {
-		      // Same column as last sort; toggle the direction
-		      direction = 1 - direction;
-		    } else {
-		      // New column; do an ascending sort
-		      this.propertyIndex = column;
-		      direction = DESCENDING;
-		    }
-		  }
-
-		  @Override
-		  public int compare(Viewer viewer, Object e1, Object e2) {
-		    ITextMessage p1 = (ITextMessage) e1;
-		    ITextMessage p2 = (ITextMessage) e2;
-		    int rc = 0;
-		    switch (propertyIndex) {
-		    case 0:
-		      rc = p1.getLevel().compareTo(p2.getLevel());
-		      break;
-		    case 1:
-		    	rc = p1.getAudience().compareTo(p2.getAudience());
-		      break;
-		    case 2:
-		      rc = p1.getTimestamp().compareTo(p2.getTimestamp());
-		      break;
-		    case 3:
-		    	rc = p1.getEmitter().getCanonicalName().compareTo(p2.getEmitter().getCanonicalName());
-		      break;
-		    case 4:
-		    	rc = p1.getMessage().compareTo(p2.getMessage());
-		      break;
-		    default:
-		    	System.err.println("default ! :-(");
-		      rc = 0;
-		    }
-		    // If descending order, flip the direction
-		    if (direction == DESCENDING) {
-		      rc = -rc;
-		    }
-		    return rc;
-		  }
-
-		} 
-	
-	/**
-	 * Listens for click events on the table, and changes sorting
-	 * @param column
-	 * @param index
-	 * @return
-	 */
-	 private SelectionAdapter getSelectionAdapter(final TableColumn column, final int index) {
-		    SelectionAdapter selectionAdapter = new SelectionAdapter() {
-		      @Override
-		      public void widgetSelected(SelectionEvent e) {
-		    	  if (comparator == null || viewer == null)
-		    		  return;
-		    	  
-		        comparator.setColumn(index);
-		        int dir = comparator.getDirection();
-		        viewer.getTable().setSortDirection(dir);
-		        viewer.refresh();
-		      }
-		    };
-		    return selectionAdapter;
-	}
-	 
-	/**
-	 * Returns the list of messages tracked by this view
-	 * @return
-	 */
-	public ListOfMessages getListOfMessages() {
-		return ListsOfMessages.getGenlabMessages();
-	}
-	
-	@Override
-	public void createPartControl(final Composite parent) {
+		if (value == null || listener == null)
+			// the view is not yet initialized; lets' wait
+			return;
 		
-		viewer = new TableViewer(
-				parent, 
-				SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER | SWT.READ_ONLY
-				);
 
-		ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE);
+		GLLogger.traceTech("should show the list of messages for id "+value+"", getClass());
 
-
-		// configure viewer
-		
-		comparator = new MyViewerComparator();
-		
-	    viewer.setComparator(comparator);
-
-		// ... columns
-		{
-			TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
-			col.getColumn().setWidth(100);
-			col.getColumn().setText("Level");
-			col.setLabelProvider(new ColorColumnProvider() {
-			  @Override
-			  public String getText(Object element) {
-			    ITextMessage message = (ITextMessage)element;
-			    return message.getLevel().toString();
-			  }
-				
-			  @Override
-				public Image getImage(Object element) {
-				    ITextMessage message = (ITextMessage)element;
-
-				  switch (message.getLevel()) {
-				  case TRACE:
-				  case DEBUG:
-					  return VisualResources.ICON_DEBUG;
-				  case TIP:
-					  return VisualResources.ICON_TIP;
-				  case ERROR:
-					  return VisualResources.ICON_ERROR;
-				  case INFO:
-					  return VisualResources.ICON_INFO;
-				  case WARNING:
-					  return VisualResources.ICON_WARNING;
-				  default:
-					  return null;
-				  }
-
-				}
-			});
-			col.getColumn().addSelectionListener(getSelectionAdapter(col.getColumn(), 0));
-
+		messages = ListsOfMessages.getListOfMessages(value);
+		if (messages==null) {
+			GLLogger.warnTech("unable to find a list of messages for id "+value+"; the messages will not be displayed", getClass());
+			return;
 		}
-		{
-			TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
-			col.getColumn().setWidth(100);
-			col.getColumn().setText("Audience");
-			col.setLabelProvider(new ColorColumnProvider() {
-
-			@Override
-			  public String getText(Object element) {
-			    ITextMessage message = (ITextMessage)element;
-			    return message.getAudience().toString();
-			  }
-			});
-			col.getColumn().addSelectionListener(getSelectionAdapter(col.getColumn(), 1));
-
-		}
-		{
-			TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
-			col.getColumn().setWidth(100);
-			col.getColumn().setText("When");
-			col.setLabelProvider(new ColorColumnProvider() {
-			  @Override
-			  public String getText(Object element) {
-			    ITextMessage message = (ITextMessage)element;
-			    return DATE_FORMAT.format(message.getDate());
-			  }
-			});
-			col.getColumn().addSelectionListener(getSelectionAdapter(col.getColumn(), 2));
-
-		}
-		{
-			TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
-			col.getColumn().setWidth(300);
-			col.getColumn().setText("From");
-			
-			col.setLabelProvider(new ColorColumnProvider() {
-				
-				@Override
-				public String getToolTipText(Object element) {
-					ITextMessage message = (ITextMessage)element;
-					return message.getEmitter().getCanonicalName();
-				}
-				
-
-				public int getToolTipDisplayDelayTime(Object object) {
-					return 500;
-				}
-
-				public int getToolTipTimeDisplayed(Object object) {
-					return 10000;
-				}
-
-				  @Override
-				  public String getText(Object element) {
-				    ITextMessage message = (ITextMessage)element;
-				    return message.getEmitter().getCanonicalName();
-				  }
-			  
-			  
-			  
-			});
-			
-			col.getColumn().addSelectionListener(getSelectionAdapter(col.getColumn(), 3));
-			
-		}
-		{
-			TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);
-			col.getColumn().setWidth(400);
-			col.getColumn().setText("Message");
-			
-			col.setLabelProvider(new ColorColumnProvider() {
-				
-				@Override
-				public String getToolTipText(Object element) {
-					ITextMessage message = (ITextMessage)element;
-					if (message.getException() != null) {
-						StringWriter sw = new StringWriter();
-						PrintWriter pw = new PrintWriter(sw);
-						message.getException().printStackTrace(pw);
-						return sw.toString(); 
-					} else
-						return null;
-				}
-				
-
-				public int getToolTipDisplayDelayTime(Object object) {
-					return 500;
-				}
-
-				public int getToolTipTimeDisplayed(Object object) {
-					return 10000;
-				}
-
-				  @Override
-				  public String getText(Object element) {
-				    ITextMessage message = (ITextMessage)element;
-				    if (message.getCount() > 1) {
-				    	StringBuffer sb = new StringBuffer();
-				    	return sb
-					    		.append("(")					//$NON-NLS-1$
-					    		.append(message.getCount())
-					    		.append(" times") 
-					    		.append(") ")					//$NON-NLS-1$
-					    		.append(message.getMessage())
-					    		.toString();
-					  } else
-				    	return message.getMessage();
-				  	}
-			  
-			  
-			  
-			});
-			
-			col.getColumn().addSelectionListener(getSelectionAdapter(col.getColumn(), 4));
-			
-		}
+		messages.addListener(listener);
 		
-		// configure table
-		final Table table = viewer.getTable();
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true); 
-
 		// ... listen for data
-		viewer.setContentProvider(new MessagesContentProvider(ListsOfMessages.getGenlabMessages()));
+		viewer.setContentProvider(new MessagesContentProvider(messages));
 		viewer.setInput("toto");
 		
-		IListOfMessagesListener listener = new IListOfMessagesListener() {
-			
-			@Override
-			public void contentChanged(ListOfMessages list) {
-
-				if (parent.isDisposed()) {
-					ListsOfMessages.getGenlabMessages().removeListener(this);
-					return;
-				}
-				
-				if (refreshPending)
-					return;
-				
-				refreshPending = true;
-				
-				final IListOfMessagesListener myThis = this;
-				
-				parent.getDisplay().asyncExec(new Runnable() {
-					
-					@Override
-					public void run() {
-						
-						refreshPending = false;
-						
-						if (parent.isDisposed()) {
-							ListsOfMessages.getGenlabMessages().removeListener(myThis);
-							return;
-						}
-						
-						try {
-							viewer.setInput("toto");
-			
-							viewer.refresh();
-							
-						} catch (RuntimeException e) {
-								// TODO manage disposed exception
-							e.printStackTrace();
-						}
-						
-					}
-				});
-				
-			}
-
-			@Override
-			public void messageAdded(ListOfMessages list, ITextMessage message) {
-				// TODO Auto-generated method stub
-				
-			}
-		};
-		
-		ListsOfMessages.getGenlabMessages().addListener(listener);
-
-		
-	}
 	
-
+	}
 
 	@Override
-	public void setFocus() {
-		// TODO Auto-generated method stub
-
+	public void propertyChange(PropertyChangeEvent event) {
+		
+		if (event.getProperty().equals(PROPERTY_MESSAGES_ID)) {
+			listenMessages();
+		}
+		
+		
 	}
 
 

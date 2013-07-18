@@ -19,7 +19,6 @@ public class ClearAllHandler extends AbstractHandler {
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		
-	    
 	    IViewPart view = HandlerUtil.getActiveWorkbenchWindow(event).getActivePage().findView(MessagesView.ID);
 	    
 	    if (view == null)

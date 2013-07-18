@@ -19,17 +19,22 @@ public class ComputationResult implements IComputationResult {
 	protected final IComputationProgress progress;
 	public Map<IInputOutputInstance,Object> results;
 
-	protected final ListOfMessages listOfMessages = new ListOfMessages();
+	protected final ListOfMessages listOfMessages;
 	
-	public ComputationResult(IAlgoInstance algo, IComputationProgress progress) {
+	public ComputationResult(IAlgoInstance algo, IComputationProgress progress, ListOfMessages listOfMessages) {
 		this.algo = algo;
 		this.progress = progress;
+		if (listOfMessages == null)
+			this.listOfMessages = new ListOfMessages();
+		else 
+			this.listOfMessages = listOfMessages;
 	}
 	
 	public ComputationResult(IAlgoInstance algo, IComputationProgress progress, Map<IInputOutputInstance,Object> results) {
 		this.algo = algo;
 		this.progress = progress;
 		this.results = results;
+		this.listOfMessages = new ListOfMessages();
 	}
 
 	@Override

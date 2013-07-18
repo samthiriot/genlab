@@ -5,6 +5,9 @@ import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.gephi.Activator;
+
+import org.osgi.framework.Bundle;
 
 public abstract class GephiAbstractAlgo extends BasicAlgo {
 
@@ -20,11 +23,16 @@ public abstract class GephiAbstractAlgo extends BasicAlgo {
 				name, 
 				description, 
 				longHtmlDescription,
-				ExistingAlgoCategories.ANALYSIS_GRAPH.getTotalId()
+				ExistingAlgoCategories.ANALYSIS_GRAPH.getTotalId(),
+				"/icons/gephi.gif" 
 				);
 		
 		inputs.add(INPUT_GRAPH);
 	}
 
-
+	@Override
+	public Bundle getBundle() {
+		return Activator.getDefault().getBundle();
+	}
+	
 }

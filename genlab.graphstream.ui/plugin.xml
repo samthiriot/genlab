@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.graphstream.ui.algos.GraphDisplayAlgo"
+            id="genlab.graphstream.ui.algos.GraphDisplayAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <library
+            description="provides display features for graphs"
+            id="genlab.graphstream.ui.libraries.graphstreamui"
+            name="Graphstream UI">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.graphstream.doc.authors.litisri2c">
+         </original_author_id>
+         <more_info
+               content="javadoc for this graphstream library"
+               url="http://graphstream-project.org/api/gs-ui/#package">
+         </more_info>
+         <more_info
+               content="Graphstream project webpage"
+               url="http://graphstream-project.org/">
+         </more_info>
+      </library>
+      <docalgo
+            algo_id="genlab.graphstream.ui.algos.GraphDisplayAlgo"
+            library_id="genlab.graphstream.ui.libraries.graphstreamui">
+      </docalgo>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            category="genlab.gui.views.categorygenlab"
+            class="genlab.graphstream.ui.views.GraphView"
+            icon="icons/graphstream.gif"
+            id="genlab.graphstream.ui.views.graphview"
+            name="GraphView"
+            restorable="false">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="genlab.gui.perspectives.WorkflowPerspective">
+         <view
+               closeable="true"
+               id="genlab.graphstream.ui.views.graphview:*"
+               minimized="false"
+               moveable="true"
+               relationship="stack"
+               relative="org.eclipse.ui.editorss"
+               showTitle="true"
+               standalone="false"
+               visible="true">
+         </view>
+      </perspectiveExtension>
+   </extension>
+
+</plugin>

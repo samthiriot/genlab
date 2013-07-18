@@ -55,8 +55,9 @@ public class UniqueTimestamp implements Comparable<UniqueTimestamp> {
 					
 	}
 
-
-	
+	public String toString() {
+		return timestamp+"_"+id;
+	}
 	
 
 }

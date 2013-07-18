@@ -25,7 +25,7 @@ public class HeterogeneousMapMultiplexorExec extends AbstractAlgoExecution {
 		progress.setComputationState(ComputationState.STARTED);
 		
 		// define result
-		final ComputationResult result = new ComputationResult(algoInst, progress);
+		final ComputationResult result = new ComputationResult(algoInst, progress, exec.getListOfMessages());
 		setResult(result);
 		
 		final HeterogeneousMap map = new HeterogeneousMap();

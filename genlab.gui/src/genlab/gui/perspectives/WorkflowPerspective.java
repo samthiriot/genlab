@@ -1,7 +1,9 @@
 package genlab.gui.perspectives;
 
+import genlab.gui.views.ConsoleView;
 import genlab.gui.views.ExistingView;
 import genlab.gui.views.MessagesView;
+import genlab.gui.views.MessagesViewGeneral;
 import genlab.gui.views.WorkflowView;
 
 import org.eclipse.ui.IFolderLayout;
@@ -22,13 +24,16 @@ public class WorkflowPerspective implements IPerspectiveFactory {
 		String editorArea = layout.getEditorArea();
 		layout.setEditorAreaVisible(true);
 
-		
+		// TODO use extensions instead
+		layout.addPlaceholder("genlab.graphstream.ui.views.graphview:*", IPageLayout.TOP, 0.9f, editorArea);
 		// add a messages (console) view in the very bottom
 
 		
-		// add a folder at right...
+		// add a folder at bottom...
 		IFolderLayout folderBottom = layout.createFolder("bottom folder", IPageLayout.BOTTOM, 0.8f, editorArea);
-		folderBottom.addView(MessagesView.ID);
+		folderBottom.addView(MessagesViewGeneral.ID);
+		folderBottom.addPlaceholder(MessagesView.ID+":*");
+		folderBottom.addPlaceholder(ConsoleView.VIEW_ID+":*");
 		
 		// add a folder at left...
 		IFolderLayout folderLeft = layout.createFolder("left folder", IPageLayout.LEFT, 0.15f, editorArea);
@@ -41,10 +46,8 @@ public class WorkflowPerspective implements IPerspectiveFactory {
 		folderRight.addView("genlab.gui.views.workflowexplorer");
 		folderRight.addView(ExistingView.ID);
 		folderRight.addView("genlab.gui.views.AlgoInfoView");
-
 		folderRight.addPlaceholder("genlab.gui.views.ParametersView:*");
 
-		//	dzdz
 		
 		//layout.getViewLayout("genlab.gui.views.projectexplorer").
 		

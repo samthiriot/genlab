@@ -89,6 +89,22 @@ public class TextMessage implements ITextMessage {
 	public final int compareTo(ITextMessage arg0) {
 		return timestamp.compareTo(arg0.getTimestamp());
 	}
+	
+	
+	@Override
+	public boolean equals(Object other) {
+		if (this == other)
+			return true;
+		try {
+			TextMessage t = (TextMessage)other;
+			return 	(this.audience == t.audience) &&
+					(this.level == t.level) && 
+					(this.emitter == t.emitter) &&
+					(this.message.equals(t.message));
+		} catch (ClassCastException e) {
+			return false;
+		}
+	}
 
 	@Override
 	public final Date getDate() {

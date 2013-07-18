@@ -26,4 +26,6 @@ public interface IExecution {
 	
 	public void setExecutionForced(boolean f);
 	
+	public String getId();
+	
 }

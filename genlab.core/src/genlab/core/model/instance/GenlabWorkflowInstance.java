@@ -515,10 +515,16 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 				}
 			}
 		}
+		
+		c.getFrom().removeConnection(c);
+		c.getTo().removeConnection(c);
+		
 	}
 
 	@Override
 	public void addListener(IWorkflowContentListener l) {
+		if (l == null)
+			throw new ProgramException("listeners can not be null");
 		if (!listeners.contains(l))
 			listeners.add(l);
 	}

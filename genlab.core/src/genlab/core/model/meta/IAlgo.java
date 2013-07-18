@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public interface IAlgo extends IGenlabResource {
 
-			
+	
 	public String getName();
 	
 	public String getDescription();
@@ -78,4 +78,11 @@ public interface IAlgo extends IGenlabResource {
 
 	public boolean hasParameter(String id);
 
+	/**
+	 * Returns a path to retrieve an icon / image for this algo
+	 * or null if none. The path should be absolute, 
+	 * so any plugin can find the file.
+	 * @return
+	 */
+	public String getImagePath();
 }

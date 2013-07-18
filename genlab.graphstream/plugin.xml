@@ -10,6 +10,14 @@
             id="genlab.graphstream.algos.generators.WattsStrogatzAlgo">
       </algo>
       <algo
+            class="genlab.graphstream.algos.generators.BarabasiAlbertAlgo"
+            id="genlab.graphstream.algos.generators.BarabasiAlbertAlgo">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.generators.BananaTreeAlgo"
+            id="genlab.graphstream.algos.generators.BananaTreeAlgo">
+      </algo>
+      <algo
             class="genlab.graphstream.algos.readers.GraphStreamDGSParser"
             id="genlab.graphstream.algos.readers.GraphStreamDGSParser">
       </algo>
@@ -65,6 +73,190 @@
             class="genlab.graphstream.algos.measure.GraphStreamAPSP"
             id="genlab.graphstream.algos.measure.GraphStreamAPSP">
       </algo>
+      <algo
+            class="genlab.graphstream.algos.generators.ChvatalAlgo"
+            id="genlab.graphstream.algos.generators.ChvatalAlgo">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.generators.DorogovtsevMendevAlgo"
+            id="genlab.graphstream.algos.generators.DorogovtsevMendevAlgo">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.generators.FlowerSnarkAlgo"
+            id="genlab.graphstream.algos.generators.FlowerSnarkAlgo">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.generators.FullConnectedAlgo"
+            id="genlab.graphstream.algos.generators.FullConnectedAlgo">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.generators.GridAlgo"
+            id="genlab.graphstream.algos.generators.GridAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <author
+            id="genlab.graphstream.doc.authors.litisri2c"
+            name="the members of RI2C team  (LITIS computer science lab)"
+            url="http://www.litislab.eu/front-page/themes/reseaux-dinteractions-et-intelligence-collective">
+      </author>
+      <library
+            description="Graphstream is a dynamic graph library in Java."
+            id="genlab.graphstream.doc.library.graphstream"
+            licence_name="GNU General Public License"
+            name="Graphstream"
+            url="http://graphstream-project.org/">
+         <original_author_id
+               id="genlab.graphstream.doc.authors.litisri2c">
+         </original_author_id>
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <more_info
+               content="the online documentation"
+               url="http://graphstream-project.org/doc/">
+         </more_info>
+         <more_info
+               content="the wikipedia page on graphstream"
+               url="http://en.wikipedia.org/wiki/GraphStream">
+         </more_info>
+         <more_info
+               content="A. Dutot, F. Guinand, D. Olivier and Y. Pigné, 2007: GraphStream: A tool for bridging the gap between complex systems and dynamic graphs , in Emergent Properties in Natural and Artificial Complex Systems (EPNACS&apos;07), Workshop of the 4th European Conference on Complex Systems (ECCS&apos;07), Dresden, Germany">
+         </more_info>
+         <more_info
+               content="A. Dutot, Y. Pigné, 2010: GraphStream workshop, in Emergent Properties in Natural and Artificial Complex Systems (EPNACS&apos;10), a satellite meeting for ECCS&apos;10, Lisbon University Institute, LISBON, Portugal">
+         </more_info>
+      </library>
+      <docalgo
+            algo_id="genlab.graphstream.algos.generators.WattsStrogatzAlgo"
+            library_id="genlab.graphstream.doc.library.graphstream">
+         <more_info
+               content="the graphstream documentation on this algorithm"
+               url="http://graphstream-project.org/doc/Generators/Small-world-Watts-Strogatz-generator_1.0/">
+         </more_info>
+         <more_info
+               content="Watts, D.J. and Strogatz, S.H., &lt;i&gt;Collective dynamics of &apos;small-world&apos; networks&lt;/i&gt;, Nature 393 (6684): pp 409–10, doi:10.1038/30918">
+         </more_info>
+         <more_info
+               content="the wikipedia page on the Watts and Strogatz model"
+               url="http://en.wikipedia.org/wiki/Watts_and_Strogatz_model">
+         </more_info>
+         <more_info
+               content="Overview of graphstream generators"
+               url="http://graphstream-project.org/doc/Generators/Overview-of-generators_1.0/">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.graphstream.algos.generators.BarabasiAlbertAlgo"
+            library_id="genlab.graphstream.doc.library.graphstream">
+         <more_info
+               content="documentation of the graphstream library for this generator"
+               url="http://graphstream-project.org/api/gs-algo/org/graphstream/algorithm/generator/BarabasiAlbertGenerator.html">
+         </more_info>
+         <more_info
+               content="    Albert-László Barabási &amp; Réka Albert &quot;Emergence of scaling in random networks&quot;, Science 286: 509–512. October 1999. doi:10.1126/science.286.5439.509.">
+         </more_info>
+         <more_info
+               content="overview of graphstream generators"
+               url="http://graphstream-project.org/doc/Generators/Overview-of-generators_1.0/">
+         </more_info>
+         <more_info
+               content="wikipedia page on this generator"
+               url="https://en.wikipedia.org/wiki/Barab%C3%A1si%E2%80%93Albert_model">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.graphstream.algos.generators.BananaTreeAlgo"
+            library_id="genlab.graphstream.doc.library.graphstream">
+         <more_info
+               content="    Chen, W. C.; Lü, H. I.; and Yeh, Y. N. &quot;Operations of Interlaced Trees and Graceful Trees.&quot; Southeast Asian Bull. Math. 21, 337-348, 1997.">
+         </more_info>
+         <more_info
+               content="the graphstream documentation for this function"
+               url="http://graphstream-project.org/api/gs-algo/index.html?org/graphstream/algorithm/generator/BananaTreeGenerator.html">
+         </more_info>
+         <more_info
+               content="overview of graphstream generators"
+               url="http://graphstream-project.org/doc/Generators/Overview-of-generators_1.0/">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.graphstream.algos.generators.ChvatalAlgo"
+            library_id="genlab.graphstream.doc.library.graphstream">
+         <more_info
+               content="    Chvátal, V. (1970), &quot;The smallest triangle-free 4-chromatic 4-regular graph&quot;, Journal of Combinatorial Theory 9 (1): 93–94, doi:10.1016/S0021-9800(70)80057-6">
+         </more_info>
+         <more_info
+               content="wikipedia page on Chvatal graphs"
+               url="http://en.wikipedia.org/wiki/Chv%C3%A1tal_graph">
+         </more_info>
+         <more_info
+               content="graphstream documentation for this graph"
+               url="http://graphstream-project.org/api/gs-algo/org/graphstream/algorithm/generator/ChvatalGenerator.html">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.graphstream.algos.generators.DorogovtsevMendevAlgo"
+            description="Generates a graph using the Dorogovtsev - Mendes algorithm. This starts by creating three nodes and tree edges, making a triangle, and then add one node at a time. Each time a node is added, an edge is chosen randomly and the node is connected to the two extremities of this edge.&#x0A;&#x0A;This process generates a power-low degree distribution, as nodes that have more edges have more chances to be selected since their edges are more represented in the edge set.&#x0A;&#x0A;This algorithm often generates graphs that seem more suitable than the simple preferential attachment implemented in the PreferentialAttachmentGenerator class (despite the fact more complex and useful preferential attachment generators could be realized in the future).&#x0A;&#x0A;The Dorogovtsev - Mendes algorithm always produce planar graphs.&#x0A;&#x0A;The more this generator is iterated, the more nodes are generated. It can therefore generate trees of any size."
+            library_id="genlab.graphstream.doc.library.graphstream">
+         <more_info
+               content="graphstream documentation for this generator"
+               url="http://graphstream-project.org/doc/Generators/Dorogovtsev-Mendes-Generator_1.0/">
+         </more_info>
+         <more_info
+               content="S. N. Dorogovtsev and J. F. F. Mendes, Evolution of networks, in Adv. Phys, 2002, 1079--1187">
+         </more_info>
+         <more_info
+               content="overview of graphstream generators"
+               url="http://graphstream-project.org/doc/Generators/Overview-of-generators_1.0/">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.graphstream.algos.generators.FlowerSnarkAlgo"
+            library_id="genlab.graphstream.doc.library.graphstream"
+            memory_complexity="O(1)"
+            time_complexity="O(1)">
+         <more_info
+               content="Isaacs, R. &quot;Infinite Families of Nontrivial Trivalent Graphs Which Are Not Tait Colorable.&quot; Amer. Math. Monthly 82, 221–239, 1975.">
+         </more_info>
+         <more_info
+               content="The wikipedia page on this graph"
+               url="http://en.wikipedia.org/wiki/Flower_snark">
+         </more_info>
+         <more_info
+               content="The graphstream documentation on this algorithm"
+               url="http://graphstream-project.org/api/gs-algo/index.html?org/graphstream/algorithm/generator/FlowerSnarkGenerator.html">
+         </more_info>
+         <more_info
+               content="graphstream generators"
+               url="http://graphstream-project.org/doc/Generators/Overview-of-generators_1.0/">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.graphstream.algos.generators.FullConnectedAlgo"
+            library_id="genlab.graphstream.doc.library.graphstream">
+         <more_info
+               content="The graphstream page on this algorithm"
+               url="http://graphstream-project.org/api/gs-algo/org/graphstream/algorithm/generator/FullGenerator.html">
+         </more_info>
+         <more_info
+               content="the overview of graphstream generators"
+               url="http://graphstream-project.org/doc/Generators/Overview-of-generators_1.0/">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.graphstream.algos.generators.GridAlgo"
+            library_id="genlab.graphstream.doc.library.graphstream">
+         <more_info
+               content="the graphstream documentation for this algorithm"
+               url="http://graphstream-project.org/api/gs-algo/org/graphstream/algorithm/generator/GridGenerator.html">
+         </more_info>
+         <more_info
+               content="the overview of graphstream generators"
+               url="http://graphstream-project.org/doc/Generators/Overview-of-generators_1.0/">
+         </more_info>
+      </docalgo>
    </extension>
 <!-- TODO
    <extension point="genlab.appli.algo" class="" name="graphML parser" id="genlab.graphstream.readers.GraphStreamGraphMLParser>

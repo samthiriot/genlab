@@ -5,6 +5,7 @@ import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.graphstream.Activator;
 
 
 /**
@@ -14,15 +15,17 @@ import genlab.core.model.instance.IAlgoInstance;
  *
  * @param 
  */
-public abstract class AbstractGraphStreamGenerator extends AbstractAlgoExecution {
+public abstract class AbstractGraphStreamGeneratorExec extends AbstractAlgoExecution {
 
-	public AbstractGraphStreamGenerator(IExecution exec, IAlgoInstance algoInst, IComputationProgress progress) {
+	public AbstractGraphStreamGeneratorExec(IExecution exec, IAlgoInstance algoInst) {
 		super(
 				exec,
 				algoInst, 
 				// a generator always has a progress with steps
 				new ComputationProgressWithSteps()
 				);
+		
+		
 	}
 
 	

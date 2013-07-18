@@ -1,5 +1,6 @@
 package genlab.core;
 
+import genlab.core.model.doc.AvailableInfo;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.usermachineinteraction.GLLogger;
 
@@ -19,11 +20,15 @@ public class Activator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
+		
 		Activator.context = bundleContext;
 		GLLogger.infoTech("initializing the genlab core...", getClass());
 		
 		// preload the list of algos
 		ExistingAlgos.getExistingAlgos();
+		
+		// preload the doc
+		AvailableInfo.getAvailableInfo().detectFromExtensions();
 		
 	}
 

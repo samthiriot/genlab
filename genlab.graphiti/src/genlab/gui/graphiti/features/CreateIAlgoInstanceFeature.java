@@ -4,6 +4,7 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.graphiti.GraphitiImageProvider;
 import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
@@ -90,4 +91,13 @@ public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
 		return algo;
 	}
 
+	@Override
+	public String getCreateImageId() {
+		if (algo.getImagePath() == null)
+			return null;
+		return GraphitiImageProvider.getImageIdForAlgo(algo);
+	}
+
+	
+	
 }

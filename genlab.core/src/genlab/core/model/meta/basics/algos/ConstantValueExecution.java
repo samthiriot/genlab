@@ -40,7 +40,7 @@ public class ConstantValueExecution<JavaType> extends AbstractAlgoExecution {
 		progress.setComputationState(ComputationState.STARTED);
 		
 		// define result
-		ComputationResult result = new ComputationResult(algoInst, progress);
+		ComputationResult result = new ComputationResult(algoInst, progress, exec.getListOfMessages());
 		IInputOutput<JavaType> output = ((ConstantValue<JavaType>)algoInst.getAlgo()).getOutput(); 
 		result.setResult(
 				algoInst.getOutputInstanceForOutput(output), 

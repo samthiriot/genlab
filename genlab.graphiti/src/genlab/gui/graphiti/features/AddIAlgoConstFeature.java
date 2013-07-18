@@ -11,13 +11,17 @@ import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.impl.AbstractAddFeature;
+import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
+import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
+import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
 import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
@@ -127,7 +131,6 @@ public class AddIAlgoConstFeature extends AbstractAddFeature {
 		IGaService gaService = Graphiti.getGaService();
 		Rectangle invisibleRectangle ;
 
-		
 		// create and set graphics algo
 		{
 			// create invisible rectangle that allows for anchors that appear to be out of the fram
@@ -139,20 +142,23 @@ public class AddIAlgoConstFeature extends AbstractAddFeature {
             		width,
             		height
             		);
-            
+
 			// create link between the domain object and the graphical graphiti representation
 			link(containerShape, addedAlgo);
+			
 		}
 		
 		
 		// add text
+		Text text;
 		{
 			Shape shape = peCreateService.createShape(containerShape, false);
-		
+			shape.setContainer(containerShape);
+			
 			final Object paramValue = addedAlgo.getValueForParameter(algo.getConstantParameter().getId()).toString();
 			final String paramValueStr = paramValue.toString();
 			
-			Text text = gaService.createText(
+			text = gaService.createText(
 					shape, 
 					paramValueStr
 					);
@@ -188,11 +194,38 @@ public class AddIAlgoConstFeature extends AbstractAddFeature {
 		
 		// add a connection point 
 		{
+//			Shape shape = peCreateService.createShape(containerShape, false);
+			
+/*
+			BoxRelativeAnchor anchor = peCreateService.createBoxRelativeAnchor(shape);
+			anchor.setRelativeHeight(0.5);
+			anchor.setRelativeWidth(0.8);
+			anchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
+			//anchor.setParent(containerShape);
+			
+	        Ellipse ellipse = gaService.createEllipse(anchor);
+			ellipse.setForeground(manageColor(IColorConstant.DARK_GRAY));
+			ellipse.setBackground(manageColor(IColorConstant.WHITE));
+			ellipse.setLineWidth(2);
+			ellipse.setWidth(LayoutIAlgoFeature.ANCHOR_WIDTH);
+			ellipse.setParentGraphicsAlgorithm(text);
+			
+			gaService.setLocationAndSize(
+					ellipse, 
+					0, 0, 
+					LayoutIAlgoFeature.ANCHOR_WIDTH, LayoutIAlgoFeature.ANCHOR_WIDTH, 
+					false
+					);
+	    */    
 			ChopboxAnchor anchor = peCreateService.createChopboxAnchor(containerShape);
 			anchor.setActive(true);
 		
+
 			link(anchor, addedAlgo.getOutputInstanceForOutput(algo.getConstantOuput()));
 		}
+		
+        layoutPictogramElement(containerShape);
+
 		
 	      
 		return containerShape;

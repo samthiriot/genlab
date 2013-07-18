@@ -1,6 +1,12 @@
 package genlab.core.commons;
 
+import genlab.core.usermachineinteraction.GLLogger;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
@@ -64,5 +70,41 @@ public class FileUtils {
 		}
 		return filename.lastIndexOf(File.separator);
 	}
+	 
+	 public static boolean copyFiles (File sourceFile, File destFile) {
+		 
+		GLLogger.debugTech("copying file "+sourceFile+" to "+destFile, FileUtils.class);
+		try {
+			if(!destFile.exists()) {
+		        destFile.createNewFile();
+		    }
+
+		    FileChannel source = null;
+		    FileChannel destination = null;
+		    try {
+		        source = new FileInputStream(sourceFile).getChannel();
+		        destination = new FileOutputStream(destFile).getChannel();
+
+		        // previous code: destination.transferFrom(source, 0, source.size());
+		        // to avoid infinite loops, should be:
+		        long count = 0;
+		        long size = source.size();              
+		        while((count += destination.transferFrom(source, count, size-count))<size);
+		    } finally {
+		        if(source != null) {
+		            source.close();
+		        }
+		        if(destination != null) {
+		            destination.close();
+		        }
+		    }
+		
+		} catch (IOException e) {
+			GLLogger.errorTech("error during the file copy from "+sourceFile+" to "+destFile+": "+e.getMessage(), FileUtils.class, e);
+			return false;
+		}
+	    
+		return true;
+	 }
 	
 }

@@ -36,8 +36,9 @@ public class IGraphAveragePathLengthAlgo extends AbstractIGraphMeasure {
 	
 	public IGraphAveragePathLengthAlgo() {
 		super(
-				"average path length", 
-				"igraph implementation"
+				"average path length (igraph)", 
+				"igraph implementation",
+				loadHtmlDescription("/genlab.igraph/html/average_path_length.html")
 				);
 		outputs.add(OUTPUT_AVERAGE_PATH_LENGTH);
 		outputs.add(OUTPUT_DIAMETER);
@@ -70,7 +71,7 @@ public class IGraphAveragePathLengthAlgo extends AbstractIGraphMeasure {
 				// diameter
 				if (isUsed(OUTPUT_DIAMETER) ||  exec.getExecutionForced()) {
 					int diameter = igraphGraph.lib.computeDiameter(igraphGraph);
-					results.put(OUTPUT_AVERAGE_PATH_LENGTH, diameter);
+					results.put(OUTPUT_DIAMETER, diameter);
 				} else {
 					messages.debugTech("the diameter is not used, so it will not be computed", getClass());	
 				}

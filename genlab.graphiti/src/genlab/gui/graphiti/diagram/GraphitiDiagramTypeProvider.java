@@ -1,7 +1,9 @@
 package genlab.gui.graphiti.diagram;
 
+import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.genlab2graphiti.GenlabNotificationService;
+import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
 import genlab.gui.graphiti.palette.WorkflowToolBehaviorProvider;
 
 import java.util.Arrays;
@@ -51,18 +53,25 @@ public class GraphitiDiagramTypeProvider extends AbstractDiagramTypeProvider {
 		return new GenlabNotificationService(this);
 	}
 
-	@Override
-	public Object[] getRelatedBusinessObjects(Object[] bos) {
-		System.err.println("get related business objects "+Arrays.toString(bos));
-		return super.getRelatedBusinessObjects(bos);
-	}
-	
 	
 	@Override
 	public void init(Diagram diagram, IDiagramEditor diagramEditor) {
 		
 		super.init(diagram, diagramEditor);
 		
+		GLLogger.debugTech("at an init step of a diagram for a diagram editor", getClass());
+		
+		IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance) getFeatureProvider().getBusinessObjectForPictogramElement(diagram);
+		
+		if (workflow==null) {
+			GLLogger.warnTech("too bad, not ready yet", getClass());
+			return;
+
+		}
+		
+		GLLogger.debugTech("now listening for this workflow", getClass());
+		workflow.addListener(WorkflowListener.lastInstance);
+			
 		/*
 		if(diagramEditor instanceof GenlabDiagramEditor) {
 			

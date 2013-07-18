@@ -107,7 +107,7 @@ public class WorkflowToolBehaviorProvider extends DefaultToolBehaviorProvider {
 				AlgoCategory parentCateg = ExistingAlgoCategories.getExistingAlgoCategories().getCategoryForId(parentCategId);
 				
 				PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(parentCateg.getName(), null);
-				compartmentEntry.setInitiallyOpen(true);
+				compartmentEntry.setInitiallyOpen(false);
 				res.add(compartmentEntry);
 				
 				categId2compartment.put(parentCategId, compartmentEntry);

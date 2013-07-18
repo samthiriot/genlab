@@ -3,7 +3,6 @@
 
 <product name="Genlab" uid="genlab.product" id="genlab.gui.product" application="genlab.gui.application" version="0.0.1" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -26,10 +25,8 @@
       </win>
    </launcher>
 
-
    <vm>
    </vm>
-
 
    <plugins>
       <plugin id="com.ibm.icu"/>
@@ -38,8 +35,11 @@
       <plugin id="genlab.gephi"/>
       <plugin id="genlab.graphiti"/>
       <plugin id="genlab.graphstream"/>
+      <plugin id="genlab.graphstream.corejar"/>
+      <plugin id="genlab.graphstream.ui"/>
       <plugin id="genlab.gui"/>
       <plugin id="genlab.igraph"/>
+      <plugin id="genlab.neo4j"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
       <plugin id="javax.xml"/>
@@ -216,6 +216,7 @@
    <configurations>
       <plugin id="org.eclipse.core.runtime.compatibility" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.p2.discovery.compatibility" autoStart="true" startLevel="0" />
+      <property name="sun.java2d.opengl" value="True" />
    </configurations>
 
 </product>

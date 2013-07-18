@@ -6,10 +6,13 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: genlab.neo4j.Activator
 Bundle-Vendor: Samuel Thiriot
 Require-Bundle: org.eclipse.core.runtime,
- genlab.core;bundle-version="0.0.1"
+ genlab.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: ext/neo4j-kernel-1.9.jar,
- .
-Export-Package: genlab.neo4j.algos.writers,
+Bundle-ClassPath: .,
+ ext/neo4j-kernel-1.9.jar,
+ ext/jta-1.1.jar,
+ ext/neo4j-cypher-1.9.jar
+Export-Package: genlab.neo4j,
+ genlab.neo4j.algos.writers,
  org.neo4j.graphdb

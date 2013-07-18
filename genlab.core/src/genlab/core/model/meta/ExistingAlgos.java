@@ -32,20 +32,28 @@ public final class ExistingAlgos {
 
 	private Map<String,IAlgo> name2algos = new HashMap<String,IAlgo>(50);
 	private Map<String,IAlgo> classname2algos = new HashMap<String,IAlgo>(50);
+	private Map<String,IAlgo> extensionId2algos = new HashMap<String,IAlgo>(50);
+	private Map<String,IAlgo> id2algos = new HashMap<String,IAlgo>(50);
+
 	private Map<String,IConstantAlgo> name2constantAlgo = new HashMap<String, IConstantAlgo>(30);
-	
+	private Map<String,IDisplayAlgo> name2displayAlgo = new HashMap<String, IDisplayAlgo>(30);
+
 	private ExistingAlgos() {
 		detectedFromExtensionPoints();
 	}
 	
 	
 	public void declareAlgo(IAlgo algo) {
-		GLLogger.debugTech("detected available algorithm: "+algo.getName()+" "+algo.getDescription(), getClass());
+		GLLogger.debugTech("detected available algorithm: "+algo.getId()+" - "+algo.getName()+" "+algo.getDescription(), getClass());
 		name2algos.put(algo.getName(), algo);
 		classname2algos.put(algo.getClass().getCanonicalName(), algo);
+		id2algos.put(algo.getId(), algo);
 		
 		if (algo instanceof IConstantAlgo) {
 			name2constantAlgo.put(algo.getName(), (IConstantAlgo) algo);
+		}
+		if (algo instanceof IDisplayAlgo) {
+			name2displayAlgo.put(algo.getName(), (IDisplayAlgo)algo);
 		}
 	}
 	
@@ -66,6 +74,7 @@ public final class ExistingAlgos {
 				o = e.createExecutableExtension("class");
 				if (o instanceof IAlgo) {
 					declareAlgo((IAlgo) o);
+					extensionId2algos.put(e.getAttribute("id"), (IAlgo)o);
 				} else {
 					GLLogger.warnTech("detected something which is not an algo: "+o, getClass());
 				}
@@ -83,12 +92,15 @@ public final class ExistingAlgos {
 		return name2algos.keySet();
 	}
 	
+	public IAlgo getAlgoForExtensionId(String id) {
+		
+		return extensionId2algos.get(id);
+	}
+	
+
 	public IAlgo getAlgoForId(String id) {
-		for (IAlgo a : classname2algos.values()) {
-			if (a.getId().equals(id))
-				return a;
-		}
-		return null;
+		
+		return id2algos.get(id);
 	}
 	
 	public IAlgo getAlgoForClass(String canonicalName) {
@@ -114,6 +126,7 @@ public final class ExistingAlgos {
 			} catch (IllegalAccessException e) {
 				GLLogger.warnTech("not able to access this class "+canonicalName, getClass(), e);
 			}
+			
 		}
 		
 		return algo;
@@ -126,4 +139,9 @@ public final class ExistingAlgos {
 	public Collection<IConstantAlgo> getConstantAlgos() {
 		return name2constantAlgo.values();
 	}
+	
+	public Collection<IDisplayAlgo> getDisplayAlgos() {
+		return name2displayAlgo.values();
+	}
+	
  }

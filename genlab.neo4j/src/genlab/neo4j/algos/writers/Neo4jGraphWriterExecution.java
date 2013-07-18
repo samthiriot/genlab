@@ -43,7 +43,7 @@ public class Neo4jGraphWriterExecution extends AbstractAlgoExecution {
 		progress.setProgressMade(0);
 		progress.setComputationState(ComputationState.STARTED);
 		
-		ComputationResult result = new ComputationResult(algoInst, progress);
+		ComputationResult result = new ComputationResult(algoInst, progress, exec.getListOfMessages());
 		setResult(result);
 		
 

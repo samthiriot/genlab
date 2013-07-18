@@ -1,5 +1,7 @@
 package genlab.core.model.meta.basics.algos;
 
+import org.osgi.framework.Bundle;
+
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
@@ -40,7 +42,8 @@ public class HeterogeneousMapMultiplexor extends BasicAlgo {
 				"multiplexer", 
 				"pieces several values into one object, easier to manipulate",
 				null,
-				ExistingAlgoCategories.CASTING.getId()
+				ExistingAlgoCategories.CASTING.getId(),
+				null
 				);
 		
 		inputs.add(INPUTS_ANYTHING);
@@ -53,5 +56,9 @@ public class HeterogeneousMapMultiplexor extends BasicAlgo {
 			AlgoInstance algoInstance) {
 		return new HeterogeneousMapMultiplexorExec(execution, algoInstance, null);
 	}
-
+	@Override
+	public Bundle getBundle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

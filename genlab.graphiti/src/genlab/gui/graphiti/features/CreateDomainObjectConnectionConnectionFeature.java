@@ -52,6 +52,7 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 		// two cases:
 		// - source and dest were both filled: standard creation of a connection
 		// - only source provided: source should be used as dest or origin (depending on its type.
+		// - TODO only dest provided: propose to display into the console
 		
 		// quick exit
 		// nota: we accept strange cases with source empty. 
@@ -203,8 +204,6 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 				
 				IAlgoInstance addInstance = proposal.algoToCreate.createInstance(workflow);
 				
-				final FixPointAnchor anchorToFixed = (FixPointAnchor)source;
-
 				WorkflowListener.lastInstance.transmitLastUIParameters(
 						addInstance, 
 						new WorkflowListener.UIInfos() {{

@@ -12,5 +12,88 @@
             id="genlab.igraph.algos.measure.IGraphComponentsAlgo">
       </algo>
    </extension>
+   <extension
+         point="genlab.core.doc">
+      <author
+            id="genlab.igraph.doc.authors.gabor"
+            name="Gabor Csardi">
+      </author>
+      <author
+            id="genlab.igraph.doc.authors.nepusz"
+            name="Tamas Nepusz">
+      </author>
+      <library
+            author="genlab.igraph.doc.authors.gabor"
+            description="The igraph library is developed for complex network research."
+            id="genlab.igraph.doc.library.igraph"
+            licence_name="GNU General Public License v2 (or higher)"
+            licence_url="http://igraph.sourceforge.net/license.html"
+            name="IGraph"
+            url="http://igraph.sourceforge.net/">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.igraph.doc.authors.gabor">
+         </original_author_id>
+         <original_author_id
+               id="genlab.igraph.doc.authors.nepusz">
+         </original_author_id>
+         <more_info
+               content="the igraph homepage"
+               url="http://igraph.sourceforge.net/">
+         </more_info>
+         <more_info
+               content="the wikipedia page on Java Native Access, the technology used to interface genlab with igraph"
+               url="http://en.wikipedia.org/wiki/Java_Native_Access">
+         </more_info>
+      </library>
+      <docalgo
+            algo_id="genlab.igraph.algos.measure.AveragePathLengthAlgo"
+            library_id="genlab.igraph.doc.library.igraph"
+            time_complexity="O(|V||E|) |V| and |E| are the number of vertices and edges in the graph">
+         <original_author_id
+               id="genlab.igraph.doc.authors.gabor">
+         </original_author_id>
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <more_info
+               content="the wikipedia page on average path length"
+               url="http://en.wikipedia.org/wiki/Average_path_length">
+         </more_info>
+         <more_info
+               content="the documentation of the igraph C library documentation for this function"
+               url="http://igraph.sourceforge.net/doc/html/ch13s02.html#igraph_average_path_length">
+         </more_info>
+         <more_info
+               content="the documentation of the R/igraph library for this function"
+               url="http://igraph.sourceforge.net/doc/R/shortest.paths.html">
+         </more_info>
+         <more_info
+               content="West, D.B. (1996). &lt;i&gt;Introduction to Graph Theory&lt;/i&gt;. Upper Saddle River, N.J.: Prentice Hall. ">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.measure.IGraphComponentsAlgo"
+            implementation_notes="This implementation relies on the C version of the igraph library. &#x0A;&lt;ul&gt;&#x0A;&lt;li&gt;The &lt;i&gt;connectivity&lt;/i&gt; of the graph is measured by calling the method &lt;code&gt;igraph_is_connected&lt;/code&gt; with IGRAPH_WEAK for the connectivity mode (only used when the network is directed).&lt;/li&gt;&#x0A;&lt;li&gt;The &lt;i&gt;components&lt;/i&gt; of the graph are computed using the method &lt;code&gt;igraph_clusters&lt;/code&gt; with IGRAPH_WEAK as a connectivity mode&#x0A;&lt;/ul&gt;&#x0A;"
+            library_id="genlab.igraph.doc.library.igraph"
+            time_complexity=" O(|V|+|E|), |V| and |E| are the number of vertices and edges in the graph">
+         <original_author_id
+               id="genlab.igraph.doc.authors.gabor">
+         </original_author_id>
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <more_info
+               content="the R/igraph documentation on clusters"
+               url="http://igraph.sourceforge.net/doc/R/clusters.html">
+         </more_info>
+         <more_info
+               content="the documentation of the C igraph library for this function"
+               url="http://igraph.sourceforge.net/doc/html/ch13s04.html#igraph_clusters">
+         </more_info>
+      </docalgo>
+   </extension>
 
 </plugin>

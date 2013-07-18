@@ -26,7 +26,6 @@ public class AlgoInstance implements IAlgoInstance {
 	protected String id;
 	protected String name;
 
-	
 	protected transient IAlgo algo;
 	protected transient IGenlabWorkflowInstance workflow;
 	
@@ -42,7 +41,7 @@ public class AlgoInstance implements IAlgoInstance {
 
 		this.id = id;
 		this.algo = algo;
-		this.name = algo.getName() + " " + (workflow.getCountOfAlgo(algo)+1); 
+		this.name = algo.getName() + " " + (workflow==null?"":workflow.getCountOfAlgo(algo)+1); 
 		
 		// init in and outs
 		for (IInputOutput<?> input : algo.getInputs()) {
@@ -200,7 +199,7 @@ public class AlgoInstance implements IAlgoInstance {
 						"input "+in.getMeta().getName()+" is not connected"
 						)
 				);
-			else if (inputConnections.size() > 1) 
+			else if (!in.getMeta().acceptsMultipleInputs() && inputConnections.size() > 1) 
 				res.messages.add(new TextMessageFromAlgoInstance(this, MessageLevel.ERROR, "input "+in.getMeta().getName()+" is connected to several inputs"));
 			
 		}

@@ -1,5 +1,7 @@
 package genlab.core.usermachineinteraction;
 
+import genlab.core.commons.WrongParametersException;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,7 +17,7 @@ import org.apache.log4j.Priority;
 
 /**
  * Stores a set of messages. Orders them by increasing timestamp.
- * Avoids to add many times a message, by just increasing the amount of occurences.
+ * Avoids to add many times a message, by just increasing the amount of occurences (for the X last messages).
  * 
  * TODO thread safety, please !
  * TODO observer pattern
@@ -73,7 +75,6 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 		return sortedMessages.last();
 	}
 	
-	
 	/**
 	 * Adds without raising event
 	 * @param e
@@ -81,38 +82,52 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 */
 	private boolean _add(ITextMessage e) {
 
-		if (RELAY_TO_LOG4J) {
-			
-			final StringBuffer msg = new StringBuffer();
-			
-			// add the basic message
-			msg.append(e.getDate().toString())
-			.append(" - ")
-			.append(e.getMessage());
-			
-			// send it using Logger.
-			Logger.getLogger((e.getClass()==null?Object.class:e.getEmitter())).log(
-					messageLevel2log4jPriority.get(e.getLevel()),
-					msg.toString(),
-					e.getException()
-					);
-		}
 		
 		synchronized (hashedMessages) {
 
-			ITextMessage messageJustBefore = sortedMessages.lower(e);
-				
-			if (
-					messageJustBefore != null 
-					&& messageJustBefore.getAudience() == e.getAudience()
-					&& messageJustBefore.getLevel() == e.getLevel()
-					&& messageJustBefore.getMessage().equals(e.getMessage())
-					) {
+			Iterator<ITextMessage> it = sortedMessages.descendingIterator();
+			
+			// attempt to find a similar message in time (in the previous 3 messages ?)
+			ITextMessage messageIdentical = null;
+			{
+				ITextMessage current = null;
+				int i=3;
+				while (it.hasNext() && (i-- > 0) ) {
+					
+					current = it.next();
+					
+					if (current.equals(e)) {
+						messageIdentical = current;
+						break;
+					}
+						
+				}
+			}
+								
+			if (messageIdentical != null) {
 				// if the message was already stored just a short time before, just add it.
-				messageJustBefore.addIncrementCount();
+				messageIdentical.addIncrementCount();
 			} else {
 				hashedMessages.add(e);
 				sortedMessages.add(e);	
+				
+				if (RELAY_TO_LOG4J) {
+					
+					final StringBuffer msg = new StringBuffer();
+					
+					// add the basic message
+					msg.append(e.getDate().toString())
+					.append(" - ")
+					.append(e.getMessage());
+					
+					// send it using Logger.
+					Logger.getLogger((e.getClass()==null?Object.class:e.getEmitter())).log(
+							messageLevel2log4jPriority.get(e.getLevel()),
+							msg.toString(),
+							e.getException()
+							);
+				}
+				
 			}
 			
 		}
@@ -209,6 +224,9 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void addListener(IListOfMessagesListener l) {
+		if (l == null) 
+			throw new WrongParametersException("listeners should never be null");
+			
 		synchronized (listeners) {
 			getOrCreateListeners().add(l);
 		}

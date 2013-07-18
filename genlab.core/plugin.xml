@@ -3,6 +3,7 @@
 <plugin>
    <extension-point id="genlab.core.algo" name="genlab.algo" schema="schema/genlab.core.algo.exsd"/>
    <extension-point id="genlab.core.workflow.listeners" name="listeners" schema="schema/genlab.core.workflow.listeners.exsd"/>
+   <extension-point id="genlab.core.doc" name="genlab.core.doc" schema="schema/genlab.core.doc.exsd"/>
    <extension
          point="genlab.core.algo">
       <algo
@@ -17,6 +18,63 @@
             class="genlab.core.model.meta.basics.algos.HeterogeneousMapMultiplexor"
             id="genlab.core.model.meta.basics.algos.HeterogeneousMapMultiplexor">
       </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.StandardOutputAlgo"
+            id="genlab.core.model.meta.basics.algos.StandardOutputAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <author
+            id="genlab.core.doc.authors.samthiriot"
+            name="Samuel Thiriot">
+      </author>
+      <library
+            author="genlab.core.doc.authors.samthiriot"
+            description="core of the genlab laboratory"
+            id="genlab.core.doc.library.core"
+            name="GenLab core">
+         <original_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </original_author_id>
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+      </library>
+      <docalgo
+            algo_id="genlab.core.algo.constants.double"
+            description="genlab.core.docalgo1"
+            library_id="genlab.core.doc.library.core"
+            memory_complexity="O(1)"
+            name="genlab.core.docalgo1"
+            original_authors="genlab.core.docalgo1"
+            time_complexity="O(1)">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </original_author_id>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.core.algo.constants.integer"
+            library_id="genlab.core.doc.library.core"
+            memory_complexity="O(1)"
+            time_complexity="O(1)">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </original_author_id>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.core.model.meta.basics.algos.StandardOutputAlgo"
+            description="This algorithm displays any input to the standard output (console)"
+            library_id="genlab.core.doc.library.core"
+            memory_complexity="O(1)"
+            time_complexity="O(1)">
+      </docalgo>
    </extension>
 
 

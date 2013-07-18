@@ -64,6 +64,21 @@ public class ExistingAlgoCategories {
 			"graphs" 
 			);
 	
+	public static final AlgoCategory STATIC = new AlgoCategory(
+			null, 
+			"static", 
+			"classic data", 
+			"data" 
+			);
+	
+
+	public static final AlgoCategory STATIC_GRAPHS = new AlgoCategory(
+			STATIC, 
+			"graphs", 
+			"classic graphs", 
+			"graphs" 
+			);
+	
 	public static final AlgoCategory ANALYSIS = new AlgoCategory(
 			null, 
 			"analysis", 
@@ -106,6 +121,13 @@ public class ExistingAlgoCategories {
 			"conversion"
 			);
 
+	public static final AlgoCategory DISPLAY = new AlgoCategory(
+			null, 
+			"displays", 
+			"display information", 
+			"dislap"
+			);
+
 	private ExistingAlgoCategories() {
 		declareCategory(PARSER);
 		declareCategory(PARSER_GRAPH);
@@ -116,8 +138,12 @@ public class ExistingAlgoCategories {
 		declareCategory(ANALYSIS);
 		declareCategory(ANALYSIS_GRAPH);
 		declareCategory(CONSTANTS);
+		declareCategory(STATIC);
+		declareCategory(STATIC_GRAPHS);
 		declareCategory(EXPLORATION);
 		declareCategory(CASTING);
+		declareCategory(DISPLAY);
+		
 	}
 
 	public AlgoCategory getCategoryForId(String id) {

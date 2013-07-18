@@ -1,5 +1,7 @@
 package genlab.core.model.meta.basics.algos;
 
+import org.osgi.framework.Bundle;
+
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
 import genlab.core.parameters.DoubleParameter;
@@ -38,6 +40,8 @@ public class ConstantValueDouble extends ConstantValue<Double> {
 	protected Parameter<Double> createConstantParameter() {
 		return new DoubleParameter(paramId, "value", "the value of this constant", 0.0);
 	}
+
+	
 
 
 }

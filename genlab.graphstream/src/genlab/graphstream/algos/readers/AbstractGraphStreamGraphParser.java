@@ -9,12 +9,14 @@ import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.FileFlowType;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.graphstream.Activator;
+import genlab.graphstream.algos.GraphStreamAlgo;
 
 import java.io.File;
 
 import org.graphstream.stream.file.FileSource;
 
-public abstract class AbstractGraphStreamGraphParser extends BasicAlgo {
+public abstract class AbstractGraphStreamGraphParser extends GraphStreamAlgo {
 
 	public static final InputOutput<File> PARAM_FILE = new InputOutput<File>(
 			FileFlowType.SINGLETON, 
@@ -34,7 +36,9 @@ public abstract class AbstractGraphStreamGraphParser extends BasicAlgo {
 		super(name, desc, ExistingAlgoCategories.PARSER_GRAPH.getTotalId());
 		inputs.add(PARAM_FILE);
 		outputs.add(OUTPUT_GRAPH);
+		
 	}
+	
 	
 	protected abstract FileSource getGraphStreamFileSource();
 

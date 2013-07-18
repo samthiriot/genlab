@@ -1,5 +1,6 @@
 package genlab.gui.graphiti.diagram;
 
+import genlab.core.model.instance.Connection;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
@@ -16,6 +17,7 @@ import genlab.gui.graphiti.features.ConstDirectEditingFeature;
 import genlab.gui.graphiti.features.ConstUpdateFeature;
 import genlab.gui.graphiti.features.CreateDomainObjectConnectionConnectionFeature;
 import genlab.gui.graphiti.features.CreateIAlgoInstanceFeature;
+import genlab.gui.graphiti.features.DeleteConnectionFeature;
 import genlab.gui.graphiti.features.DeleteIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.LayoutConstFeature;
 import genlab.gui.graphiti.features.LayoutIAlgoFeature;
@@ -78,6 +80,7 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 	
 	protected RemoveIAlgoInstanceFeature removeAlgo = new RemoveIAlgoInstanceFeature(this);
 	protected DeleteIAlgoInstanceFeature deleteAlgo = new DeleteIAlgoInstanceFeature(this);
+	protected DeleteConnectionFeature deleteConnection = new DeleteConnectionFeature(this);
 
 	protected LayoutIAlgoFeature layoutAlgo = new LayoutIAlgoFeature(this);
 	protected LayoutConstFeature layoutConst = new LayoutConstFeature(this);
@@ -218,9 +221,11 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 
 		if (bo instanceof IAlgoInstance) {
 			return deleteAlgo; 
+		} else if (bo instanceof Connection) {
+			return deleteConnection;
 		}
 		
-		GLLogger.warnTech("cannot provide a feature for a wrong object: "+bo, getClass());
+		GLLogger.warnTech("cannot provide a feature to delete this object: "+bo, getClass());
 		
 		return super.getDeleteFeature(context);
 	}

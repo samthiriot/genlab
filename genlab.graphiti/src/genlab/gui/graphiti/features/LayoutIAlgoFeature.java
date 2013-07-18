@@ -33,7 +33,10 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
 
 	public static final int INVISIBLE_RECT_MARGIN_HORIZ = 5;
 
+
 	public static final int ANCHOR_WIDTH = 10;
+	
+	public static final int TITLE_TEXT_LEFT = INVISIBLE_RECT_MARGIN_HORIZ+ANCHOR_WIDTH+16;
 	
 	
 	public static final int MIN_HEIGHT = 100;
@@ -62,6 +65,7 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
 	    
 	    return !(ai.getAlgo() instanceof IConstantAlgo);
 	}
+	
 
 	/**
 	 * returns true if something changed
@@ -85,23 +89,25 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
             } else if (graphicsAlgorithm instanceof Text) {
             	Object bo = getBusinessObjectForPictogramElement(shape);
             	if (bo != null && bo instanceof AlgoInstance) {
-            		// if this is the top text
+            		// if this is the top (title) text
                 	// ... resize it !
-            		gaService.setWidth(graphicsAlgorithm, containerWidth);
+            		gaService.setWidth(graphicsAlgorithm, containerWidth-TITLE_TEXT_LEFT);
             		anythingChanged = true;
             	} else {
             		// this is probably a text for anchor
             		Text text = (Text)graphicsAlgorithm;
             		if (text.getX() > ANCHOR_WIDTH*2) {
-            			// this is a text aligned right
+            			// this is a right element
             			gaService.setLocationAndSize(
-        						text, 
-        						containerWidth/2, 
-        						text.getY(), 
-        						containerWidth/2-ANCHOR_WIDTH, 
-        						text.getHeight()
-        						);
-        				
+            					text, 
+            					containerWidth/2,
+            					text.getY(),
+            					containerWidth/2-ANCHOR_WIDTH,
+            					text.getHeight()
+            					);
+            		} else {
+            			// this is a left element: just resize it
+            			gaService.setWidth(text, containerWidth/2-ANCHOR_WIDTH);
             		}
             	}
                 
@@ -167,10 +173,6 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
         
         ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
         GraphicsAlgorithm containerGa = containerShape.getGraphicsAlgorithm();
-     
-        System.err.println("container size: "+containerShape.getGraphicsAlgorithm().getWidth());
-        System.err.println("invisible rect: "+containerShape.getGraphicsAlgorithm().getGraphicsAlgorithmChildren().get(0).getWidth());
-        
         
         // ensure min height and width are ok for invisible rectangle
         
@@ -203,13 +205,10 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
 
         }
         
-        System.err.println("container size: "+containerShape.getGraphicsAlgorithm().getWidth());
-        System.err.println("invisible rect: "+containerShape.getGraphicsAlgorithm().getGraphicsAlgorithmChildren().get(0).getWidth());
-        
-        
         // rezize text, lines and this kind of stuff
         for (Shape shape : containerShape.getChildren()){
         	
+        	//TITLE_TEXT_LEFT
         	anythingChanged = manageResizing(containerWidth, shape) || anythingChanged;
         	
         }

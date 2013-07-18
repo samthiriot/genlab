@@ -3,6 +3,7 @@ package genlab.gui;
 import genlab.core.exec.TaskManagers;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.genlab2eclipse.EclipseResourceListener;
+import genlab.gui.genlab2eclipse.ExecutionListener;
 import genlab.gui.genlab2eclipse.GenLabSaveParticipant;
 import genlab.gui.genlab2eclipse.StartupTasksDisplayer;
 
@@ -60,6 +61,11 @@ public class Activator extends AbstractUIPlugin {
 				new EclipseResourceListener(),
 				IResourceChangeEvent.POST_CHANGE
 				);
+		
+		// listen for execution events
+		{
+			ExecutionListener execL = new ExecutionListener();
+		}
 		
 		/*
 		 * if (lastState == null)

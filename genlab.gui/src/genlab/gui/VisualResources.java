@@ -1,6 +1,7 @@
 package genlab.gui;
 
 import genlab.core.commons.FileUtils;
+import genlab.core.usermachineinteraction.GLLogger;
 
 import java.awt.Desktop;
 import java.awt.Graphics2D;
@@ -13,6 +14,8 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -430,7 +433,8 @@ public class VisualResources {
 				}
 				
 				
-			}		
+			}	
+			
 			// first attempt using the SWT Program feature
 			// nota: cannot open a directory using SWT
 			if (!openedFile){ 
@@ -472,6 +476,35 @@ public class VisualResources {
 	
 	public static void openFile(final String filename) {
 		openFile(new File(filename));			
+	}
+
+	
+	public static void openUrl(final String url) {
+		
+		boolean openedUrl = false;
+		
+		openedUrl = Program.launch(url);
+
+		// second attempt using the Desktop features 
+		if (!openedUrl) {
+			GLLogger.traceTech("attempting to open the URL using AWT Desktop", VisualResources.class);
+			
+			Desktop desktop = null;
+	        if (Desktop.isDesktopSupported()) {
+		          desktop = Desktop.getDesktop();
+	        } else {
+				GLLogger.traceTech("no AWT Desktop", VisualResources.class);
+	        }
+			try {
+				desktop.browse(new URI(url));
+				openedUrl = true;
+			} catch (IOException ioe) {
+				GLLogger.traceTech("exception while opening the URL using AWT Desktop", VisualResources.class, ioe);
+			} catch (URISyntaxException e) {
+				GLLogger.traceTech("exception while opening the URL using AWT Desktop", VisualResources.class, e);
+			}
+		
+		}
 	}
 
 	

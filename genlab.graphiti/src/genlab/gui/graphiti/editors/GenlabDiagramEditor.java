@@ -9,6 +9,7 @@ import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
 import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
 import genlab.gui.graphiti.genlab2graphiti.Genlab2GraphitiUtils;
 import genlab.gui.graphiti.genlab2graphiti.GenlabDomainModelChangeListener;
+import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
 
 import java.io.File;
 
@@ -113,6 +114,7 @@ public class GenlabDiagramEditor extends DiagramEditor {
 		
 		GenLabIndependenceSolver.singleton.registerWorkflow(workflow);
 		
+		workflow.addListener(WorkflowListener.lastInstance);
 		
 		
 	}

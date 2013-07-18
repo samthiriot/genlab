@@ -1,6 +1,7 @@
 package genlab.core.model.meta.basics.algos;
 
 import org.eclipse.core.runtime.Plugin;
+import org.osgi.framework.Bundle;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
@@ -33,8 +34,9 @@ public abstract class ConstantValue<JavaType> extends BasicAlgo implements ICons
 		super(
 				name, 
 				desc, 
-				longHtmlDescription,
-				ExistingAlgoCategories.CONSTANTS.getId()
+				null,
+				ExistingAlgoCategories.CONSTANTS.getId(),
+				null
 				);
 
 		paramId = getId()+".params.value";
@@ -88,6 +90,10 @@ public abstract class ConstantValue<JavaType> extends BasicAlgo implements ICons
 	public Parameter<?> getConstantParameter() {
 		return parameterValue;
 	}
-
+	@Override
+	public Bundle getBundle() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

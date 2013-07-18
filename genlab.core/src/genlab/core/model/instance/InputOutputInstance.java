@@ -2,6 +2,7 @@ package genlab.core.model.instance;
 
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.parameters.IParameterConstraint;
+import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -53,7 +54,8 @@ public abstract class InputOutputInstance implements IInputOutputInstance {
 
 	@Override
 	public void removeConnection(IConnection c) {
-		connections.remove(c);		
+		if (!connections.remove(c))
+			GLLogger.warnTech("was asked to remove a connection which does not exists", getClass());
 	}
 
 	@Override

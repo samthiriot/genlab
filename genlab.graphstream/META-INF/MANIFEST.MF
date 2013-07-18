@@ -7,15 +7,16 @@ Bundle-Activator: genlab.graphstream.Activator
 Bundle-Vendor: Samuel Thiriot
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
+ genlab.graphstream.corejar;bundle-version="1.0.0",
  genlab.core;bundle-version="0.0.1",
  org.junit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  ext/gs-core-1.1.2.jar,
- ext/gs-algo-1.1.2.jar,
- ext/gs-ui-1.1.2.jar
+ ext/gs-algo-1.1.2.jar
 Export-Package: genlab.graphstream,
+ genlab.graphstream.algos,
  genlab.graphstream.algos.generators,
  genlab.graphstream.algos.measure,
  genlab.graphstream.algos.readers,

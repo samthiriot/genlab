@@ -35,7 +35,7 @@ public class GenlabNotificationService implements INotificationService {
 	 */
 	protected PictogramElement[] calculateLinkedPictogramElements(ArrayList<Object> changedAndRelatedBOsList) {
 		
-		System.err.println("calculateLinkedPictogramElements "+changedAndRelatedBOsList.toString());
+		//System.err.println("calculateLinkedPictogramElements "+changedAndRelatedBOsList.toString());
 
 		ArrayList<PictogramElement> retList = new ArrayList<PictogramElement>();
 		final IFeatureProvider featureProvider = diagramTypeProvider.getFeatureProvider();
@@ -57,7 +57,7 @@ public class GenlabNotificationService implements INotificationService {
 	 */
 	public PictogramElement[] calculateRelatedPictogramElements(Object[] changedBOs) {
 		
-		System.err.println("calculateRelatedPictogramElements "+Arrays.toString(changedBOs));
+		//System.err.println("calculateRelatedPictogramElements "+Arrays.toString(changedBOs));
 		
 		ArrayList<Object> changedAndRelatedBOsList = new ArrayList<Object>();
 		for (Object cbo : changedBOs) {
@@ -74,7 +74,7 @@ public class GenlabNotificationService implements INotificationService {
 	@Override
 	public void updatePictogramElements(PictogramElement[] dirtyPes) {
 		
-		System.err.println("updatePictogramElements "+Arrays.toString(dirtyPes));
+		//System.err.println("updatePictogramElements "+Arrays.toString(dirtyPes));
 		
 		final IDiagramTypeProvider dtp = diagramTypeProvider;
 		final IFeatureProvider fp = dtp.getFeatureProvider();
