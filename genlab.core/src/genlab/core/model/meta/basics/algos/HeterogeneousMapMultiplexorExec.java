@@ -66,4 +66,9 @@ public class HeterogeneousMapMultiplexorExec extends AbstractAlgoExecution {
 		return "multiplexor execution";
 	}
 
+	@Override
+	public long getTimeout() {
+		return 1000;
+	}
+
 }

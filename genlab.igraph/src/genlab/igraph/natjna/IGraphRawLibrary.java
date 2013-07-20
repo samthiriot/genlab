@@ -10,6 +10,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.ptr.DoubleByReference;
+import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
@@ -519,6 +520,33 @@ int igraph_k_regular_game(igraph_t *graph,
 	 */
 	public native int igraph_clusters(Pointer graph, Igraph_vector_t membership, 
 			Igraph_vector_t csize, IntByReference no,
+		    int mode);
+	
+	/*
+	 * int igraph_transitivity_undirected(const igraph_t *graph,
+				   igraph_real_t *res,
+				   igraph_transitivity_mode_t mode);
+				   
+				   mode: Defines how to treat graphs with no connected triples. IGRAPH_TRANSITIVITY_NAN=0 returns NaN in this case, IGRAPH_TRANSITIVITY_ZERO=1 returns zero.
+	 */
+	public native int igraph_transitivity_undirected(Pointer graph, FloatByReference res, int mode);
+	
+	
+	/*
+	public native int int igraph_transitivity_local_undirected(const igraph_t *graph,
+			 igraph_vector_t *res,
+			 const igraph_vs_t vids,
+			 igraph_transitivity_mode_t mode);
+			 TODO
+	*/
+	
+	/*
+	int igraph_transitivity_avglocal_undirected(const igraph_t *graph,
+		    igraph_real_t *res,
+		    igraph_transitivity_mode_t mode);
+	*/
+	public native int igraph_transitivity_avglocal_undirected(Pointer graph,
+		    FloatByReference res,
 		    int mode);
 	
     static {

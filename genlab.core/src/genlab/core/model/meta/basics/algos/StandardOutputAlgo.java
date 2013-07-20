@@ -117,13 +117,14 @@ public class StandardOutputAlgo extends BasicAlgo implements IDisplayAlgo {
 				// TODO Auto-generated method stub
 				
 			}
+
+			@Override
+			public long getTimeout() {
+				return 1000*30;
+			}
 		};
 	}
 	
-	@Override
-	public Bundle getBundle() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 }

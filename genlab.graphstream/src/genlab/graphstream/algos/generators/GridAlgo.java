@@ -1,5 +1,7 @@
 package genlab.graphstream.algos.generators;
 
+import javax.swing.text.StyledEditorKit.BoldAction;
+
 import org.graphstream.algorithm.generator.BaseGenerator;
 import org.graphstream.algorithm.generator.DorogovtsevMendesGenerator;
 import org.graphstream.algorithm.generator.FullGenerator;
@@ -16,6 +18,7 @@ import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.parameters.BooleanParameter;
 
 /**
  * TODO add parameters
@@ -32,7 +35,14 @@ public class GridAlgo extends GraphStreamGeneratorAlgo {
 			"X", 
 			"number of rows and columns"
 	);
-		
+	
+	
+	public static final BooleanParameter PARAM_TORUS = new BooleanParameter(
+			"torus", "torus", "should the grid be a torus", Boolean.FALSE);
+	
+	public static final BooleanParameter PARAM_DIAGS = new BooleanParameter(
+			"diagonals", "diagonals", "should create diagonals", Boolean.FALSE);
+	
 	public GridAlgo() {
 		super(
 				ALGO_NAME,
@@ -41,13 +51,20 @@ public class GridAlgo extends GraphStreamGeneratorAlgo {
 				);
 		
 		inputs.add(PARAM_X);
+		registerParameter(PARAM_TORUS);
+		registerParameter(PARAM_DIAGS);
+
 	}
 		
 
 	@Override
 	public BaseGenerator getBaseGeneratorForExec(
 			AbstractGraphStreamGeneratorExec exec) {
-		return new GridGenerator();
+		
+		final Boolean diags = (Boolean)exec.getAlgoInstance().getValueForParameter(PARAM_DIAGS.getId());
+		final Boolean torus = (Boolean)exec.getAlgoInstance().getValueForParameter(PARAM_TORUS.getId());
+
+		return new GridGenerator(diags, torus, true);
 	}
 
 

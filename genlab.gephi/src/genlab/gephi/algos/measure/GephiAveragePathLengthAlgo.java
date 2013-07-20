@@ -98,7 +98,6 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 						);
 
 				
-				
 				System.err.println("gephi/ average path length: "+algo.getPathLength());
 				System.err.println("gephi/ diameter: "+algo.getDiameter());
 				
@@ -132,6 +131,11 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 				
 				return results;
 				
+			}
+
+			@Override
+			public long getTimeout() {
+				return 1000*60*10; // TODO timeout ? should be closed in 
 			}
 
 

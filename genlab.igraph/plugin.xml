@@ -11,6 +11,10 @@
             class="genlab.igraph.algos.measure.IGraphComponentsAlgo"
             id="genlab.igraph.algos.measure.IGraphComponentsAlgo">
       </algo>
+      <algo
+            class="genlab.igraph.algos.measure.IGraphClusteringAlgo"
+            id="genlab.igraph.algos.measure.IGraphClusteringAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -92,6 +96,20 @@
          <more_info
                content="the documentation of the C igraph library for this function"
                url="http://igraph.sourceforge.net/doc/html/ch13s04.html#igraph_clusters">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.measure.IGraphClusteringAlgo"
+            description="We use IGRAPH_TRANSITIVITY_NAN for the mode."
+            implementation_notes="We use IGRAPH_TRANSITIVITY_NAN for the mode."
+            library_id="genlab.igraph.doc.library.igraph"
+            time_complexity=" O(|V|*d^2), |V| is the number of vertices in the graph, d is the average node degree.">
+         <more_info
+               content="S. Wasserman and K. Faust: Social Network Analysis: Methods and Applications. Cambridge: Cambridge University Press, 1994.">
+         </more_info>
+         <more_info
+               content="the igraph page for this algorithm"
+               url="http://igraph.sourceforge.net/doc/html/ch13s11.html#igraph_transitivity_local_undirected">
          </more_info>
       </docalgo>
    </extension>

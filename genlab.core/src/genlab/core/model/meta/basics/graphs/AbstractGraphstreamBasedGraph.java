@@ -63,6 +63,16 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 			throw new WrongParametersException("an edge attribute "+attributeId+" was already declared for this graph");
 		edgeAttributes2type.put(attributeId, type);
 	}
+	
+	@Override
+	public boolean hasVertexAttribute(String attributeId) {
+		return vertexAttributes2type.containsKey(attributeId);
+	}
+
+	@Override
+	public boolean hasEdgeAttribute(String attributeId) {
+		return edgeAttributes2type.containsKey(attributeId);
+	}
 
 	@Override
 	public Collection<String> getDeclaredVertexAttributes() {
@@ -295,6 +305,11 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 			throw new WrongParametersException("a graph attribute "+attributeId+" was already declared for this graph");
 		graphAttribute2type.put(attributeId, type);
 	}
+
+	@Override
+	public boolean hasGraphAttribute(String attribute) {
+		return graphAttribute2type.containsKey(attribute);
+	}
 	
 	@Override
 	public String getGraphId() {
@@ -416,4 +431,34 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 		return clone;
 	}	
 
+	@Override
+	public String toString() {
+		
+		StringBuffer sb = new StringBuffer();
+		
+		if (isMultiGraph())
+			sb.append("multiplex");
+		else 
+			sb.append("simple");
+		
+		sb.append(" graph with ");
+		sb.append(getVerticesCount()).append(" vertices and ").append(getEdgesCount()).append(" edges.\n");
+		sb.append("\t- ");
+		if (isVertexAttributed()) {
+			sb.append("vertex attributes: ");
+			sb.append(vertexAttributes2type.keySet());
+		} else {
+			sb.append("no vertex attributes");
+		}
+		sb.append("\n\t-");
+		if (isEdgeAttributed()) {
+			sb.append("edge attributes: ");
+			sb.append(edgeAttributes2type.keySet());
+		} else {
+			sb.append("no edge attributes");
+		}
+		sb.append("\n");
+		// TODO graph attributes
+		return sb.toString();
+	}
 }

@@ -11,6 +11,8 @@ public interface IGenlabGraph {
 	public long getEdgesCount();
 	
 	public void declareGraphAttribute(String attributeId, Class type);
+	public boolean hasGraphAttribute(String attribute);
+
 	public Collection<String> getDeclaredGraphAttributes();
 	public Map<String,Class> getDeclaredGraphAttributesAndTypes();
 	public void setGraphAttribute(String attributeId, Object value);
@@ -18,8 +20,12 @@ public interface IGenlabGraph {
 	
 
 	public void declareVertexAttribute(String attributeId, Class type);
+	public boolean hasVertexAttribute(String attributeId);
+
 	public void declareEdgeAttribute(String attributeId, Class type);
-	
+	public boolean hasEdgeAttribute(String attributeId);
+
+
 	
 	public Collection<String> getDeclaredVertexAttributes();
 	public Map<String,Class> getDeclaredVertexAttributesAndTypes();
@@ -92,5 +98,6 @@ public interface IGenlabGraph {
 	 * @return
 	 */
 	public IGenlabGraph clone(String cloneId);
+
 	
 }

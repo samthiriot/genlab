@@ -7,6 +7,10 @@
             class="genlab.graphstream.ui.algos.GraphDisplayAlgo"
             id="genlab.graphstream.ui.algos.GraphDisplayAlgo">
       </algo>
+      <algo
+            class="genlab.graphstream.ui.algos.GraphDisplay2DAlgo"
+            id="genlab.graphstream.ui.algos.GraphDisplay2DAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -33,6 +37,14 @@
             algo_id="genlab.graphstream.ui.algos.GraphDisplayAlgo"
             library_id="genlab.graphstream.ui.libraries.graphstreamui">
       </docalgo>
+      <docalgo
+            algo_id="genlab.graphstream.ui.algos.GraphDisplay2DAlgo"
+            library_id="genlab.graphstream.ui.libraries.graphstreamui">
+         <more_info
+               content="the graphstream tutorial for graph visualization"
+               url="http://graphstream-project.org/doc/Tutorials/Graph-Visualisation_1.0/">
+         </more_info>
+      </docalgo>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -43,6 +55,15 @@
             icon="icons/graphstream.gif"
             id="genlab.graphstream.ui.views.graphview"
             name="GraphView"
+            restorable="false">
+      </view>
+      <view
+            allowMultiple="true"
+            category="genlab.gui.views.categorygenlab"
+            class="genlab.graphstream.ui.views.GraphView2D"
+            icon="icons/graphstream.gif"
+            id="genlab.graphstream.ui.views.graphview2d"
+            name="GraphView2D"
             restorable="false">
       </view>
    </extension>
@@ -60,6 +81,14 @@
                showTitle="true"
                standalone="false"
                visible="true">
+         </view>
+         <view
+               closeable="true"
+               id="genlab.graphstream.ui.views.graphview2d:*"
+               minimized="false"
+               ratio="0.9"
+               relationship="stack"
+               relative="org.eclipse.ui.editorss">
          </view>
       </perspectiveExtension>
    </extension>

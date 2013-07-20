@@ -1,6 +1,7 @@
 package genlab.graphstream.ui;
 
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.graphstream.ui.views.AbstractGraphView;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -31,6 +32,15 @@ public class Activator extends AbstractUIPlugin {
 		plugin = this;
 		
 		GLLogger.infoTech("initializing the graphstream.ui plugin...", getClass());
+		
+		try {
+			GLLogger.debugTech("attempting to load the graphstream class "+AbstractGraphView.CLASSNAME_VIEWER, getClass());
+			context.getBundle().loadClass(AbstractGraphView.CLASSNAME_VIEWER);
+			AbstractGraphView.isAvailable = true;
+		} catch (ClassNotFoundException e) {
+			AbstractGraphView.isAvailable = true;
+			GLLogger.errorTech("unable to load the graphstream class "+AbstractGraphView.CLASSNAME_VIEWER+"; the viewer algos will not be available", getClass());
+		}
 	}
 
 	/*

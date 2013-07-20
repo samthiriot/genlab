@@ -11,6 +11,7 @@ import genlab.core.usermachineinteraction.ListsOfMessages;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.DoubleByReference;
+import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
@@ -26,7 +27,9 @@ public class IGraphLibrary {
 	public final static String GRAPH_KEY_CONNECTED = "connected";
 	public final static String GRAPH_KEY_COMPONENTS_COUNT = "components.count";
 	public final static String GRAPH_KEY_COMPONENTS_GIANT_SIZE = "components.giant.size";
-	
+	public final static String GRAPH_KEY_CLUSTERING_GLOBAL = "stats.clustering.global";
+	public final static String GRAPH_KEY_CLUSTERING_GLOBAL_AVG = "stats.clustering.global.avg";
+
 	/**
 	 * Stores a double array containing for each vertex the id of its cluster.
 	 */
@@ -446,6 +449,79 @@ public class IGraphLibrary {
 		return (Integer) g.getCachedProperty(GRAPH_KEY_COMPONENTS_GIANT_SIZE);
 		
 	}
+	
+	public Float computeGlobalClustering(IGraphGraph g) {
+		
+		if (paramUseCache && g.hasCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL)) {
+			return (Float) g.getCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL);
+		}
+		
+		// compute 
+		FloatByReference res = new FloatByReference();
+		
+		GLLogger.debugTech("calling igraph to compute the global clustering...", getClass());
+
+		final long startTime = System.currentTimeMillis();
+		
+		final int res2 = rawLib.igraph_transitivity_undirected(
+				g.getPointer(), 
+				res,
+				0
+				);
+		
+		final long duration = System.currentTimeMillis() - startTime;
+		GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		
+		checkIGraphResult(res2);
+		
+		// use result
+		final float clustering = res.getValue();
+		
+		// store in cache
+		g.setCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL, new Float(clustering));
+		
+		System.err.println("igraph/ clustering global: "+clustering);
+
+		return clustering;
+		
+	}
+	
+	public Float computeGlobalClusteringLocal(IGraphGraph g) {
+		
+		if (paramUseCache && g.hasCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL_AVG)) {
+			return (Float) g.getCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL_AVG);
+		}
+		
+		// compute 
+		FloatByReference res = new FloatByReference();
+		
+		GLLogger.debugTech("calling igraph to compute the average clustering...", getClass());
+
+		final long startTime = System.currentTimeMillis();
+		
+		final int res2 = rawLib.igraph_transitivity_avglocal_undirected(
+				g.getPointer(), 
+				res,
+				0
+				);
+		
+		final long duration = System.currentTimeMillis() - startTime;
+		GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		
+		checkIGraphResult(res2);
+		
+		// use result
+		final float clustering = res.getValue();
+		
+		// store in cache
+		g.setCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL_AVG, new Float(clustering));
+		
+		System.err.println("igraph/ average clustering: "+clustering);
+
+		return clustering;
+		
+	}
+
 	
 	/*
 	public IGenlabGraph computeClusterInfos(IGraphGraph g) {

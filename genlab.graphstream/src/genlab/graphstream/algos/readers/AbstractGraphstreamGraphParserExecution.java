@@ -48,6 +48,7 @@ public class AbstractGraphstreamGraphParserExecution extends
 		ComputationResult result = new ComputationResult(algoInst, progress, exec.getListOfMessages());
 		setResult(result);
 		
+		
 		// decode parameters
 		final File file = (File) getInputValueForInput(AbstractGraphStreamGraphParser.PARAM_FILE);
 		
@@ -65,6 +66,8 @@ public class AbstractGraphstreamGraphParserExecution extends
 			throw new WrongParametersException("Unable to load file from " + file.getAbsolutePath() +
 				" (" + e.getLocalizedMessage() + ")");
 		}
+		
+		result.getMessages().debugTech("loading the graph from "+file+"...", getClass());
 		
 		// actually load the graph
 		try {
@@ -103,6 +106,11 @@ public class AbstractGraphstreamGraphParserExecution extends
 	@Override
 	public void cancel() {
 		cancelled = true;
+	}
+
+	@Override
+	public long getTimeout() {
+		return 1000*60;
 	}
 
 }

@@ -22,6 +22,10 @@
             class="genlab.core.model.meta.basics.algos.StandardOutputAlgo"
             id="genlab.core.model.meta.basics.algos.StandardOutputAlgo">
       </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.ConstantValueFile"
+            id="genlab.core.model.meta.basics.algos.ConstantValueFile">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">

@@ -3,8 +3,15 @@ package genlab.gui.actions;
 import genlab.core.model.exec.Tests;
 import genlab.core.model.instance.GenlabWorkflowInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.editors.IWorkflowEditor;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 
 public class RunAction extends Action implements IWorkbenchAction {
@@ -20,9 +27,31 @@ public class RunAction extends Action implements IWorkbenchAction {
 	
 	public void run() {  
 		
-		IGenlabWorkflowInstance workflow = GenlabWorkflowInstance.currentTODO;
+		IEditorPart part = null;
+		try {
+			part = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		} catch (NullPointerException e) {
+			GLLogger.errorTech("unable to find an active window, view or editor; unable to run a workflow", getClass());
+			return;
+		}
+		   		
+		if (part == null) {
+			GLLogger.errorTech("unable to find an active editor; unable to run a workflow", getClass());
+			return;
+		}
+		if (part instanceof IWorkflowEditor) {
+		
+			IGenlabWorkflowInstance workflow = ((IWorkflowEditor)part).getEditedWorkflow();
+			if (workflow == null) {
+				GLLogger.errorTech("no workflow associated with this editor; unable to run the workflow", getClass());
+				return;
+			}
+					// ;GenlabWorkflowInstance.currentTODO;
 
-		Tests.run(workflow);
+			Tests.run(workflow);
+			
+		}
+		
 			
 	}  
 	

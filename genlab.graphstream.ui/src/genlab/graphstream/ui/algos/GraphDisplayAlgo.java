@@ -19,45 +19,18 @@ import genlab.gui.views.AbstractViewOpenedByAlgo;
  * @author Samuel Thiriot
  *
  */
-public class GraphDisplayAlgo extends GraphStreamAlgo {
+public class GraphDisplayAlgo extends AbstractGraphDisplayAlgo {
 
-
-	public static final InputOutput<IGenlabGraph> INPUT_GRAPH = new InputOutput<IGenlabGraph>(
-			SimpleGraphFlowType.SINGLETON, 
-			"in_graph", 
-			"graph", 
-			"the graph to analyze"
-	);
-	
 	public GraphDisplayAlgo() {
 		super(
 				"graph display (graphstream)", 
-				"displays a graph on an abstract space", 
-				ExistingAlgoCategories.DISPLAY.getTotalId()
+				"displays a graph on an abstract space" 
 				);
 		
-		inputs.add(INPUT_GRAPH);
-
 	}
-
-	@Override
-	public IAlgoExecution createExec(
-			IExecution execution,
-			AlgoInstance algoInstance) {
-		
-		return new AbstractOpenViewAlgoExec(execution, algoInstance, GraphView.VIEW_ID) {
-			
-			@Override
-			protected void displayResults(AbstractViewOpenedByAlgo theView) {
-				
-				GLLogger.traceTech("displaying the graph...", getClass());
-				GraphView gv = (GraphView)theView;
-				
-				IGenlabGraph glGraph = (IGenlabGraph)getInputValueForInput(INPUT_GRAPH);
-				
-				gv.displayGraph(glGraph);
-			}
-		};
+	
+	protected String getViewId() {
+		return GraphView.VIEW_ID;
 	}
 
 	

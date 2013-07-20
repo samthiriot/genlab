@@ -106,5 +106,9 @@ public class FileUtils {
 	    
 		return true;
 	 }
+
+	public static File getHomeDirectoryFile() {
+		return new File(System.getProperty("user.home"));
+	}
 	
 }

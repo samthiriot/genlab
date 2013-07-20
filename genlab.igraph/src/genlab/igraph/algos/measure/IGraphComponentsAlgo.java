@@ -85,6 +85,12 @@ public class IGraphComponentsAlgo extends AbstractIGraphMeasure {
 				return results;
 			}
 
+			@Override
+			public long getTimeout() {
+				// TODO interesting timeout given the complexity
+				return 1000*60*5;
+			}
+
 		
 		};
 	}

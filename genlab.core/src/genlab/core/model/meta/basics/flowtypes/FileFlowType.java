@@ -18,8 +18,9 @@ public class FileFlowType extends AbstractFlowType<File> {
 
 	@Override
 	public File decodeFrom(Object value) {
-	
-		// TODO accept String for filenmaes ? 
+			
+		if (value instanceof String)
+			return new File((String)value);
 		
 		try {
 			return (File)value;

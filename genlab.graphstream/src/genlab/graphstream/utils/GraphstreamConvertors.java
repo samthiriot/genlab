@@ -1,6 +1,7 @@
 package genlab.graphstream.utils;
 
 import genlab.core.commons.ProgramException;
+import genlab.core.commons.WrongParametersException;
 import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.GraphFactory;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
@@ -27,7 +28,7 @@ public class GraphstreamConvertors {
 
 	/**
 	 * Receives graph events, and pushes them into a GenLab graph.
-	 * TODO manage the automatic creation of attributes !
+	 * TODO a parameter to ignore attributes ???
 	 * 
 	 * @author Samuel Thiriot
 	 *
@@ -74,7 +75,20 @@ public class GraphstreamConvertors {
 		public void edgeAttributeAdded(String sourceId, long timeId, String edgeId, String attribute, Object value) {
 			if (ignoredAttributesEdge.contains(attribute.toLowerCase()))
 				return;
-			graph.setEdgeAttribute(edgeId, attribute, value);
+
+			try {
+				graph.setEdgeAttribute(edgeId, attribute, value);
+			} catch (WrongParametersException e) {
+
+				if (!graph.hasEdgeAttribute(attribute)) {
+					messages.traceTech("the graph had no edge attribute "+attribute+"; we automatically define it", getClass());
+					graph.declareEdgeAttribute(attribute, value.getClass());
+					graph.setEdgeAttribute(edgeId, attribute, value);
+				} else {
+					messages.errorTech("error while attempting to define edge attribute: "+attribute, getClass(), e);
+					throw e;
+				}
+			}
 		}
 
 		@Override
@@ -88,8 +102,20 @@ public class GraphstreamConvertors {
 				String nodeId, String attribute, Object value) {
 			if (ignoredAttributesVertex.contains(attribute.toLowerCase()))
 				return;
-			graph.setVertexAttribute(nodeId, attribute, value);
 			
+			try {
+				graph.setVertexAttribute(nodeId, attribute, value);
+			} catch (WrongParametersException e) {
+
+				if (!graph.hasVertexAttribute(attribute)) {
+					messages.traceTech("the graph had no vertex attribute "+attribute+"; we automatically define it", getClass());
+					graph.declareVertexAttribute(attribute, value.getClass());
+					graph.setVertexAttribute(nodeId, attribute, value);
+				} else {
+					messages.errorTech("error while attempting to define graph attribute: "+attribute, getClass(), e);
+					throw e;
+				}
+			}			
 		}
 
 		@Override
@@ -97,8 +123,21 @@ public class GraphstreamConvertors {
 				String edgeId, String attribute, Object oldValue,
 				Object newValue) {
 			
-			messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
-					"the attribute '"+attribute+"' of an edge changed."));
+
+			try {
+				graph.setEdgeAttribute(edgeId, attribute, newValue);
+			} catch (WrongParametersException e) {
+
+				if (!graph.hasEdgeAttribute(attribute)) {
+					messages.traceTech("the graph had no edge attribute "+attribute+"; we automatically define it", getClass());
+					graph.declareEdgeAttribute(attribute, newValue.getClass());
+					graph.setEdgeAttribute(edgeId, attribute, newValue);
+				} else {
+					messages.errorTech("error while attempting to define edge attribute: "+attribute, getClass(), e);
+					throw e;
+				}
+			}
+			
 		}
 
 		@Override
@@ -111,8 +150,26 @@ public class GraphstreamConvertors {
 		@Override
 		public void graphAttributeChanged(String sourceId, long timeId,
 				String attribute, Object oldValue, Object newValue) {
+			
+
+			try {
+				graph.setGraphAttribute(attribute, newValue);
+			} catch (WrongParametersException e) {
+
+				if (!graph.hasGraphAttribute(attribute)) {
+					messages.traceTech("the graph had no graph attribute "+attribute+"; we automatically define it", getClass());
+					graph.declareGraphAttribute(attribute, newValue.getClass());
+					graph.setGraphAttribute(attribute, newValue);
+				} else {
+					messages.errorTech("error while attempting to define edge graph: "+attribute, getClass(), e);
+					throw e;
+				}
+			}
+			
+			/*
 			messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
 					"the attribute '"+attribute+"' of the graph changed."));
+					*/
 		}
 
 		@Override
@@ -127,11 +184,20 @@ public class GraphstreamConvertors {
 				String nodeId, String attribute, Object oldValue,
 				Object newValue) {
 			
-			// TODO graph.setVertexAttribute(nodeId, attribute, newValue);
+			try {
+				graph.setVertexAttribute(nodeId, attribute, newValue);
+			} catch (WrongParametersException e) {
+
+				if (!graph.hasVertexAttribute(attribute)) {
+					messages.traceTech("the graph had no vertex attribute "+attribute+"; we automatically define it", getClass());
+					graph.declareVertexAttribute(attribute, newValue.getClass());
+					graph.setVertexAttribute(nodeId, attribute, newValue);
+				} else {
+					messages.errorTech("error while attempting to define vertex attribute: "+attribute, getClass(), e);
+					throw e;
+				}
+			}
 			
-			messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
-					"the attribute '"+attribute+"' of a node changed."));
-					
 		}
 
 		@Override
@@ -173,8 +239,10 @@ public class GraphstreamConvertors {
 	public static IGenlabGraph loadGraphWithGraphstreamFromGeneratorSource(String graphId, BaseGenerator generator, int maxNodes, ListOfMessages messages, boolean countIterations) {
 
 
+			messages.debugTech("loading the graph from a source into a genlab graph...", GraphstreamConvertors.class);
+		
 			GenLabGraphSink ourSink = new GenLabGraphSink(graphId, messages);
-			ourSink.ignoreVertexAttribute("xy");
+			// TODO ??? ourSink.ignoreVertexAttribute("xy");
 			generator.addSink(ourSink);
 
 			// load the graph
@@ -216,6 +284,8 @@ public class GraphstreamConvertors {
 			throw new ProgramException("input graph parameter can not be null");
 		
 		Graph g = new MultiGraph("tmpGraph", true, false);
+		
+		messages.debugTech("transcoding from a genlab graph to a graphstream graph...", GraphstreamConvertors.class);
 		
 		Map<String,Node> genlabNode2graphStreamNode = new HashMap<String, Node>((int) genlabGraph.getVerticesCount());
 		

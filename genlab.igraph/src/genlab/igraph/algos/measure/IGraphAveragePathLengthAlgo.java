@@ -78,6 +78,11 @@ public class IGraphAveragePathLengthAlgo extends AbstractIGraphMeasure {
 				
 				return results;
 			}
+
+			@Override
+			public long getTimeout() {
+				return 1000*60*5; // TODO timeout with complexity
+			}
 		};
 	}
 

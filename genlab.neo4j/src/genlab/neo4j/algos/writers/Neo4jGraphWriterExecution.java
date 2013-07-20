@@ -176,6 +176,11 @@ public class Neo4jGraphWriterExecution extends AbstractAlgoExecution {
 		
 	}
 
+	@Override
+	public long getTimeout() {
+		return 1000*30;
+	}
+
 	
 
 }

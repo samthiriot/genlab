@@ -6,6 +6,7 @@ import genlab.core.model.exec.ExecutionHooks;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.exec.IComputationProgressSimpleListener;
+import genlab.core.model.exec.WatchdogTimer;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.util.Collection;
@@ -173,6 +174,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			messages.debugUser("starting a thread for task "+e+": "+t, getClass());
 			final IAlgoExecution e2 = e;
 			
+			// add an exception handler to the thread;
 			t.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
 				
 				@Override
@@ -193,6 +195,13 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 							);
 				}
 			});
+			
+			// also add a watchdog
+			(new WatchdogTimer(
+					e2.getTimeout(), 
+					e2.getProgress(), 
+					e2.getExecution().getListOfMessages())
+			).start();
 			
 			t.start();
 		}

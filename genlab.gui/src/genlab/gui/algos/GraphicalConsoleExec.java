@@ -65,6 +65,11 @@ public class GraphicalConsoleExec extends AbstractOpenViewAlgoExec {
 		getProgress().setComputationState(ComputationState.FINISHED_OK);
 		
 	}
+
+	@Override
+	public long getTimeout() {
+		return 1000*5;
+	}
 	
 
 }

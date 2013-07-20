@@ -162,16 +162,15 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		
 		GLLogger.debugTech("removing algo instance "+algoInstance, getClass());
 		
-		// TODO first remove all connections !
 		GLLogger.traceTech("removing input connections...", getClass());
 		for (IInputOutputInstance io: algoInstance.getInputInstances()) {
-				for (IConnection c : io.getConnections()) {
+				for (IConnection c : new LinkedList<IConnection>(io.getConnections())) {
 					removeConnection(c);
 				}
 		}
 		GLLogger.traceTech("removing output connections...", getClass());
 		for (IInputOutputInstance io: algoInstance.getOutputInstances()) {
-			for (IConnection c : io.getConnections()) {
+			for (IConnection c : new LinkedList<IConnection>(io.getConnections())) {
 				removeConnection(c);
 			}
 		}

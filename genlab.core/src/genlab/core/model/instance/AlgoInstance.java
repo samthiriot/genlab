@@ -5,6 +5,7 @@ import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
+import genlab.core.parameters.Parameter;
 import genlab.core.usermachineinteraction.MessageLevel;
 
 import java.util.Collection;
@@ -17,6 +18,7 @@ import java.util.Map;
  * from the algo: it just stores values for the inputs and outputs
  * of its algo, and just deleguates the execution to the algo type.
  *  
+ *  TODO add a "disable" flag
  * 
  * @author Samuel Thiriot
  *
@@ -159,6 +161,10 @@ public class AlgoInstance implements IAlgoInstance {
 		}
 		
 		return res;
+	}
+	
+	public Object getValueForParameter(Parameter<?> param) {
+		return getValueForParameter(param.getId());
 	}
 	
 	public Map<String,Object> getParametersAndValues() {

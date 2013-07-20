@@ -205,6 +205,10 @@
                url="http://graphstream-project.org/doc/Generators/Dorogovtsev-Mendes-Generator_1.0/">
          </more_info>
          <more_info
+               content="graphstream documentation for the implementation of this algorithm"
+               url="http://graphstream-project.org/api/gs-algo/index.html?org/graphstream/algorithm/generator/DorogovtsevMendesGenerator.html">
+         </more_info>
+         <more_info
                content="S. N. Dorogovtsev and J. F. F. Mendes, Evolution of networks, in Adv. Phys, 2002, 1079--1187">
          </more_info>
          <more_info

@@ -75,4 +75,9 @@ public class ConstantValueExecution<JavaType> extends AbstractAlgoExecution {
 		return "execute constant";
 	}
 
+	@Override
+	public long getTimeout() {
+		return 500;
+	}
+
 }

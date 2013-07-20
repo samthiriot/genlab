@@ -23,6 +23,11 @@ public class Application implements IApplication {
 				return IApplication.EXIT_RESTART;
 			}
 			return IApplication.EXIT_OK;
+		} catch (Exception e) {
+			System.err.println("catched an exception during the creation or execution of the workbench.");
+			e.printStackTrace();
+			System.err.println("attempting to restart...");
+			return IApplication.EXIT_RESTART;
 		} finally {
 			display.dispose();
 		}

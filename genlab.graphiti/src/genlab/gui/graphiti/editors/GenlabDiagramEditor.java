@@ -1,9 +1,11 @@
 package genlab.gui.graphiti.editors;
 
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.editors.IWorkflowEditor;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
 import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
 import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
@@ -29,7 +31,7 @@ import org.eclipse.ui.PartInitException;
  * 
  * @author Samuel Thiriot
  */
-public class GenlabDiagramEditor extends DiagramEditor {
+public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEditor {
 
 	public static final String EDITOR_ID = "genlab.gui.graphiti.editors.GenlabDiagramEditor";
 	
@@ -37,6 +39,7 @@ public class GenlabDiagramEditor extends DiagramEditor {
 	private Diagram diagram = null;
 	private String filename  = null;
 	
+	private IGenlabWorkflowInstance workflow = null;
 	
 	public String getFilename() {
 		return filename;
@@ -104,7 +107,7 @@ public class GenlabDiagramEditor extends DiagramEditor {
 		IGenlabProject project = GenlabPersistence.getPersistence().searchProjectForFile(filename);
 		System.err.println("project : "+project);
 		
-		IGenlabWorkflowInstance workflow = GenlabPersistence.getPersistence().getWorkflowForFilename(filename);
+		workflow = GenlabPersistence.getPersistence().getWorkflowForFilename(filename);
 		System.err.println(workflow);
 
 		// OR, just start to match objects ???
@@ -201,6 +204,11 @@ public class GenlabDiagramEditor extends DiagramEditor {
         GenlabPersistence.getPersistence().saveWorkflow(workflow);
         
 
+	}
+
+	@Override
+	public IGenlabWorkflowInstance getEditedWorkflow() {
+		return workflow;
 	}
 	
 	

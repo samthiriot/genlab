@@ -26,6 +26,8 @@ public class WorkflowPerspective implements IPerspectiveFactory {
 
 		// TODO use extensions instead
 		layout.addPlaceholder("genlab.graphstream.ui.views.graphview:*", IPageLayout.TOP, 0.9f, editorArea);
+		layout.addPlaceholder("genlab.graphstream.ui.views.graphview2d:*", IPageLayout.TOP, 0.9f, editorArea);
+
 		// add a messages (console) view in the very bottom
 
 		

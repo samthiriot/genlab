@@ -270,6 +270,11 @@ public class GraphStreamAPSP extends AbstractGraphStreamMeasure {
 				return results;
 			}
 
+			@Override
+			public long getTimeout() {
+				return 1000*60*5;
+			}
+
 		};
 	}
 

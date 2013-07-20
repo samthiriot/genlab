@@ -138,6 +138,11 @@ public class WorkflowExecution extends AbstractAlgoExecution {
 
 
 
+	@Override
+	public long getTimeout() {
+		return -1;
+	}
+
 
 
 

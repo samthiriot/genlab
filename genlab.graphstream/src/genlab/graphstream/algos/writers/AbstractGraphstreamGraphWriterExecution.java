@@ -96,6 +96,11 @@ public class AbstractGraphstreamGraphWriterExecution extends
 		
 	}
 
+	@Override
+	public long getTimeout() {
+		return 1000*60;
+	}
+
 	
 	
 

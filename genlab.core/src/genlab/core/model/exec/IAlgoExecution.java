@@ -54,4 +54,11 @@ public interface IAlgoExecution extends IExecutionTask {
 	 */
 	public void initInputs(Map<IAlgoInstance,IAlgoExecution> instance2exec);
 	
+	/**
+	 * Returns a max for which, given the current parameters, the algo can be said to be died.
+	 * Returning -1 disables watchdog; this is a bad practice.
+	 * @return
+	 */
+	public long getTimeout();
+	
 }

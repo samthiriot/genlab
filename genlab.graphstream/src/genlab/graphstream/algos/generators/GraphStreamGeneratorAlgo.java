@@ -136,6 +136,11 @@ public abstract class GraphStreamGeneratorAlgo extends GraphStreamAlgo {
 				// TODO Auto-generated method stub
 				
 			}
+
+			@Override
+			public long getTimeout() {
+				return 1000*60*5; // 5 minutes ?
+			}
 		};
 	}
 }

@@ -3,12 +3,15 @@ package genlab.gui.views;
 import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.parameters.BooleanParameter;
 import genlab.core.parameters.DoubleParameter;
+import genlab.core.parameters.FileParameter;
 import genlab.core.parameters.IntParameter;
 import genlab.core.parameters.Parameter;
 import genlab.core.projects.GenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +22,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Widget;
@@ -173,6 +178,46 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				createdWidget = sp;
 				
 				sp.addSelectionListener(this);
+			} else if (param instanceof BooleanParameter) {
+				
+				BooleanParameter b = (BooleanParameter)param;
+				Button check = new Button(form.getBody(), SWT.CHECK);
+				check.setBackground(form.getBackground());
+				
+				Boolean valueB = (Boolean)value;
+				
+				check.setSelection(valueB);
+				
+				createdWidget = check;
+				
+				check.addSelectionListener(this);
+			} else if (param instanceof FileParameter) {
+				
+				final FileParameter f = (FileParameter)param;
+				
+				Button button = new Button(form.getBody(), SWT.PUSH);
+				if (value == null)
+					button.setText("push to select a file");
+				else 
+					button.setText((String)value);
+				
+				button.addSelectionListener(new SelectionListener() {
+					
+					@Override
+					public void widgetSelected(SelectionEvent e) {
+						FileDialog dialog = new FileDialog (form.getShell(), SWT.OPEN);
+						String res = dialog.open();
+						if (res != null)
+							algo.setValueForParameter(f.getId(), res);
+						
+					}
+					
+					@Override
+					public void widgetDefaultSelected(SelectionEvent e) {
+						
+					}
+				});
+				
 			} else {
 
 				GLLogger.errorTech("unable to manage parameter type "+param.getClass().getCanonicalName()+"; the parameter "+param.getName()+" will not be displayed...", getClass());
@@ -238,6 +283,9 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 		} else if (param instanceof DoubleParameter) {
 			Double value = ((double)((Spinner)e.widget).getSelection())/Math.pow(10, ((DoubleParameter)param).getPrecision());
 			algo.setValueForParameter(param.getId(), value);		
+		} else if (param instanceof BooleanParameter) {
+			Boolean value = ((Button)e.widget).getSelection();
+			algo.setValueForParameter(param.getId(), value);
 		} else {
 			throw new ProgramException("unable to deal with this type of widget: "+e.getClass());
 		}
