@@ -75,9 +75,9 @@ public abstract class AbstractGraphDisplayAlgo extends GraphStreamAlgo {
 				
 				IGenlabGraph glGraph = (IGenlabGraph)getInputValueForInput(INPUT_GRAPH);
 				
-				String filenameCss = (String)algoInstance.getValueForParameter(PARAM_STYLESHEET);
-				if (filenameCss != null) {
-					File fileCss = new File(filenameCss);
+				File fileCss = (File)algoInstance.getValueForParameter(PARAM_STYLESHEET);
+				String filenameCss = null;
+				if (fileCss != null) {
 					execution.getListOfMessages().debugUser("a stylesheet was provided, verifying it...", getClass());
 					if (!fileCss.exists()) 
 						throw new WrongParametersException("the file provided for the stylesheet does not exists");

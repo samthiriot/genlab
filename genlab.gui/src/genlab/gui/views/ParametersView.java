@@ -199,7 +199,7 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				if (value == null)
 					button.setText("push to select a file");
 				else 
-					button.setText((String)value);
+					button.setText(((File)value).getAbsolutePath());
 				
 				button.addSelectionListener(new SelectionListener() {
 					
@@ -208,7 +208,7 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 						FileDialog dialog = new FileDialog (form.getShell(), SWT.OPEN);
 						String res = dialog.open();
 						if (res != null)
-							algo.setValueForParameter(f.getId(), res);
+							algo.setValueForParameter(f.getId(), new File(res));
 						
 					}
 					

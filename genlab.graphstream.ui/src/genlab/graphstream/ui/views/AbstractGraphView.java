@@ -88,7 +88,7 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		awtFrame = SWT_AWT.new_Frame(hostSwtComposite);
 		//awtFrame.setIgnoreRepaint(true);
 		awtFrame.setLayout(new BorderLayout());
-		awtFrame.setBackground(Color.BLUE);
+		awtFrame.setBackground(Color.WHITE);
 		
 		// create a panel that does not clears its background into the AWT frame
 		awtPanel = new Panel(new BorderLayout()) {
@@ -97,15 +97,15 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 				paint(g);
 			}
 		};
-		awtPanel.setBackground(Color.GREEN);
+		awtPanel.setBackground(Color.WHITE);
 		awtFrame.add(awtPanel, BorderLayout.CENTER);
 		
 		awtRootPane = new JRootPane(); 
-		awtRootPane.setBackground(Color.YELLOW);
+		awtRootPane.setBackground(Color.WHITE);
 		awtPanel.add(awtRootPane, BorderLayout.CENTER); 
 
 		awtRootPane.getContentPane().setLayout(new BorderLayout());
-		awtRootPane.getContentPane().setBackground(Color.RED);
+		awtRootPane.getContentPane().setBackground(Color.WHITE);
 		
 	}
 
@@ -123,7 +123,7 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		if (gsView == null)
 			return;
 		
-	
+		gsView.setVisible(true);
 		gsView.grabFocus();
 		gsView.revalidate();
 		
