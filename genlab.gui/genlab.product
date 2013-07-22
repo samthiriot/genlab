@@ -40,6 +40,7 @@
       <plugin id="genlab.gui"/>
       <plugin id="genlab.igraph"/>
       <plugin id="genlab.neo4j"/>
+      <plugin id="genlab.random.colt"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
       <plugin id="javax.xml"/>

@@ -38,6 +38,7 @@ public class AlgoInstance implements IAlgoInstance {
 	// TODO improve algo parameters
 	private Map<String,Object> parameters = new HashMap<String, Object>();
 	
+	private IAlgoContainerInstance container = null;
 	
 	public AlgoInstance(IAlgo algo, IGenlabWorkflowInstance workflow, String id) {
 
@@ -249,6 +250,18 @@ public class AlgoInstance implements IAlgoInstance {
 			workflow._notifyAlgoChanged(this);
 		
 	}
+
+	@Override
+	public IAlgoContainerInstance getContainer() {
+		return container;
+	}
+
+	@Override
+	public void setContainer(IAlgoContainerInstance container) {
+		this.container = container;
+	}
+	
+	
 	
 
 }

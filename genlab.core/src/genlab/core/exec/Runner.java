@@ -27,7 +27,7 @@ import java.util.Set;
  */
 public class Runner extends Thread implements IComputationProgressSimpleListener {
 	
-	final static int MAX_THREADS = 1;
+	final static int MAX_THREADS = 4;
 	
 	final Set<IAlgoExecution> all = new HashSet<IAlgoExecution>();
 
@@ -46,14 +46,27 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	
 	private ListOfMessages messages = null;
 	
-	public Runner(IExecution execution, IComputationProgress progress, Collection<IAlgoExecution> allTasks) {
+	private final IContainerTask task;
+	
+	
+	public Runner(IExecution execution, IComputationProgress progress, Collection<IAlgoExecution> allTasks, IContainerTask task) {
 		
 		this.progress = progress;
-		all.addAll(allTasks);
 		
 		messages = execution.getListOfMessages();
 		
-		ExecutionHooks.singleton.notifyParentTaskAdded(execution);
+		for (IAlgoExecution e: allTasks)
+			addTask(e);
+		
+		
+		this.task = task;
+	}
+	
+	protected void addTask(IAlgoExecution exec) {
+		
+		all.add(exec);
+		//ExecutionHooks.singleton.notifyParentTaskAdded(exec);
+
 		
 	}
 
@@ -80,6 +93,18 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	
 	protected void initRun() {
 
+		// prepare our task
+		/*
+		task = new ContainerTask(this.getName());
+		synchronized (all) {
+			for (IAlgoExecution e: all) {
+				task.addTask(e);
+			}
+		}
+		*/
+		TasksManager.singleton.notifyListenersOfTaskAdded(task);
+
+		
 		// init progress
 		// TODO
 		progress.setComputationState(ComputationState.STARTED);

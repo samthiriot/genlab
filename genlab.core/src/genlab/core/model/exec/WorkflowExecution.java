@@ -1,28 +1,30 @@
 package genlab.core.model.exec;
 
+import genlab.core.commons.ProgramException;
+import genlab.core.exec.IContainerTask;
 import genlab.core.exec.IExecution;
+import genlab.core.exec.ITask;
 import genlab.core.exec.Runner;
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.usermachineinteraction.GLLogger;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 
-public class WorkflowExecution extends AbstractAlgoExecution {
+public class WorkflowExecution extends AbstractAlgoExecution implements IContainerTask, IComputationProgressSimpleListener {
 
 	private final IGenlabWorkflowInstance workflowInstance;
 	protected Map<IAlgoInstance, IAlgoExecution> instance2execution = null;
 
-
-	// the roots that can be ran independantly
-	protected Set<IAlgoInstance> roots = null;
-
 	protected Runner r = null;
 	
+	private Collection<ITask> subTasks = new LinkedList<ITask>();
 	
 	
 	public WorkflowExecution(IExecution exec, IGenlabWorkflowInstance workflowInstance) {
@@ -44,22 +46,50 @@ public class WorkflowExecution extends AbstractAlgoExecution {
 		GLLogger.traceTech("preparing the execution of worklow "+workflowInstance, getClass());
 		
 		instance2execution = new HashMap<IAlgoInstance, IAlgoExecution>(workflowInstance.getAlgoInstances().size());
-		roots = new HashSet<IAlgoInstance>();
-		
+
 		// first create execution for each sub algo
+		// ...first run to let containers do their job
 		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
-		
+			
+			// TODO !
+			//if (sub.getContainer() != null)
+			//	continue;
+			
 			GLLogger.traceTech("creating an execution task for subalgo "+sub, getClass());
+			IAlgoExecution subExec = sub.execute(exec);
+
+			if (subExec == null)
+				throw new ProgramException("an algorithm was unable to prepare an execution "+sub);
+			
+			subExec.setParent(this);
+			this.addTask(subExec);
+			
 			instance2execution.put(
 					sub, 
-					sub.execute(exec)
+					subExec
 					);
 			
 		}
 		
+		// then create their inter dependancies
+		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
+			
+			IAlgoExecution exec = instance2execution.get(sub);
+			
+			for (IInputOutputInstance in : sub.getInputInstances()) {
+				for (IConnection c : in.getConnections()) {
+					IAlgoInstance aiFrom = c.getFrom().getAlgoInstance();
+					IAlgoExecution execFrom = instance2execution.get(aiFrom);
+					exec.addPrerequire(execFrom);
+					
+				}
+			}
+			
+		}
+		
+		
 		// now init links
 		Map<IAlgoInstance, IAlgoExecution> unmodifiableMap = Collections.unmodifiableMap(instance2execution);
-		
 		for (IAlgoExecution exec : instance2execution.values()) {
 			
 			GLLogger.traceTech("init links for "+exec, getClass());
@@ -76,7 +106,7 @@ public class WorkflowExecution extends AbstractAlgoExecution {
 		GLLogger.traceTech("starting the execution of worklow "+workflowInstance, getClass());
 
 		
-		r = new Runner(exec, progress, instance2execution.values());
+		r = new Runner(exec, progress, instance2execution.values(), this);
 		r.run();
 		
 		// plan the execution time
@@ -144,6 +174,50 @@ public class WorkflowExecution extends AbstractAlgoExecution {
 	}
 
 
+	@Override
+	public void addTask(ITask t) {
+		if (!subTasks.contains(t)) {
+			subTasks.add(t);
+			t.getProgress().addListener(this);
+		}
+	}
+
+
+	@Override
+	public Collection<ITask> getTasks() {
+		return subTasks;
+	}
+
+	protected boolean allSubtasksSucceed() {
+		for (ITask t: subTasks) {
+			if (t.getProgress().getComputationState() != ComputationState.FINISHED_OK)
+				return false;
+		}
+		return true;
+	}
+
+	@Override
+	public void computationStateChanged(IComputationProgress progress) {
+		switch (progress.getComputationState()) {
+		case FINISHED_CANCEL:
+		case FINISHED_FAILURE:
+			// if one of our child fails or is canceled, the whole is.
+			this.progress.setComputationState(progress.getComputationState());
+			// and we stop listening it.
+			progress.removeListener(this);
+			break;
+		case FINISHED_OK:
+			// stop listen for this one
+			progress.removeListener(this);
+			// if one of our childs succeeds... we still have to wait for all of them
+			if (allSubtasksSucceed()) {
+				this.progress.setComputationState(ComputationState.FINISHED_OK);
+			}
+			break;
+		default:
+			// do nothing :-)
+		}
+	}
 
 
 }

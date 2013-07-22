@@ -26,6 +26,18 @@
             class="genlab.core.model.meta.basics.algos.ConstantValueFile"
             id="genlab.core.model.meta.basics.algos.ConstantValueFile">
       </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.DoubleFillTableAlgo"
+            id="genlab.core.model.meta.basics.algos.DoubleFillTableAlgo">
+      </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.IntegerFillTableAlgo"
+            id="genlab.core.model.meta.basics.algos.IntegerFillTableAlgo">
+      </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.AppendToTableAlgo"
+            id="genlab.core.model.meta.basics.algos.AppendToTableAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">

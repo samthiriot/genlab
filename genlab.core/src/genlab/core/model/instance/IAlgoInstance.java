@@ -55,4 +55,10 @@ public interface IAlgoInstance extends IGenlabResource {
 	public void setValueForParameter(String name, Object value);
 	
 	public void checkForRun(WorkflowCheckResult res);
+
+	public IAlgoContainerInstance getContainer();
+	
+	public void setContainer(IAlgoContainerInstance container);
+	
+	
 }

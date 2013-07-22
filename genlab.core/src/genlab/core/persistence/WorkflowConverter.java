@@ -1,9 +1,11 @@
 package genlab.core.persistence;
 
 import genlab.core.commons.ProgramException;
+import genlab.core.commons.WrongParametersException;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.Connection;
 import genlab.core.model.instance.GenlabWorkflowInstance;
+import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.projects.IGenlabProject;
@@ -72,6 +74,17 @@ public class WorkflowConverter extends Decoder implements Converter {
 			writer.endNode();
 		}
 		writer.endNode();
+		
+		writer.startNode("inclusions");
+		for (IAlgoInstance ai : workflow.getAlgoInstances()) {
+			if (ai.getContainer() == null)
+				continue;
+			writer.startNode("contained");
+			writer.addAttribute("put", ai.getId());
+			writer.addAttribute("into", ai.getContainer().getId());
+		}
+		writer.endNode();
+		
 		
 	}
 
@@ -152,6 +165,35 @@ public class WorkflowConverter extends Decoder implements Converter {
 							return connections;
 						}
 					});
+					add(new ProcessOnlySubnode("inclusions") {
+						
+						@Override
+						public Object processSubnode(String name, HierarchicalStreamReader reader,
+								UnmarshallingContext ctxt) {
+						
+							GLLogger.debugTech("decoding inclusions for this workflow", WorkflowConverter.class);
+
+							Map<String,String> child2parentId = new HashMap<String, String>();
+							
+							while (reader.hasMoreChildren()) {
+								reader.moveDown();
+
+								if (reader.getNodeName() != "contained") {
+									GLLogger.warnTech("ignored tag in algo: "+reader.getNodeName(), WorkflowConverter.class);
+									continue;
+								}
+								final String childId = reader.getAttribute("put");
+								final String containerId = reader.getAttribute("into");
+								
+								child2parentId.put(childId, containerId);
+								
+								reader.moveUp();
+
+							}
+							
+							return child2parentId;
+						}
+					});
 				}}
 				);
 		
@@ -179,10 +221,27 @@ public class WorkflowConverter extends Decoder implements Converter {
 		
 		// post processing on connections (?)
 		Collection<Connection> connections = (Collection<Connection>) readen.get("connections");
-		for (Connection c: connections) {
-			workflow.addConnection(c);
+		if (connections != null) {
+			for (Connection c: connections) {
+				workflow.addConnection(c);
+			}
 		}
-
+		
+		// post processing on inclusions
+		Map<String,String> child2parentId = (Map<String,String>)readen.get("inclusions");
+		if (child2parentId != null) {
+			for (String childId : child2parentId.keySet()) {
+				String containerId = child2parentId.get(childId);
+				IAlgoInstance aiChild = workflow.getAlgoInstanceForId(childId);
+				IAlgoContainerInstance aiContainer = (IAlgoContainerInstance)workflow.getAlgoInstanceForId(containerId);
+				if (aiChild == null)
+					throw new WrongParametersException("unable to find a children for "+childId);
+				if (aiContainer == null)
+					throw new WrongParametersException("unable to find a container for "+containerId);
+				aiChild.setContainer((IAlgoContainerInstance) aiContainer);
+				aiContainer.addChildren(aiChild);
+			}
+		}
 		return workflow;
 	}
 

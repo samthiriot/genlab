@@ -41,6 +41,8 @@ public interface IAlgoExecution extends IExecutionTask {
 	
 	public IExecution getExecution();
 
+	
+	
 	/**
 	 * Called during execution when an input became available
 	 * @param to
@@ -60,5 +62,5 @@ public interface IAlgoExecution extends IExecutionTask {
 	 * @return
 	 */
 	public long getTimeout();
-	
+
 }

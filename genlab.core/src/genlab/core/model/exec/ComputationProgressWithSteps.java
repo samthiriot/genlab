@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import genlab.core.commons.ProgramException;
+import genlab.core.commons.UniqueTimestamp;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 
@@ -17,6 +18,7 @@ import genlab.core.usermachineinteraction.GLLogger;
 public class ComputationProgressWithSteps implements IComputationProgress {
 
 	private IAlgoExecution algoExec = null;
+	private UniqueTimestamp timestampCreation = null;
 	private Long timestampStart = null;
 	private Long timestampEnd  = null;
 	private Long total  = null;
@@ -30,6 +32,7 @@ public class ComputationProgressWithSteps implements IComputationProgress {
 	
 	public ComputationProgressWithSteps() {
 		this.state = ComputationState.CREATED;
+		this.timestampCreation = new UniqueTimestamp();
 	}
 	
 	
@@ -204,6 +207,12 @@ public class ComputationProgressWithSteps implements IComputationProgress {
 	@Override
 	public String getCurrentTaskName() {
 		return currentTaskName;
+	}
+
+
+	@Override
+	public UniqueTimestamp getTimestampCreation() {
+		return timestampCreation;
 	}
 
 

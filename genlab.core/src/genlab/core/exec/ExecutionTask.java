@@ -7,19 +7,21 @@ import java.util.Set;
 
 public abstract class ExecutionTask implements IExecutionTask {
 
-	private Set<IExecutionTask> prerequires = new HashSet<IExecutionTask>();
+	private Set<ITask> prerequires = new HashSet<ITask>();
+	
+	private IContainerTask parent = null;
 	
 	public ExecutionTask() {
-		
+
 	}
 	
 	@Override
-	public Collection<IExecutionTask> getPrerequires() {
+	public Collection<ITask> getPrerequires() {
 		return prerequires;
 	}
 
 	@Override
-	public void addPrerequire(IExecutionTask task) {
+	public void addPrerequire(ITask task) {
 		prerequires.add(task);
 	}
 	
@@ -29,5 +31,19 @@ public abstract class ExecutionTask implements IExecutionTask {
 		return false;
 	}
 	
+
+	@Override
+	public IContainerTask getParent() {
+		return parent;
+	}
+
+
+
+	@Override
+	public void setParent(IContainerTask parent) {
+		this.parent = parent;
+	}
+
+
 
 }

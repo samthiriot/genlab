@@ -127,6 +127,14 @@ public class ExistingAlgoCategories {
 			"display information", 
 			"dislap"
 			);
+	
+
+	public static final AlgoCategory LOOPS = new AlgoCategory(
+			null, 
+			"loops", 
+			"loops", 
+			"loops"
+			);
 
 	private ExistingAlgoCategories() {
 		declareCategory(PARSER);
@@ -143,7 +151,7 @@ public class ExistingAlgoCategories {
 		declareCategory(EXPLORATION);
 		declareCategory(CASTING);
 		declareCategory(DISPLAY);
-		
+		declareCategory(LOOPS);
 	}
 
 	public AlgoCategory getCategoryForId(String id) {

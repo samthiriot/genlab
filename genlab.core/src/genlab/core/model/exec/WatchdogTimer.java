@@ -11,7 +11,7 @@ import genlab.core.usermachineinteraction.ListOfMessages;
  */
 public class WatchdogTimer extends Thread implements IComputationProgressSimpleListener {
 
-	private final long timeoutSeconds;
+	private final long timeoutMs;
 	
 	private long timeStampEnd;
 	
@@ -22,7 +22,7 @@ public class WatchdogTimer extends Thread implements IComputationProgressSimpleL
 	private final ListOfMessages messages;
 	
 	public WatchdogTimer(long timeoutSeconds, IComputationProgress progress, ListOfMessages messages) {
-		this.timeoutSeconds = timeoutSeconds;
+		this.timeoutMs = timeoutSeconds;
 		this.progress = progress;
 		this.messages = messages;
 	}
@@ -41,7 +41,7 @@ public class WatchdogTimer extends Thread implements IComputationProgressSimpleL
 	public void start() {
 		
 		progress.addListener(this);
-		timeStampEnd = System.currentTimeMillis() + timeoutSeconds;
+		timeStampEnd = System.currentTimeMillis() + timeoutMs;
 	
 		super.start();
 	}
@@ -50,9 +50,9 @@ public class WatchdogTimer extends Thread implements IComputationProgressSimpleL
 	@Override
 	public void run() {
 
-		long toWait = timeoutSeconds;
+		long toWait = timeoutMs;
 		
-		messages.traceTech("starting to watch task "+progress.getCurrentTaskName()+", timeout "+timeoutSeconds+"ms...", getClass());
+		messages.traceTech("starting to watch task "+progress.getCurrentTaskName()+", timeout "+timeoutMs+"ms...", getClass());
 		while (!canceled && toWait > 10) {
 			try {
 				Thread.sleep(toWait);
@@ -63,7 +63,7 @@ public class WatchdogTimer extends Thread implements IComputationProgressSimpleL
 		}
 		
 		if (!canceled) {
-			messages.warnTech("timeout reached, declaring the task in failure state.", getClass());
+			messages.warnTech("timeout reached ("+timeoutMs+" ms), declaring the task in failure state.", getClass());
 			progress.setComputationState(ComputationState.FINISHED_FAILURE);
 			progress.removeListener(this);
 		}

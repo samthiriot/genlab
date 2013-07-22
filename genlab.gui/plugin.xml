@@ -132,6 +132,14 @@
             name="MessagesViewGeneral"
             restorable="true">
       </view>
+      <view
+            allowMultiple="false"
+            category="genlab.gui.views.categorygenlab"
+            class="genlab.gui.views.TasksProgressView"
+            id="genlab.gui.views.ProgressView"
+            name="Progress"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.commands">

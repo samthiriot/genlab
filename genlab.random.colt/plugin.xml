@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.random.colt.algos.RandomIntTableAlgo"
+            id="genlab.random.colt.algos.RandomIntTableAlgo">
+      </algo>
+      <algo
+            class="genlab.random.colt.algos.RandomDoubleTableAlgo"
+            id="genlab.random.colt.algos.RandomDoubleTableAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <author
+            id="genlab.random.colt.doc.authors.cern"
+            name="CERN (European Organization for Nuclear Research)"
+            url="http://home.web.cern.ch/">
+      </author>
+      <library
+            description="Colt provides a set of Open Source Libraries for High Performance Scientific and Technical Computing in Java."
+            id="genlab.random.colt.doc.libraryCOLT"
+            licence_name="Colt License Agreement"
+            name="Colt Libraries"
+            url="http://acs.lbl.gov/software/colt/">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.random.colt.doc.authors.cern">
+         </original_author_id>
+         <more_info
+               content="the wikipedia page on COLT libraries"
+               url="http://en.wikipedia.org/wiki/Colt_(libraries)">
+         </more_info>
+         <more_info
+               content="official project webpage"
+               url="http://acs.lbl.gov/software/colt/">
+         </more_info>
+         <more_info
+               content="java documentation for this library"
+               url="http://acs.lbl.gov/software/colt/api/">
+         </more_info>
+      </library>
+      <docalgo
+            algo_id="genlab.random.colt.algos.RandomIntTableAlgo"
+            library_id="genlab.random.colt.doc.libraryCOLT">
+      </docalgo>
+      <docalgo
+            algo_id="genlab.random.colt.algos.RandomDoubleTableAlgo"
+            library_id="genlab.random.colt.doc.libraryCOLT">
+      </docalgo>
+   </extension>
+
+</plugin>

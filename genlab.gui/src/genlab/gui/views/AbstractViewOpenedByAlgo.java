@@ -1,7 +1,9 @@
 package genlab.gui.views;
 
+import genlab.core.exec.IExecution;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
+import genlab.gui.perspectives.OutputsGUIManagement;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.ui.part.ViewPart;
@@ -13,12 +15,15 @@ import org.eclipse.ui.part.ViewPart;
  * @author Samuel Thiriot
  *
  */
-public abstract class AbstractViewOpenedByAlgo extends ViewPart implements IPropertyChangeListener  {
+public abstract class AbstractViewOpenedByAlgo extends ViewPart implements IPropertyChangeListener, IExecutionView  {
 
 	public static final String PROPERTY_ALGOVIEW_EXEC = "algoview_id";
 	
+	protected IExecution execution = null;
+	
 	public AbstractViewOpenedByAlgo() {
 		addPartPropertyListener(this);
+		
 	}
 	
 	protected abstract String getName(AbstractOpenViewAlgoExec exec);
@@ -38,6 +43,17 @@ public abstract class AbstractViewOpenedByAlgo extends ViewPart implements IProp
 			exec.callbackRegisterView(this);
 			
 			setPartName(getName(exec));
+			
+			this.execution = exec.getExecution();
+
+			OutputsGUIManagement.singleton.registerOutputGUI(this);
+			
 		}
 	}
+	
+	@Override
+	public IExecution getExecution() {
+		return execution;
+	}
+
 }

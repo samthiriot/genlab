@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Genlab Colt
+Bundle-SymbolicName: genlab.random.colt;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: genlab.random.colt.Activator
+Bundle-Vendor: Samuel Thiriot
+Require-Bundle: org.eclipse.core.runtime,
+ genlab.core;bundle-version="0.0.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: ext/concurrent.jar,
+ ext/colt.jar,
+ .
+Export-Package: cern.colt,
+ cern.jet.math,
+ cern.jet.random,
+ cern.jet.random.engine,
+ cern.jet.random.sampling,
+ genlab.random.colt,
+ genlab.random.colt.algos
+Import-Package: cern.jet.random,
+ cern.jet.random.engine,
+ cern.jet.random.sampling

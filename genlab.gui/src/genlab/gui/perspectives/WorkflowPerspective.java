@@ -4,6 +4,7 @@ import genlab.gui.views.ConsoleView;
 import genlab.gui.views.ExistingView;
 import genlab.gui.views.MessagesView;
 import genlab.gui.views.MessagesViewGeneral;
+import genlab.gui.views.TasksProgressView;
 import genlab.gui.views.WorkflowView;
 
 import org.eclipse.ui.IFolderLayout;
@@ -49,7 +50,7 @@ public class WorkflowPerspective implements IPerspectiveFactory {
 		folderRight.addView(ExistingView.ID);
 		folderRight.addView("genlab.gui.views.AlgoInfoView");
 		folderRight.addPlaceholder("genlab.gui.views.ParametersView:*");
-
+		folderRight.addView(TasksProgressView.VIEW_ID);
 		
 		//layout.getViewLayout("genlab.gui.views.projectexplorer").
 		

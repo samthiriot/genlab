@@ -86,7 +86,7 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 										put(GenlabPersistence.XMLTAG_ID, true);
 										put("algoClassName", true);
 										put("algoName", true);
-
+										put("container", false);
 									}}
 							)
 					);
@@ -131,6 +131,7 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 				i.setValueForParameter(s, m.get(s));
 			}
 		}
+		
 		return i;
 	}
 

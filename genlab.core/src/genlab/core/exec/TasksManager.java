@@ -11,8 +11,9 @@ import java.util.LinkedList;
  */
 public class TasksManager {
 
-	private LinkedList<ITaskManagerListener> listeners = new LinkedList<ITaskManagerListener>();
+	private final LinkedList<ITaskManagerListener> listeners = new LinkedList<ITaskManagerListener>();
 	
+	public static TasksManager singleton = new TasksManager();
 	
 	public TasksManager() {
 
@@ -32,7 +33,7 @@ public class TasksManager {
 		}
 	}
 	
-	protected void notifyListenersOfTaskAdded(ITask t) {
+	public void notifyListenersOfTaskAdded(ITask t) {
 		
 		synchronized (listeners) {
 			for (ITaskManagerListener l : listeners) {

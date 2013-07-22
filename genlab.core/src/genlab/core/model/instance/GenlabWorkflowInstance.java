@@ -53,6 +53,8 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	
 	private LinkedList<IWorkflowContentListener> listeners = new LinkedList<IWorkflowContentListener>();
 	
+	private IAlgoContainerInstance container = null;
+	
 	public GenlabWorkflowInstance(IGenlabProject project, String name, String description, String relativeFilename) {
 		
 		GLLogger.debugTech("creating worklow instance "+id+" "+super.toString(), getClass());
@@ -562,6 +564,16 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 				nb++;
 		}
 		return nb;
+	}
+
+	@Override
+	public IAlgoContainerInstance getContainer() {
+		return container;
+	}
+
+	@Override
+	public void setContainer(IAlgoContainerInstance container) {
+		this.container = container;
 	}
 
 	

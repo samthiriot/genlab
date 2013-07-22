@@ -72,7 +72,9 @@ public final class ExistingAlgos {
 	    	Object o;
 			try {
 				o = e.createExecutableExtension("class");
-				if (o instanceof IAlgo) {
+				if (o == null) {
+					GLLogger.errorTech("unable to load an algo", getClass());
+				} else if (o instanceof IAlgo) {
 					declareAlgo((IAlgo) o);
 					extensionId2algos.put(e.getAttribute("id"), (IAlgo)o);
 				} else {
@@ -80,6 +82,7 @@ public final class ExistingAlgos {
 				}
 			} catch (CoreException e1) {
 				GLLogger.errorTech("error while detecting available algorithms: error with extension point "+e.getName(), getClass(), e1);
+				e1.printStackTrace();
 			}
 			
 		}

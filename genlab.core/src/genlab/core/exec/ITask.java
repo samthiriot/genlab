@@ -1,5 +1,7 @@
 package genlab.core.exec;
 
+import java.util.Collection;
+
 import genlab.core.model.exec.IComputationProgress;
 
 /**
@@ -28,4 +30,24 @@ public interface ITask {
 	 */
 	public IComputationProgress getProgress();
 
+	public void addPrerequire(ITask task);
+
+
+	/**
+	 * returns the set of execution tasks that should be ran before this one.
+	 * @return
+	 * 
+	 */
+	public Collection<ITask> getPrerequires();
+	
+	/**
+	 * Returns the parent task (if any), or null. 
+	 * A parent task is like a container.
+	 * @return
+	 */
+	public IContainerTask getParent();
+	
+	public void setParent(IContainerTask parent);
+	
 }
+

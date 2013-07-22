@@ -42,6 +42,10 @@ public class ConnectionExec implements IComputationProgressSimpleListener {
 		
 	}
 	
+	/**
+	 * Used by the target algo exec to retrieve the value
+	 * @return
+	 */
 	public Object getValue() {
 		return value;
 	}
@@ -52,6 +56,13 @@ public class ConnectionExec implements IComputationProgressSimpleListener {
 		if (progress != from.getProgress())
 			return;	// no reason for this case...
 		
+		if (progress.getComputationState() == ComputationState.STARTED) {
+			// reset internal value
+			GLLogger.traceTech("the parent exec is starting, clearing internal data...", getClass());
+			value = null;
+			return;
+		}
+
 		if (progress.getComputationState() != ComputationState.FINISHED_OK)
 			return;	
 		

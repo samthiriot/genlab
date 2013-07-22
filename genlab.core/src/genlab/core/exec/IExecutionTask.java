@@ -11,14 +11,6 @@ import java.util.Collection;
  */
 public interface IExecutionTask extends ITask, Runnable  {
 
-	/**
-	 * returns the set of execution tasks that should be ran before this one.
-	 * @return
-	 * 
-	 */
-	public Collection<IExecutionTask> getPrerequires();
-	
-	public void addPrerequire(IExecutionTask task);
 
 	/**
 	 * Actually run this task

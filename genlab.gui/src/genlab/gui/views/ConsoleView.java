@@ -1,5 +1,6 @@
 package genlab.gui.views;
 
+import genlab.core.exec.IExecution;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 
 import org.eclipse.swt.SWT;
@@ -24,7 +25,7 @@ public class ConsoleView extends AbstractViewOpenedByAlgo {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		text = new StyledText(parent, SWT.BORDER);
+		text = new StyledText(parent, SWT.BORDER | SWT.V_SCROLL);
 		
 	}
 
@@ -66,6 +67,7 @@ public class ConsoleView extends AbstractViewOpenedByAlgo {
 		return exec.getAlgoInstance().getName();
 	}
 
+	
 	
 }
 

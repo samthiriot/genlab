@@ -1,5 +1,6 @@
 package genlab.core.model.exec;
 
+import genlab.core.commons.UniqueTimestamp;
 import genlab.core.model.meta.IAlgo;
 
 /**
@@ -27,6 +28,8 @@ public interface IComputationProgress {
 	 */
 	public Long getTimestampStart();
 	 
+	public UniqueTimestamp getTimestampCreation();
+
 	/**
 	 * Returns the duration of the task in milliseconds,
 	 * or null if not available (either not started or not ended)

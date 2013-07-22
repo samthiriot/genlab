@@ -230,8 +230,8 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	
 	@Override
 	public String getName() {
-		return "execution of "+algoInst.getName();
+		return algoInst.getName();
 	}
 	
-	
+
 }

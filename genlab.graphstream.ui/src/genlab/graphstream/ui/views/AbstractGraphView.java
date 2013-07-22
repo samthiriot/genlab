@@ -29,6 +29,7 @@ import org.graphstream.ui.swingViewer.Viewer;
 import org.graphstream.ui.swingViewer.Viewer.CloseFramePolicy;
 
 /**
+ * TODO: do not display graphs when they are too big; alert instead.
  * @see http://www.eclipse.org/articles/Article-Swing-SWT-Integration/index.html
  * @author Samuel Thiriot
  *
@@ -58,6 +59,8 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 	public static final String CLASSNAME_VIEWER = "org.graphstream.ui.j2dviewer.J2DGraphRenderer";
 	
 	public static boolean isAvailable = true;
+	
+	private boolean firstDisplay = true;
 
 	{
 		// reduce flickering for Windows
@@ -123,9 +126,15 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		if (gsView == null)
 			return;
 		
-		gsView.setVisible(true);
+		
+		if (firstDisplay) {
+			gsView.setVisible(true);
+			gsView.revalidate();
+			firstDisplay = false;
+		}
+		
 		gsView.grabFocus();
-		gsView.revalidate();
+
 		
 	}
 	
