@@ -25,6 +25,16 @@ public interface IExecutionTask extends ITask, Runnable  {
 	public boolean isCostless();
 	
 	/**
+	 * May return 0, if this is just a task which waits for subtasks;
+	 * typically returns 1; may return more if several cores
+	 * are used by this task.
+	 * Should be constant.
+	 * @return
+	 */
+	public int getThreadsUsed();
+	
+	
+	/**
 	 * Kills the task. Cancellation should be tried first.
 	 */
 	public void kill();

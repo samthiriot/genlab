@@ -1,13 +1,15 @@
 package genlab.gui.graphiti.features;
 
-import genlab.core.commons.WrongParametersException;
+import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.instance.AlgoContainerInstance;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.GenlabWorkflowInstance;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.AlgoContainer;
 import genlab.core.model.meta.IConstantAlgo;
+import genlab.core.persistence.AlgoInstanceConverter;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import org.eclipse.graphiti.datatypes.IDimension;
@@ -36,17 +38,19 @@ import org.eclipse.graphiti.util.IColorConstant;
 /**
  * From a constant, displays it
  * 
- * TODO manage color constants
+ * TODO TODO
  * 
  * @see http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.graphiti.doc%2Fresources%2Fdocu%2Fgfw%2Fselection-behavior.htm
  * 
  * @author Samuel Thiriot
  *
  */
-public class AddIAlgoConstFeature extends AbstractAddFeature {
+public class AddIAlgoContainerFeature extends AbstractAddFeature {
 
 	public static final int WIDTH = 80;
 	public static final int HEIGHT = 80;
+	
+	public static final int ROUNDED = 10;
 	
 	public static final int FONT_SIZE = 20;
 	public static final String FONT_NAME = "Arial";
@@ -55,7 +59,7 @@ public class AddIAlgoConstFeature extends AbstractAddFeature {
 	public static final int MARGIN_HEIGHT = 3;
 	
 	
-	public AddIAlgoConstFeature(IFeatureProvider fp) {
+	public AddIAlgoContainerFeature(IFeatureProvider fp) {
 		super(fp);
 		
 	}
@@ -63,76 +67,62 @@ public class AddIAlgoConstFeature extends AbstractAddFeature {
 	@Override
 	public boolean canAdd(IAddContext context) {
 		
-		// we only manage novel algo instances
-		if (!(context.getNewObject() instanceof IAlgoInstance))
-			return false;
-			
-		IAlgoInstance ai = (IAlgoInstance)context.getNewObject();
-		
-		// and only constant algos
-		if (! (ai.getAlgo() instanceof IConstantAlgo) )
+		// check what is added
+		if (!(context.getNewObject() instanceof IAlgoContainerInstance))
 			return false;
 		
-		// only allow the storage into the diagram (or into a container ?)
-		Object boForContainer = getBusinessObjectForPictogramElement(context.getTargetContainer());
-		if (boForContainer == null) {
-			GLLogger.warnTech("unable to find the business object for a PE; problems ahead", getClass());
+		
+		IAlgoContainerInstance ai = (IAlgoContainerInstance)context.getNewObject();
+		
+		if (! (ai.getAlgo() instanceof AlgoContainer) )
 			return false;
-		}
+		
 			
-		final IAlgoInstance algoInstanceToAdd = (IAlgoInstance)context.getNewObject();
+		// and to what it is added
+		if (!(context.getTargetContainer() instanceof Diagram))
+			return false;
+				
 
-		// don't recreate the PE
-		if (getFeatureProvider().getPictogramElementForBusinessObject(algoInstanceToAdd) != null)
-			return false;
-		
-		IGenlabWorkflowInstance workflow = null;
-		
-		if (boForContainer instanceof IGenlabWorkflowInstance) {
-			workflow = (IGenlabWorkflowInstance)boForContainer;
-			
-		} else if (boForContainer instanceof IAlgoContainerInstance) {
-			IAlgoContainerInstance container = (IAlgoContainerInstance)boForContainer;
-			workflow = container.getWorkflow();
-		} else {
-			// wrong container !
+		IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance) getBusinessObjectForPictogramElement(
+				context.getTargetContainer()
+				);
+		if (workflow == null) {
+			GLLogger.warnTech("unable to find the workflow for this diagram, problems ahead", getClass());
 			return false;
 		}
+			
+		// don't add the same instance twice, that is...
+		return	(
+					// the algo instance is not already in the workflow 
+					(!workflow.containsAlgoInstance(ai))
+					||
+					// or it still has no graphical representation
+					(getFeatureProvider().getPictogramElementForBusinessObject(ai) == null)
+				);
 		
-		return true;
-		
-		
-	
 	}
 
 	@Override
 	public PictogramElement add(IAddContext context) {
 
-		GLLogger.debugTech("creating a graphic representation for a constant", getClass());
+		GLLogger.debugTech("creating a graphic representation for a container", getClass());
 		
 		// retrieve parameters
-		AlgoInstance addedAlgo = (AlgoInstance) context.getNewObject();
-		IConstantAlgo algo = (IConstantAlgo) addedAlgo.getAlgo();
+		AlgoContainerInstance addedAlgo = (AlgoContainerInstance) context.getNewObject();
 
-		// retrieve diagram
 		ContainerShape contextContainerShape = context.getTargetContainer();
-		GenlabWorkflowInstance workflow = null;
-		Object boForContainer = this.getBusinessObjectForPictogramElement(context.getTargetContainer());
+		Object boForContainerShape = getBusinessObjectForPictogramElement(contextContainerShape);
 		
-		if (boForContainer instanceof GenlabWorkflowInstance) {
-			workflow = (GenlabWorkflowInstance)boForContainer;
-			
-		} else if (boForContainer instanceof IAlgoContainerInstance) {
-			IAlgoContainerInstance algoContainer = (IAlgoContainerInstance)boForContainer;
-			workflow = (GenlabWorkflowInstance) algoContainer.getWorkflow();
-			addedAlgo.setContainer(algoContainer);
-			
-		} else 
-			throw new WrongParametersException("wrong container, neither diagram/workflow nor container");
-			
+		GenlabWorkflowInstance workflow = null;
+		if (boForContainerShape instanceof GenlabWorkflowInstance) {
+			workflow = (GenlabWorkflowInstance)boForContainerShape;
+		} else if (boForContainerShape instanceof IAlgoContainerInstance) {
+			IAlgoContainerInstance containerInstance  = (IAlgoContainerInstance)boForContainerShape;
+			addedAlgo.setContainer(containerInstance);
+			workflow = (GenlabWorkflowInstance) containerInstance.getWorkflow();
+		}
 		
 		addedAlgo._setWorkflow(workflow);
-		
 		
 		// create container 
 		IPeCreateService peCreateService = Graphiti.getPeCreateService();
@@ -148,9 +138,12 @@ public class AddIAlgoConstFeature extends AbstractAddFeature {
 				context.getHeight(), 
 				HEIGHT
 				);
+	
+		// TODO detect children...
 		
 		IGaService gaService = Graphiti.getGaService();
 		Rectangle invisibleRectangle ;
+		RoundedRectangle roundedRectangle;
 
 		// create and set graphics algo
 		{
@@ -167,9 +160,27 @@ public class AddIAlgoConstFeature extends AbstractAddFeature {
 			// create link between the domain object and the graphical graphiti representation
 			link(containerShape, addedAlgo);
 			
+			roundedRectangle = gaService.createRoundedRectangle(invisibleRectangle, ROUNDED, ROUNDED);
+			roundedRectangle.setForeground(manageColor(IColorConstant.DARK_GRAY));
+			roundedRectangle.setLineWidth(2);
+			roundedRectangle.setBackground(manageColor(IColorConstant.WHITE));
+
+			//roundedRectangle.setFilled(false);
+
+			gaService.setLocationAndSize(
+					roundedRectangle, 
+					LayoutIAlgoFeature.INVISIBLE_RECT_MARGIN_HORIZ, 
+					0, 
+					width, 
+					height
+					);
+			
+			// TODO remove
+			roundedRectangle.setParentGraphicsAlgorithm(invisibleRectangle);
+			
 		}
 		
-		
+		/*
 		// add text
 		Text text;
 		{
@@ -191,9 +202,6 @@ public class AddIAlgoConstFeature extends AbstractAddFeature {
 			
 			IDimension dim = GraphitiUi.getUiLayoutService().calculateTextSize(paramValueStr, bigFont);
 			
-			width = dim.getWidth()+MARGIN_WIDTH*2;
-			height = dim.getHeight()+MARGIN_HEIGHT*2;
-			
 			gaService.setLocationAndSize(
 					text, 
 					MARGIN_WIDTH, 
@@ -204,6 +212,7 @@ public class AddIAlgoConstFeature extends AbstractAddFeature {
 			
 			link(shape, addedAlgo);
 		}
+		*/
 		
 		 gaService.setLocationAndSize(
          		invisibleRectangle,
@@ -212,42 +221,14 @@ public class AddIAlgoConstFeature extends AbstractAddFeature {
          		width,
          		height
          		);
-		
-		// add a connection point 
-		{
-//			Shape shape = peCreateService.createShape(containerShape, false);
-			
-/*
-			BoxRelativeAnchor anchor = peCreateService.createBoxRelativeAnchor(shape);
-			anchor.setRelativeHeight(0.5);
-			anchor.setRelativeWidth(0.8);
-			anchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
-			//anchor.setParent(containerShape);
-			
-	        Ellipse ellipse = gaService.createEllipse(anchor);
-			ellipse.setForeground(manageColor(IColorConstant.DARK_GRAY));
-			ellipse.setBackground(manageColor(IColorConstant.WHITE));
-			ellipse.setLineWidth(2);
-			ellipse.setWidth(LayoutIAlgoFeature.ANCHOR_WIDTH);
-			ellipse.setParentGraphicsAlgorithm(text);
-			
-			gaService.setLocationAndSize(
-					ellipse, 
-					0, 0, 
-					LayoutIAlgoFeature.ANCHOR_WIDTH, LayoutIAlgoFeature.ANCHOR_WIDTH, 
-					false
-					);
-	    */    
-			ChopboxAnchor anchor = peCreateService.createChopboxAnchor(containerShape);
-			anchor.setActive(true);
-		
-
-			link(anchor, addedAlgo.getOutputInstanceForOutput(algo.getConstantOuput()));
-		}
-		
-        layoutPictogramElement(containerShape);
+		 
+		containerShape.setActive(true);
+		 
+		System.err.println(Graphiti.getPeService().getAllContainedPictogramElements(containerShape));
 
 		
+		
+        //layoutPictogramElement(containerShape);
 	      
 		return containerShape;
 	}

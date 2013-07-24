@@ -2,6 +2,7 @@ package genlab.gephi.utils;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
 import org.gephi.data.attributes.api.AttributeController;
@@ -11,6 +12,7 @@ import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
+import org.gephi.graph.dhns.core.EventManager;
 import org.gephi.project.api.Project;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
@@ -228,7 +230,27 @@ public class GephiConvertors {
 		}
        
 		
-        return new GephiGraph(gephiCurrentWorkspace, gephiGraph, attributeModel, graphModel);
+        return new GephiGraph(gephiCurrentWorkspace, gephiGraph, attributeModel, graphModel, gephiCurrentProject);
+	}
+	
+	public static void clearGraph(GephiGraph graph) {
+
+		GLLogger.debugTech("freeing a gephi graph", GephiConvertors.class);
+		try {
+			synchronized (gephiStaticLocker) {
+				
+				ProjectController pc = getGephiProjectController();
+				pc.removeProject(graph.project);
+			
+				//pc.cleanWorkspace(graph.workspace);
+	
+				//graph.graph.clear();
+				//graph.graphModel.clear();
+				
+			}
+		} catch (RuntimeException e) {
+			GLLogger.warnTech("error while freeing a gephi graph: "+e.getMessage(), GephiConvertors.class, e);
+		}
 	}
 	
 	private GephiConvertors() {

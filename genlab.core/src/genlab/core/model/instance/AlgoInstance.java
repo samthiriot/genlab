@@ -118,6 +118,8 @@ public class AlgoInstance implements IAlgoInstance {
 	public void delete() {
 		if (workflow != null)
 			workflow.removeAlgoInstance(this);
+		if (container != null)
+			container.removeChildren(this);
 	}
 	
 	public void _setWorkflow(IGenlabWorkflowInstance workflow) {

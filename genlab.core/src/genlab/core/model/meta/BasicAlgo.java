@@ -106,7 +106,7 @@ public abstract class BasicAlgo implements IAlgo {
 	}
 
 	@Override
-	public final IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
+	public IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
 		return new AlgoInstance(this, workflow);
 	}
 	

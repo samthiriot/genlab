@@ -55,7 +55,16 @@ public class VisualResources {
 
 	private static Shell swtShell;
 	
+	private static boolean isInitialized() {
+		return swtShell != null;
+		
+	}
 	public static void initVisualResource(Shell shell) {
+		
+		if (isInitialized())
+			return;
+		if (shell == null)
+			return;
 		
 		swtShell = shell;
 

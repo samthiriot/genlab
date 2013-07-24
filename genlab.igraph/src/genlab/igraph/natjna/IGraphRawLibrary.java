@@ -529,7 +529,7 @@ int igraph_k_regular_game(igraph_t *graph,
 				   
 				   mode: Defines how to treat graphs with no connected triples. IGRAPH_TRANSITIVITY_NAN=0 returns NaN in this case, IGRAPH_TRANSITIVITY_ZERO=1 returns zero.
 	 */
-	public native int igraph_transitivity_undirected(Pointer graph, FloatByReference res, int mode);
+	public native int igraph_transitivity_undirected(Pointer graph, DoubleByReference res, int mode);
 	
 	
 	/*
@@ -546,7 +546,7 @@ int igraph_k_regular_game(igraph_t *graph,
 		    igraph_transitivity_mode_t mode);
 	*/
 	public native int igraph_transitivity_avglocal_undirected(Pointer graph,
-		    FloatByReference res,
+			DoubleByReference res,
 		    int mode);
 	
     static {

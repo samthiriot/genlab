@@ -103,6 +103,7 @@
             <element ref="integrator_author_id" minOccurs="1" maxOccurs="unbounded"/>
             <element ref="original_author_id" minOccurs="1" maxOccurs="unbounded"/>
             <element ref="more_info" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="known_limitation" minOccurs="0" maxOccurs="unbounded"/>
          </sequence>
          <attribute name="id" type="string" use="required">
             <annotation>

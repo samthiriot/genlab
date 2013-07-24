@@ -29,6 +29,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         configurer.setShowStatusLine(true);
         configurer.setShowMenuBar(true);
         
+        // we can try to run it right now. 
+        // but, sometimes it is too early.
+        // in this case, it will work in the post event
 		VisualResources.initVisualResource(Display.getCurrent().getActiveShell());
 
 		 
@@ -37,6 +40,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     @Override
     public void postWindowOpen() {
 
+    	// try again (will have no impact if it worked the first time)
+		VisualResources.initVisualResource(Display.getCurrent().getActiveShell());
     	        
     }
     

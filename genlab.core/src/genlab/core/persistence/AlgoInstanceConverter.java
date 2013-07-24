@@ -25,7 +25,10 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 
 	@Override
 	public boolean canConvert(Class c) {
-		return c.equals(AlgoInstance.class);
+		//c.isInstance(arg0)
+		GLLogger.debugTech("can transform "+c.getCanonicalName()+": "+AlgoInstance.class.isAssignableFrom(c), getClass());
+		return AlgoInstance.class.isAssignableFrom(c);
+		//return c.isInstance(AlgoInstance.class);
 	}
 
 	@Override
@@ -119,8 +122,8 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 			// TODO user friendly message
 		GLLogger.traceTech("found the corresponding available algo: "+algo, getClass());
 
-		IAlgoInstance i = algo.createInstance((String)data.get(GenlabPersistence.XMLTAG_ID), null);
 		
+		IAlgoInstance i = algo.createInstance((String)data.get(GenlabPersistence.XMLTAG_ID), null);
 		final String algoName = (String) data.get("algoName");
 		i.setName(algoName);
 		

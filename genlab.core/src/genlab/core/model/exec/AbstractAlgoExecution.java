@@ -3,11 +3,11 @@ package genlab.core.model.exec;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.ExecutionTask;
 import genlab.core.exec.IExecution;
-import genlab.core.model.instance.Connection;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IInputOutput;
+import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,9 +36,9 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	/**
 	 * For each input, associates it with the incoming connections for this input.
 	 */
-	private Map<IInputOutputInstance,Collection<ConnectionExec>> input2connection = new HashMap<IInputOutputInstance, Collection<ConnectionExec>>();
+	protected Map<IInputOutputInstance,Collection<ConnectionExec>> input2connection = new HashMap<IInputOutputInstance, Collection<ConnectionExec>>();
 
-	private Set<IInputOutputInstance> inputsNotAvailable = null;
+	protected Set<IInputOutputInstance> inputsNotAvailable = null;
 
 	
 	/**
@@ -69,26 +69,64 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	protected void createInputExecutableConnection(IInputOutputInstance input, Map<IAlgoInstance,IAlgoExecution> instance2exec) {
 		
 		for (IConnection c : input.getConnections()) {
-			IAlgoExecution fromExec = instance2exec.get(c.getFrom().getAlgoInstance());
-			
-			if (fromExec == null)
-				throw new ProgramException("unable to find an executable for algo instance "+c.getFrom());
-			
-			ConnectionExec cEx = new ConnectionExec(
-					c, 
-					fromExec, 
-					this
-					);
-			
-			Collection<ConnectionExec> conns = input2connection.get(input);
-			if (conns == null) {
-				conns = new LinkedList<ConnectionExec>();
-				input2connection.put(input, conns);
-			}
-			conns.add(cEx);
-			
-			addPrerequire(fromExec);
+			createInputExecutableConnection(input, c, instance2exec);
 		}
+		
+	}
+	
+	protected Collection<ConnectionExec> getConnectionsForInput(IInputOutputInstance input) {
+		Collection<ConnectionExec> conns = input2connection.get(input);
+		if (conns == null) {
+			conns = new LinkedList<ConnectionExec>();
+			input2connection.put(input, conns);
+		}
+		return conns;
+	}
+
+	
+	protected void createInputExecutableConnection(IInputOutputInstance input, IConnection c, Map<IAlgoInstance,IAlgoExecution> instance2exec) {
+	
+		// the executable we listen for
+		IAlgoExecution fromExec = null;
+		boolean connectToParent = (
+				// the "from" algo is not in the same container
+				(c.getFrom().getAlgoInstance().getContainer() != algoInst.getContainer())
+				);
+				// ... then I should connect to parent 
+		
+
+		if (!connectToParent) {
+			// we are in the same container; let's link as usual
+			fromExec = instance2exec.get(c.getFrom().getAlgoInstance());
+			GLLogger.traceTech("creating an exec link from "+fromExec, getClass());
+		} else {
+			// we are not in the same container; 
+			// so I will listen for this container, which will act as a proxy for this case
+			// maybe i'm in the container and not my parent; so my container will warn me when ready
+			// or i'm out of the container; in this case the targer container will also warn me when necesssary
+			fromExec = instance2exec.get((algoInst.getContainer()==null?c.getFrom().getAlgoInstance().getContainer():algoInst.getContainer()));
+			GLLogger.traceTech("creating an exec link from the container "+fromExec, getClass());
+		}
+		
+		if (fromExec == null)
+			throw new ProgramException("unable to find an executable for algo instance "+c.getFrom());
+		
+		ConnectionExec cEx = new ConnectionExec(
+				c, 
+				fromExec, 
+				this,
+				!connectToParent	// don't check when we do fancy things
+				);
+		
+		getConnectionsForInput(input).add(cEx);
+		
+		addPrerequire(fromExec);
+		
+		if (connectToParent) {
+			// warn the parent who eager we are to receive orders from him
+			((AbstractContainerExecution)fromExec).declareInputExpected(cEx, input, c, instance2exec);
+		}
+		
 		
 	}
 
@@ -171,6 +209,10 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	@Override
 	public void notifyInputAvailable(IInputOutputInstance to) {
 		
+		// ignore all 
+		if (progress.getComputationState() != ComputationState.WAITING_DEPENDENCY)
+			return;
+		
 		if (to.getMeta().acceptsMultipleInputs()) {
 			// this input accepts / expects several connection; so we have to check for all these connections !
 			
@@ -179,6 +221,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 			for (ConnectionExec c: input2connection.get(to)) {
 				if (c.getValue() == null) {
 					allConnectionsProvidedValue = false;
+					break;
 				}
 			}
 			
@@ -233,5 +276,18 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		return algoInst.getName();
 	}
 	
+
+	@Override
+	public void reset() {
+		progress.setComputationState(ComputationState.WAITING_DEPENDENCY);
+		inputsNotAvailable.clear();
+		inputsNotAvailable.addAll(algoInst.getInputInstances());
+
+	}
+
+	@Override
+	public int getThreadsUsed() {
+		return 1;
+	}
 
 }

@@ -7,6 +7,7 @@ import genlab.core.usermachineinteraction.GLLogger;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 public abstract class InputOutputInstance implements IInputOutputInstance {
@@ -17,7 +18,7 @@ public abstract class InputOutputInstance implements IInputOutputInstance {
 	
 	protected IParameterConstraint<?> paramConstraint = null;
 	
-	protected final transient Set<IConnection> connections = new HashSet<IConnection>();
+	protected transient Set<IConnection> connections = new HashSet<IConnection>();
 	
 	public InputOutputInstance(IInputOutput<?> meta, IAlgoInstance algoInstance) {
 		
@@ -76,6 +77,12 @@ public abstract class InputOutputInstance implements IInputOutputInstance {
 	@Override
 	public String toString() {
 		return id;
+	}
+
+	private Object readResolve() {
+		// when unmarshalled (persistence !), we recreate transient objects
+		connections = new HashSet<IConnection>();		
+		return this;
 	}
 
 }

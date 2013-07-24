@@ -11,6 +11,11 @@ public interface IGenlabTable {
 	public void declareColumns(Collection<String> ids);
 	public void declareColumn(String id);
 	public boolean containsColumn(String id);
+	
+	/**
+	 * Returns the columns ids in their order
+	 * @return
+	 */
 	public Collection<String> getColumnsId();
 	
 	/**
@@ -29,7 +34,6 @@ public interface IGenlabTable {
 	 */
 	public int addRow(Object[] values);
 
-	
-	
+	public Object[] getRow(int i);
 	
 }

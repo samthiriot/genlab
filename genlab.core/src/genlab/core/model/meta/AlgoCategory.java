@@ -43,7 +43,10 @@ public class AlgoCategory {
 	}
 	
 	public String getName() {
-		return name;
+		if (parent == null)
+			return name;
+		else 
+			return parent.getName()+" / "+name;
 	}
 	
 	public String getDescription() {

@@ -1,6 +1,7 @@
 package genlab.gui.graphiti.diagram;
 
 import genlab.core.model.instance.Connection;
+import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
@@ -10,6 +11,7 @@ import genlab.core.model.meta.IConstantAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.features.AddConnectionFeature;
 import genlab.gui.graphiti.features.AddIAlgoConstFeature;
+import genlab.gui.graphiti.features.AddIAlgoContainerFeature;
 import genlab.gui.graphiti.features.AddIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.AlgoDirectEditingFeature;
 import genlab.gui.graphiti.features.AlgoUpdateFeature;
@@ -76,6 +78,7 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 	
 	protected AddConnectionFeature addConnection = new AddConnectionFeature(this);
 	protected AddIAlgoConstFeature addConstant = new AddIAlgoConstFeature(this);
+	protected AddIAlgoContainerFeature addContainer = new AddIAlgoContainerFeature(this);
 	protected AddIAlgoInstanceFeature addAlgo = new AddIAlgoInstanceFeature(this);
 	
 	protected RemoveIAlgoInstanceFeature removeAlgo = new RemoveIAlgoInstanceFeature(this);
@@ -147,6 +150,8 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 			IAlgoInstance ai = (IAlgoInstance)context.getNewObject();
 			if (ai.getAlgo() instanceof IConstantAlgo)
 				return addConstant;
+			else if (ai instanceof IAlgoContainerInstance)
+				return addContainer;
 			else 
 				return addAlgo;
 		}

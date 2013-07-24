@@ -7,6 +7,101 @@
             class="genlab.gephi.algos.measure.GephiAveragePathLengthAlgo"
             id="genlab.gephi.algos.measure.GephiAveragePathLengthAlgo">
       </algo>
+      <algo
+            class="genlab.gephi.algos.measure.GephiClusteringAlgo"
+            id="genlab.gephi.algos.measure.GephiClusteringAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <author
+            id="genlab.gephi.doc.author.gephiconsortium"
+            name="Gephi Consortium"
+            url="https://consortium.gephi.org/">
+      </author>
+      <author
+            id="genlab.gephi.doc.authors.PatrickMcSweeney"
+            name="Patrick McSweeney">
+      </author>
+      <library
+            description="Gephi is an open-source network analysis and visualization software package written in Java. The Gephi Toolkit project package essential modules (Graph, Layout, Filters, IO…) in a standard Java library, which any Java project can use for getting things done."
+            id="genlab.gephi.doc.library"
+            licence_name="GNU General Public License v3"
+            name="Gephi toolkit"
+            url="https://gephi.org/toolkit/">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.gephi.doc.author.gephiconsortium">
+         </original_author_id>
+         <known_limitation
+               content="there are many resource leaks in Gephi; both memory and threads can not be cleaned (see &lt;a href=&quot;https://forum.gephi.org/viewtopic.php?f=27&amp;t=2242&quot;&gt;this forum discussion&lt;/a&gt; or &lt;a href=&quot;https://forum.gephi.org/viewtopic.php?f=30&amp;t=2558&quot;&gt;this one&lt;/a&gt;)">
+         </known_limitation>
+         <more_info
+               content="the gephi wikipdia page"
+               url="http://en.wikipedia.org/wiki/Gephi">
+         </more_info>
+         <more_info
+               content="the official gephi page"
+               url="http://gephi.org/">
+         </more_info>
+      </library>
+      <docalgo
+            algo_id="genlab.gephi.algos.measure.GephiAveragePathLengthAlgo"
+            library_id="genlab.gephi.doc.library">
+         <more_info
+               content="the gephi javadoc for this algo"
+               url="http://gephi.org/docs/toolkit/org/gephi/statistics/plugin/GraphDistance.html">
+         </more_info>
+         <more_info
+               content="Ulrik Brandes, A Faster Algorithm for Betweenness Centrality, in Journal of Mathematical Sociology 25(2):163-177, (2001)">
+         </more_info>
+         <more_info
+               content="the gephi&apos;s wiki page for this algo"
+               url="http://wiki.gephi.org/index.php/Avg_Path_Length">
+         </more_info>
+         <original_author_id
+               id="genlab.gephi.doc.authors.PatrickMcSweeney">
+         </original_author_id>
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <more_info
+               content="Albert, R., and Barabasi, A.-L. (2002) Statistical mechanics of complex networks. Review of Modern Physics 74:47-97">
+         </more_info>
+         <more_info
+               content="Newman, M.E.J. (2003) The structure and function of complex networks. SIAM Review 45:167-256.">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.gephi.algos.measure.GephiClusteringAlgo"
+            library_id="genlab.gephi.doc.library">
+         <more_info
+               content="the gephi javadoc for this algo"
+               url="http://gephi.org/docs/toolkit/org/gephi/statistics/plugin/ClusteringCoefficient.html">
+         </more_info>
+         <more_info
+               content="the gephi&apos;s wiki page"
+               url="http://wiki.gephi.org/index.php/Avg_Clustering_Coefficient">
+         </more_info>
+         <original_author_id
+               id="genlab.gephi.doc.authors.PatrickMcSweeney">
+         </original_author_id>
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <more_info
+               content="Matthieu Latapy, Main-memory Triangle Computations for Very Large (Sparse (Power-Law)) Graphs, in Theoretical Computer Science (TCS) 407 (1-3), pages 458-473, 2008.">
+         </more_info>
+         <more_info
+               content="Watts, D.J., Strogatz, S.H.(1998) Collective dynamics of &apos;small-world&apos; networks. Nature 393:440-442.">
+         </more_info>
+         <more_info
+               content="the wikipedia page on clustering"
+               url="http://en.wikipedia.org/wiki/Clustering_coefficient">
+         </more_info>
+      </docalgo>
    </extension>
 
 </plugin>

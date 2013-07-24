@@ -1,6 +1,7 @@
 package genlab.gui.graphiti.features;
 
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.GraphitiImageProvider;
 import genlab.gui.views.ParametersView;
@@ -49,12 +50,24 @@ public class OpenParametersFeature extends AbstractCustomFeature {
 			return false;
 		
 		final Object value = getBusinessObjectForPictogramElement(context.getInnerPictogramElement());
+		
+
+		if (value == null)
+			return false;
+		
 		if (!(value instanceof IAlgoInstance))
 			return false;
 		
 		IAlgoInstance algoInstance = (IAlgoInstance)value;
 		
-		return !algoInstance.getAlgo().getParameters().isEmpty();
+		IAlgo algo = algoInstance.getAlgo();
+		
+		if (algo == null) {
+			GLLogger.warnTech("no algo for intance "+algoInstance+"; problems ahead", getClass());
+			return false;
+		}
+		
+		return !algo.getParameters().isEmpty();
 		
 	}
 

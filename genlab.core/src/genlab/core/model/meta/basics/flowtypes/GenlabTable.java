@@ -7,12 +7,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class GenlabTable implements IGenlabTable {
 
 	private ArrayList<Object[]> content = new ArrayList<Object[]>();
 	
+	private List<String> columnsTitles = new LinkedList<String>();
 	private Map<String,Integer> columnId2idx = new HashMap<String, Integer>(50);
 	
 	public GenlabTable() {
@@ -31,6 +34,7 @@ public class GenlabTable implements IGenlabTable {
 	protected int createNewIdForColumn(String id) {
 		Integer idx = columnId2idx.size();
 		columnId2idx.put(id, idx);
+		columnsTitles.add(id);
 		return idx;
 	}
 
@@ -82,7 +86,7 @@ public class GenlabTable implements IGenlabTable {
 
 	@Override
 	public Collection<String> getColumnsId() {
-		return columnId2idx.keySet();
+		return columnsTitles;
 	}
 
 	@Override
@@ -137,16 +141,22 @@ public class GenlabTable implements IGenlabTable {
 	public String toString() {
 	
 		StringBuffer sb = new StringBuffer();
-		sb.append("table with ").append(columnId2idx.size()).append(" columns and ").append(content.size()).append(" rows").append("\n");
-		
-		sb.append(columnId2idx.keySet().toString()).append("\n");
-		
-		for (int i=0; i<content.size(); i++) {
-			sb.append(Arrays.toString(content.get(i))).append("\n");
-		}
+		sb
+		 .append("a table with ")
+		 .append(columnId2idx.size())
+		 .append(" columns and ")
+		 .append(content.size())
+		 .append(" rows")
+		 .append("\n");
 		
 		return sb.toString();
 		
+	}
+
+	@Override
+	public Object[] getRow(int i) {
+		// TODO manage error
+		return content.get(i);
 	}
 
 	

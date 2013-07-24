@@ -17,6 +17,7 @@ import genlab.core.model.meta.basics.flowtypes.AnythingFlowType;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import genlab.core.model.meta.basics.flowtypes.TableFlowType;
+import genlab.core.usermachineinteraction.GLLogger;
 
 public class AppendToTableAlgo extends BasicAlgo {
 
@@ -59,21 +60,30 @@ public class AppendToTableAlgo extends BasicAlgo {
 				
 			}
 			
+			protected IGenlabTable outputTable = null;
+			
 			@Override
 			public void run() {
 				
+				GLLogger.traceTech("starting", getClass());
 				progress.setComputationState(ComputationState.STARTED);
 				
 				Map<IConnection,Object> inputs = getInputValuesForInput(INPUT_ANYTHING);
 				progress.setProgressTotal(inputs.size());
 				
-				// TODO how to deal with no creation ? 
-				IGenlabTable outputTable = new GenlabTable();
+				if (outputTable == null) { 
+					outputTable = new GenlabTable();
+				}
+				
+				GLLogger.traceTech("add row", getClass());
 				final int rowId = outputTable.addRow();
 				
 				for (IConnection c: inputs.keySet()) {
+					
 					final Object value = inputs.get(c);
 
+					GLLogger.traceTech("connection "+c+" / "+value, getClass());
+					
 					final String columnId = c.getFrom().getAlgoInstance().getName()+"/"+c.getFrom().getMeta().getName();
 					if (!outputTable.containsColumn(columnId))
 						outputTable.declareColumn(columnId);
@@ -83,10 +93,15 @@ public class AppendToTableAlgo extends BasicAlgo {
 					progress.incProgressMade();
 				}
 				
-				ComputationResult result = new ComputationResult(algoInstance, progress, execution.getListOfMessages());
+				GLLogger.traceTech("set res", getClass());
 				
-				setResult(result);
-				result.setResult(OUTPUT_TABLE, outputTable);
+				if (getResult() == null) {
+					ComputationResult result = new ComputationResult(algoInstance, progress, execution.getListOfMessages());
+					setResult(result);
+				}
+				((ComputationResult)getResult()).setResult(OUTPUT_TABLE, outputTable);
+				
+				GLLogger.traceTech("end", getClass());
 				
 				progress.setComputationState(ComputationState.FINISHED_OK);
 				
@@ -101,7 +116,7 @@ public class AppendToTableAlgo extends BasicAlgo {
 			@Override
 			public long getTimeout() {
 				// TODO Auto-generated method stub
-				return 1000;
+				return 2000;
 			}
 		};
 	}

@@ -69,7 +69,7 @@ public class AlgoUpdateFeature extends AbstractUpdateFeature {
 	            }
 	        }
 			
-			if (!displayedName.equals(ai.getName()))
+			if (displayedName != null && !displayedName.equals(ai.getName()))
 		            return Reason.createTrueReason("Name is out of date");
 		}
 		

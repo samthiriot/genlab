@@ -31,6 +31,9 @@ import org.graphstream.ui.swingViewer.Viewer.CloseFramePolicy;
 /**
  * TODO: do not display graphs when they are too big; alert instead.
  * @see http://www.eclipse.org/articles/Article-Swing-SWT-Integration/index.html
+ * 
+ * TODO "we spotted the mysterious bug" http://grepcode.com/file/repo1.maven.org$maven2@org.graphstream$gs-core@1.1.2@org$graphstream$ui$swingViewer$basicRenderer$SwingBasicGraphRenderer.java
+ * 
  * @author Samuel Thiriot
  *
  */
@@ -162,33 +165,38 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 			
 			configureGraph(gsGraph);
 			
-			messages.traceTech("create the graphstream viewer...", getClass());
-			gsViewer = new Viewer(gsGraph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
-			configureViewer(gsViewer);
+			if (gsViewer == null) {
+				messages.traceTech("create the graphstream viewer...", getClass());
+				gsViewer = new Viewer(gsGraph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+				configureViewer(gsViewer);
+				
+				messages.traceTech("create the view...", getClass());
+				gsView = gsViewer.addDefaultView(false); // false indicates "no JFrame".
+				//gsView.setDoubleBuffered(false);
+				//gsView.setIgnoreRepaint(true);
+				gsView.setBackground(Color.CYAN);
+				
+				awtRootPane.getContentPane().add(gsView, BorderLayout.CENTER);
+				
+				//awtFrame.invalidate();
+				//awtRootPane.invalidate();
+				startViewer(gsViewer);
+				
+	
+				awtFrame.doLayout();
+				awtRootPane.doLayout();
+				awtRootPane.invalidate();
+				awtRootPane.repaint();
 			
-			messages.traceTech("create the view...", getClass());
-			gsView = gsViewer.addDefaultView(false); // false indicates "no JFrame".
-			//gsView.setDoubleBuffered(false);
-			//gsView.setIgnoreRepaint(true);
-			gsView.setBackground(Color.CYAN);
-			
-			awtRootPane.getContentPane().add(gsView, BorderLayout.CENTER);
-			
-			//awtFrame.invalidate();
-			//awtRootPane.invalidate();
-			startViewer(gsViewer);
-			
-
-			awtFrame.doLayout();
-			awtRootPane.doLayout();
-			awtRootPane.invalidate();
-			awtRootPane.repaint();
-		
-			awtPanel.setVisible(true);
-			awtRootPane.setVisible(true);
-			gsView.setVisible(true);
-			gsView.revalidate();
-			gsView.repaint();
+				awtPanel.setVisible(true);
+				awtRootPane.setVisible(true);
+				gsView.setVisible(true);
+				gsView.revalidate();
+				gsView.repaint();
+				
+			}  else {
+				messages.errorTech("unable to redisplay the graph", getClass());
+			}
 			
 			progress.setComputationState(ComputationState.FINISHED_OK);
 			

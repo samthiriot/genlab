@@ -2,6 +2,8 @@ package genlab.core.model.instance;
 
 import genlab.core.model.meta.IAlgo;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -20,6 +22,10 @@ public class AlgoContainerInstance extends AlgoInstance implements IAlgoContaine
 		super(algo, workflow);
 	}
 
+	public AlgoContainerInstance(IAlgo algo, IGenlabWorkflowInstance workflow, String id) {
+		super(algo, workflow, id);
+	}
+	
 	@Override
 	public Collection<IAlgoInstance> getChildren() {
 		return children;
@@ -36,6 +42,20 @@ public class AlgoContainerInstance extends AlgoInstance implements IAlgoContaine
 		children.remove(child);
 	}
 
-	
+	@Override
+	public void delete() {
+		for (IAlgoInstance ai : children) {
+			ai.setContainer(null);
+		}
+		super.delete();
+	}
+
+	private Object readResolve() {
+		// when unmarshalled (persistence !), we recreate transient objects
+		children = new LinkedList<IAlgoInstance>();
+		
+		return this;
+	}
+
 	
 }

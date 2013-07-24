@@ -82,6 +82,7 @@ public class WorkflowConverter extends Decoder implements Converter {
 			writer.startNode("contained");
 			writer.addAttribute("put", ai.getId());
 			writer.addAttribute("into", ai.getContainer().getId());
+			writer.endNode();
 		}
 		writer.endNode();
 		

@@ -1,25 +1,5 @@
 package genlab.gui.graphiti.genlab2graphiti;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.eclipse.graphiti.features.IUpdateFeature;
-import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
-import org.eclipse.graphiti.features.context.impl.AddContext;
-import org.eclipse.graphiti.features.context.impl.UpdateContext;
-import org.eclipse.graphiti.features.impl.IIndependenceSolver;
-import org.eclipse.graphiti.internal.ExternalPictogramLink;
-import org.eclipse.graphiti.mm.Property;
-import org.eclipse.graphiti.mm.pictograms.Anchor;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.graphiti.services.Graphiti;
-
-import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.instance.Connection;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
@@ -30,6 +10,19 @@ import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
 import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.eclipse.graphiti.features.IUpdateFeature;
+import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
+import org.eclipse.graphiti.features.context.impl.AddContext;
+import org.eclipse.graphiti.features.context.impl.UpdateContext;
+import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 
 /**
  * Listens all the genlab worflows (is registered as a listener using an extension point)
@@ -49,6 +42,7 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 
 	public static class UIInfos {
 		public int x, y, width, height;
+		public ContainerShape containerShape;
 			
 	}
 	
@@ -295,6 +289,8 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 					ctxt.setWidth(uiInfos.width);
 					ctxt.setX(uiInfos.x);
 					ctxt.setY(uiInfos.y);
+					if (uiInfos.containerShape != null)
+						ctxt.setTargetContainer(uiInfos.containerShape);
 					objectCreated2infos.remove(instance); // should not be of use anymore
 				}
 				

@@ -13,6 +13,7 @@ import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.natjna.IGraphGraph;
 
@@ -57,8 +58,7 @@ public class IGraphClusteringAlgo extends AbstractIGraphMeasure {
 					IGenlabGraph genlabGraph,
 					ListOfMessages messages
 					) {
-				
-				
+
 				if (genlabGraph.getDirectionality() != GraphDirectionality.UNDIRECTED) {
 					messages.warnUser("the global clustering assumes the graph is undirected, while the graph provided as parameter is "+genlabGraph.getDirectionality(), getClass());
 				}

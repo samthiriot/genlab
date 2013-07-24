@@ -82,9 +82,7 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecution {
 	 * Opens the view to display info
 	 */
 	protected void openViewSync() {
-		
-		// TODO add timeout ! Its the only way to detect a problem
-		
+				
 		try {
 			IViewPart view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(
 					
@@ -122,14 +120,15 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecution {
 			return;
 		}
 		
-		display.asyncExec(new Runnable() {
-			
-			@Override
-			public void run() {
-				openViewSync();
-			}
-		});
-		
+		if (theView == null) {
+			display.asyncExec(new Runnable() {
+				
+				@Override
+				public void run() {
+					openViewSync();
+				}
+			});
+		}
 	}
 	
 	protected abstract void displayResults(AbstractViewOpenedByAlgo theView);

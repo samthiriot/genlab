@@ -17,8 +17,7 @@ public class TableFlowType extends AbstractFlowType<IGenlabTable> {
 
 	@Override
 	public IGenlabTable decodeFrom(Object value) {
-		// TODO Auto-generated method stub
-		return null;
+		return (IGenlabTable)value;
 	}
 
 	

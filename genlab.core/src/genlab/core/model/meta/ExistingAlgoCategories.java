@@ -177,5 +177,9 @@ public class ExistingAlgoCategories {
 		return singleton;
 	}
 	
+	public Map<String, AlgoCategory> getAllCategories() {
+		return Collections.unmodifiableMap(id2algo);
+	}
+	
 
 }

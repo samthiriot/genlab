@@ -198,6 +198,7 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 	
 	private TreeItem getOrCreateItemForTask(ITask t) {
 		
+		
 		TreeItem item = task2item.get(t);
 		
 		if (item == null) {
@@ -243,7 +244,7 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 			}
 			
 			// ... its expanded state
-			item.setExpanded(t instanceof ContainerTask);
+			item.setExpanded(t instanceof IContainerTask);
 
 		} 
 		
@@ -259,6 +260,7 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		
 		//GLLogger.debugTech("updating for task "+t, getClass());
 		
+		
 		TreeItem item = getOrCreateItemForTask(t);
 		
 		if (item.isDisposed()) {
@@ -270,11 +272,15 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		final ComputationState state = t.getProgress().getComputationState();
 		String txt = null;
 		switch (state) {
-		case FINISHED_OK:
+		case FINISHED_OK: {
 			StringBuffer sb = new StringBuffer();
-			sb.append("finished (").append(t.getProgress().getDurationMs()).append(" ms)");
+			sb.append("finished (").append(getHumanReadableTimeRepresentation(t.getProgress().getDurationMs())).append(")");
 			txt = sb.toString();
-			break;
+		} break;
+		case STARTED: { StringBuffer sb = new StringBuffer();
+			sb.append("running (").append(t.getProgress().getProgressDone()).append("/").append(t.getProgress().getProgressTotalToDo()).append(")");
+			txt = sb.toString();
+		} break;
 		default:
 			txt  = state.toString();
 			break;
@@ -296,6 +302,26 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		}
 	}
 	
+	protected String getHumanReadableTimeRepresentation(long durationMs) {
+	
+		StringBuffer sb = new StringBuffer();
+		
+		if (durationMs < 1000)
+			sb.append(durationMs).append(" ms");
+		else {
+			final long durationS = durationMs/1000;
+			if (durationS < 60) {
+				sb.append(durationS).append(" s");
+			} else {
+				final int durationM = (int)Math.round(durationS / 60.0);
+				sb.append(durationM).append(" m");
+			}
+		}
+		return sb.toString();
+		
+	}
+	
+	
 	/**
 	 * SHould be called from the SWT thread
 	 */
@@ -316,6 +342,11 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 			updateWidget(t);
 		}
 		*/
+		
+		if (treeWidget == null || treeWidget.isDisposed()) {
+			thread.cancel();
+			return;
+		}
 		
 		// first copy the collection of tasks updates to avoid concurrent modifications
 		Set<ITask> tasksUpdating = new HashSet<ITask>(task2item.size()*2);

@@ -7,6 +7,7 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.exec.IComputationProgressSimpleListener;
 import genlab.core.model.exec.WatchdogTimer;
+import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.util.Collection;
@@ -39,6 +40,8 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	final Set<IAlgoExecution> notReady = new HashSet<IAlgoExecution>();	
 	
 	final Map<IAlgoExecution, Thread> exec2thread = new HashMap<IAlgoExecution, Thread>();
+	
+	private int usedThreads = 0;
 	
 	IComputationProgress progress;
 	
@@ -75,9 +78,11 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		LinkedList<IAlgoExecution> res = new LinkedList<IAlgoExecution>();
 		
 		for (IAlgoExecution e: all) {
-			if (e.getPrerequires().isEmpty())
+			if (e.getPrerequires().isEmpty() && e.getAlgoInstance().getContainer()==null)
 				res.add(e);
 		}
+		
+		GLLogger.traceTech("found root tasks: "+res, getClass());
 		
 		return res;
 		
@@ -162,7 +167,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		printState();
 		
 		// are there enough resources ?
-		if (exec2thread.size() >= MAX_THREADS) {
+		if (usedThreads >= MAX_THREADS) {
 			messages.debugTech("all threads used, wait...", getClass());
 			return false;	// threads limit reached, do nothing.
 		}
@@ -188,7 +193,11 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			// actually run something
 			if (!e.isCostless()) {
 				t = new Thread(e);
+				t.setName("gl_task");
+				t.setDaemon(false);
+				t.setPriority(MIN_PRIORITY);
 				exec2thread.put(e, t);
+				usedThreads += e.getThreadsUsed();
 			}
 		}
 		
@@ -222,11 +231,13 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			});
 			
 			// also add a watchdog
+			/* TODO restore the watchdog
 			(new WatchdogTimer(
 					e2.getTimeout(), 
 					e2.getProgress(), 
 					e2.getExecution().getListOfMessages())
 			).start();
+			*/
 			
 			t.start();
 		}
@@ -288,6 +299,8 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	@Override
 	public void computationStateChanged(IComputationProgress progress) {
 		
+		messages.debugTech("computation state changed: "+progress.getAlgoExecution()+": "+progress.getComputationState(), getClass());
+		
 		IAlgoExecution e = progress.getAlgoExecution();
 	
 		// check event
@@ -306,6 +319,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				running.remove(e);
 				done.add(e);
 				exec2thread.remove(e);
+				usedThreads -= e.getThreadsUsed();
 			}
 			attemptToDoThings();
 			break;

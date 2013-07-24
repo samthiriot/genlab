@@ -2,6 +2,7 @@ package genlab.gui.graphiti.features;
 
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.GenlabWorkflowInstance;
+import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IInputOutputInstance;
@@ -52,40 +53,30 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 	@Override
 	public boolean canAdd(IAddContext context) {
 		
-		// check what is added
+		// only manage standard algo instance: no container
 		if (
-				(context.getNewObject() instanceof IAlgoInstance)
-				&& 
-				!(context.getNewObject() instanceof IConstantAlgo)
-				) {
-			
-			// and to what it is added
-			if (context.getTargetContainer() instanceof Diagram) {
-				
-				IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance) getBusinessObjectForPictogramElement(
-						context.getTargetContainer()
-						);
-				if (workflow == null) {
-					GLLogger.warnTech("unable to find the workflow for this diagram, problems ahead", getClass());
-					return false;
-				}
-				
-				final IAlgoInstance algoInstanceToAdd = (IAlgoInstance)context.getNewObject();
-				
-				// don't add the same instance twice, that is...
-				return	(
-							// the algo instance is not already in the workflow 
-							(!workflow.containsAlgoInstance(algoInstanceToAdd))
-							||
-							// or it still has no graphical representation
-							(getFeatureProvider().getPictogramElementForBusinessObject(algoInstanceToAdd) == null)
-						);
-				
-			}
-			
-		}
+				!(context.getNewObject() instanceof IAlgoInstance)
+				|| 
+				(context.getNewObject() instanceof IAlgoContainerInstance)
+				) 
+			return false;
 		
-		return false;
+			
+		// don't create the graphics again
+		if (getFeatureProvider().getPictogramElementForBusinessObject(context.getNewObject()) != null)
+			return false;
+		
+		// and to what it is added
+		Object bo = getBusinessObjectForPictogramElement(context.getTargetContainer());
+		if (bo == null) 
+			return false;
+		
+		return (
+				(bo instanceof IGenlabWorkflowInstance)
+				||
+				(bo instanceof IAlgoContainerInstance)
+				);
+		
 	}
 
 	@Override
@@ -95,15 +86,23 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 		
 		// retrieve parameters
 		AlgoInstance addedAlgo = (AlgoInstance) context.getNewObject();
-		Diagram targetDiagram = (Diagram) context.getTargetContainer();
 		
-		GenlabWorkflowInstance workflow = (GenlabWorkflowInstance)this.getBusinessObjectForPictogramElement(targetDiagram);
+		ContainerShape contextTargetContainer = context.getTargetContainer();;
 		
+		Object boForContainer = getBusinessObjectForPictogramElement(contextTargetContainer);
+		GenlabWorkflowInstance workflow = null;
+		if (boForContainer instanceof GenlabWorkflowInstance) {
+			workflow = (GenlabWorkflowInstance)boForContainer;
+		} else if (boForContainer instanceof IAlgoContainerInstance) {
+			IAlgoContainerInstance container = (IAlgoContainerInstance)boForContainer;
+			workflow = (GenlabWorkflowInstance) container.getWorkflow();
+		}
+			
 		addedAlgo._setWorkflow(workflow);
 		
 		// create container 
 		IPeCreateService peCreateService = Graphiti.getPeCreateService();
-		ContainerShape containerShape = peCreateService.createContainerShape(targetDiagram, true);
+		ContainerShape containerShape = peCreateService.createContainerShape(contextTargetContainer, true);
 
 		
 		// with default size..
@@ -120,7 +119,6 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 		RoundedRectangle roundedRectangle;
 		Rectangle invisibleRectangle ;
 
-		
 		// create and set graphics algo
 		{
 			// create invisible rectangle that allows for anchors that appear to be out of the fram

@@ -63,4 +63,10 @@ public interface IAlgoExecution extends IExecutionTask {
 	 */
 	public long getTimeout();
 
+	/**
+	 * Asks the execution to reset its internal state so it will run again. 
+	 */
+	public void reset();
+
+	
 }

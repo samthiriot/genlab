@@ -38,6 +38,14 @@
             class="genlab.core.model.meta.basics.algos.AppendToTableAlgo"
             id="genlab.core.model.meta.basics.algos.AppendToTableAlgo">
       </algo>
+      <algo
+            class="genlab.core.model.meta.LoopForAlgo"
+            id="genlab.core.model.meta.LoopForAlgo">
+      </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.WriteTableCSV"
+            id="genlab.core.model.meta.basics.algos.WriteTableCSV">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">

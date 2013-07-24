@@ -12,6 +12,8 @@ public class DocLibrary {
 	
 	public final List<String> moreInfo = new LinkedList<String>();
 
+	public final List<String> knownLimitations = new LinkedList<String>();
+
 	public final String name;
 	public final String url;
 	public final String description;

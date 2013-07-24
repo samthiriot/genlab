@@ -1,8 +1,8 @@
 package genlab.core.model.meta;
 
-import genlab.core.exec.IExecution;
-import genlab.core.model.exec.IAlgoExecution;
-import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.AlgoContainerInstance;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
 
 /**
  * An algo container, that is a container of algos (like a loop for instance)
@@ -20,6 +20,18 @@ public abstract class AlgoContainer extends BasicAlgo {
 		super(name, description, categoryId);
 	}
 
+
+	@Override
+	public IAlgoInstance createInstance(String id, IGenlabWorkflowInstance workflow) {
+		return new AlgoContainerInstance(this, workflow, id); // TODO id ??? 
+	}
+
+
+	@Override
+	public final IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
+		return new AlgoContainerInstance(this, workflow);
+	}
 	
+
 
 }

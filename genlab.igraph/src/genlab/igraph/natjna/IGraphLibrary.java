@@ -15,6 +15,7 @@ import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
+// TODO a pool for igraph libs
 public class IGraphLibrary {
 
 	private final IGraphRawLibrary rawLib;
@@ -450,14 +451,14 @@ public class IGraphLibrary {
 		
 	}
 	
-	public Float computeGlobalClustering(IGraphGraph g) {
+	public Double computeGlobalClustering(IGraphGraph g) {
 		
 		if (paramUseCache && g.hasCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL)) {
-			return (Float) g.getCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL);
+			return (Double) g.getCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL);
 		}
 		
 		// compute 
-		FloatByReference res = new FloatByReference();
+		DoubleByReference res = new DoubleByReference();
 		
 		GLLogger.debugTech("calling igraph to compute the global clustering...", getClass());
 
@@ -475,10 +476,10 @@ public class IGraphLibrary {
 		checkIGraphResult(res2);
 		
 		// use result
-		final float clustering = res.getValue();
+		final double clustering = res.getValue();
 		
 		// store in cache
-		g.setCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL, new Float(clustering));
+		g.setCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL, new Double(clustering));
 		
 		System.err.println("igraph/ clustering global: "+clustering);
 
@@ -486,14 +487,14 @@ public class IGraphLibrary {
 		
 	}
 	
-	public Float computeGlobalClusteringLocal(IGraphGraph g) {
+	public Double computeGlobalClusteringLocal(IGraphGraph g) {
 		
 		if (paramUseCache && g.hasCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL_AVG)) {
-			return (Float) g.getCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL_AVG);
+			return (Double) g.getCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL_AVG);
 		}
 		
 		// compute 
-		FloatByReference res = new FloatByReference();
+		DoubleByReference res = new DoubleByReference();
 		
 		GLLogger.debugTech("calling igraph to compute the average clustering...", getClass());
 
@@ -511,7 +512,7 @@ public class IGraphLibrary {
 		checkIGraphResult(res2);
 		
 		// use result
-		final float clustering = res.getValue();
+		final double clustering = res.getValue();
 		
 		// store in cache
 		g.setCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL_AVG, new Float(clustering));

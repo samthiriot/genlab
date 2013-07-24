@@ -15,7 +15,7 @@ import genlab.core.usermachineinteraction.GLLogger;
  * @author B12772
  *
  */
-public class ComputationProgressWithSteps implements IComputationProgress {
+public class ComputationProgressWithSteps implements IComputationProgress, Cloneable {
 
 	private IAlgoExecution algoExec = null;
 	private UniqueTimestamp timestampCreation = null;
@@ -25,6 +25,8 @@ public class ComputationProgressWithSteps implements IComputationProgress {
 	private Long made  = null;
 	private IAlgo algo = null;
 	private ComputationState state = null;
+	// locks the state. Used to avoid the state to be changed while we are dispatching the event on state change.
+	private Object stateLock = new Object();
 	
 	private String currentTaskName = "";
 	
@@ -148,21 +150,26 @@ public class ComputationProgressWithSteps implements IComputationProgress {
 
 	@Override
 	public void setComputationState(ComputationState state) {
+		
 		if (state == this.state)
 			return; // quick exit
 		
-		this.state = state;
-		switch (state) {
-		case STARTED:
-			this.timestampStart = System.currentTimeMillis();
-			break;
-		case FINISHED_FAILURE:
-		case FINISHED_OK:
-			this.made = this.total;
-			this.timestampEnd = System.currentTimeMillis();
-			break;
+		synchronized (stateLock) {
+
+			this.state = state;	
+			switch (state) {
+			case STARTED:
+				this.timestampStart = System.currentTimeMillis();
+				break;
+			case FINISHED_FAILURE:
+			case FINISHED_OK:
+				this.made = this.total;
+				this.timestampEnd = System.currentTimeMillis();
+				break;
+			}
+			dispatchComputationStateChanged();
 		}
-		dispatchComputationStateChanged();
+		
 	}
 
 	@Override
@@ -186,6 +193,8 @@ public class ComputationProgressWithSteps implements IComputationProgress {
 		synchronized (listeners) {
 			listenersCopy = new LinkedList<IComputationProgressSimpleListener>(listeners);
 		}
+		// produce a clone, so a change during dispatching would not raise a problem
+		//ComputationProgressWithSteps clone = (ComputationProgressWithSteps) this.clone();
 		for (IComputationProgressSimpleListener l:  listenersCopy) {
 			l.computationStateChanged(this);
 		}	
@@ -213,6 +222,18 @@ public class ComputationProgressWithSteps implements IComputationProgress {
 	@Override
 	public UniqueTimestamp getTimestampCreation() {
 		return timestampCreation;
+	}
+
+	public Object clone() {
+		ComputationProgressWithSteps clone;
+		
+		try {
+			clone = (ComputationProgressWithSteps)super.clone();
+			
+		} catch(CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+		return clone;
 	}
 
 

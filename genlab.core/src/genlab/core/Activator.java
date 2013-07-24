@@ -1,6 +1,7 @@
 package genlab.core;
 
 import genlab.core.model.doc.AvailableInfo;
+import genlab.core.model.instance.WorkflowHooks;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.usermachineinteraction.GLLogger;
 
@@ -29,7 +30,9 @@ public class Activator implements BundleActivator {
 		
 		// preload the doc
 		AvailableInfo.getAvailableInfo().detectFromExtensions();
-		
+	
+		// preload listeners
+		WorkflowHooks.getWorkflowHooks();
 	}
 
 	/*

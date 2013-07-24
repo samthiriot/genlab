@@ -4,6 +4,7 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.graphiti.Utils;
 import genlab.gui.graphiti.editors.IntuitiveObjectCreation;
 import genlab.gui.graphiti.editors.IntuitiveObjectCreation.ProposalObjectCreation;
 import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
@@ -33,8 +34,14 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 		try {
 			IInputOutputInstance from = (IInputOutputInstance)getBusinessObjectForPictogramElement(context.getSourceAnchor());
 			
-			return (from != null);
+			if (from == null)
+				return false;
 			
+			// do not create multiple connection if this is not possible
+			if (!from.getMeta().acceptsMultipleInputs() && from.getConnections().size()>0)
+				return false;
+			
+			return true;
 			
 		} catch (NullPointerException e) {
 			return false;
@@ -116,7 +123,7 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 					}
 				}
 				
-				return correctedFrom.acceptsConnectionTo(correctedTo) && to.acceptsConnectionFrom(correctedTo);
+				return correctedFrom.acceptsConnectionTo(correctedTo) && correctedTo.acceptsConnectionFrom(correctedTo);
 				
 			} else {
 				
@@ -211,6 +218,7 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 							y = context.getTargetLocation().getY();
 							width = 30;
 							height = 30;
+							containerShape = Utils.getFirstContainer(context.getTargetPictogramElement());
 						}}
 						);
 				

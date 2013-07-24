@@ -24,10 +24,10 @@ public class ConnectionExec implements IComputationProgressSimpleListener {
 	// TODO store the value !
 	private Object value;
 	
-	public ConnectionExec(IConnection c, IAlgoExecution from, IAlgoExecution to) {
+	public ConnectionExec(IConnection c, IAlgoExecution from, IAlgoExecution to, boolean check) {
 		
 		// check parameters
-		if (c.getFrom().getAlgoInstance() != from.getAlgoInstance() || c.getTo().getAlgoInstance() != to.getAlgoInstance())
+		if (check && (c.getFrom().getAlgoInstance() != from.getAlgoInstance() || c.getTo().getAlgoInstance() != to.getAlgoInstance()))
 			throw new ProgramException("inconsistant executable connection");
 		
 		// store them
@@ -40,6 +40,10 @@ public class ConnectionExec implements IComputationProgressSimpleListener {
 		// listen for the "from" exec
 		from.getProgress().addListener(this);
 		
+	}
+	
+	public ConnectionExec(IConnection c, IAlgoExecution from, IAlgoExecution to) {
+		this(c, from, to, true);
 	}
 	
 	/**
@@ -55,17 +59,22 @@ public class ConnectionExec implements IComputationProgressSimpleListener {
 		
 		if (progress != from.getProgress())
 			return;	// no reason for this case...
-		
-		if (progress.getComputationState() == ComputationState.STARTED) {
-			// reset internal value
-			GLLogger.traceTech("the parent exec is starting, clearing internal data...", getClass());
-			value = null;
+
+		final ComputationState state = progress.getComputationState();
+		if (state != ComputationState.FINISHED_OK) {
+			
+			// clear internal state only if the task is not running
+			if (state != ComputationState.STARTED) {
+				GLLogger.debugTech("parent task status changed to "+progress.getComputationState()+"; clearing result", getClass());
+				value = null;		
+			}
+			
+			// exit, nothing else to do
 			return;
 		}
-
-		if (progress.getComputationState() != ComputationState.FINISHED_OK)
-			return;	
+				
 		
+			
 		// a computation ended; let's reuse its result !
 		
 		if (value != null)
@@ -81,6 +90,17 @@ public class ConnectionExec implements IComputationProgressSimpleListener {
 		
 	}
 	
+	public void forceValue(Object value) {
+		this.value = value;
+
+		GLLogger.traceTech("received (forced) value "+value, getClass());
+		
+		// warn children
+		to.notifyInputAvailable(c.getTo());
+	}
 	
+	public void reset() {
+		this.value = null;
+	}
 
 }

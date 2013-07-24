@@ -9,6 +9,7 @@ import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gephi.utils.GephiConvertors;
 import genlab.gephi.utils.GephiGraph;
 
@@ -79,18 +80,21 @@ public abstract class GephiAbstractAlgoExecution extends AbstractAlgoExecution {
 					false, 
 					false
 					);
-			
-						
+									
 			// analyze
 			Map<IInputOutput<?>,Object> stats = analyzeGraph(progress, gephiGraph , glGraph);
 			
 			// use outputs
 			for (IInputOutput<?> out: stats.keySet()) {
 				Object value = stats.get(out);
+				GLLogger.debugTech("result :"+out.getName()+"= "+value, getClass());
 				result.setResult(out, value);	
 			}
-			
+		
+			// clear data
+			GephiConvertors.clearGraph(gephiGraph);
 		}
+		
 		
 		progress.setProgressMade(1);
 		progress.setComputationState(ComputationState.FINISHED_OK);

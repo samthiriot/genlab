@@ -9,6 +9,8 @@ import genlab.gui.graphiti.features.OpenParametersFeature;
 import genlab.gui.graphiti.features.SeeInfoFeature;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,28 +91,21 @@ public class WorkflowToolBehaviorProvider extends DefaultToolBehaviorProvider {
 	public IPaletteCompartmentEntry[] getPalette() {
 		List<IPaletteCompartmentEntry> res = new ArrayList<IPaletteCompartmentEntry>();
 		
-		// add compartments from super class
-		{
-			IPaletteCompartmentEntry[] superCompartments = super.getPalette();
-			for (int i = 0; i < superCompartments.length; i++) {
-				if (!superCompartments[i].getLabel().equals(Messages.DefaultToolBehaviorProvider_1_xfld))
-					res.add(superCompartments[i]);
-			}
-			
-		}
 		
 		// add compartments for algos			
 		Map<String,PaletteCompartmentEntry> categId2compartment = new HashMap<String, PaletteCompartmentEntry>();
 		{
 			
-			for (String parentCategId : ExistingAlgoCategories.getExistingAlgoCategories().getParentCategories()) {
-				AlgoCategory parentCateg = ExistingAlgoCategories.getExistingAlgoCategories().getCategoryForId(parentCategId);
+			Map<String,AlgoCategory> id2categ = ExistingAlgoCategories.getExistingAlgoCategories().getAllCategories();
+			for (String categId : id2categ.keySet()) {
+			//for (String parentCategId : ExistingAlgoCategories.getExistingAlgoCategories().getParentCategories()()) {
+				AlgoCategory categ = id2categ.get(categId);
 				
-				PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(parentCateg.getName(), null);
+				PaletteCompartmentEntry compartmentEntry = new PaletteCompartmentEntry(categ.getName(), null);
 				compartmentEntry.setInitiallyOpen(false);
 				res.add(compartmentEntry);
 				
-				categId2compartment.put(parentCategId, compartmentEntry);
+				categId2compartment.put(categId, compartmentEntry);
 				
 			}
 			
@@ -127,9 +122,12 @@ public class WorkflowToolBehaviorProvider extends DefaultToolBehaviorProvider {
 					if (createFeature instanceof CreateIAlgoInstanceFeature) {
 						
 						IAlgo algo = ((CreateIAlgoInstanceFeature)createFeature).getAlgo();
+						/*
 						String id = ExistingAlgoCategories.getExistingAlgoCategories().getCategoryForId(
 								algo.getCategoryId()
 								).getTopParent().getId();
+						*/
+						String id = algo.getCategoryId();
 						
 						PaletteCompartmentEntry compartmentEntry = categId2compartment.get(id);
 						
@@ -161,7 +159,27 @@ public class WorkflowToolBehaviorProvider extends DefaultToolBehaviorProvider {
 			}
 			
 		}
+	
+		// sort novel compartments
+		Collections.sort(res, new Comparator<IPaletteCompartmentEntry>() {
+
+			@Override
+			public int compare(IPaletteCompartmentEntry c1, IPaletteCompartmentEntry c2) {
+				return c1.getLabel().compareTo(c2.getLabel());
+			}
+		});
+
+		// add compartments from super class
+		{
+			IPaletteCompartmentEntry[] superCompartments = super.getPalette();
+			for (int i = 0; i < superCompartments.length; i++) {
+				if (!superCompartments[i].getLabel().equals(Messages.DefaultToolBehaviorProvider_1_xfld))
+					res.add(0, superCompartments[i]);
+			}
+			
+		}
 		
+				
 		return res.toArray(new IPaletteCompartmentEntry[res.size()]);
 	}
 

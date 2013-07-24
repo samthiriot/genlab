@@ -38,7 +38,6 @@ public abstract class ExecutionTask implements IExecutionTask {
 	}
 
 
-
 	@Override
 	public void setParent(IContainerTask parent) {
 		this.parent = parent;

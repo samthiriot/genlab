@@ -34,40 +34,27 @@ import org.openide.util.Lookup;
  * @author Samuel Thiriot
  *
  */
-public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
+public class GephiClusteringAlgo extends GephiAbstractAlgo {
 
-	public static final InputOutput<IGenlabGraph> OUTPUT_GRAPH = new InputOutput<IGenlabGraph>(
-			SimpleGraphFlowType.SINGLETON, 
-			"out_graph", 
-			"graph", 
-			"the graph with betweeness"
-	);
 	
-	public static final InputOutput<Double> OUTPUT_AVERAGE_PATH_LENGTH = new InputOutput<Double>(
+	public static final InputOutput<Double> OUTPUT_AVERAGE_CLUSTERING_COEF = new InputOutput<Double>(
 			DoubleFlowType.SINGLETON, 
-			"out_average_path_length", 
-			"average path length", 
-			"the average length of the shortest pathes"
+			"out_average_clustering_coef", 
+			"average clustering coef", 
+			"the average clustering coefficient"
 	);
 	
 
-	public static final InputOutput<Double> OUTPUT_DIAMETER = new InputOutput<Double>(
-			DoubleFlowType.SINGLETON, 
-			"out_diameter", 
-			"diameter", 
-			"the diameter, that is the longest shortest path in the graph. "
-	);
 	
-	public GephiAveragePathLengthAlgo() {
+	public GephiClusteringAlgo() {
 		super(
-				"average path length (Gephi)", 
-				"computes the average path length",
+				"clustering (gephi)", 
+				"computes the clustering coefficient",
 				null
 				);
 		
-		outputs.add(OUTPUT_AVERAGE_PATH_LENGTH);
-		outputs.add(OUTPUT_DIAMETER);
-		outputs.add(OUTPUT_GRAPH);
+		outputs.add(OUTPUT_AVERAGE_CLUSTERING_COEF);
+
 	}
 	
 
@@ -83,14 +70,13 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 					GephiGraph gephiGraph,
 					IGenlabGraph genlabGraph) {
 				
-				final String param_betweeness_attribute = "betweeness";
 				
 				Map<IInputOutput<?>, Object> results = new HashMap<IInputOutput<?>, Object>();
 				
-				GraphDistance algo = null;
+				ClusteringCoefficient algo = null;
 				for (int i=0; i<3; i++) {
 					try {
-						algo = new GraphDistance();
+						algo = new ClusteringCoefficient();
 						break;
 					} catch (NullPointerException e) {
 						
@@ -110,36 +96,9 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 
 				GLLogger.debugTech("report from gephi "+algo.getReport(), getClass());
 				
-				System.err.println("gephi/ average path length: "+algo.getPathLength());
-				System.err.println("gephi/ diameter: "+algo.getDiameter());
 				
-				results.put(OUTPUT_AVERAGE_PATH_LENGTH, algo.getPathLength());
-				results.put(OUTPUT_DIAMETER, algo.getDiameter());
+				results.put(OUTPUT_AVERAGE_CLUSTERING_COEF, algo.getAverageClusteringCoefficient());
 				
-				if (isUsed(OUTPUT_GRAPH) && param_betweeness_attribute != null ) {
-					
-					IGenlabGraph outputGraph = genlabGraph.clone("cloned"); // TODO graph id ?!
-					
-					final AttributeColumn col = gephiGraph.attributeModel.getNodeTable().getColumn(GraphDistance.BETWEENNESS);
-					outputGraph.declareVertexAttribute(param_betweeness_attribute, Double.class);
-					
-					//Iterate over values
-					for (Node n : gephiGraph.graph.getNodes()) {
-					   Double centrality = (Double)n.getNodeData().getAttributes().getValue(col.getIndex());
-					   outputGraph.setVertexAttribute(
-							   n.getNodeData().getLabel(),
-							   param_betweeness_attribute,
-							   centrality
-							   );
-					   if (cancelled == true) {
-						   progress.setComputationState(ComputationState.FINISHED_CANCEL);
-						   return null;
-					   }
-					}
-					
-					results.put(OUTPUT_GRAPH, outputGraph);
-					
-				}
 				
 				return results;
 				

@@ -186,6 +186,8 @@ public class AvailableInfo {
 					l.moreInfo.add(sb.toString());
 				} else
 					l.moreInfo.add(e2.getAttribute("content"));
+			} else if (e2.getName().equals("known_limitation")) {
+				l.knownLimitations.add(e2.getAttribute("content"));
 			} else {
 				GLLogger.warnTech("unknown element: "+e2.getName(), getClass());
 			}
@@ -418,11 +420,16 @@ public class AvailableInfo {
 		}
 		
 
-		if (!algo.knownLimitations.isEmpty()) {
+		if (!algo.knownLimitations.isEmpty() || !algo.library.knownLimitations.isEmpty()) {
 			sb.append("<p>");
 			sb.append("known limitations: ");
 			sb.append("<ul>");
 			for (String s: algo.knownLimitations) {
+				sb.append("<li>");
+				sb.append(s);
+				sb.append("</li>\n");
+			}
+			for (String s: algo.library.knownLimitations) {
 				sb.append("<li>");
 				sb.append(s);
 				sb.append("</li>\n");

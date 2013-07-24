@@ -30,7 +30,6 @@ public class GraphicalConsoleExec extends AbstractOpenViewAlgoExec {
 		
 		ConsoleView cv = (ConsoleView)theView;
 		
-
 		if (cv == null) {
 			getResult().getMessages().warnUser("unable to find the info to display", getClass());
 			getProgress().setComputationState(ComputationState.FINISHED_FAILURE);

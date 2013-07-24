@@ -1,6 +1,5 @@
 package genlab.gui.graphiti.features;
 
-import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.IAlgo;
@@ -19,11 +18,11 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
  * @author Samuel Thiriot
  *
  */
-public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
+public class CreateIAlgoContainerFeature extends AbstractCreateFeature {
 
 	private final IAlgo algo;
 	
-	public CreateIAlgoInstanceFeature(IFeatureProvider fp, IAlgo algo) {
+	public CreateIAlgoContainerFeature(IFeatureProvider fp, IAlgo algo) {
 		super(fp, algo.getName(), algo.getDescription());
 		this.algo = algo;
 	}
@@ -31,17 +30,13 @@ public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
 	@Override
 	public boolean canCreate(ICreateContext context) {
 		
-		// always create into something
-		if (context.getTargetContainer() == null)
+		if (!(context.getTargetContainer() instanceof Diagram))
 			return false;
 		
-		Object bo = getBusinessObjectForPictogramElement(context.getTargetContainer());
+		// TODO check what is inside !
 		
-		return (
-				(bo instanceof IGenlabWorkflowInstance)
-				||
-				(bo instanceof IAlgoContainerInstance)
-				);
+		return true;
+		
 	}
 
 	@Override
@@ -63,22 +58,11 @@ public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
 
 		// TODO should add this to the workflow !
 		
-		Object bo = getBusinessObjectForPictogramElement(
+		IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance)getBusinessObjectForPictogramElement(
 				context.getTargetContainer()
 				);
-		if (bo == null) {
-			GLLogger.warnTech("unable to find the business object related to this diagram, problems ahead", getClass());
-			return null;
-		}
-		
-		IGenlabWorkflowInstance workflow = null;
-		IAlgoContainerInstance container = null;
-		if (bo instanceof IGenlabWorkflowInstance) {
-			workflow = (IGenlabWorkflowInstance)bo;
-		} else if (bo instanceof IAlgoContainerInstance) {
-			container = (IAlgoContainerInstance)bo;
-			workflow = container.getWorkflow();
-		}
+		if (workflow == null)
+			GLLogger.warnTech("unable to find the workflow related to this diagram, problems ahead", getClass());
 		
 		// create the instance 
 		IAlgoInstance algoInstance = algo.createInstance(workflow);
@@ -96,9 +80,6 @@ public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
 				);
 		
 		// add to the workflow
-		if (container != null) {
-			algoInstance.setContainer(container);
-		}
 		workflow.addAlgoInstance(algoInstance);
 		
 		// the graphical representation will be created by reaction to workflow listener

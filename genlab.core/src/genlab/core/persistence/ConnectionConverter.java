@@ -82,7 +82,7 @@ public class ConnectionConverter extends Decoder implements Converter {
 			return c;
 			
 		} catch (RuntimeException e) {
-			GLLogger.errorTech("error while reading the file: a connection could not be created. The project will be partial.", getClass());
+			GLLogger.errorTech("error while reading the file: a connection could not be created ("+e.getMessage()+"). The project will be partial.", getClass(), e);
 			return null;
 		}
 	}

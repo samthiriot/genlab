@@ -3,8 +3,10 @@ package genlab.core.model.exec;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IContainerTask;
 import genlab.core.exec.IExecution;
+import genlab.core.exec.IExecutionTask;
 import genlab.core.exec.ITask;
 import genlab.core.exec.Runner;
+import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
@@ -14,6 +16,7 @@ import genlab.core.usermachineinteraction.GLLogger;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -48,21 +51,13 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 		instance2execution = new HashMap<IAlgoInstance, IAlgoExecution>(workflowInstance.getAlgoInstances().size());
 
 		// first create execution for each sub algo
-		// ...first run to let containers do their job
 		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
-			
-			// TODO !
-			//if (sub.getContainer() != null)
-			//	continue;
-			
-			GLLogger.traceTech("creating an execution task for subalgo "+sub, getClass());
+						
+			GLLogger.traceTech("creating the execution task for algo "+sub, getClass());
 			IAlgoExecution subExec = sub.execute(exec);
-
+			
 			if (subExec == null)
 				throw new ProgramException("an algorithm was unable to prepare an execution "+sub);
-			
-			subExec.setParent(this);
-			this.addTask(subExec);
 			
 			instance2execution.put(
 					sub, 
@@ -71,7 +66,28 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 			
 		}
 		
-		// then create their inter dependancies
+		// now add the parent relationship to each task 
+		// (something the parent is a container algo; 
+		//  else it is the workflow that, that is "this")
+		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
+			
+			IAlgoExecution subExec = instance2execution.get(sub);
+			
+			if (sub.getContainer() != null) {
+				// tasks with a container will have a container task
+				IContainerTask subExecContainer = (IContainerTask)instance2execution.get(sub.getContainer());
+				subExec.setParent(subExecContainer);
+				subExecContainer.addTask(subExec);
+			} else {
+				// standard: 
+				subExec.setParent(this);
+				this.addTask(subExec);
+			}
+			
+		}
+		
+		// then create the inter dependancies between the tasks
+		/* TODO USELESS ? probably done in executable connections !
 		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
 			
 			IAlgoExecution exec = instance2execution.get(sub);
@@ -85,17 +101,18 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 				}
 			}
 			
-		}
+		}*/
 		
 		
 		// now init links
+		
+		// call each algo and ask him to create its executable connections
 		Map<IAlgoInstance, IAlgoExecution> unmodifiableMap = Collections.unmodifiableMap(instance2execution);
 		for (IAlgoExecution exec : instance2execution.values()) {
 			
 			GLLogger.traceTech("init links for "+exec, getClass());
 			exec.initInputs(unmodifiableMap);
 		}
-		
 		
 		
 	}
@@ -217,6 +234,13 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 		default:
 			// do nothing :-)
 		}
+	}
+
+
+
+	@Override
+	public int getThreadsUsed() {
+		return 0;
 	}
 
 
