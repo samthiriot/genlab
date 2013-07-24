@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="genlab.batch"
+         name="Genlab batch"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="genlab.batch.Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         id="genlab_batch"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="genlab.batch"
+            name="Genlab batch">
+         <property
+               name="appName"
+               value="Genlab batch">
+         </property>
+      </product>
+   </extension>
+
+</plugin>

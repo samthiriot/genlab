@@ -52,7 +52,7 @@ public abstract class AbstractIGraphMeasureExec extends AbstractAlgoExecution {
 
 		if (noOutputIsUsed() && !exec.getExecutionForced()) {
 			
-			result.getMessages().warnUser("nobody is using the result of this computation; it will not be computed at all.", getClass());
+			result.getMessages().debugUser("nobody is using the result of this computation; it will not be computed at all.", getClass());
 		
 		} else {
 		

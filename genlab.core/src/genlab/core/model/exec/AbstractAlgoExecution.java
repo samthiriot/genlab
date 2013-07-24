@@ -234,7 +234,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		
 		// maybe now we have all the required inputs ?
 		if (inputsNotAvailable.isEmpty()) {
-			exec.getListOfMessages().debugTech("all inputs are available, now ready to run !", getClass());
+			exec.getListOfMessages().traceTech("all inputs are available, now ready to run !", getClass());
 			progress.setComputationState(ComputationState.READY);
 		}
 			

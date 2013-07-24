@@ -1,36 +1,10 @@
 package genlab.gui.views;
 
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.core.usermachineinteraction.IListOfMessagesListener;
-import genlab.core.usermachineinteraction.ITextMessage;
-import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
-import genlab.gui.VisualResources;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.text.DateFormat;
-import java.util.Locale;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerComparator;
-import org.eclipse.jface.window.ToolTip;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.part.ViewPart;
 
 /**
  * Displays messages as a table. 
@@ -43,7 +17,7 @@ import org.eclipse.ui.part.ViewPart;
  * @author Samuel Thiriot
  *
  */
-public class MessagesView extends MessagesViewGeneral implements IPropertyChangeListener  {
+public class MessagesView extends MessagesViewAbstract implements IPropertyChangeListener  {
 
 	public static final String ID = "genlab.gui.views.MessagesView";
 

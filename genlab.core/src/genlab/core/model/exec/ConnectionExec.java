@@ -65,7 +65,7 @@ public class ConnectionExec implements IComputationProgressSimpleListener {
 			
 			// clear internal state only if the task is not running
 			if (state != ComputationState.STARTED) {
-				GLLogger.debugTech("parent task status changed to "+progress.getComputationState()+"; clearing result", getClass());
+				//GLLogger.traceTech("parent task status changed to "+progress.getComputationState()+"; clearing result", getClass());
 				value = null;		
 			}
 			
@@ -83,7 +83,7 @@ public class ConnectionExec implements IComputationProgressSimpleListener {
 		// retrieve the value
 		value = from.getResult().getResults().get(c.getFrom());
 		
-		GLLogger.traceTech("received value "+value, getClass());
+		//GLLogger.traceTech("received value "+value, getClass());
 		
 		// warn children
 		to.notifyInputAvailable(c.getTo());
@@ -93,7 +93,7 @@ public class ConnectionExec implements IComputationProgressSimpleListener {
 	public void forceValue(Object value) {
 		this.value = value;
 
-		GLLogger.traceTech("received (forced) value "+value, getClass());
+		//GLLogger.traceTech("received (forced) value "+value, getClass());
 		
 		// warn children
 		to.notifyInputAvailable(c.getTo());

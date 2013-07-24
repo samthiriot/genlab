@@ -51,7 +51,7 @@ public class IGraphLibrary {
 	
 	public IGraphLibrary() {
 
-		GLLogger.debugTech("init igraph native library...", getClass());
+		//GLLogger.debugTech("init igraph native library...", getClass());
 		
 		if (!IGraphRawLibrary.isAvailable) 
 			throw new ProgramException("unable to use the igraph native library");
@@ -60,7 +60,7 @@ public class IGraphLibrary {
 		
 		retrieveVersion();
 		
-		GLLogger.debugTech("detected version: "+versionString, getClass());
+		//GLLogger.debugTech("detected version: "+versionString, getClass());
 		
 	}
 
@@ -124,7 +124,7 @@ public class IGraphLibrary {
 
 		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
 				
-		GLLogger.debugTech("calling igraph", getClass());
+		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
 		final int res = rawLib.igraph_erdos_renyi_game_gnp(
 				g,
@@ -134,7 +134,7 @@ public class IGraphLibrary {
 				allowLoops
 		);
 		final long duration = System.currentTimeMillis() - startTime;
-		GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
 		listOfMessages.debugTech("processing took "+duration+" ms", getClass());
 		// detect errors
 		checkIGraphResult(res);
@@ -154,7 +154,7 @@ public class IGraphLibrary {
 		
 		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
 		
-		GLLogger.debugTech("calling igraph", getClass());
+		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
 		int res = rawLib.igraph_watts_strogatz_game(
 				g,
@@ -166,7 +166,7 @@ public class IGraphLibrary {
 				allowLoops
 				);
 		final long duration = System.currentTimeMillis() - startTime;
-		GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
 
 		// detect errors
 		checkIGraphResult(res);
@@ -193,7 +193,7 @@ public class IGraphLibrary {
 	
 		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
 				
-		GLLogger.debugTech("calling igraph", getClass());
+		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
 		final int res = rawLib.igraph_empty(
 				g, 
@@ -201,7 +201,7 @@ public class IGraphLibrary {
 				directed
 				);
 		final long duration = System.currentTimeMillis() - startTime;
-		GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
 
 		// detect errors
 		checkIGraphResult(res);
@@ -266,14 +266,14 @@ public class IGraphLibrary {
 		
 		DoubleByReference res = new DoubleByReference();
 		
-		GLLogger.debugTech("calling igraph to compute average path length...", getClass());
+		//GLLogger.debugTech("calling igraph to compute average path length...", getClass());
 
 		final long startTime = System.currentTimeMillis();
 		
 		final int res2 = rawLib.igraph_average_path_length(g.getPointer(), res, g.directed, true);
 
 		final long duration = System.currentTimeMillis() - startTime;
-		GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
 
 		
 		checkIGraphResult(res2);
@@ -282,7 +282,7 @@ public class IGraphLibrary {
 		
 		g.setCachedProperty(GRAPH_KEY_AVERAGE_PATH_LENGTH, length);
 		
-		System.err.println("igraph/ average path length: "+length);
+		//System.err.println("igraph/ average path length: "+length);
 
 		return length;
 		
@@ -298,7 +298,7 @@ public class IGraphLibrary {
 		// compute 
 		IntByReference res = new IntByReference();
 		
-		GLLogger.debugTech("calling igraph to compute the diameter...", getClass());
+		//GLLogger.debugTech("calling igraph to compute the diameter...", getClass());
 
 		final long startTime = System.currentTimeMillis();
 		
@@ -313,7 +313,7 @@ public class IGraphLibrary {
 				);
 		
 		final long duration = System.currentTimeMillis() - startTime;
-		GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
 		
 		checkIGraphResult(res2);
 		
@@ -324,7 +324,7 @@ public class IGraphLibrary {
 		// store in cache
 		g.setCachedProperty(GRAPH_KEY_DIAMETER, new Integer(length));
 		
-		System.err.println("igraph/ diameter: "+length);
+		//System.err.println("igraph/ diameter: "+length);
 
 		return length;
 		
@@ -339,7 +339,7 @@ public class IGraphLibrary {
 		
 		IntByReference res = new IntByReference();
 		
-		GLLogger.debugTech("calling igraph to compute the diameter...", getClass());
+		//GLLogger.debugTech("calling igraph to compute the diameter...", getClass());
 
 		final long startTime = System.currentTimeMillis();
 		
@@ -350,12 +350,12 @@ public class IGraphLibrary {
 				);
 		
 		final long duration = System.currentTimeMillis() - startTime;
-		GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
 		
 		checkIGraphResult(res2);
 		
 		final boolean connected = res.getValue()>0;
-		System.err.println("igraph/ connected: "+connected);
+		//System.err.println("igraph/ connected: "+connected);
 
 		g.setCachedProperty(GRAPH_KEY_CONNECTED, new Boolean(connected));
 
@@ -371,7 +371,7 @@ public class IGraphLibrary {
 
 		final long startTime = System.currentTimeMillis();
 		
-		GLLogger.debugTech("calling igraph to initialize vectors...", getClass());
+		//GLLogger.debugTech("calling igraph to initialize vectors...", getClass());
 
 		IGraphRawLibrary.Igraph_vector_t membership = new IGraphRawLibrary.Igraph_vector_t();
 		rawLib.igraph_vector_init(membership, 0);
@@ -379,7 +379,7 @@ public class IGraphLibrary {
 		rawLib.igraph_vector_init(csize, 0);
 		IntByReference count = new IntByReference();
 		
-		GLLogger.debugTech("calling igraph to compute the clusters...", getClass());
+		//GLLogger.debugTech("calling igraph to compute the clusters...", getClass());
 
 		final int res2 = rawLib.igraph_clusters(
 				g.getPointer(), 
@@ -390,7 +390,7 @@ public class IGraphLibrary {
 				);
 		
 		final long duration = System.currentTimeMillis() - startTime;
-		GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
 		
 		checkIGraphResult(res2);
 		
@@ -399,7 +399,7 @@ public class IGraphLibrary {
 		// count
 		{
 			final int countInt = count.getValue();
-			System.err.println("igraph/ components: "+countInt);
+			//System.err.println("igraph/ components: "+countInt);
 			g.setCachedProperty(GRAPH_KEY_COMPONENTS_COUNT, new Integer(countInt));
 		
 		}
@@ -420,7 +420,7 @@ public class IGraphLibrary {
 			for (int i=0; i<csizes.length; i++) {
 				max = Math.max(csizes[i], max);
 			}
-			System.err.println("igraph/ giant cluster: "+max);
+			//System.err.println("igraph/ giant cluster: "+max);
 			g.setCachedProperty(GRAPH_KEY_COMPONENTS_GIANT_SIZE, new Integer((int)max));
 		}
 		
@@ -460,7 +460,7 @@ public class IGraphLibrary {
 		// compute 
 		DoubleByReference res = new DoubleByReference();
 		
-		GLLogger.debugTech("calling igraph to compute the global clustering...", getClass());
+		//GLLogger.debugTech("calling igraph to compute the global clustering...", getClass());
 
 		final long startTime = System.currentTimeMillis();
 		
@@ -471,7 +471,7 @@ public class IGraphLibrary {
 				);
 		
 		final long duration = System.currentTimeMillis() - startTime;
-		GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
 		
 		checkIGraphResult(res2);
 		
@@ -481,7 +481,7 @@ public class IGraphLibrary {
 		// store in cache
 		g.setCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL, new Double(clustering));
 		
-		System.err.println("igraph/ clustering global: "+clustering);
+		//System.err.println("igraph/ clustering global: "+clustering);
 
 		return clustering;
 		
@@ -496,7 +496,7 @@ public class IGraphLibrary {
 		// compute 
 		DoubleByReference res = new DoubleByReference();
 		
-		GLLogger.debugTech("calling igraph to compute the average clustering...", getClass());
+		//GLLogger.debugTech("calling igraph to compute the average clustering...", getClass());
 
 		final long startTime = System.currentTimeMillis();
 		
@@ -507,7 +507,7 @@ public class IGraphLibrary {
 				);
 		
 		final long duration = System.currentTimeMillis() - startTime;
-		GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
 		
 		checkIGraphResult(res2);
 		
@@ -517,7 +517,7 @@ public class IGraphLibrary {
 		// store in cache
 		g.setCachedProperty(GRAPH_KEY_CLUSTERING_GLOBAL_AVG, new Float(clustering));
 		
-		System.err.println("igraph/ average clustering: "+clustering);
+		//System.err.println("igraph/ average clustering: "+clustering);
 
 		return clustering;
 		

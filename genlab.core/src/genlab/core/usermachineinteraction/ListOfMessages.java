@@ -47,7 +47,10 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	/**
 	 * If true, relays every message to a log4j logger.
 	 */
-	public static final boolean RELAY_TO_LOG4J = true;
+	public static boolean RELAY_TO_LOG4J = true;
+	
+	protected MessageLevel filterIgnoreBelow = MessageLevel.DEBUG;
+	
 	
 	protected static final Map<MessageLevel,Priority> messageLevel2log4jPriority = new HashMap<MessageLevel, Priority>(){{
 		put(MessageLevel.TRACE, Priority.DEBUG);
@@ -80,8 +83,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 * @param e
 	 * @return
 	 */
-	private boolean _add(ITextMessage e) {
-
+	private void _add(ITextMessage e) {
 		
 		synchronized (hashedMessages) {
 
@@ -131,12 +133,14 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			}
 			
 		}
-		return true;
 		
 	}
 	
 	public boolean add(ITextMessage e) {
 
+		if (!e.getLevel().shouldDisplay(filterIgnoreBelow))
+			return false;
+		
 		_add(e);
 		
 		for (IListOfMessagesListener l : new LinkedList<IListOfMessagesListener>(getListeners())) {
@@ -150,6 +154,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 		return true;
 		
 	}
+	
 	
 	/**
 	 * Returns an iterator on the natural order (that is, sorted by timestamp)
@@ -172,7 +177,10 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			Iterator<ITextMessage> itOther = others.iterator();
 			
 			while (itOther.hasNext()) {
-				this._add(itOther.next());
+				ITextMessage m = itOther.next();
+				
+				if (m.getLevel().shouldDisplay(filterIgnoreBelow))
+					this._add(m);
 			}
 			
 
@@ -247,6 +255,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void debugUser(String message, String fromShort, Class fromClass) {
+		if (!MessageLevel.DEBUG.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.DEBUG, 
@@ -259,6 +269,9 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void debugUser(String message, Class fromClass) {
+		if (!MessageLevel.DEBUG.shouldDisplay(filterIgnoreBelow))
+			return;
+		
 		add(
 				new TextMessage(
 						MessageLevel.DEBUG, 
@@ -271,6 +284,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void warnUser(String message, String fromShort, Class fromClass) {
+		if (!MessageLevel.WARNING.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.WARNING, 
@@ -283,6 +298,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void warnUser(String message, Class fromClass) {
+		if (!MessageLevel.WARNING.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.WARNING, 
@@ -295,6 +312,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void infoUser(String message, String fromShort, Class fromClass) {
+		if (!MessageLevel.INFO.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.INFO, 
@@ -307,6 +326,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void infoUser(String message, Class fromClass) {
+		if (!MessageLevel.INFO.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.INFO, 
@@ -319,6 +340,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void tipUser(String message, String fromShort, Class fromClass) {
+		if (!MessageLevel.TIP.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.TIP, 
@@ -331,6 +354,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void tipUser(String message, Class fromClass) {
+		if (!MessageLevel.TIP.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.TIP, 
@@ -344,6 +369,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	
 
 	public void errorUser(String message, String fromShort, Class fromClass) {
+		if (!MessageLevel.ERROR.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.ERROR, 
@@ -356,6 +383,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void errorUser(String message, Class fromClass, Throwable e) {
+		if (!MessageLevel.ERROR.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.ERROR, 
@@ -368,6 +397,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void errorUser(String message, Class fromClass) {
+		if (!MessageLevel.ERROR.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.ERROR, 
@@ -379,6 +410,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			);
 	}
 	public void traceTech(String message, String fromShort, Class fromClass) {
+		if (!MessageLevel.TRACE.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.TRACE, 
@@ -391,6 +424,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void traceTech(String message, Class fromClass) {
+		if (!MessageLevel.TRACE.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.TRACE, 
@@ -403,6 +438,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void traceTech(String message, String fromShort, Class fromClass, Throwable e) {
+		if (!MessageLevel.TRACE.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.TRACE, 
@@ -416,6 +453,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void traceTech(String message, Class fromClass, Throwable e) {
+		if (!MessageLevel.TRACE.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.TRACE, 
@@ -429,6 +468,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void debugTech(String message, String fromShort, Class fromClass) {
+		if (!MessageLevel.DEBUG.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.DEBUG, 
@@ -441,6 +482,10 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void debugTech(String message, Class fromClass) {
+		
+		if (!MessageLevel.DEBUG.shouldDisplay(filterIgnoreBelow))
+			return;
+		
 		add(
 				new TextMessage(
 						MessageLevel.DEBUG, 
@@ -453,6 +498,10 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void debugTech(String message, String fromShort, Class fromClass, Throwable e) {
+		
+		if (!MessageLevel.DEBUG.shouldDisplay(filterIgnoreBelow))
+			return;
+		
 		add(
 				new TextMessage(
 						MessageLevel.DEBUG, 
@@ -466,6 +515,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void debugTech(String message, Class fromClass, Throwable e) {
+		if (!MessageLevel.DEBUG.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.DEBUG, 
@@ -479,6 +530,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void warnTech(String message, String fromShort, Class fromClass) {
+		if (!MessageLevel.WARNING.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.WARNING, 
@@ -491,6 +544,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void warnTech(String message, Class fromClass) {
+		if (!MessageLevel.WARNING.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.WARNING, 
@@ -503,6 +558,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void warnTech(String message, String fromShort, Class fromClass, Throwable e) {
+		if (!MessageLevel.WARNING.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.WARNING, 
@@ -516,6 +573,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void warnTech(String message, Class fromClass, Throwable e) {
+		if (!MessageLevel.WARNING.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.WARNING, 
@@ -529,6 +588,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void infoTech(String message, String fromShort, Class fromClass) {
+		if (!MessageLevel.INFO.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.INFO, 
@@ -541,6 +602,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void infoTech(String message, Class fromClass) {
+		if (!MessageLevel.INFO.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.INFO, 
@@ -553,6 +616,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void tipTech(String message, String fromShort, Class fromClass) {
+		if (!MessageLevel.TIP.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.TIP, 
@@ -565,6 +630,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void tipTech(String message, Class fromClass) {
+		if (!MessageLevel.TIP.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.TIP, 
@@ -577,6 +644,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void errorTech(String message, String fromShort, Class fromClass) {
+		if (!MessageLevel.ERROR.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.ERROR, 
@@ -589,6 +658,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void errorTech(String message, Class fromClass) {
+		if (!MessageLevel.ERROR.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.ERROR, 
@@ -601,6 +672,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void errorTech(String message, String fromShort, Class fromClass, Throwable e) {
+		if (!MessageLevel.ERROR.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.ERROR, 
@@ -614,6 +687,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public void errorTech(String message, Class fromClass, Throwable e) {
+		if (!MessageLevel.ERROR.shouldDisplay(filterIgnoreBelow))
+			return;
 		add(
 				new TextMessage(
 						MessageLevel.ERROR, 

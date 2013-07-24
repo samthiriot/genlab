@@ -200,10 +200,12 @@ public class WorkflowConverter extends Decoder implements Converter {
 		
 	
 		final IGenlabProject project = GenlabPersistence.getPersistence().getCurrentProject();
-		final String filename = GenlabPersistence.getPersistence().getCurrentWorkflowFilename();
+		if (project == null)
+			throw new ProgramException("project should not be null");
 		
-		if (project == null || filename == null)
-			throw new ProgramException("project or filename should not be null");
+		final String filename = GenlabPersistence.getPersistence().getCurrentWorkflowFilename();
+		if (filename == null)
+			throw new ProgramException("filename should not be null");
 		
 		GenlabWorkflowInstance workflow = new GenlabWorkflowInstance(
 				(String)readen.get("id"),

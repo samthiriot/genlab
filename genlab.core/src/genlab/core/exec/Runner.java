@@ -2,11 +2,9 @@ package genlab.core.exec;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.model.exec.ComputationState;
-import genlab.core.model.exec.ExecutionHooks;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.exec.IComputationProgressSimpleListener;
-import genlab.core.model.exec.WatchdogTimer;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
@@ -162,7 +160,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	
 	protected boolean attemptToDoSomething() {
 		
-		messages.debugTech("attempting to do something", getClass());
+		messages.traceTech("attempting to do something", getClass());
 		
 		printState();
 		
@@ -178,7 +176,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		synchronized (all) {
 			
 			if (ready.isEmpty()) {
-				messages.debugTech("nothing ready, wait...", getClass());
+				messages.traceTech("nothing ready, wait...", getClass());
 				if (running.isEmpty()) {
 					// TODO wait, nothing is gonna happen there ?
 					
@@ -299,7 +297,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	@Override
 	public void computationStateChanged(IComputationProgress progress) {
 		
-		messages.debugTech("computation state changed: "+progress.getAlgoExecution()+": "+progress.getComputationState(), getClass());
+		//messages.traceTech("computation state changed: "+progress.getAlgoExecution()+": "+progress.getComputationState(), getClass());
 		
 		IAlgoExecution e = progress.getAlgoExecution();
 	
@@ -314,7 +312,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			cancelTasks();
 		case FINISHED_OK:
 		case FINISHED_CANCEL:
-			messages.debugTech("task finished: "+e+" ("+progress.getDurationMs()+" ms)", getClass());
+			messages.traceTech("task finished: "+e+" ("+progress.getDurationMs()+" ms)", getClass());
 			synchronized (all) {
 				running.remove(e);
 				done.add(e);
@@ -326,7 +324,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			
 		// a task was waiting for dependancy, and received all inputs
 		case READY:
-			messages.debugTech("task is now ready: "+e, getClass());
+			messages.traceTech("task is now ready: "+e, getClass());
 			synchronized (all) {
 				notReady.remove(e);
 				ready.add(e);

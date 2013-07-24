@@ -1,6 +1,5 @@
 package genlab.gui.views;
 
-import genlab.core.exec.ContainerTask;
 import genlab.core.exec.IContainerTask;
 import genlab.core.exec.ITask;
 import genlab.core.exec.ITaskManagerListener;
@@ -10,9 +9,8 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.exec.IComputationProgressSimpleListener;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -53,7 +51,7 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 	 */
 	private Set<ITask> tasksToUpdate = new HashSet<ITask>(100);
 	
-	public final static long REFRESH_PERIOD = 500;
+	public final static long REFRESH_PERIOD = 200;
 	
 	private class ProgressThread extends Thread {
 
@@ -243,6 +241,15 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 				
 			}
 			
+			// its children ? 
+			if (t instanceof IContainerTask) {
+				IContainerTask cont = (IContainerTask)t;
+				
+				for (ITask sub : cont.getTasks()) {
+					getOrCreateItemForTask(sub);
+				}
+			}
+			
 			// ... its expanded state
 			item.setExpanded(t instanceof IContainerTask);
 
@@ -274,7 +281,7 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		switch (state) {
 		case FINISHED_OK: {
 			StringBuffer sb = new StringBuffer();
-			sb.append("finished (").append(getHumanReadableTimeRepresentation(t.getProgress().getDurationMs())).append(")");
+			sb.append("finished (").append(UserMachineInteractionUtils.getHumanReadableTimeRepresentation(t.getProgress().getDurationMs())).append(")");
 			txt = sb.toString();
 		} break;
 		case STARTED: { StringBuffer sb = new StringBuffer();
@@ -302,24 +309,6 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		}
 	}
 	
-	protected String getHumanReadableTimeRepresentation(long durationMs) {
-	
-		StringBuffer sb = new StringBuffer();
-		
-		if (durationMs < 1000)
-			sb.append(durationMs).append(" ms");
-		else {
-			final long durationS = durationMs/1000;
-			if (durationS < 60) {
-				sb.append(durationS).append(" s");
-			} else {
-				final int durationM = (int)Math.round(durationS / 60.0);
-				sb.append(durationM).append(" m");
-			}
-		}
-		return sb.toString();
-		
-	}
 	
 	
 	/**

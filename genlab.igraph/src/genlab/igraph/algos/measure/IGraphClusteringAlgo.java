@@ -60,7 +60,7 @@ public class IGraphClusteringAlgo extends AbstractIGraphMeasure {
 					) {
 
 				if (genlabGraph.getDirectionality() != GraphDirectionality.UNDIRECTED) {
-					messages.warnUser("the global clustering assumes the graph is undirected, while the graph provided as parameter is "+genlabGraph.getDirectionality(), getClass());
+					messages.infoUser("the global clustering assumes the graph is undirected, while the graph provided as parameter is "+genlabGraph.getDirectionality(), getClass());
 				}
 				
 				Map<IInputOutput<?>, Object> results = new HashMap<IInputOutput<?>, Object>();

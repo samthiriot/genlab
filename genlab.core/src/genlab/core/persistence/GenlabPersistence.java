@@ -58,6 +58,10 @@ public class GenlabPersistence {
 
 	private GenlabWorkflowInstance currentWorkflowInstance = null;
 
+	/**
+	 * if true, when a project is loaded, all its sub workflows are loaded (of use for GUI)
+	 */
+	public boolean autoloadAllWorkflows = true;
 	
 	public IGenlabWorkflowInstance getWorkflowForFilename(String filename) {
 		IGenlabWorkflowInstance workflow = filename2workflow.get(filename);
@@ -258,18 +262,20 @@ public class GenlabPersistence {
 		project._setBaseDirectory(baseDirectory);
     	GenlabProject.registerOpenedProject(project);
 
+		filename2project.put(f.getAbsolutePath(), project);
+		
+
 		// ... the sub workflows
-		for (String relativeWorkflowFilename : project.getWorkflowPathes()) {
-			this.currentWorkflowRelativeName = relativeWorkflowFilename;
-			IGenlabWorkflowInstance workflow = readWorkflow(project, relativeWorkflowFilename);
-			project.addWorkflow(workflow);
-		}
+    	if (autoloadAllWorkflows)
+			for (String relativeWorkflowFilename : project.getWorkflowPathes()) {
+				this.currentWorkflowRelativeName = relativeWorkflowFilename;
+				IGenlabWorkflowInstance workflow = readWorkflow(project, relativeWorkflowFilename);
+				project.addWorkflow(workflow);
+			} 
 		this.currentWorkflowRelativeName = null;
 		
 		this.currentProject = null;
-		
-		filename2project.put(f.getAbsolutePath(), project);
-		
+    	
 		return project;
 	}
 	
@@ -319,6 +325,8 @@ public class GenlabPersistence {
 	}
 	
 	public IGenlabWorkflowInstance readWorkflow(IGenlabProject project, String relativeFilename) {
+		
+		this.currentWorkflowRelativeName = relativeFilename;
 		
 		GenlabWorkflowInstance workflow = null;
 		

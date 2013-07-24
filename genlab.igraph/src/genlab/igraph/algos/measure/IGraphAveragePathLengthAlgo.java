@@ -65,7 +65,7 @@ public class IGraphAveragePathLengthAlgo extends AbstractIGraphMeasure {
 					double averagePathLength = igraphGraph.lib.computeAveragePathLength(igraphGraph);
 					results.put(OUTPUT_AVERAGE_PATH_LENGTH, averagePathLength);
 				} else {
-					messages.debugTech("the average path length is not used, so it will not be computed", getClass());	
+					messages.debugUser("the average path length is not used, so it will not be computed", getClass());	
 				}
 				
 				// diameter
@@ -73,7 +73,7 @@ public class IGraphAveragePathLengthAlgo extends AbstractIGraphMeasure {
 					int diameter = igraphGraph.lib.computeDiameter(igraphGraph);
 					results.put(OUTPUT_DIAMETER, diameter);
 				} else {
-					messages.debugTech("the diameter is not used, so it will not be computed", getClass());	
+					messages.debugUser("the diameter is not used, so it will not be computed", getClass());	
 				}
 				
 				return results;

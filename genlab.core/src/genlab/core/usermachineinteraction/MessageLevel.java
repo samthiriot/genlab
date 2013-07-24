@@ -27,4 +27,10 @@ public enum MessageLevel {
 		
 	}
 	
+	public boolean shouldDisplay(MessageLevel filter) {
+		if (filter == null)
+			return true;
+		return this.compareTo(filter) >= 0;
+	}
+	
 }

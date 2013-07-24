@@ -1,16 +1,12 @@
 package genlab.gui.actions;
 
-import genlab.core.model.exec.Tests;
-import genlab.core.model.instance.GenlabWorkflowInstance;
+import genlab.core.exec.GenlabExecution;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.editors.IWorkflowEditor;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 
@@ -48,7 +44,7 @@ public class RunAction extends Action implements IWorkbenchAction {
 			}
 					// ;GenlabWorkflowInstance.currentTODO;
 
-			Tests.run(workflow);
+			GenlabExecution.runBackground(workflow);
 			
 		}
 		

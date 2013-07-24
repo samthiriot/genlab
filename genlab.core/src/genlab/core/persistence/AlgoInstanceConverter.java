@@ -25,10 +25,7 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 
 	@Override
 	public boolean canConvert(Class c) {
-		//c.isInstance(arg0)
-		GLLogger.debugTech("can transform "+c.getCanonicalName()+": "+AlgoInstance.class.isAssignableFrom(c), getClass());
 		return AlgoInstance.class.isAssignableFrom(c);
-		//return c.isInstance(AlgoInstance.class);
 	}
 
 	@Override

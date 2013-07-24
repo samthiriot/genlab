@@ -23,6 +23,10 @@
                value="Genlab">
          </property>
          <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+         <property
                name="startupForegroundColor"
                value="000000">
          </property>
@@ -33,10 +37,6 @@
          <property
                name="startupProgressRect"
                value="273,193,385,18">
-         </property>
-         <property
-               name="preferenceCustomization"
-               value="plugin_customization.ini">
          </property>
       </product>
    </extension>

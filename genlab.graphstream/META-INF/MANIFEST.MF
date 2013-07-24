@@ -5,8 +5,7 @@ Bundle-SymbolicName: genlab.graphstream;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Activator: genlab.graphstream.Activator
 Bundle-Vendor: Samuel Thiriot
-Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.core.runtime,
  genlab.graphstream.corejar;bundle-version="1.0.0",
  genlab.core;bundle-version="0.0.1",
  org.junit

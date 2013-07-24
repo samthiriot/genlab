@@ -122,7 +122,8 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 		
 		GLLogger.traceTech("starting the execution of worklow "+workflowInstance, getClass());
 
-		
+		ExecutionHooks.singleton.notifyParentTaskAdded(exec);
+	
 		r = new Runner(exec, progress, instance2execution.values(), this);
 		r.run();
 		
