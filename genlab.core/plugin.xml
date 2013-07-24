@@ -46,6 +46,10 @@
             class="genlab.core.model.meta.basics.algos.WriteTableCSV"
             id="genlab.core.model.meta.basics.algos.WriteTableCSV">
       </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.GraphBasicPropertiesAlgo"
+            id="genlab.core.model.meta.basics.algos.GraphBasicPropertiesAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -98,6 +102,16 @@
             library_id="genlab.core.doc.library.core"
             memory_complexity="O(1)"
             time_complexity="O(1)">
+      </docalgo>
+      <docalgo
+            algo_id="genlab.core.model.meta.basics.algos.GraphBasicPropertiesAlgo"
+            library_id="genlab.core.doc.library.core"
+            memory_complexity="O(1)"
+            time_complexity="O(1)">
+         <more_info
+               content="a wikipedia page on graph density"
+               url="https://en.wikipedia.org/wiki/Dense_graph">
+         </more_info>
       </docalgo>
    </extension>
 

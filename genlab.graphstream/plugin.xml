@@ -93,6 +93,10 @@
             class="genlab.graphstream.algos.generators.GridAlgo"
             id="genlab.graphstream.algos.generators.GridAlgo">
       </algo>
+      <algo
+            class="genlab.graphstream.algos.measure.GraphStreamAverageClustering"
+            id="genlab.graphstream.algos.measure.GraphStreamAverageClustering">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -259,6 +263,15 @@
          <more_info
                content="the overview of graphstream generators"
                url="http://graphstream-project.org/doc/Generators/Overview-of-generators_1.0/">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.graphstream.algos.measure.GraphStreamAverageClustering"
+            library_id="genlab.graphstream.doc.library.graphstream"
+            time_complexity="at worse O(n d^2) where n is the number of nodes and d the average or maximum degree of nodes">
+         <more_info
+               content="graphstream javadoc on this algorithm"
+               url="http://graphstream-project.org/api/gs-algo/index.html?org/graphstream/algorithm/Toolkit.html">
          </more_info>
       </docalgo>
    </extension>

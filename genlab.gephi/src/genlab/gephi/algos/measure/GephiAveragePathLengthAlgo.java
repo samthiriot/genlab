@@ -8,6 +8,7 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
+import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
@@ -51,8 +52,7 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 	);
 	
 
-	public static final InputOutput<Double> OUTPUT_DIAMETER = new InputOutput<Double>(
-			DoubleFlowType.SINGLETON, 
+	public static final IntegerInOut OUTPUT_DIAMETER = new IntegerInOut(
 			"out_diameter", 
 			"diameter", 
 			"the diameter, that is the longest shortest path in the graph. "
@@ -111,7 +111,7 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 				GLLogger.debugTech("report from gephi "+algo.getReport(), getClass());
 				
 				results.put(OUTPUT_AVERAGE_PATH_LENGTH, algo.getPathLength());
-				results.put(OUTPUT_DIAMETER, algo.getDiameter());
+				results.put(OUTPUT_DIAMETER, (int)Math.round(algo.getDiameter()));
 				
 				if (isUsed(OUTPUT_GRAPH) && param_betweeness_attribute != null ) {
 					
