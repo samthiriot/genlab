@@ -1,12 +1,5 @@
 package genlab.core.model.exec;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
-
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IContainerTask;
 import genlab.core.exec.IExecution;
@@ -15,7 +8,11 @@ import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
-import genlab.core.usermachineinteraction.GLLogger;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 public abstract class AbstractContainerExecution extends AbstractAlgoExecution implements IContainerTask {
 
@@ -68,69 +65,7 @@ public abstract class AbstractContainerExecution extends AbstractAlgoExecution i
 				throw new ProgramException("exec should not be null ! my children were not processed, including : "+child);
 			subExecs.add(e);
 		}
-		/*
-		// in our case, we don't care about our connection (this algo instance has no connection)
-		// we rather focus on the connections of our children !
-		Set<IInputOutputInstance> inputs = new HashSet<IInputOutputInstance>();
-		Set<IInputOutputInstance> outputs = new HashSet<IInputOutputInstance>();
 		
-		// identify input and output connections out of this algo inst
-		for (IAlgoInstance aiChild : algoInst.getChildren()) {
-			for (IInputOutputInstance input : aiChild.getInputInstances()) {
-				for (IConnection c : input.getConnections()) {
-					
-					if (!algoInst.getChildren().contains(c.getFrom().getAlgoInstance())) {
-						// this input is not connected to a children of this algo
-						inputs.add(c.getFrom());
-					}
-				}
-			}
-			
-			for (IInputOutputInstance output : aiChild.getOutputInstances()) {
-				for (IConnection c : output.getConnections()) {
-					
-					if (!algoInst.getChildren().contains(c.getTo().getAlgoInstance())) {
-						// this input is not connected to a children of this algo
-						outputs.add(c.getFrom());
-					}
-				}
-			}
-		}
-		
-		GLLogger.debugTech("found inputs for this container: "+inputs, getClass());
-		GLLogger.debugTech("found output for this container: "+outputs, getClass());
-		
-		// for each input of each child, create a corresponding connection to ourself (NOT our children)
-		for (IInputOutputInstance input : inputs) {
-			
-			for (IConnection c : input.getConnections()) {
-				
-				IAlgoExecution fromExec = instance2exec.get(c.getFrom().getAlgoInstance());
-				
-				if (fromExec == null)
-					throw new ProgramException("unable to find an executable for algo instance "+c.getFrom());
-				
-				ConnectionExec cEx = new ConnectionExec(
-						c, 
-						fromExec, 
-						this
-						);
-				
-				Collection<ConnectionExec> conns = input2connection.get(input);
-				if (conns == null) {
-					conns = new LinkedList<ConnectionExec>();
-					input2connection.put(input, conns);
-				}
-				conns.add(cEx);
-				
-				addPrerequire(fromExec);
-				
-			}
-			
-		}
-		
-		// now, for each of our children, let's create exec 
-		*/
 		
 		// our links are not created here (see declare**)
 		
@@ -165,7 +100,7 @@ public abstract class AbstractContainerExecution extends AbstractAlgoExecution i
 				if (cex.getValue() == null)
 					return;
 			}
-			GLLogger.debugTech("all inputs available, I'm now ready !", getClass());
+			messages.debugTech("all inputs available, I'm now ready !", getClass());
 			progress.setComputationState(ComputationState.READY);
 			
 		} else {
@@ -181,7 +116,7 @@ public abstract class AbstractContainerExecution extends AbstractAlgoExecution i
 	protected void waitForInternalFinished() {
 		
 
-		GLLogger.traceTech("now waiting for outputs...", getClass());
+		messages.traceTech("now waiting for outputs...", getClass());
 		while (!allDataFromInsideReceived()) {
 			//GLLogger.traceTech("still waiting for outputs...", getClass());
 			synchronized (semaphoreStopWaitingChildren) {
@@ -194,7 +129,7 @@ public abstract class AbstractContainerExecution extends AbstractAlgoExecution i
 			//GLLogger.traceTech("interrupted, let's check the state of internal tasks...", getClass());
 
 		}
-		GLLogger.debugTech("all outputs received ! ", getClass());
+		messages.debugTech("all outputs received ! ", getClass());
 		
 	}
 	
@@ -227,11 +162,11 @@ public abstract class AbstractContainerExecution extends AbstractAlgoExecution i
 			connection2OutsideToMe.put(c, connOutsideToMe);
 			getConnectionsForInput(input).add(connOutsideToMe);
 
-			GLLogger.traceTech("I'm listening for outside algo: "+c.getFrom().getAlgoInstance(), getClass());
+			messages.traceTech("I'm listening for outside algo: "+c.getFrom().getAlgoInstance(), getClass());
 				
 			// and remember the connection inside so I can warn it
 			connection2MeToInside.put(c, connToMe);
-			GLLogger.traceTech("My child is listening for me: "+c.getTo().getAlgoInstance(), getClass());
+			messages.traceTech("My child is listening for me: "+c.getTo().getAlgoInstance(), getClass());
 
 			// also indicate that I depend on this input (else I become a root in the exec tree)
 			addPrerequire(connOutsideToMe.from);
@@ -246,11 +181,11 @@ public abstract class AbstractContainerExecution extends AbstractAlgoExecution i
 					false
 					);
 			connection2InsideToMe.put(c, connOutsideToMe);
-			GLLogger.traceTech("I'm listening for my child algo: "+c.getFrom().getAlgoInstance(), getClass());
+			messages.traceTech("I'm listening for my child algo: "+c.getFrom().getAlgoInstance(), getClass());
 			
 			// and remember the connection inside so I can warn it
 			connection2MeToOutside.put(c, connToMe);
-			GLLogger.traceTech("An external algo is listening for me: "+c.getTo().getAlgoInstance(), getClass());
+			messages.traceTech("An external algo is listening for me: "+c.getTo().getAlgoInstance(), getClass());
 
 		}
 		
@@ -290,7 +225,7 @@ public abstract class AbstractContainerExecution extends AbstractAlgoExecution i
 	public void run() {
 
 	
-		GLLogger.debugTech("should start !", getClass());
+		messages.debugTech("should start !", getClass());
 		
 		initFirstRun();
 		
@@ -301,18 +236,18 @@ public abstract class AbstractContainerExecution extends AbstractAlgoExecution i
 			startOfIteration();
 			
 			// reset
-			GLLogger.traceTech("reset of each subtask...", getClass());
+			messages.traceTech("reset of each subtask...", getClass());
 			for (IAlgoExecution subEx : subExecs) {
 				subEx.reset();
 			}
 			
 			// start tasks
-			GLLogger.traceTech("starting tasks by sending them values...", getClass());
+			messages.traceTech("starting tasks by sending them values...", getClass());
 			for (IConnection c : connection2MeToInside.keySet()) {
 			
 				Object value = connection2OutsideToMe.get(c).getValue();
 				
-				GLLogger.debugTech("transmitting value "+value+" to "+c.getTo().getAlgoInstance(), getClass());
+				messages.debugTech("transmitting value "+value+" to "+c.getTo().getAlgoInstance(), getClass());
 				
 				connection2MeToInside.get(c).forceValue(value);
 				
@@ -323,13 +258,16 @@ public abstract class AbstractContainerExecution extends AbstractAlgoExecution i
 			waitForInternalFinished();
 
 			endOfRun();
+			
+			// suggest garbage collecting right now
+			Runtime.getRuntime().gc();
 		}
 		
-		GLLogger.debugTech("done iterations; will now transmit results out of this container", getClass());
+		messages.debugTech("done iterations; will now transmit results out of this container", getClass());
 		for (IConnection c: connection2InsideToMe.keySet()) {
 			
 			Object value = connection2InsideToMe.get(c).getValue();
-			GLLogger.debugTech("transmitting value "+value+" to "+c.getTo().getAlgoInstance(), getClass());
+			messages.debugTech("transmitting value "+value+" to "+c.getTo().getAlgoInstance(), getClass());
 			connection2MeToOutside.get(c).forceValue(value);
 		}
 		

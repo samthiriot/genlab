@@ -3,7 +3,6 @@ package genlab.core.model.exec;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.instance.IConnection;
-import genlab.core.usermachineinteraction.GLLogger;
 
 /**
  * A connection instance in the execution world: links two algo executions.

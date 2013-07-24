@@ -7,6 +7,7 @@ import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphLibrary;
+import genlab.igraph.natjna.IGraphRawLibraryPool;
 
 public class IGraph2GenLabConvertor {
 
@@ -21,9 +22,8 @@ public class IGraph2GenLabConvertor {
 		// TODO check directionaliy
 		
 		// find one library for the processing
-		// TODO find a library (not a new one !)
-		IGraphLibrary lib = new IGraphLibrary();
-		
+		IGraphLibrary lib = IGraphRawLibraryPool.singleton.getLibrary();
+	
 		// init the igraph network
 		IGraphGraph igraphGraph = lib.generateEmpty(
 				(int)genlabGraph.getVerticesCount(), 
@@ -45,6 +45,7 @@ public class IGraph2GenLabConvertor {
 		
 		// end !
 		return igraphGraph;
+
 	}
 	
 	private IGraph2GenLabConvertor() {

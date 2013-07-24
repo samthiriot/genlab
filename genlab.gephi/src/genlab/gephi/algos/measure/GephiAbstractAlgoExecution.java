@@ -87,7 +87,7 @@ public abstract class GephiAbstractAlgoExecution extends AbstractAlgoExecution {
 			// use outputs
 			for (IInputOutput<?> out: stats.keySet()) {
 				Object value = stats.get(out);
-				GLLogger.debugTech("result :"+out.getName()+"= "+value, getClass());
+				//GLLogger.debugTech("result :"+out.getName()+"= "+value, getClass());
 				result.setResult(out, value);	
 			}
 		

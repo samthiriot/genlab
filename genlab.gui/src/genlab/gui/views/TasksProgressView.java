@@ -18,9 +18,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TreeEditor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -51,6 +53,9 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 	 */
 	private Set<ITask> tasksToUpdate = new HashSet<ITask>(100);
 	
+	private Map<ITask, ProgressBar> task2progress = new HashMap<ITask, ProgressBar>(100);
+	private Map<ITask, TreeEditor> task2editor = new HashMap<ITask, TreeEditor>(100);
+
 	public final static long REFRESH_PERIOD = 200;
 	
 	private class ProgressThread extends Thread {
@@ -141,10 +146,10 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		treeWidget.setHeaderVisible(true);
 		TreeColumn columnName = new TreeColumn(treeWidget, SWT.LEFT);
 		columnName.setText("name");
-		columnName.setWidth(100);
+		columnName.setWidth(200);
 		TreeColumn columnState = new TreeColumn(treeWidget, SWT.LEFT);
 		columnState.setText("state");
-		columnState.setWidth(100);
+		columnState.setWidth(200);
 		
 		thread = new ProgressThread(this);
 		thread.start();
@@ -284,7 +289,8 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 			sb.append("finished (").append(UserMachineInteractionUtils.getHumanReadableTimeRepresentation(t.getProgress().getDurationMs())).append(")");
 			txt = sb.toString();
 		} break;
-		case STARTED: { StringBuffer sb = new StringBuffer();
+		case STARTED: { 
+			StringBuffer sb = new StringBuffer();
 			sb.append("running (").append(t.getProgress().getProgressDone()).append("/").append(t.getProgress().getProgressTotalToDo()).append(")");
 			txt = sb.toString();
 		} break;
@@ -294,8 +300,28 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		}
 		item.setText(1, txt);
 		
-		// TODO progress bar :-)
-	
+		// progress bar :-)
+		ProgressBar pb = task2progress.get(t);
+		if (state == ComputationState.STARTED) {
+			if (pb == null) {
+				// create the progress bar !
+				TreeEditor editor = new TreeEditor(treeWidget);
+				pb = new ProgressBar(treeWidget, SWT.SMOOTH);
+				editor.grabHorizontal = true;
+				editor.setEditor(pb, item, 1);
+				task2progress.put(t, pb);
+				task2editor.put(t, editor);
+			}
+			pb.setState(SWT.NORMAL);
+			pb.setSelection((int)Math.floor(t.getProgress().getProgressPercent()));
+		} else if (pb != null) {
+			// should remove this progress bar !
+			pb.dispose();
+			task2editor.get(t).dispose();
+			task2progress.remove(t);
+			task2editor.remove(t);
+		}
+		// TODO hide ?
 		
 	}
 	

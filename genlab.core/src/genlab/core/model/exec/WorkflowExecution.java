@@ -3,20 +3,14 @@ package genlab.core.model.exec;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IContainerTask;
 import genlab.core.exec.IExecution;
-import genlab.core.exec.IExecutionTask;
 import genlab.core.exec.ITask;
 import genlab.core.exec.Runner;
-import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.instance.IInputOutputInstance;
-import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -46,14 +40,14 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 	
 	protected void initTasks() {
 		
-		GLLogger.traceTech("preparing the execution of worklow "+workflowInstance, getClass());
+		messages.traceTech("preparing the execution of worklow "+workflowInstance, getClass());
 		
 		instance2execution = new HashMap<IAlgoInstance, IAlgoExecution>(workflowInstance.getAlgoInstances().size());
 
 		// first create execution for each sub algo
 		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
 						
-			GLLogger.traceTech("creating the execution task for algo "+sub, getClass());
+			messages.traceTech("creating the execution task for algo "+sub, getClass());
 			IAlgoExecution subExec = sub.execute(exec);
 			
 			if (subExec == null)
@@ -110,7 +104,7 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 		Map<IAlgoInstance, IAlgoExecution> unmodifiableMap = Collections.unmodifiableMap(instance2execution);
 		for (IAlgoExecution exec : instance2execution.values()) {
 			
-			GLLogger.traceTech("init links for "+exec, getClass());
+			messages.traceTech("init links for "+exec, getClass());
 			exec.initInputs(unmodifiableMap);
 		}
 		
@@ -120,7 +114,7 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 	@Override
 	public void run() {
 		
-		GLLogger.traceTech("starting the execution of worklow "+workflowInstance, getClass());
+		messages.traceTech("starting the execution of worklow "+workflowInstance, getClass());
 
 		ExecutionHooks.singleton.notifyParentTaskAdded(exec);
 	
@@ -155,7 +149,7 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 		if (r == null)
 				return;
 		
-		GLLogger.debugTech("attempts to cancel this execution", getClass());
+		messages.debugTech("attempts to cancel this execution", getClass());
 		
 		r.cancel();
 	}
@@ -167,7 +161,7 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 		if (r == null)
 			return;
 		
-		GLLogger.debugTech("attempts to kill this execution", getClass());
+		messages.debugTech("attempts to kill this execution", getClass());
 		
 		r.kill();
 	}

@@ -153,6 +153,7 @@
             id="genlab.gui.openMessage">
       </command>
       <command
+            categoryId="genlab.gui.category"
             defaultHandler="genlab.gui.handlers.ClearAllHandler"
             description="clears the whole messages view"
             id="genlab.gui.messagesview.clearview"

@@ -33,7 +33,7 @@ public class WatchdogTimer extends Thread implements IComputationProgressSimpleL
 	 */
 	public void cancel() {
 		canceled = true;
-		GLLogger.traceTech("cancelling this watchdog.", getClass());
+		messages.traceTech("cancelling this watchdog.", getClass());
 		progress.removeListener(this);
 		this.interrupt();
 	}

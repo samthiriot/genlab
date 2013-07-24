@@ -59,7 +59,7 @@ public class LoopForAlgo extends AlgoContainer {
 
 			@Override
 			protected void startOfIteration() {
-				GLLogger.debugTech("start iteration "+i, getClass());
+				messages.debugTech("start iteration "+i, getClass());
 			}
 		
 

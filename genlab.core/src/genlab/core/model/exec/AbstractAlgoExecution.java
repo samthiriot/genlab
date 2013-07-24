@@ -8,6 +8,7 @@ import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,6 +41,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 
 	protected Set<IInputOutputInstance> inputsNotAvailable = null;
 
+	protected ListOfMessages messages;
 	
 	/**
 	 * During init, creates the input executable connections
@@ -56,7 +58,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		inputsNotAvailable = new HashSet<IInputOutputInstance>(algoInst.getInputInstances());
 		progress.setComputationState(ComputationState.WAITING_DEPENDENCY);
 		
-		
+		messages = exec.getListOfMessages();
 	}	
 	
 	public void initInputs(Map<IAlgoInstance,IAlgoExecution> instance2exec) {
@@ -98,14 +100,14 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		if (!connectToParent) {
 			// we are in the same container; let's link as usual
 			fromExec = instance2exec.get(c.getFrom().getAlgoInstance());
-			GLLogger.traceTech("creating an exec link from "+fromExec, getClass());
+			//GLLogger.traceTech("creating an exec link from "+fromExec, getClass());
 		} else {
 			// we are not in the same container; 
 			// so I will listen for this container, which will act as a proxy for this case
 			// maybe i'm in the container and not my parent; so my container will warn me when ready
 			// or i'm out of the container; in this case the targer container will also warn me when necesssary
 			fromExec = instance2exec.get((algoInst.getContainer()==null?c.getFrom().getAlgoInstance().getContainer():algoInst.getContainer()));
-			GLLogger.traceTech("creating an exec link from the container "+fromExec, getClass());
+			//GLLogger.traceTech("creating an exec link from the container "+fromExec, getClass());
 		}
 		
 		if (fromExec == null)

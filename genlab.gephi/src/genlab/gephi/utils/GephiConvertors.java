@@ -235,7 +235,9 @@ public class GephiConvertors {
 	
 	public static void clearGraph(GephiGraph graph) {
 
-		GLLogger.debugTech("freeing a gephi graph", GephiConvertors.class);
+		// we know this is not OK; there are plenty of memory leaks and threads;
+		// we wait for the next version
+		//GLLogger.debugTech("freeing a gephi graph", GephiConvertors.class);
 		try {
 			synchronized (gephiStaticLocker) {
 				

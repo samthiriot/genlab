@@ -108,7 +108,7 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 						gephiGraph.attributeModel
 						);
 
-				GLLogger.debugTech("report from gephi "+algo.getReport(), getClass());
+				//GLLogger.debugTech("report from gephi "+algo.getReport(), getClass());
 				
 				results.put(OUTPUT_AVERAGE_PATH_LENGTH, algo.getPathLength());
 				results.put(OUTPUT_DIAMETER, (int)Math.round(algo.getDiameter()));

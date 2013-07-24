@@ -410,7 +410,43 @@ public class VisualResources {
 		
 	}
 	
+	protected static Map<String,Image> cachedImages = new HashMap<String, Image>(100);
+	
+	public static Image getCachedImageForFile(String imagePath, Display display) {
+		
+		synchronized (cachedImages) {
 
+			Image img = cachedImages.get(imagePath);
+			
+			if (img == null) {
+				try {
+					img = new Image(display, imagePath);
+				} catch (RuntimeException e) {
+					e.printStackTrace();
+				}
+				if (img == null)
+					return null;
+				cachedImages.put(imagePath, img);
+			}
+
+			return img;
+		}
+	}
+	
+	public static void clearCachedImages() {
+		synchronized (cachedImages) {
+			for (Image i : cachedImages.values()) {
+				i.dispose();
+			}
+			cachedImages.clear();
+		}
+		
+	}
+
+	public static void clearCachedResources() {
+		clearCachedImages();
+	}
+	
 	public static void openFile(final File file) {
 
 		if (file == null)

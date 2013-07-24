@@ -65,7 +65,7 @@ public class AppendToTableAlgo extends BasicAlgo {
 			@Override
 			public void run() {
 				
-				GLLogger.traceTech("starting", getClass());
+				messages.traceTech("starting", getClass());
 				progress.setComputationState(ComputationState.STARTED);
 				
 				Map<IConnection,Object> inputs = getInputValuesForInput(INPUT_ANYTHING);
@@ -75,14 +75,14 @@ public class AppendToTableAlgo extends BasicAlgo {
 					outputTable = new GenlabTable();
 				}
 				
-				GLLogger.traceTech("add row", getClass());
+				messages.traceTech("add row", getClass());
 				final int rowId = outputTable.addRow();
 				
 				for (IConnection c: inputs.keySet()) {
 					
 					final Object value = inputs.get(c);
 
-					GLLogger.traceTech("connection "+c+" / "+value, getClass());
+					//messages.traceTech("connection "+c+" / "+value, getClass());
 					
 					final String columnId = c.getFrom().getAlgoInstance().getName()+"/"+c.getFrom().getMeta().getName();
 					if (!outputTable.containsColumn(columnId))
@@ -93,7 +93,7 @@ public class AppendToTableAlgo extends BasicAlgo {
 					progress.incProgressMade();
 				}
 				
-				GLLogger.traceTech("set res", getClass());
+				//messages.traceTech("set res", getClass());
 				
 				if (getResult() == null) {
 					ComputationResult result = new ComputationResult(algoInstance, progress, execution.getListOfMessages());
@@ -101,7 +101,7 @@ public class AppendToTableAlgo extends BasicAlgo {
 				}
 				((ComputationResult)getResult()).setResult(OUTPUT_TABLE, outputTable);
 				
-				GLLogger.traceTech("end", getClass());
+				//messages.traceTech("end", getClass());
 				
 				progress.setComputationState(ComputationState.FINISHED_OK);
 				

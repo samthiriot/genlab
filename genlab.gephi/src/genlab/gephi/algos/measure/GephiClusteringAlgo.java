@@ -94,7 +94,7 @@ public class GephiClusteringAlgo extends GephiAbstractAlgo {
 						gephiGraph.attributeModel
 						);
 
-				GLLogger.debugTech("report from gephi "+algo.getReport(), getClass());
+				//GLLogger.debugTech("report from gephi "+algo.getReport(), getClass());
 				
 				
 				results.put(OUTPUT_AVERAGE_CLUSTERING_COEF, algo.getAverageClusteringCoefficient());

@@ -108,6 +108,11 @@ public class IGraphLibrary {
 		return new IGraphRawLibrary.InternalGraphStruct(rawLib);
 	}
 	
+	public void clearGraphMemory(IGraphGraph g) {
+		
+		rawLib.igraph_destroy(g.getPointer());
+	}
+	
 	/**
 	 * Check the integer code returned by igraph.
 	 * @param code

@@ -478,8 +478,10 @@ int igraph_k_regular_game(igraph_t *graph,
 
 	// TODO free memory !
 	/*
-	 * igraph_destroy
+	 * int igraph_destroy(igraph_t *graph);
 	 */
+	public native int igraph_destroy(Pointer graph);
+
 	
 	/*
 	 * int igraph_add_edge(igraph_t *graph, igraph_integer_t from, igraph_integer_t to);

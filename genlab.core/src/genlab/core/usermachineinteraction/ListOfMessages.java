@@ -4,7 +4,6 @@ import genlab.core.commons.WrongParametersException;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -33,11 +32,6 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Quick access to messages by a hash
-	 */
-	private HashSet<ITextMessage> hashedMessages = new HashSet<ITextMessage>();
-	
-	/**
 	 * All the messages in natural order (by timestamp)
 	 */
 	private TreeSet<ITextMessage> sortedMessages = new TreeSet<ITextMessage>();
@@ -47,9 +41,17 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	/**
 	 * If true, relays every message to a log4j logger.
 	 */
-	public static boolean RELAY_TO_LOG4J = true;
+	public static boolean RELAY_TO_LOG4J = false;
 	
-	protected MessageLevel filterIgnoreBelow = MessageLevel.DEBUG;
+	protected MessageLevel filterIgnoreBelow = MessageLevel.WARNING;
+	
+	private long countMessagesCanBeDeleted = 0;
+	
+	/**
+	 * After this limit, will attempt to clean the messages
+	 */
+	public static final int LIMIT_START_CLEANUP = 500;
+	public static final int CLEANUP_TARGET_SIZE = 50;
 	
 	
 	protected static final Map<MessageLevel,Priority> messageLevel2log4jPriority = new HashMap<MessageLevel, Priority>(){{
@@ -71,12 +73,41 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public boolean isEmpty() {
-		return hashedMessages.isEmpty();
+		return sortedMessages.isEmpty();
 	}
 	
 	public ITextMessage last() {
 		return sortedMessages.last();
 	}
+	
+
+	protected void clearOld() {
+			
+		synchronized (sortedMessages) {
+			
+			//System.err.println("can be cleaned: "+countMessagesCanBeDeleted);
+			
+			long timeBegin = System.currentTimeMillis();
+			Iterator<ITextMessage> it = sortedMessages.iterator();
+			ITextMessage current = null;
+			while (it.hasNext() && countMessagesCanBeDeleted > CLEANUP_TARGET_SIZE) {
+				
+				current = it.next();
+				if (current.getLevel().compareTo(MessageLevel.DEBUG) <= 0) {
+					it.remove();
+					countMessagesCanBeDeleted --;
+				}
+				
+			}
+			//System.err.println("can be cleaned: "+countMessagesCanBeDeleted);
+			//System.err.println("cleanup took "+(System.currentTimeMillis()-timeBegin)+" ms");
+			
+		}
+		
+		
+	}
+	
+	
 	
 	/**
 	 * Adds without raising event
@@ -85,8 +116,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 */
 	private void _add(ITextMessage e) {
 		
-		synchronized (hashedMessages) {
-
+		synchronized (sortedMessages) {
+			
 			Iterator<ITextMessage> it = sortedMessages.descendingIterator();
 			
 			// attempt to find a similar message in time (in the previous 3 messages ?)
@@ -110,7 +141,6 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 				// if the message was already stored just a short time before, just add it.
 				messageIdentical.addIncrementCount();
 			} else {
-				hashedMessages.add(e);
 				sortedMessages.add(e);	
 				
 				if (RELAY_TO_LOG4J) {
@@ -129,6 +159,14 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 							e.getException()
 							);
 				}
+				
+
+				if (e.getLevel().compareTo(MessageLevel.DEBUG) <= 0)
+					countMessagesCanBeDeleted++;
+				
+				if (countMessagesCanBeDeleted > LIMIT_START_CLEANUP)
+					clearOld();
+
 				
 			}
 			
@@ -172,7 +210,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	public boolean addAll(Iterable<ITextMessage> others) {
 
 		// add messages
-		synchronized (hashedMessages) {
+		synchronized (sortedMessages) {
 
 			Iterator<ITextMessage> itOther = others.iterator();
 			
@@ -199,9 +237,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	
 	public void clear() {
 		
-		synchronized (hashedMessages) {
+		synchronized (sortedMessages) {
 
-			hashedMessages.clear();
 			sortedMessages.clear();
 			
 		}
@@ -215,9 +252,9 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 
 	public ITextMessage[] asArray() {
 		
-		synchronized (hashedMessages) {
+		synchronized (sortedMessages) {
 
-		return hashedMessages.toArray(new ITextMessage[hashedMessages.size()]);
+			return sortedMessages.toArray(new ITextMessage[sortedMessages.size()]);
 		
 		}
 	}
@@ -248,11 +285,13 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public int getSize() {
-		synchronized (hashedMessages) {
+		synchronized (sortedMessages) {
 
-			return hashedMessages.size();
+			return sortedMessages.size();
 		}
 	}
+	
+	
 	
 	public void debugUser(String message, String fromShort, Class fromClass) {
 		if (!MessageLevel.DEBUG.shouldDisplay(filterIgnoreBelow))

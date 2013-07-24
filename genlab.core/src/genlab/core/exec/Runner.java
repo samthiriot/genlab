@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public class Runner extends Thread implements IComputationProgressSimpleListener {
 	
-	final static int MAX_THREADS = 4;
+	final static int MAX_THREADS = 5;
 	
 	final Set<IAlgoExecution> all = new HashSet<IAlgoExecution>();
 
@@ -58,9 +58,13 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		
 		for (IAlgoExecution e: allTasks)
 			addTask(e);
-		
+	
 		
 		this.task = task;
+		
+		setName("glRunner");
+		setPriority(MAX_PRIORITY);
+		setDaemon(true);
 	}
 	
 	protected void addTask(IAlgoExecution exec) {
@@ -80,7 +84,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				res.add(e);
 		}
 		
-		GLLogger.traceTech("found root tasks: "+res, getClass());
+		messages.traceTech("found root tasks: "+res, getClass());
 		
 		return res;
 		
@@ -193,7 +197,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				t = new Thread(e);
 				t.setName("gl_task");
 				t.setDaemon(false);
-				t.setPriority(MIN_PRIORITY);
+				t.setPriority(NORM_PRIORITY);
 				exec2thread.put(e, t);
 				usedThreads += e.getThreadsUsed();
 			}

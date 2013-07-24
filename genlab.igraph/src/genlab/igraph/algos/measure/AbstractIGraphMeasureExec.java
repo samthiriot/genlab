@@ -13,6 +13,7 @@ import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.commons.IGraph2GenLabConvertor;
 import genlab.igraph.natjna.IGraphGraph;
+import genlab.igraph.natjna.IGraphRawLibraryPool;
 
 import java.util.Map;
 
@@ -61,19 +62,28 @@ public abstract class AbstractIGraphMeasureExec extends AbstractAlgoExecution {
 			
 			IGraphGraph igraphGraph = IGraph2GenLabConvertor.getIGraphGraphForGenlabGraph(glGraph, result.getMessages());
 			
-			// ask the lib to transmit its information as the result of OUR computations
-			igraphGraph.lib.setListOfMessages(result.getMessages());
-			
-			// analyze
-			Map<IInputOutput<?>,Object> stats = analyzeGraph(progress, igraphGraph, glGraph, result.getMessages());
-			
-			// use outputs
-			for (IInputOutput<?> out: stats.keySet()) {
-				Object value = stats.get(out);
-				result.setResult(out, value);	
+			try {
+				
+				// ask the lib to transmit its information as the result of OUR computations
+				igraphGraph.lib.setListOfMessages(result.getMessages());
+				
+				// analyze
+				Map<IInputOutput<?>,Object> stats = analyzeGraph(progress, igraphGraph, glGraph, result.getMessages());
+				
+				// use outputs
+				for (IInputOutput<?> out: stats.keySet()) {
+					Object value = stats.get(out);
+					result.setResult(out, value);	
+				}
+				
+			} finally {
+				// clear memory
+				igraphGraph.lib.clearGraphMemory(igraphGraph);
+				igraphGraph.lib.setListOfMessages(null);
+				IGraphRawLibraryPool.singleton.returnLibrary(igraphGraph.lib);
+
 			}
 			
-			igraphGraph.lib.setListOfMessages(null);
 			
 		}
 		

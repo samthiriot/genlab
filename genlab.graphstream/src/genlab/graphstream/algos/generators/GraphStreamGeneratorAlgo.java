@@ -112,6 +112,7 @@ public abstract class GraphStreamGeneratorAlgo extends GraphStreamAlgo {
 					progress.setProgressMade(1);
 					progress.setComputationState(ComputationState.FINISHED_OK);
 								
+					// TODO catch OutOfMemoryError with a specific message
 				} catch (RuntimeException e) {
 										
 					result.getMessages().errorUser("something went wrong during the execution", getClass());
