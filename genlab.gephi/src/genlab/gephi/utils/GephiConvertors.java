@@ -1,5 +1,8 @@
 package genlab.gephi.utils;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import genlab.core.commons.ProgramException;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -231,6 +234,38 @@ public class GephiConvertors {
        
 		
         return new GephiGraph(gephiCurrentWorkspace, gephiGraph, attributeModel, graphModel, gephiCurrentProject);
+	}
+	
+	protected final static Set<String> THREADS_TO_KILL = new HashSet<String>() {{
+		add("graph-event-bus");
+		add("attribute-event-bus");
+		add("DHNS View destructor");
+	}};
+	
+	public static void killGephiThreads() {
+        
+		
+		
+		ThreadGroup currentGroup = Thread.currentThread().getThreadGroup();
+        int numThreads = currentGroup.activeCount();
+        Thread[] listOfThreads = new Thread[numThreads];
+        currentGroup.enumerate(listOfThreads);
+        
+        for (int i = 0; i < numThreads; i++) {
+            
+        	Thread currentThread = listOfThreads[i];
+        	if (THREADS_TO_KILL.contains(currentGroup.getName())) {
+        		GLLogger.debugTech("found a thread to kill ("+currentGroup.getName()+"); let's kill it.", GephiConvertors.class);
+        		
+        		currentGroup.
+        		if (!(currentThread instanceof EventManager)) {
+        			GLLogger.warnTech("found a thread which is not a gephi one as expected", GephiConvertors.class);
+        		}
+        		currentGroup.destroy();
+        	}
+        }
+
+
 	}
 	
 	public static void clearGraph(GephiGraph graph) {
