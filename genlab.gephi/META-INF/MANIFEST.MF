@@ -11,5 +11,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: genlab.gephi,
  genlab.gephi.algos.measure
-Bundle-ClassPath: ext/gephi-toolkit.jar,
- .
+Bundle-ClassPath: .,
+ ext/gephi-toolkit-0.9-20130724.180145-191-all.jar

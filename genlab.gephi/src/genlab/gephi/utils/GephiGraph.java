@@ -18,16 +18,16 @@ public class GephiGraph {
 		
 	public final Workspace workspace;
 	public final Graph graph;
-	public final AttributeModel attributeModel;
 	public final GraphModel graphModel;
+	public final AttributeModel attributeModel;
 	public final Project project;
 	
 	public GephiGraph(Workspace workspace, Graph graph,
-			AttributeModel attributeModel, GraphModel graphModel, Project project) {
+			GraphModel graphModel, AttributeModel attributeModel, Project project) {
 		this.workspace = workspace;
 		this.graph = graph;
-		this.attributeModel = attributeModel;
 		this.graphModel = graphModel;
+		this.attributeModel = attributeModel;
 		this.project = project;
 	}
 	
@@ -37,7 +37,6 @@ public class GephiGraph {
 		StringBuffer sb = new StringBuffer();
 		sb.append("workspace: ").append(workspace);
 		sb.append(", graph: ").append(graph);
-		sb.append(", attribute: ").append(attributeModel);
 		sb.append(", graph mmodel: ").append(graphModel);
 		
 		return sb.toString();

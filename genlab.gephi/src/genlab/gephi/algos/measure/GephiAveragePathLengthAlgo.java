@@ -101,7 +101,6 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 				// TODO warning if mixed ???
 				
 				// TODO progress
-				
 			
 				algo.execute(
 						gephiGraph.graphModel,

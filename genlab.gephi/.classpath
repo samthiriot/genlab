@@ -4,6 +4,10 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests"/>
-	<classpathentry kind="lib" path="ext/gephi-toolkit.jar"/>
+	<classpathentry kind="lib" path="ext/gephi-toolkit-0.9-20130724.180145-191-all.jar" sourcepath="ext/gephi-toolkit-0.9-20130724.180145-191-javadoc.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/genlab.gephi/ext/gephi-toolkit-0.9-20130724.180145-191-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -7,12 +7,15 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 
 import org.gephi.data.attributes.api.AttributeController;
 import org.gephi.data.attributes.api.AttributeModel;
+import org.gephi.data.attributes.model.TemporaryAttributeModel;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.dhns.core.EventManager;
+import org.gephi.graph.store.GraphModelImpl;
+import org.gephi.graph.store.GraphStore;
 import org.gephi.project.api.Project;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
@@ -32,6 +35,7 @@ public class GephiConvertors {
 	
 	public static final String FIELD_EDGE_ID = "id" ;
 
+	public static final String VERSION_LIBRARY = "0.8";
 
 	public static ProjectController getGephiProjectController () {
 		
@@ -41,20 +45,6 @@ public class GephiConvertors {
 				gephiProjectController.startup();
 			}
 			return gephiProjectController;
-		}
-		
-	}
-	
-	public static GraphModel getGraphModel(Workspace workspace) {
-		synchronized (gephiStaticLocker) {
-			return Lookup.getDefault().lookup(GraphController.class).getModel(workspace);
-		}
-	}
-	
-
-	public static AttributeModel getAttributeModel(Workspace workspace) {
-		synchronized (gephiStaticLocker) {
-			return Lookup.getDefault().lookup(AttributeController.class).getModel(workspace);
 		}
 		
 	}
@@ -81,6 +71,8 @@ public class GephiConvertors {
 					GephiConvertors.class
 					);
 		
+		
+		
 		Project gephiCurrentProject = null;
 		Workspace gephiCurrentWorkspace = null;
 		GraphModel graphModel ;
@@ -101,26 +93,29 @@ public class GephiConvertors {
 			if (gephiCurrentWorkspace == null)
 				throw new ProgramException("unable to init a novel Gephi workspace, sorry.");
 			
+			
 		}
 		
 		// init attributes
 		synchronized (gephiStaticLocker) {
-			graphModel = Lookup.getDefault().lookup(GraphController.class).getModel(gephiCurrentWorkspace);
-			attributeModel = Lookup.getDefault().lookup(AttributeController.class).getModel(gephiCurrentWorkspace);
+			graphModel = new GraphModelImpl();
+			//graphModel = Lookup.getDefault().lookup(GraphController.class).getModel(gephiCurrentWorkspace);
+			attributeModel = new TemporaryAttributeModel(gephiCurrentWorkspace);
+			//attributeModel = Lookup.getDefault().lookup(AttributeController.class).getModel(gephiCurrentWorkspace);
 		}
          
 		// configure the resulting graph
 		Graph gephiGraph = null;
 		switch (glGraph.getDirectionality()) {
 		case DIRECTED:
-			gephiGraph = graphModel.getDirectedGraph();
+		case MIXED:
+				gephiGraph = graphModel.getDirectedGraph();
+			gephiGraph = graphModel.getDirectedGraph(); 
 			break;
 		case UNDIRECTED:
 			gephiGraph = graphModel.getUndirectedGraph();
 			break;
-		case MIXED:
-			gephiGraph = graphModel.getMixedGraph();
-			break;
+			
 		default:
 			throw new ProgramException("unknown directionnality constant "+glGraph.getDirectionality());
 		}
@@ -196,7 +191,7 @@ public class GephiConvertors {
 	        Node gephiNode = graphModel.factory().newNode(nameId);
 	        
 	        // set node properties
-	        gephiNode.getNodeData().setLabel(nameId);
+	        gephiNode.setLabel(nameId);
 	        
 			// actually add the node to the network
 			gephiGraph.addNode(gephiNode);
@@ -206,16 +201,21 @@ public class GephiConvertors {
 		}
 		
 		// add edges
+		final int ID_EDGE_TYPE_UNIQUE = graphModel.addEdgeType("unique_edge_type");
 		for (String edgeId : glGraph.getEdges()) {
 			
 			Edge createdEdge = graphModel.factory().newEdge(
+					edgeId,
 					gephiGraph.getNode(glGraph.getEdgeVertexFrom(edgeId)),
-					gephiGraph.getNode(glGraph.getEdgeVertexTo(edgeId))
+					gephiGraph.getNode(glGraph.getEdgeVertexTo(edgeId)),
+					ID_EDGE_TYPE_UNIQUE,
+					1.0,
+					glGraph.isEdgeDirected(edgeId)
 					);
 			
 			// always add an id for the edge (required for some formats)
-	        createdEdge.getAttributes().setValue(FIELD_EDGE_ID, edgeId);
-			
+	        createdEdge.setLabel(edgeId);
+	        
 	        // TODO attributes
 	        
 			// actually add the edge to the network
@@ -230,7 +230,7 @@ public class GephiConvertors {
 		}
        
 		
-        return new GephiGraph(gephiCurrentWorkspace, gephiGraph, attributeModel, graphModel, gephiCurrentProject);
+        return new GephiGraph(gephiCurrentWorkspace, gephiGraph, graphModel, attributeModel, gephiCurrentProject);
 	}
 	
 	public static void clearGraph(GephiGraph graph) {
@@ -243,9 +243,9 @@ public class GephiConvertors {
 				
 				ProjectController pc = getGephiProjectController();
 				pc.removeProject(graph.project);
+				pc.cleanWorkspace(graph.workspace);
+				
 			
-				//pc.cleanWorkspace(graph.workspace);
-	
 				//graph.graph.clear();
 				//graph.graphModel.clear();
 				

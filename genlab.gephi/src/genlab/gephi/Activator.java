@@ -1,6 +1,7 @@
 package genlab.gephi;
 
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gephi.utils.GephiConvertors;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;
@@ -29,8 +30,8 @@ public class Activator extends Plugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		GLLogger.infoTech("initializing the gephi plugin for genlab...", getClass());
-
+		GLLogger.infoTech("initializing the gephi plugin for genlab; it includes the gephi toolkit library version "+GephiConvertors.VERSION_LIBRARY, getClass());
+		
 	}
 
 	/*
