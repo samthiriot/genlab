@@ -2,6 +2,7 @@ package genlab.gui.graphiti.palette;
 
 import genlab.core.model.meta.AlgoCategory;
 import genlab.core.model.meta.ExistingAlgoCategories;
+import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.features.CreateIAlgoInstanceFeature;
@@ -98,6 +99,10 @@ public class WorkflowToolBehaviorProvider extends DefaultToolBehaviorProvider {
 			
 			Map<String,AlgoCategory> id2categ = ExistingAlgoCategories.getExistingAlgoCategories().getAllCategories();
 			for (String categId : id2categ.keySet()) {
+				
+				// do not create empty categories
+				if (!ExistingAlgos.getExistingAlgos().hasAlgoInCategory(categId))
+					continue;
 			//for (String parentCategId : ExistingAlgoCategories.getExistingAlgoCategories().getParentCategories()()) {
 				AlgoCategory categ = id2categ.get(categId);
 				

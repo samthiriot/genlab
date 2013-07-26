@@ -39,6 +39,7 @@
       <plugin id="genlab.graphstream.ui"/>
       <plugin id="genlab.gui"/>
       <plugin id="genlab.igraph"/>
+      <plugin id="genlab.jung"/>
       <plugin id="genlab.neo4j"/>
       <plugin id="genlab.random.colt"/>
       <plugin id="javax.annotation"/>

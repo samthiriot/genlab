@@ -42,12 +42,12 @@ public class GraphstreamConvertors {
 		protected Set<String> ignoredAttributesEdge = new HashSet<String>();
 		protected Set<String> ignoredAttributesVertex = new HashSet<String>();
 
-		public GenLabGraphSink (String graphId, ListOfMessages messages) {
+		public GenLabGraphSink (String graphId, ListOfMessages messages,  GraphDirectionality directionality) {
 			
 			this.messages = messages;
 			
 			// TODO hard to predict what will be found into the graph...
-			graph = GraphFactory.createGraph(graphId, GraphDirectionality.MIXED, false);
+			graph = GraphFactory.createGraph(graphId, directionality, false);
 			
 		}
 		
@@ -236,12 +236,12 @@ public class GraphstreamConvertors {
 		
 	}
 	
-	public static IGenlabGraph loadGraphWithGraphstreamFromGeneratorSource(String graphId, BaseGenerator generator, int maxNodes, ListOfMessages messages, boolean countIterations) {
+	public static IGenlabGraph loadGraphWithGraphstreamFromGeneratorSource(String graphId, BaseGenerator generator, int maxNodes, ListOfMessages messages, boolean countIterations, GraphDirectionality directionality) {
 
 
 			messages.debugTech("loading the graph from a source into a genlab graph...", GraphstreamConvertors.class);
 		
-			GenLabGraphSink ourSink = new GenLabGraphSink(graphId, messages);
+			GenLabGraphSink ourSink = new GenLabGraphSink(graphId, messages, directionality);
 			// TODO ??? ourSink.ignoreVertexAttribute("xy");
 			generator.addSink(ourSink);
 

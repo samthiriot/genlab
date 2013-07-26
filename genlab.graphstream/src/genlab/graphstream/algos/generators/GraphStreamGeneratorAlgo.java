@@ -8,7 +8,10 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
+import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.parameters.BooleanParameter;
+import genlab.core.usermachineinteraction.GLLogger;
 import genlab.graphstream.algos.GraphStreamAlgo;
 import genlab.graphstream.utils.GraphstreamConvertors;
 
@@ -24,6 +27,15 @@ public abstract class GraphStreamGeneratorAlgo extends GraphStreamAlgo {
 			"resulting graph"
 		);
 	
+	
+	public static final BooleanParameter PARAM_DIRECTED = new BooleanParameter(
+			"param_directed",
+			"directed", 
+			"generate a directed graph", 
+			Boolean.FALSE
+			);
+	
+	
 	public GraphStreamGeneratorAlgo(
 			String name, 
 			String description
@@ -33,6 +45,8 @@ public abstract class GraphStreamGeneratorAlgo extends GraphStreamAlgo {
 				description, 
 				ExistingAlgoCategories.GENERATORS_GRAPHS.getTotalId()
 				);
+		
+		registerParameter(PARAM_DIRECTED);
 		
 	}
 	
@@ -54,10 +68,11 @@ public abstract class GraphStreamGeneratorAlgo extends GraphStreamAlgo {
 	/**
 	 * Returns a generator for this execution context (notably for parameters !)
 	 * @param exec
+	 * @param algoInstance 
 	 * @return
 	 */
-	public abstract BaseGenerator getBaseGeneratorForExec(AbstractGraphStreamGeneratorExec exec);
-	
+	protected abstract BaseGenerator getBaseGeneratorForExec(AbstractGraphStreamGeneratorExec exec, AlgoInstance algoInstance);
+		
 	
 	/**
 	 * Returns the number of iterations to drive for this context (-1 to let the generator 
@@ -78,7 +93,7 @@ public abstract class GraphStreamGeneratorAlgo extends GraphStreamAlgo {
 	}
 	
 	@Override
-	public final IAlgoExecution createExec(IExecution exec, AlgoInstance algoInstance) {
+	public final IAlgoExecution createExec(IExecution exec, final AlgoInstance algoInstance) {
 		
 		return new AbstractGraphStreamGeneratorExec(exec, algoInstance) {
 			
@@ -96,7 +111,13 @@ public abstract class GraphStreamGeneratorAlgo extends GraphStreamAlgo {
 					
 				try {
 									
-					BaseGenerator generator = getBaseGeneratorForExec(this);
+					BaseGenerator generator = getBaseGeneratorForExec(this, algoInstance);
+					
+					Boolean directed = (Boolean)algoInstance.getValueForParameter(PARAM_DIRECTED.getId());
+					
+					messages.debugUser("configuring graph directionality to: "+directed, getClass());
+					
+					generator.setDirectedEdges(directed, false);
 					
 					IGenlabGraph graph = GraphstreamConvertors.loadGraphWithGraphstreamFromGeneratorSource(
 							// TODO ???
@@ -104,7 +125,8 @@ public abstract class GraphStreamGeneratorAlgo extends GraphStreamAlgo {
 							generator, 
 							size,
 							result.getMessages(),
-							shouldCountIterations()
+							shouldCountIterations(),
+							directed?GraphDirectionality.DIRECTED:GraphDirectionality.UNDIRECTED
 							);
 					result.setResult(OUTPUT_GRAPH, graph);
 					

@@ -8,6 +8,7 @@ import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.IInputOutput;
+import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.graphstream.utils.GraphstreamConvertors;
@@ -76,7 +77,8 @@ public abstract class AbstractGraphstreamMeasureExecution extends
 			
 			GraphstreamConvertors.GenLabGraphSink ourSink = new GraphstreamConvertors.GenLabGraphSink(
 					"opened", 
-					result.getMessages()
+					result.getMessages(),
+					GraphDirectionality.MIXED
 					);
 			
 			

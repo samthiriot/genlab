@@ -52,9 +52,9 @@ public class TestWattsStrogatz {
 		
 		IAlgoExecution execution = instance.execute(
 				new HashMap<IInputOutput, Object>() {{
-					put(WattsStrogatzAlgo.PARAM_N, 100);
-					put(WattsStrogatzAlgo.PARAM_K, 2);
-					put(WattsStrogatzAlgo.PARAM_P, 0.1);
+					put(WattsStrogatzAlgo.INPUT_N, 100);
+					put(WattsStrogatzAlgo.INPUT_K, 2);
+					put(WattsStrogatzAlgo.INPUT_P, 0.1);
 				}}
 		);
 		

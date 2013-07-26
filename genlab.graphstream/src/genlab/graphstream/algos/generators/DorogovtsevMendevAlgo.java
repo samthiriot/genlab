@@ -41,7 +41,8 @@ public class DorogovtsevMendevAlgo extends GraphStreamGeneratorAlgo {
 
 	@Override
 	public BaseGenerator getBaseGeneratorForExec(
-			AbstractGraphStreamGeneratorExec exec) {
+			AbstractGraphStreamGeneratorExec exec,
+			AlgoInstance algoInstance) {
 		return new DorogovtsevMendesGenerator();
 	}
 

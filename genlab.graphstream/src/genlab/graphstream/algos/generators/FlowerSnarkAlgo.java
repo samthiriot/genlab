@@ -1,5 +1,6 @@
 package genlab.graphstream.algos.generators;
 
+import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
@@ -32,7 +33,8 @@ public class FlowerSnarkAlgo extends GraphStreamGeneratorAlgo {
 
 	@Override
 	public BaseGenerator getBaseGeneratorForExec(
-			AbstractGraphStreamGeneratorExec exec) {
+			AbstractGraphStreamGeneratorExec exec,
+			AlgoInstance algoInstance) {
 		
 		return new FlowerSnarkGenerator();
 	}

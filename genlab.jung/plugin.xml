@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.jung.algos.DistanceJungAlgo"
+            id="genlab.jung.algos.DistanceJungAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <author
+            id="genlab.jung.doc.JungTeam"
+            name="JUNG team"
+            url="http://jung.sourceforge.net/team.html">
+      </author>
+      <author
+            id="genlab.jung.doc.authors.ScottWhite"
+            name="Scott White">
+      </author>
+      <author
+            id="genlab.jung.doc.authors.JoshuaOMadadhain"
+            name="Joshua O&apos;Madadhain">
+      </author>
+      <library
+            description="JUNG — the Java Universal Network/Graph Framework--is a software library that provides a common and extendible language for the modeling, analysis, and visualization of data that can be represented as a graph or network. It is written in Java, which allows JUNG-based applications to make use of the extensive built-in capabilities of the Java API, as well as those of other existing third-party Java libraries."
+            id="genlab.jung.doc.library.jung"
+            licence_name="Berkeley Software Distribution (BSD)"
+            licence_url="http://jung.sourceforge.net/faq.html#license"
+            name="JUNG"
+            url="http://jung.sourceforge.net/">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.jung.doc.JungTeam">
+         </original_author_id>
+         <more_info
+               content="javadoc for the JUNG library"
+               url="http://jung.sourceforge.net/doc/api/">
+         </more_info>
+      </library>
+      <docalgo
+            algo_id="genlab.jung.algos.DistanceJungAlgo"
+            library_id="genlab.jung.doc.library.jung">
+         <original_author_id
+               id="genlab.jung.doc.authors.JoshuaOMadadhain">
+         </original_author_id>
+         <original_author_id
+               id="genlab.jung.doc.authors.ScottWhite">
+         </original_author_id>
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+      </docalgo>
+   </extension>
+
+</plugin>

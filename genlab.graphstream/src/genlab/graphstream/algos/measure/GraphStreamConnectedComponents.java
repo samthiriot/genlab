@@ -6,6 +6,7 @@ import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.InputOutput;
+import genlab.core.model.meta.basics.flowtypes.BooleanInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
@@ -30,6 +31,11 @@ public class GraphStreamConnectedComponents extends AbstractGraphStreamMeasure {
 			"count", 
 			"the number of components found in the graph"
 	);
+	public static final BooleanInOut OUTPUT_CONNECTED = new BooleanInOut(
+			"out_connected", 
+			"is connected", 
+			"true if the graph is connected"
+	);
 	public static final InputOutput<Integer> OUTPUT_GIANT_COMPONENT_SIZE = new InputOutput<Integer>(
 			IntegerFlowType.SINGLETON, 
 			"out_giantComponentSize", 
@@ -51,6 +57,7 @@ public class GraphStreamConnectedComponents extends AbstractGraphStreamMeasure {
 				);
 		
 		outputs.add(OUTPUT_COUNT);
+		outputs.add(OUTPUT_CONNECTED);
 		outputs.add(OUTPUT_GRAPH);
 		outputs.add(OUTPUT_GIANT_COMPONENT_SIZE);
 		
@@ -120,11 +127,11 @@ public class GraphStreamConnectedComponents extends AbstractGraphStreamMeasure {
 				
 				// ... count of connected components
 				int count = cc.getConnectedComponentsCount();
-				System.err.println("components count: "+count);
 				// (as an output)
 				results.put(OUTPUT_COUNT, new Integer(count));
+				results.put(OUTPUT_CONNECTED, new Boolean(count == 1));
 				// (and as a graph attribute)
-				if (graphAttributeNumberComponents != null) {
+				if (graphAttributeNumberComponents != null && outputGraph != null) {
 					outputGraph.declareGraphAttribute(graphAttributeNumberComponents, Integer.class);
 				}
 				
@@ -133,7 +140,7 @@ public class GraphStreamConnectedComponents extends AbstractGraphStreamMeasure {
 				results.put(OUTPUT_GIANT_COMPONENT_SIZE, nodesInGiantComponent.size());
 				// TODO add as a graph attribute ? 
 				// (if asked, add an attribute for nodes and define its value)
-				if (vertexAttributeBelongGiantComponent != null) {
+				if (vertexAttributeBelongGiantComponent != null && outputGraph != null) {
 					outputGraph.declareVertexAttribute(vertexAttributeBelongGiantComponent, Boolean.class);
 					Set<Node> nodesInGiantComponentSet = new HashSet<Node>(nodesInGiantComponent);
 					for (Node n : gsGraph.getNodeSet()) {
@@ -146,7 +153,7 @@ public class GraphStreamConnectedComponents extends AbstractGraphStreamMeasure {
 				}
 				
 				// ... id of each component
-				if (vertexAttributeComponentId != null) {
+				if (vertexAttributeComponentId != null && outputGraph != null) {
 					outputGraph.declareVertexAttribute(vertexAttributeComponentId, Integer.class);
 					for (Node n : gsGraph.getNodeSet()) {
 						outputGraph.setVertexAttribute(
