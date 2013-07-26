@@ -567,7 +567,7 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 		Node n = gsGraph.getNode(vertexId);
 		Collection<String> res = new ArrayList<String>(n.getInDegree());
 		for (Edge e: n.getEnteringEdgeSet()) {
-			res.add(e.getNode0().getId());
+			res.add(e.getOpposite(n).getId());
 		}
 		return res;
 	}
@@ -577,7 +577,7 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 		Node n = gsGraph.getNode(vertexId);
 		Collection<String> res = new ArrayList<String>(n.getOutDegree());
 		for (Edge e: n.getLeavingEdgeSet()) {
-			res.add(e.getNode1().getId());
+			res.add(e.getOpposite(n).getId());
 		}
 		return res;
 	}
