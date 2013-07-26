@@ -313,7 +313,11 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 				task2editor.put(t, editor);
 			}
 			pb.setState(SWT.NORMAL);
-			pb.setSelection((int)Math.floor(t.getProgress().getProgressPercent()));
+			try {
+				pb.setSelection((int)Math.floor(t.getProgress().getProgressPercent()));
+			} catch (NullPointerException e) {
+				// ignore it
+			}
 		} else if (pb != null) {
 			// should remove this progress bar !
 			pb.dispose();
