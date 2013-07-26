@@ -51,7 +51,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
      inkscape:cx="147.86707"
-     inkscape:cy="886.51565"
+     inkscape:cy="885.5055"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -68,7 +68,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -144,7 +144,7 @@
            y="6.3492212"
            style="fill:#808080" /></flowRegion><flowPara
          id="flowPara3877"
-         style="font-size:8px;text-align:justify;text-anchor:start;fill:#808080">synthetic populations . population resizing . network generation . populations matching . multi-scale populations . complex networks . reproductible research . open-source . model coupling . plugin-oriented . agent-based modeling . micro modeling . social simulation . igraph . graphstream . gephi . yang . </flowPara></flowRoot>    <rect
+         style="font-size:8px;text-align:justify;text-anchor:start;fill:#808080">synthetic populations . population resizing . network generation . populations matching . multi-scale populations . complex networks . reproductible research . open-source . plugin-oriented . agent-based modeling . micro modeling . social simulation . igraph . graphstream . jung . gephi . yang . neo4j . cern colt . </flowPara></flowRoot>    <rect
        style="fill:none;stroke:#000000;stroke-width:0.94501566999999997;stroke-opacity:1"
        id="rect3893"
        width="359.66928"
