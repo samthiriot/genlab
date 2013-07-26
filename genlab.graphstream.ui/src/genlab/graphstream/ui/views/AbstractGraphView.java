@@ -5,6 +5,7 @@ import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.meta.basics.graphs.AbstractGraphstreamBasedGraph;
+import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
@@ -146,6 +147,7 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		gsGraph.addAttribute("ui.quality");
 		gsGraph.addAttribute("ui.antialias");
 		
+		
 	}
 	
 	protected void configureViewer(Viewer gsViewer) {
@@ -227,7 +229,13 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 			if (stylesheetFilenmae != null) {
 				messages.debugTech("a stylesheet was provided, adding it to the graph...", getClass());
 				gsGraph.setAttribute("ui.stylesheet", "url('file://"+stylesheetFilenmae+"')");
+			} else if (glGraph.getDirectionality() != GraphDirectionality.UNDIRECTED) {
+						
+				// if the graph has some directionality, then display it
+				gsGraph.addAttribute("ui.stylesheet", "edge { arrow-shape: arrow; }");
+					
 			}
+				
 			
 			parent.getDisplay().asyncExec(new Runnable() {
 				

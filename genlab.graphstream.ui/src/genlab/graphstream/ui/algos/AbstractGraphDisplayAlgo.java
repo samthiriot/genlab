@@ -10,6 +10,7 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
+import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.parameters.FileParameter;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -77,7 +78,7 @@ public abstract class AbstractGraphDisplayAlgo extends GraphStreamAlgo {
 				
 				File fileCss = (File)algoInstance.getValueForParameter(PARAM_STYLESHEET);
 				String filenameCss = null;
-				if (fileCss != null) {
+				if (fileCss != null && fileCss.exists()) {
 					execution.getListOfMessages().debugUser("a stylesheet was provided, verifying it...", getClass());
 					if (!fileCss.exists()) 
 						throw new WrongParametersException("the file provided for the stylesheet does not exists");
@@ -86,8 +87,7 @@ public abstract class AbstractGraphDisplayAlgo extends GraphStreamAlgo {
 					if (!fileCss.canRead()) 
 						throw new WrongParametersException("can not read the file provided for the stylesheet");
 					filenameCss = fileCss.getAbsolutePath();
-				}
-				
+				} 
 				gv.displayGraph(glGraph, filenameCss, execution.getListOfMessages(), getProgress());
 			}
 
