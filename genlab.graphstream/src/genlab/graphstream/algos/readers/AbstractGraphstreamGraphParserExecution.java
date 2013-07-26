@@ -7,6 +7,7 @@ import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.graphstream.utils.GraphstreamConvertors;
 
 import java.io.File;
@@ -53,7 +54,11 @@ public class AbstractGraphstreamGraphParserExecution extends
 		final File file = (File) getInputValueForInput(AbstractGraphStreamGraphParser.PARAM_FILE);
 		
 		// init our sink which will process events from the filesource
-		GraphstreamConvertors.GenLabGraphSink ourSink = new GraphstreamConvertors.GenLabGraphSink("opened", result.getMessages());
+		GraphstreamConvertors.GenLabGraphSink ourSink = new GraphstreamConvertors.GenLabGraphSink(
+				"opened", 
+				result.getMessages(), 
+				GraphDirectionality.MIXED
+				);
 		
 		// that we listen to
 		filesource.addSink(ourSink);

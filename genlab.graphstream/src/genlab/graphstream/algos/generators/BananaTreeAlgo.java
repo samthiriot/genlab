@@ -1,5 +1,6 @@
 package genlab.graphstream.algos.generators;
 
+import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 
@@ -41,7 +42,8 @@ public class BananaTreeAlgo extends GraphStreamGeneratorAlgo {
 
 	@Override
 	public BaseGenerator getBaseGeneratorForExec(
-			AbstractGraphStreamGeneratorExec exec) {
+			AbstractGraphStreamGeneratorExec exec,
+			AlgoInstance algoInstance) {
 		 
 		
 		final Integer k = (Integer)exec.getInputValueForInput(BananaTreeAlgo.PARAM_K);

@@ -31,6 +31,8 @@ public class SimpleGraphstreamBasedGraph extends AbstractGraphstreamBasedGraph {
 			String cloneId) {
 		return new SimpleGraphstreamBasedGraph(cloneId, directionality);
 	}
+
+	
 	
 
 }

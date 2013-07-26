@@ -38,13 +38,14 @@ public interface IGenlabGraph {
 	public Map<String,Object> getGraphAttributes();
 
 	public void addVertex(String id);
+	public boolean removeVertex(String id);
+
 	
 	public void setVertexAttribute(String vertexId, String attributeId, Object value);
 	
 	
 	public Collection<String> getVertices();
 	
-	public void removeEdge(String id);
 
 	
 	public void addEdge(String id, String vertexIdFrom, String vertexIdTo);
@@ -54,7 +55,9 @@ public interface IGenlabGraph {
 	public void addEdge(String id, String vertexIdFrom, String vertexIdTo, boolean directed);
 	
 	public void setEdgeAttribute(String vertexId, String attributeId, Object value);
-	
+	public boolean removeEdge(String id);
+	public boolean containsEdge(String vertexFrom, String vertexTo);
+	public boolean containsEdge(String edgeId);
 	
 	/**
 	 * Returns true if one can create several edges between the 
@@ -81,15 +84,40 @@ public interface IGenlabGraph {
 	 */
 	public boolean isEdgeAttributed();
 	
-	public boolean containsEdge(String vertexFrom, String vertexTo);
 	
 	public boolean containsVertex(String vertexId);
 	
+	public Collection<String> getAllIncidentEdges(String vertexId);
+
+	public Collection<String> getEdgesFrom(String vertexId);
+	public int getEdgesCountFrom(String vertexId);
+
+	public Collection<String> getEdgesTo(String vertexId);
+	public int getEdgesCountTo(String vertexId);
+
 	public Collection<String> getNeighboors(String vertexId);
-	
+	public int getNeighboorsCount(String vertexId);
+
+	public Collection<String> getInNeighboors(String vertexId);
+	public Collection<String> getOutNeighboors(String vertexId);
+
+	public String getEdgeOtherVertex(String edgeId, String vertex1);
+
 	public String getEdgeVertexFrom(String edgeId);
 	public String getEdgeVertexTo(String edgeId);
 	public boolean isEdgeDirected(String edgeId);
+
+	public boolean isEdgeLoop(String edgeId);
+
+	public String getEdgeBetween(String nodeId1, String nodeId2);
+	public Collection<String> getEdgesBetween(String nodeId1, String nodeId2);
+
+	
+	public int getDegree(String nodeId);
+	public int getInDegree(String nodeId);
+	public int getOutDegree(String nodeId);
+
+
 	
 	public Collection<String> getEdges();
 	

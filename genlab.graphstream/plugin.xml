@@ -97,6 +97,10 @@
             class="genlab.graphstream.algos.measure.GraphStreamAverageClustering"
             id="genlab.graphstream.algos.measure.GraphStreamAverageClustering">
       </algo>
+      <algo
+            class="genlab.graphstream.algos.generators.EuclidianGraphGenerator"
+            id="genlab.graphstream.algos.generators.EuclidianGraphGenerator">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -272,6 +276,24 @@
          <more_info
                content="graphstream javadoc on this algorithm"
                url="http://graphstream-project.org/api/gs-algo/index.html?org/graphstream/algorithm/Toolkit.html">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.graphstream.algos.generators.EuclidianGraphGenerator"
+            description="Random Euclidean graph generator.&#x0A;&#x0A;This generator creates random graphs of any size. Links of such graphs are created according to a threshold. If the Euclidean distance between two nodes is less than a given threshold, then a link is created between those 2 nodes."
+            library_id="genlab.graphstream.doc.library.graphstream"
+            time_complexity="For the construction of a n nodes graph, the complexity is about O(n^2).">
+         <more_info
+               content="javadoc for this algorithm"
+               url="http://graphstream-project.org/api/gs-algo/org/graphstream/algorithm/generator/RandomEuclideanGenerator.html#RandomEuclideanGenerator(int)">
+         </more_info>
+         <more_info
+               content="graphstream page on this algorithm"
+               url="http://graphstream-project.org/doc/Generators/Random-Euclidean-Generator_1.0/">
+         </more_info>
+         <more_info
+               content="wikipedia page with a definition of euclidian graphs"
+               url="https://en.wikipedia.org/wiki/Geometric_graph_theory">
          </more_info>
       </docalgo>
    </extension>

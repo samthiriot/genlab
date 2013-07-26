@@ -3,7 +3,6 @@
 
 <product name="Genlab batch" uid="genlab.batch" id="genlab.batch.genlab_batch" application="genlab.batch" version="0.0.1" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -13,7 +12,6 @@
 
    <windowImages/>
 
-
    <launcher>
       <solaris/>
       <win useIco="false">
@@ -21,10 +19,8 @@
       </win>
    </launcher>
 
-
    <vm>
    </vm>
-
 
    <plugins>
       <plugin id="genlab.batch"/>
@@ -33,6 +29,7 @@
       <plugin id="genlab.graphstream"/>
       <plugin id="genlab.graphstream.corejar"/>
       <plugin id="genlab.igraph"/>
+      <plugin id="genlab.jung"/>
       <plugin id="genlab.neo4j"/>
       <plugin id="genlab.random.colt"/>
       <plugin id="org.eclipse.core.contenttype"/>

@@ -139,6 +139,14 @@ public final class ExistingAlgos {
 		return name2algos.values();
 	}
 	
+	public boolean hasAlgoInCategory(String categId) {
+		for (IAlgo algo : name2algos.values()) {
+			if (categId.equals(algo.getCategoryId()))
+				return true;
+		}
+		return false;
+	}
+	
 	public Collection<IConstantAlgo> getConstantAlgos() {
 		return name2constantAlgo.values();
 	}

@@ -49,7 +49,8 @@ public class BarabasiAlbertAlgo extends GraphStreamGeneratorAlgo {
 
 	@Override
 	public BaseGenerator getBaseGeneratorForExec(
-			AbstractGraphStreamGeneratorExec exec) {
+			AbstractGraphStreamGeneratorExec exec,
+			AlgoInstance algoInstance) {
 		
 		final Integer m = (Integer)exec.getInputValueForInput(PARAM_M);
 

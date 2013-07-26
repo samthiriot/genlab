@@ -59,7 +59,8 @@ public class GridAlgo extends GraphStreamGeneratorAlgo {
 
 	@Override
 	public BaseGenerator getBaseGeneratorForExec(
-			AbstractGraphStreamGeneratorExec exec) {
+			AbstractGraphStreamGeneratorExec exec,
+			AlgoInstance algoInstance) {
 		
 		final Boolean diags = (Boolean)exec.getAlgoInstance().getValueForParameter(PARAM_DIAGS.getId());
 		final Boolean torus = (Boolean)exec.getAlgoInstance().getValueForParameter(PARAM_TORUS.getId());

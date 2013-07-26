@@ -88,7 +88,7 @@ public class TestReadWriteChain {
 			wsN.setValueForParameter("value", 500);
 			IConnection c = workflow.connect(
 					wsN.getOutputInstanceForOutput(constInteger.OUTPUT),
-					wsAlgoInstance.getInputInstanceForInput(wsAlgo.PARAM_N)
+					wsAlgoInstance.getInputInstanceForInput(wsAlgo.INPUT_N)
 					);
 		}
 		{
@@ -96,7 +96,7 @@ public class TestReadWriteChain {
 			wsK.setValueForParameter("value", 2);
 			IConnection c = workflow.connect(
 					wsK.getOutputInstanceForOutput(constInteger.OUTPUT),
-					wsAlgoInstance.getInputInstanceForInput(wsAlgo.PARAM_K)
+					wsAlgoInstance.getInputInstanceForInput(wsAlgo.INPUT_K)
 					);
 		}
 		{
@@ -104,7 +104,7 @@ public class TestReadWriteChain {
 			wsP.setValueForParameter("value", 0.2);
 			IConnection c = workflow.connect(
 					wsP.getOutputInstanceForOutput(constDouble.OUTPUT),
-					wsAlgoInstance.getInputInstanceForInput(wsAlgo.PARAM_P)
+					wsAlgoInstance.getInputInstanceForInput(wsAlgo.INPUT_P)
 					);
 		}
 		

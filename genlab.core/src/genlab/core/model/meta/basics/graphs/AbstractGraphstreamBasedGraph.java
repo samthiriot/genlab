@@ -1,9 +1,10 @@
 package genlab.core.model.meta.basics.graphs;
 
+import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
-import genlab.core.usermachineinteraction.GLLogger;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -373,7 +374,12 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 
 	@Override
 	public boolean isEdgeDirected(String edgeId) {
-		return gsGraph.getEdge(edgeId).isDirected();
+		if (getDirectionality() == GraphDirectionality.DIRECTED)
+			return true;
+		else if (getDirectionality() == GraphDirectionality.UNDIRECTED)
+			return false;
+		else
+			return gsGraph.getEdge(edgeId).isDirected();
 	}
 
 	@Override
@@ -387,10 +393,8 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 
 
 	@Override
-	public void removeEdge(String id) {
-		Edge removed = gsGraph.removeEdge(id);
-		if (removed == null)
-			throw new WrongParametersException("unable to find edge id "+id);
+	public boolean removeEdge(String id) {
+		return gsGraph.removeEdge(id) != null;
 	}	
 
 
@@ -461,4 +465,135 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 		// TODO graph attributes
 		return sb.toString();
 	}
+	
+	@Override
+	public boolean removeVertex(String id) {
+		return gsGraph.removeNode(id) != null;
+	}
+
+	@Override
+	public boolean containsEdge(String edgeId) {
+		return gsGraph.getEdge(edgeId) != null;
+	}
+
+	@Override
+	public Collection<String> getEdgesFrom(String vertexId) {
+		Node n = gsGraph.getNode(vertexId);
+		Collection<String> res = new ArrayList<String>(n.getOutDegree());
+		for (Edge e : n.getLeavingEdgeSet()) {
+			res.add(e.getId());
+		}
+		return res;
+	}
+
+	@Override
+	public int getEdgesCountFrom(String vertexId) {
+		Node n = gsGraph.getNode(vertexId);
+		return n.getOutDegree();
+	}
+
+	@Override
+	public Collection<String> getEdgesTo(String vertexId) {
+		Node n = gsGraph.getNode(vertexId);
+		Collection<String> res = new ArrayList<String>(n.getInDegree());
+		for (Edge e : n.getEnteringEdgeSet()) {
+			res.add(e.getId());
+		}
+		return res;
+	}
+
+	@Override
+	public int getEdgesCountTo(String vertexId) {
+		Node n = gsGraph.getNode(vertexId);
+		return n.getInDegree();
+	}
+
+	@Override
+	public int getNeighboorsCount(String vertexId) {
+		Node n = gsGraph.getNode(vertexId);
+		return n.getDegree();
+		
+	}
+
+	@Override
+	public String getEdgeOtherVertex(String edgeId, String vertex1) {
+		Edge e = gsGraph.getEdge(edgeId);
+		if (e.getNode0().getId().equals(vertex1))
+			return e.getNode1().getId();
+		else 
+			return e.getNode0().getId();
+	}
+
+
+	@Override
+	public boolean isEdgeLoop(String edgeId) {
+		Edge e = gsGraph.getEdge(edgeId);
+		return e.isLoop();
+	}
+
+	@Override
+	public String getEdgeBetween(String nodeId1, String nodeId2) {
+		Node n1 = gsGraph.getNode(nodeId1);
+		return n1.getEdgeBetween(nodeId2).getId();
+	}
+
+	@Override
+	public Collection<String> getEdgesBetween(String nodeId1, String nodeId2) {
+		// TODO implement
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public int getDegree(String nodeId) {
+		Node n = gsGraph.getNode(nodeId);
+		return n.getDegree();
+	}
+
+	@Override
+	public int getInDegree(String nodeId) {
+		Node n = gsGraph.getNode(nodeId);
+		return n.getInDegree();
+	}
+
+	@Override
+	public int getOutDegree(String nodeId) {
+		Node n = gsGraph.getNode(nodeId);
+		return n.getOutDegree();
+	}
+	
+
+	@Override
+	public Collection<String> getInNeighboors(String vertexId) {
+		Node n = gsGraph.getNode(vertexId);
+		Collection<String> res = new ArrayList<String>(n.getInDegree());
+		for (Edge e: n.getEnteringEdgeSet()) {
+			res.add(e.getNode0().getId());
+		}
+		return res;
+	}
+
+	@Override
+	public Collection<String> getOutNeighboors(String vertexId) {
+		Node n = gsGraph.getNode(vertexId);
+		Collection<String> res = new ArrayList<String>(n.getOutDegree());
+		for (Edge e: n.getLeavingEdgeSet()) {
+			res.add(e.getNode1().getId());
+		}
+		return res;
+	}
+
+
+	@Override
+	public Collection<String> getAllIncidentEdges(String vertexId) {
+		Node n = gsGraph.getNode(vertexId);
+		Collection<String> res = new ArrayList<String>(n.getDegree());
+		for (Edge e: n.getEdgeSet()) {
+			res.add(e.getNode0().getId());
+		}
+		return res;
+	}
+
+
+	
+
 }

@@ -49,7 +49,8 @@ public class IncompleteGridAlgo extends GraphStreamGeneratorAlgo {
 
 	@Override
 	public BaseGenerator getBaseGeneratorForExec(
-			AbstractGraphStreamGeneratorExec exec) {
+			AbstractGraphStreamGeneratorExec exec,
+			AlgoInstance algoInstance) {
 		return new GridGenerator();
 	}
 
