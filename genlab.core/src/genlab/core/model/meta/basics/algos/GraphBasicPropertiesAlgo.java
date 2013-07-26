@@ -42,6 +42,12 @@ public class GraphBasicPropertiesAlgo extends BasicAlgo {
 			"density in the graph"
 			);
 	
+	public static final DoubleInOut OUTPUT_AVERAGE_DEGREE = new DoubleInOut(
+			"out_avdegree", 
+			"average degree", 
+			"average degree"
+			);
+	
 	/*
 	public static final BooleanInOut OUTPUT_DIRECTED = new DoubleInOut(
 			"out_density", 
@@ -64,6 +70,7 @@ public class GraphBasicPropertiesAlgo extends BasicAlgo {
 		outputs.add(OUTPUT_COUNT_EDGES);
 		outputs.add(OUTPUT_COUNT_VERTICES);
 		outputs.add(OUTPUT_DENSITY);
+		outputs.add(OUTPUT_AVERAGE_DEGREE);
 	}
 
 	@Override
@@ -99,6 +106,9 @@ public class GraphBasicPropertiesAlgo extends BasicAlgo {
 				}
 				result.setResult(OUTPUT_DENSITY, density);
 				
+				
+				result.setResult(OUTPUT_AVERAGE_DEGREE, ((double)glGraph.getEdgesCount())/(double)glGraph.getVerticesCount());
+
 				progress.setComputationState(ComputationState.FINISHED_OK);
 				
 			

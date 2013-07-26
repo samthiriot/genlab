@@ -101,6 +101,18 @@
             class="genlab.graphstream.algos.generators.EuclidianGraphGenerator"
             id="genlab.graphstream.algos.generators.EuclidianGraphGenerator">
       </algo>
+      <algo
+            class="genlab.graphstream.algos.generators.RandomGeneratorAlgo"
+            id="genlab.graphstream.algos.generators.RandomGeneratorAlgo">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.generators.PetersenAlgo"
+            id="genlab.graphstream.algos.generators.PetersenAlgo">
+      </algo>
+      <algo
+            class="genlab.graphstream.algos.generators.LobsterAlgo"
+            id="genlab.graphstream.algos.generators.LobsterAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -294,6 +306,46 @@
          <more_info
                content="wikipedia page with a definition of euclidian graphs"
                url="https://en.wikipedia.org/wiki/Geometric_graph_theory">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.graphstream.algos.generators.RandomGeneratorAlgo"
+            library_id="genlab.graphstream.doc.library.graphstream">
+         <more_info
+               content="javadoc for this algorithm"
+               url="http://graphstream-project.org/api/gs-algo/org/graphstream/algorithm/generator/RandomGenerator.html">
+         </more_info>
+         <more_info
+               content="description of this algorithm by graphstream "
+               url="http://graphstream-project.org/doc/Generators/Random-graph-generator_1.0/">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.graphstream.algos.generators.PetersenAlgo"
+            description="The Petersen graph is named for Julius Petersen, who in 1898 constructed it to be the smallest bridgeless cubic graph with no three-edge-coloring. Although the graph is generally credited to Petersen, it had in fact first appeared 12 years earlier, in a paper by A. B. Kempe (1886). Donald Knuth states that the Petersen graph is &quot;a remarkable configuration that serves as a counterexample to many optimistic predictions about what might be true for graphs in general.&quot;"
+            library_id="genlab.graphstream.doc.library.graphstream">
+         <more_info
+               content="Petersen, Julius (1898), &quot;Sur le théorème de Tait&quot;, L&apos;Intermédiaire des Mathématiciens 5: 225–227.">
+         </more_info>
+         <more_info
+               content="wikipedia page on Petersen graphs"
+               url="http://en.wikipedia.org/wiki/Petersen_graph">
+         </more_info>
+         <more_info
+               content="javadoc of this algorithm"
+               url="http://graphstream-project.org/api/gs-algo/org/graphstream/algorithm/generator/PetersenGraphGenerator.html">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.graphstream.algos.generators.LobsterAlgo"
+            library_id="genlab.graphstream.doc.library.graphstream">
+         <more_info
+               content="graphstream javadoc for this algorithm"
+               url="http://graphstream-project.org/api/gs-algo/org/graphstream/algorithm/generator/LobsterGenerator.html">
+         </more_info>
+         <more_info
+               content="definition in wikipedia"
+               url="http://en.wikipedia.org/wiki/List_of_graphs#Lobster">
          </more_info>
       </docalgo>
    </extension>

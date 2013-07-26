@@ -257,11 +257,13 @@ public class GraphstreamConvertors {
 				generator.begin();
 				if (countIterations) {
 					for (int i = 0; i < maxNodes;  i++ ) {
-						generator.nextEvents();
+						if (!generator.nextEvents())
+							break;
 					}
 				} else {
 					while (ourSink.graph.getVerticesCount() <= maxNodes) {
-						generator.nextEvents();
+						if (!generator.nextEvents())
+							break;
 					}
 				}
 				generator.end();

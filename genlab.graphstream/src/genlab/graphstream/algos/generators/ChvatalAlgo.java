@@ -1,18 +1,10 @@
 package genlab.graphstream.algos.generators;
 
+import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.meta.ExistingAlgoCategories;
+
 import org.graphstream.algorithm.generator.BaseGenerator;
 import org.graphstream.algorithm.generator.ChvatalGenerator;
-
-import genlab.core.exec.IExecution;
-import genlab.core.model.exec.IAlgoExecution;
-import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.meta.BasicAlgo;
-import genlab.core.model.meta.ExistingAlgoCategories;
-import genlab.core.model.meta.IGenlabWorkflow;
-import genlab.core.model.meta.InputOutput;
-import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
-import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
-import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 
 public class ChvatalAlgo extends GraphStreamGeneratorAlgo {
 

@@ -213,6 +213,12 @@ public class IGraphRawLibrary {
 	public native int igraph_vector_init (Igraph_vector_t v, int size);
 
 	/*
+	 * void igraph_vector_destroy   (igraph_vector_t* v);
+	 */
+	public native void igraph_vector_destroy(Igraph_vector_t v);
+
+	
+	/*
 	 * 
      */
 	public native int igraph_vector_size (Igraph_vector_t v);
@@ -265,14 +271,16 @@ int igraph_version(const char **version_string,
 		    igraph_vector_t *x, 
 		    igraph_vector_t *y
 		    );
-	public void igraph_grg_game(
-			MyGraph graph, // TODO
-			int nodes,
-			float radius,
-			boolean torus,
-			
-			);
+	
 */
+	public native int igraph_grg_game(
+			InternalGraphStruct graph, 
+			int nodes,
+		    double radius, 
+		    boolean torus,
+		    Igraph_vector_t x, 
+		    Igraph_vector_t y
+		    );
 	/*
 	 * igraph_game.h
 	 */
@@ -389,18 +397,36 @@ int igraph_citing_cited_type_game(igraph_t *graph, igraph_integer_t nodes,
 				  igraph_integer_t edges_per_step,
 				  igraph_bool_t directed);
 
-int igraph_forest_fire_game(igraph_t *graph, igraph_integer_t nodes,
-			    igraph_real_t fw_prob, igraph_real_t bw_factor,
-			    igraph_integer_t ambs, igraph_bool_t directed);
+*/
+	
+	/*
+	int igraph_forest_fire_game(igraph_t *graph, igraph_integer_t nodes,
+				    igraph_real_t fw_prob, igraph_real_t bw_factor,
+				    igraph_integer_t ambs, igraph_bool_t directed);
+	*/
+	public native int igraph_forest_fire_game(InternalGraphStruct graph, int nodes,
+		    double fw_prob, double bw_factor,
+		    int pambs, boolean directed);
 
-
+	/*
 int igraph_simple_interconnected_islands_game(
 				igraph_t *graph, 
 				igraph_integer_t islands_n, 
 				igraph_integer_t islands_size,
 				igraph_real_t islands_pin, 
 				igraph_integer_t n_inter);
+*/
 
+	
+	public native int igraph_simple_interconnected_islands_game(
+			InternalGraphStruct graph, 
+			int islands_n, 
+			int islands_size,
+			double islands_pin, 
+			int n_inter
+			);
+
+	/*
 int igraph_static_fitness_game(igraph_t *graph, igraph_integer_t no_of_edges,
                 igraph_vector_t* fitness_out, igraph_vector_t* fitness_in,
                 igraph_bool_t loops, igraph_bool_t multiple);
@@ -487,6 +513,13 @@ int igraph_k_regular_game(igraph_t *graph,
 	 * int igraph_add_edge(igraph_t *graph, igraph_integer_t from, igraph_integer_t to);
 	 */
 	public native int igraph_add_edge(Pointer graph, int from, int to);
+	
+	/*
+	 * int igraph_edge(const igraph_t *graph, igraph_integer_t eid, 
+		igraph_integer_t *from, igraph_integer_t *to);
+	 */
+	public native int igraph_edge(Pointer graph, int eid, 
+			IntByReference from, IntByReference to);
 	
 	/*
 	 * int igraph_average_path_length(const igraph_t *graph, igraph_real_t *res,

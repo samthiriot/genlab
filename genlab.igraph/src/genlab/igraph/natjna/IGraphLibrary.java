@@ -1,17 +1,15 @@
 package genlab.igraph.natjna;
 
-import java.util.Arrays;
-
+import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
-import genlab.core.model.meta.basics.graphs.IGenlabGraph;
-import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
+import java.util.Iterator;
+
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.DoubleByReference;
-import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
@@ -153,7 +151,62 @@ public class IGraphLibrary {
 		
 	}
 	
+	public IGraphGraph generateForestFire(int size, double fw_prob, double bw_factor,
+		    int pambs, boolean directed) {
 
+		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+				
+		//GLLogger.debugTech("calling igraph", getClass());
+		final long startTime = System.currentTimeMillis();
+		final int res = rawLib.igraph_forest_fire_game(
+				g, 
+				size, 
+				fw_prob, 
+				bw_factor, 
+				pambs, 
+				directed
+				);
+		final long duration = System.currentTimeMillis() - startTime;
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		listOfMessages.debugTech("processing took "+duration+" ms", getClass());
+		// detect errors
+		checkIGraphResult(res);
+		
+		IGraphGraph result = new IGraphGraph(this, rawLib, g, directed);
+		
+		// basic checks
+		// TODO
+		
+		return result;
+		
+	}
+	
+	public IGraphGraph generateInterconnectedIslands(
+			int islands_n, 
+			int islands_size,
+			double islands_pin, 
+			int n_inter) {
+
+		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+				
+		//GLLogger.debugTech("calling igraph", getClass());
+		final long startTime = System.currentTimeMillis();
+		final int res = rawLib.igraph_simple_interconnected_islands_game(g, islands_n, islands_size, islands_pin, n_inter);
+		
+		final long duration = System.currentTimeMillis() - startTime;
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		listOfMessages.debugTech("processing took "+duration+" ms", getClass());
+		// detect errors
+		checkIGraphResult(res);
+		
+		IGraphGraph result = new IGraphGraph(this, rawLib, g, false);
+		
+		// basic checks
+		// TODO
+		
+		return result;
+		
+	}
 	
 	public IGraphGraph generateWattsStrogatz(int size, int dimension, double proba, int nei, boolean directed, boolean allowLoops) {
 		
@@ -179,6 +232,45 @@ public class IGraphLibrary {
 		IGraphGraph result = new IGraphGraph(this, rawLib, g, directed);
 		
 		return result;
+	}
+	
+	public IGraphGraph generateGRG(int nodes, double radius, boolean torus) {
+		
+		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+		
+		IGraphRawLibrary.Igraph_vector_t x = new IGraphRawLibrary.Igraph_vector_t();
+		rawLib.igraph_vector_init(x, 0);
+		IGraphRawLibrary.Igraph_vector_t y = new IGraphRawLibrary.Igraph_vector_t();
+		rawLib.igraph_vector_init(y, 0);
+		
+		try {
+		
+			//GLLogger.debugTech("calling igraph", getClass());
+			final long startTime = System.currentTimeMillis();
+			int res = rawLib.igraph_grg_game(
+					g,
+					nodes,
+					radius,
+					torus,
+					x,
+					y
+					);
+			final long duration = System.currentTimeMillis() - startTime;
+			//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+	
+			// detect errors
+			checkIGraphResult(res);
+			
+			IGraphGraph result = new IGraphGraph(this, rawLib, g, false);
+			result.xPositions = x.asDoubleArray(nodes);
+			result.yPositions = y.asDoubleArray(nodes);
+					
+			return result;
+
+		} finally {
+			rawLib.igraph_vector_destroy(x);
+			rawLib.igraph_vector_destroy(y);
+		}
 	}
 	
 
@@ -384,51 +476,56 @@ public class IGraphLibrary {
 		rawLib.igraph_vector_init(csize, 0);
 		IntByReference count = new IntByReference();
 		
-		//GLLogger.debugTech("calling igraph to compute the clusters...", getClass());
-
-		final int res2 = rawLib.igraph_clusters(
-				g.getPointer(), 
-				membership, 
-				csize, 
-				count, 
-				1
-				);
-		
-		final long duration = System.currentTimeMillis() - startTime;
-		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
-		
-		checkIGraphResult(res2);
-		
-		// process and store results
-		
-		// count
-		{
-			final int countInt = count.getValue();
-			//System.err.println("igraph/ components: "+countInt);
-			g.setCachedProperty(GRAPH_KEY_COMPONENTS_COUNT, new Integer(countInt));
-		
-		}
-		
-		// memberships
-		{
-			final int membershipSize = rawLib.igraph_vector_size(membership);
-			final double[] memberships = membership.asDoubleArray(membershipSize);
-			g.setCachedProperty(GRAPH_KEY_COMPONENTS_MEMBERSHIP, membership);
-		}
-		
-		// size
-		{
-			final int csizeSize = rawLib.igraph_vector_size(csize);
-			final double[] csizes = csize.asDoubleArray(csizeSize);
-			g.setCachedProperty(GRAPH_KEY_COMPONENTS_CLUSTER_SIZES, csizes);
-			double max = 0;
-			for (int i=0; i<csizes.length; i++) {
-				max = Math.max(csizes[i], max);
+		try {
+			//GLLogger.debugTech("calling igraph to compute the clusters...", getClass());
+	
+			final int res2 = rawLib.igraph_clusters(
+					g.getPointer(), 
+					membership, 
+					csize, 
+					count, 
+					1
+					);
+			
+			final long duration = System.currentTimeMillis() - startTime;
+			//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+			
+			checkIGraphResult(res2);
+			
+			// process and store results
+			
+			// count
+			{
+				final int countInt = count.getValue();
+				//System.err.println("igraph/ components: "+countInt);
+				g.setCachedProperty(GRAPH_KEY_COMPONENTS_COUNT, new Integer(countInt));
+			
 			}
-			//System.err.println("igraph/ giant cluster: "+max);
-			g.setCachedProperty(GRAPH_KEY_COMPONENTS_GIANT_SIZE, new Integer((int)max));
+			
+			// memberships
+			{
+				final int membershipSize = rawLib.igraph_vector_size(membership);
+				final double[] memberships = membership.asDoubleArray(membershipSize);
+				g.setCachedProperty(GRAPH_KEY_COMPONENTS_MEMBERSHIP, membership);
+			}
+			
+			// size
+			{
+				final int csizeSize = rawLib.igraph_vector_size(csize);
+				final double[] csizes = csize.asDoubleArray(csizeSize);
+				g.setCachedProperty(GRAPH_KEY_COMPONENTS_CLUSTER_SIZES, csizes);
+				double max = 0;
+				for (int i=0; i<csizes.length; i++) {
+					max = Math.max(csizes[i], max);
+				}
+				//System.err.println("igraph/ giant cluster: "+max);
+				g.setCachedProperty(GRAPH_KEY_COMPONENTS_GIANT_SIZE, new Integer((int)max));
+			}
+			
+		} finally {
+			rawLib.igraph_vector_destroy(csize);
+			rawLib.igraph_vector_destroy(membership);
 		}
-		
 		
 	}
 	
@@ -527,7 +624,45 @@ public class IGraphLibrary {
 		return clustering;
 		
 	}
+	
+	
+	protected class EdgesIterator implements Iterator<IGraphEdge> {
 
+		private final IGraphGraph g;
+		
+		int lastEdgeId = 0;
+		final int maxEdge;
+		
+		public EdgesIterator(IGraphGraph g) {
+			this.g = g;
+			maxEdge = getEdgeCount(g);
+		}
+		
+		@Override
+		public boolean hasNext() {
+			
+			return lastEdgeId < maxEdge;
+		}
+
+		@Override
+		public IGraphEdge next() {
+			IntByReference from = new IntByReference();
+			IntByReference to = new IntByReference();
+			rawLib.igraph_edge(g.getPointer(), lastEdgeId, from, to);
+			
+			return new IGraphEdge(lastEdgeId++, from.getValue(), to.getValue());
+		}
+
+		@Override
+		public void remove() {
+			throw new NotImplementedException();
+		}
+		
+	}
+
+	public Iterator<IGraphEdge> getEdgeIterator(IGraphGraph g) {
+		return new EdgesIterator(g);
+	}
 	
 	/*
 	public IGenlabGraph computeClusterInfos(IGraphGraph g) {

@@ -46,7 +46,6 @@ public abstract class GraphStreamGeneratorAlgo extends GraphStreamAlgo {
 				ExistingAlgoCategories.GENERATORS_GRAPHS.getTotalId()
 				);
 		
-		registerParameter(PARAM_DIRECTED);
 		
 	}
 	
@@ -61,6 +60,8 @@ public abstract class GraphStreamGeneratorAlgo extends GraphStreamAlgo {
 				categoryId
 				);
 		
+		registerParameter(PARAM_DIRECTED);
+
 		outputs.add(OUTPUT_GRAPH);
 	}
 	

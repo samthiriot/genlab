@@ -15,6 +15,26 @@
             class="genlab.igraph.algos.measure.IGraphClusteringAlgo"
             id="genlab.igraph.algos.measure.IGraphClusteringAlgo">
       </algo>
+      <algo
+            class="genlab.igraph.algos.generation.WattsStrogatzGeneratorAlgo"
+            id="genlab.igraph.algos.generation.WattsStrogatzGeneratorAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.generation.GRGGeneratorAlgo"
+            id="genlab.igraph.algos.generation.GRGGeneratorAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.generation.ErdosRenyiGNPGeneratorAlgo"
+            id="genlab.igraph.algos.generation.ErdosRenyiGNPGeneratorAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.generation.ForestFireGeneratorAlgo"
+            id="genlab.igraph.algos.generation.ForestFireGeneratorAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.generation.SIIGeneratorAlgo"
+            id="genlab.igraph.algos.generation.SIIGeneratorAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -25,6 +45,10 @@
       <author
             id="genlab.igraph.doc.authors.nepusz"
             name="Tamas Nepusz">
+      </author>
+      <author
+            id="genlab.igraph.doc.authors.KeithBriggs"
+            name="Keith Briggs">
       </author>
       <library
             author="genlab.igraph.doc.authors.gabor"
@@ -110,6 +134,63 @@
          <more_info
                content="the igraph page for this algorithm"
                url="http://igraph.sourceforge.net/doc/html/ch13s11.html#igraph_transitivity_local_undirected">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.generation.WattsStrogatzGeneratorAlgo"
+            library_id="genlab.igraph.doc.library.igraph"
+            time_complexity=" O(|V|*d^o+|E|), |V| ans |E| are the number of vertices and edges, d is the average degree, o is the nei argument.">
+         <more_info
+               content="wikipedia page on this algorithm"
+               url="http://en.wikipedia.org/wiki/Watts_and_Strogatz_model">
+         </more_info>
+         <more_info
+               content="igraph documentation on this algorithm"
+               url="http://igraph.sourceforge.net/doc/html/ch09s02.html#igraph_watts_strogatz_game">
+         </more_info>
+         <more_info
+               content="Duncan J Watts and Steven H Strogatz: Collective dynamics of “small world” networks, Nature 393, 440-442, 1998.">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.generation.GRGGeneratorAlgo"
+            description="A geometric random graph is created by dropping points (=vertices) randomly to the unit square and then connecting all those pairs which are less than radius apart in Euclidean norm."
+            library_id="genlab.graphstream.doc.library.graphstream"
+            time_complexity="O(|V|^2+|E|)">
+         <more_info
+               content="igraph documentatipon"
+               url="http://igraph.sourceforge.net/doc/html/ch09s02.html#igraph_grg_game">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.generation.ErdosRenyiGNPGeneratorAlgo"
+            library_id="genlab.igraph.doc.library.igraph">
+         <more_info
+               content="igraph documentation on this algorithm"
+               url="http://igraph.sourceforge.net/doc/html/ch09s02.html#igraph_grg_game">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.generation.ForestFireGeneratorAlgo"
+            library_id="genlab.igraph.doc.library.igraph">
+         <more_info
+               content="Jure Leskovec, Jon Kleinberg and Christos Faloutsos. Graphs over time: densification laws, shrinking diameters and possible explanations. KDD &apos;05: Proceeding of the eleventh ACM SIGKDD international conference on Knowledge discovery in data mining , 177--187, 2005.">
+         </more_info>
+         <more_info
+               content="Novel version of the algo used for this implementation"
+               url="http://www.cs.cmu.edu/~jure/pubs/powergrowth-tkdd.pdf">
+         </more_info>
+         <more_info
+               content="igraph documentation for this algorithm"
+               url="http://igraph.sourceforge.net/doc/html/ch09s02.html#igraph_forest_fire_game">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.generation.SIIGeneratorAlgo"
+            library_id="genlab.igraph.doc.library.igraph">
+         <more_info
+               content="igraph documentation"
+               url="http://igraph.sourceforge.net/doc/html/ch09s02.html">
          </more_info>
       </docalgo>
    </extension>

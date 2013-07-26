@@ -1,6 +1,7 @@
 package genlab.igraph.natjna;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.sun.jna.Pointer;
@@ -11,7 +12,7 @@ import com.sun.jna.Pointer;
  * @author Samuel Thiriot
  *
  */
-public class IGraphGraph {
+public class IGraphGraph implements Iterable<IGraphEdge> {
 
 	public final IGraphLibrary lib;
 
@@ -32,6 +33,10 @@ public class IGraphGraph {
 	 * Stores caches properties to avoid useless computations
 	 */
 	private Map<String,Object> cachedProperties = new HashMap<String, Object>();
+	
+	public double[] xPositions = null;
+	public double[] yPositions = null;
+	
 	
 	public IGraphGraph(IGraphLibrary lib, IGraphRawLibrary baseLib, IGraphRawLibrary.InternalGraphStruct graphStruct, boolean directed) {
 		this.lib = lib;
@@ -119,7 +124,10 @@ public class IGraphGraph {
 	public void graphChanged() {
 		clearCachedProperties();
 	}
-	
+
+	public Iterator<IGraphEdge> iterator() {
+		return lib.getEdgeIterator(this);
+	}
 	
 
 }

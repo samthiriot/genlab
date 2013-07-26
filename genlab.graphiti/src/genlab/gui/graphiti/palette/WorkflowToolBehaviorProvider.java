@@ -25,6 +25,7 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.internal.Messages;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.palette.IPaletteCompartmentEntry;
+import org.eclipse.graphiti.palette.IToolEntry;
 import org.eclipse.graphiti.palette.impl.ObjectCreationToolEntry;
 import org.eclipse.graphiti.palette.impl.PaletteCompartmentEntry;
 import org.eclipse.graphiti.tb.ContextButtonEntry;
@@ -150,9 +151,11 @@ public class WorkflowToolBehaviorProvider extends DefaultToolBehaviorProvider {
 								);
 	
 						compartmentEntry.addToolEntry(objectCreationToolEntry);
-	
+						
+
 					}
 				
+
 				} catch (RuntimeException e) {
 					GLLogger.errorTech(
 							"error during the initialization of workflow tools; the tool "+createFeature.getCreateName()+" will not be available", 
@@ -173,6 +176,21 @@ public class WorkflowToolBehaviorProvider extends DefaultToolBehaviorProvider {
 				return c1.getLabel().compareTo(c2.getLabel());
 			}
 		});
+		
+		// and sort inside compartments
+		for (PaletteCompartmentEntry compartmentEntry: categId2compartment.values()) {
+			Collections.sort(
+					compartmentEntry.getToolEntries(), 
+					new Comparator<IToolEntry>() {
+
+						@Override
+						public int compare(IToolEntry arg0, IToolEntry arg1) {
+							return arg0.getLabel().toLowerCase().compareTo(arg1.getLabel().toLowerCase());
+						}
+				
+					});
+		}
+
 
 		// add compartments from super class
 		{
