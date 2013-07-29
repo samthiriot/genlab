@@ -15,7 +15,7 @@ import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
 
 /**
  * TODO add help (see parent)
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public class NewWorkflowWizardDescPage extends WizardPage implements Listener  {

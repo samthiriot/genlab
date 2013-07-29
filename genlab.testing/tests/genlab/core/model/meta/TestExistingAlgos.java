@@ -16,7 +16,7 @@ import org.junit.Test;
 /**
  * TODO to be changed to a generic test
  * 
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public class TestExistingAlgos {

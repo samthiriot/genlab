@@ -5,7 +5,7 @@ import org.graphstream.stream.file.FileSourceEdge;
 
 /**
  * TODO add directed parameter
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public class GraphStreamEdgeParser extends AbstractGraphStreamGraphParser {

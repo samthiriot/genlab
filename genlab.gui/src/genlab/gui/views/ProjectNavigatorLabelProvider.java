@@ -14,7 +14,7 @@ import org.eclipse.ui.navigator.IPipelinedTreeContentProvider2;
  * TODO IPipelinedTreeContentProvider2
  * http://devdesignandstuff.blogspot.fr/2010/10/contributing-to-eclipse-common.html
  * 
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public class ProjectNavigatorLabelProvider extends LabelProvider  {

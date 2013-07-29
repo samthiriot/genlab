@@ -12,7 +12,7 @@ import org.eclipse.jface.viewers.Viewer;
 /**
  * TODO view http://devdesignandstuff.blogspot.fr/2010/10/contributing-to-eclipse-common.html
  * 
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public class ProjectNavigatorContentProvider implements ITreeContentProvider {

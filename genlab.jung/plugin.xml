@@ -7,6 +7,18 @@
             class="genlab.jung.algos.DistanceJungAlgo"
             id="genlab.jung.algos.DistanceJungAlgo">
       </algo>
+      <algo
+            class="genlab.jung.generators.KleinbergSmallWorldGeneratorAlgo"
+            id="genlab.jung.generators.KleinbergSmallWorldGenerator">
+      </algo>
+      <algo
+            class="genlab.jung.generators.EppsteinPowerLawGeneratorAlgo"
+            id="genlab.jung.generators.EppsteinPowerLawGeneratorAlgo">
+      </algo>
+      <algo
+            class="genlab.jung.generators.BarabasiAlbertGeneratorAlgo"
+            id="genlab.jung.generators.BarabasiAlbertGeneratorAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -53,6 +65,58 @@
          <integrator_author_id
                id="genlab.core.doc.authors.samthiriot">
          </integrator_author_id>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.jung.generators.KleinbergSmallWorldGenerator"
+            library_id="genlab.jung.doc.library.jung">
+         <original_author_id
+               id="genlab.jung.doc.authors.JoshuaOMadadhain">
+         </original_author_id>
+         <more_info
+               content="JUNG javadoc for this algorithm"
+               url="http://jung.sourceforge.net/doc/api/edu/uci/ics/jung/algorithms/generators/random/KleinbergSmallWorldGenerator.html">
+         </more_info>
+         <more_info
+               content="Navigation in a small world J. Kleinberg, Nature 406(2000), 845.">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.jung.generators.EppsteinPowerLawGeneratorAlgo"
+            library_id="genlab.jung.doc.library.jung">
+         <more_info
+               content="A Steady State Model for Graph Power Law by David Eppstein and Joseph Wang">
+         </more_info>
+         <original_author_id
+               id="genlab.jung.doc.authors.ScottWhite">
+         </original_author_id>
+         <more_info
+               content="javadoc of the JUNG algorithm"
+               url="http://jung.sourceforge.net/doc/api/edu/uci/ics/jung/algorithms/generators/random/EppsteinPowerLawGenerator.html">
+         </more_info>
+      </docalgo>
+      <author
+            id="genlab.jung.docs.authors.TomNelson"
+            name="Tom Nelson">
+      </author>
+      <docalgo
+            algo_id="genlab.jung.generators.BarabasiAlbertGeneratorAlgo"
+            library_id="genlab.jung.doc.library.jung">
+         <more_info
+               content="JUNG javadoc for this algorithm"
+               url="http://jung.sourceforge.net/doc/api/edu/uci/ics/jung/algorithms/generators/random/BarabasiAlbertGenerator.html">
+         </more_info>
+         <more_info
+               content="&quot;A.-L. Barabasi and R. Albert, Emergence of scaling in random networks, Science 286, 1999.">
+         </more_info>
+         <original_author_id
+               id="genlab.jung.doc.authors.ScottWhite">
+         </original_author_id>
+         <original_author_id
+               id="genlab.jung.doc.authors.JoshuaOMadadhain">
+         </original_author_id>
+         <original_author_id
+               id="genlab.jung.docs.authors.TomNelson">
+         </original_author_id>
       </docalgo>
    </extension>
 

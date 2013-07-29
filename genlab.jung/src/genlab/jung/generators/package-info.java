@@ -5,4 +5,4 @@
  * @author Samuel Thiriot
  *
  */
-package genlab.igraph.natjna;
+package genlab.jung.generators;

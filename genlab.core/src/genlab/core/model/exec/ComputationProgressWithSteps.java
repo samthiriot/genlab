@@ -12,7 +12,7 @@ import genlab.core.usermachineinteraction.GLLogger;
  * TODO state
  * TODO timestamps
  * 
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public class ComputationProgressWithSteps implements IComputationProgress, Cloneable {

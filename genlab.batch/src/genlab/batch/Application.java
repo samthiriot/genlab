@@ -74,7 +74,7 @@ public class Application implements IApplication {
 	protected void printUsage() {
 		System.out.println("Genlab headless: usage");
 		System.out.println("... still to be defined (TODO)"); // TODO command line ? script ?
-		System.out.println("    java -Dosgi.requiredJavaVersion=1.5 -Dhelp.lucene.tokenizer=standard -XX:MaxPermSize=256m -Xms40m -Xmx512m -Dfile.encoding=UTF-8 -classpath /local00/home/B12772/opt/eclipseJuno/plugins/org.eclipse.equinox.launcher_1.3.0.v20120522-1813.jar org.eclipse.equinox.launcher.Main -launcher /local00/home/B12772/opt/eclipseJuno/eclipse -product genlab.batch.genlab_batch -os linux -ws gtk -arch x86_64 -nl fr_FR -consoleLog  <path to the workflow file>");
+		System.out.println("    java -Dosgi.requiredJavaVersion=1.5 -Dhelp.lucene.tokenizer=standard -XX:MaxPermSize=256m -Xms40m -Xmx512m -Dfile.encoding=UTF-8 -classpath /local00/home/Samuel Thiriot/opt/eclipseJuno/plugins/org.eclipse.equinox.launcher_1.3.0.v20120522-1813.jar org.eclipse.equinox.launcher.Main -launcher /local00/home/Samuel Thiriot/opt/eclipseJuno/eclipse -product genlab.batch.genlab_batch -os linux -ws gtk -arch x86_64 -nl fr_FR -consoleLog  <path to the workflow file>");
 		System.out.println();
 
 	}

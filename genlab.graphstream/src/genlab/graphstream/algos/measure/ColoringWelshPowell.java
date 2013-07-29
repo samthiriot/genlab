@@ -79,7 +79,6 @@ public class ColoringWelshPowell extends AbstractGraphStreamMeasure {
 				
 				Graph outGSgraph = ((AbstractGraphstreamBasedGraph)outGraph)._getInternalGraphstreamGraph();
 				
-				
 				WelshPowell wp = new WelshPowell(attributeId);
 				wp.init(outGSgraph);
 				wp.compute();

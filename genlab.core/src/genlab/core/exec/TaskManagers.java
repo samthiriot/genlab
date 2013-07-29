@@ -2,7 +2,7 @@ package genlab.core.exec;
 
 /**
  * Standard, minimal task managers
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public class TaskManagers {

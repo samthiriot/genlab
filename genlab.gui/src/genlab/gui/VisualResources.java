@@ -48,7 +48,7 @@ import org.eclipse.ui.ide.FileStoreEditorInput;
 /**
  * TODO see ISharedImages.
  * 
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public class VisualResources {

@@ -6,7 +6,7 @@ import java.util.Map;
  * PArameters based on this parameter will be edited by String, 
  * even if they can have another value
  * 
- * @author B12772
+ * @author Samuel Thiriot
  *
  * @param <ClassSomething>
  */

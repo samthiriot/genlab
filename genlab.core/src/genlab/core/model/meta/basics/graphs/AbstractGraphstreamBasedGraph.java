@@ -216,7 +216,7 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 			throw new WrongParametersException("As this graph is mixed, you have to precise for each new edge if it is directed or not.");
 		
 		addEdge(
-				vertexIdFrom+"_to_"+vertexIdTo, 
+				id, 
 				vertexIdFrom, 
 				vertexIdTo, 
 				getDirectionality()==GraphDirectionality.DIRECTED
@@ -462,7 +462,11 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 
 	@Override
 	public boolean removeEdge(String id) {
-		return gsGraph.removeEdge(id) != null;
+		try {
+			return (gsGraph.removeEdge(id) != null);
+		} catch (org.graphstream.graph.ElementNotFoundException e) {
+			throw new WrongParametersException("this edge does not exists: "+id, e);
+		}
 	}	
 
 
@@ -669,7 +673,7 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 		Node n = gsGraph.getNode(vertexId);
 		Collection<String> res = new ArrayList<String>(n.getDegree());
 		for (Edge e: n.getEdgeSet()) {
-			res.add(e.getNode0().getId());
+			res.add(e.getId());
 		}
 		return res;
 	}

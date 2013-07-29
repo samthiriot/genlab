@@ -75,7 +75,7 @@ public class IGraphRawLibrary {
 	/**
 	 * Reflects the igraph internal igraph_vector_t structure.
 	 * Warning, it should first by initialized using the igraph init vector method.
-	 * @author B12772
+	 * @author Samuel Thiriot
 	 *
 	 */
 	public static class Igraph_vector_t extends Structure {
