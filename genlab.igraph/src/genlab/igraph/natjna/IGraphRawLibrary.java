@@ -10,7 +10,6 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.ptr.DoubleByReference;
-import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
@@ -113,6 +112,7 @@ public class IGraphRawLibrary {
 			return * (v->stor_begin + pos);
 		}
 		*/
+		
 		/**
 		 * Returns the element with this index, supposing it is a integer.
 		 * Warning: if the vector was changed (memory copy)
@@ -213,6 +213,16 @@ public class IGraphRawLibrary {
 	public native int igraph_vector_init (Igraph_vector_t v, int size);
 
 	/*
+	 * int igraph_vector_init_copy(igraph_vector_t *v, 
+				      igraph_real_t *data, long int length);
+	 */
+	public native int igraph_vector_init_copy(
+			Igraph_vector_t v, 
+		    Pointer data, 
+		    int length
+		    );
+	
+	/*
 	 * void igraph_vector_destroy   (igraph_vector_t* v);
 	 */
 	public native void igraph_vector_destroy(Igraph_vector_t v);
@@ -281,7 +291,13 @@ int igraph_version(const char **version_string,
 		    Igraph_vector_t x, 
 		    Igraph_vector_t y
 		    );
-	
+
+	/*
+	int igraph_rewire(igraph_t *graph, igraph_integer_t n, igraph_rewiring_t mode);
+	IGRAPH_REWIRING_SIMPLE=0 
+	 */
+	public native int igraph_rewire(Pointer graph, int n, int mode);
+
 	
 	/*
 	 * igraph_game.h
@@ -470,6 +486,19 @@ int igraph_k_regular_game(igraph_t *graph,
 			boolean loops
 			);
 	
+
+	/*
+	 * int igraph_lcf_vector(igraph_t *graph, igraph_integer_t n,
+		      const igraph_vector_t *shifts, 
+		      igraph_integer_t repeats);
+	 */
+	public native int igraph_lcf_vector(
+			InternalGraphStruct graph, 
+			int n,
+		    Igraph_vector_t shifts, 
+		    int repeats
+		    );
+	
 	/*
 	 * igraph_integer_t igraph_vcount(const igraph_t *graph);
 	 */
@@ -566,6 +595,60 @@ int igraph_k_regular_game(igraph_t *graph,
 	 */
 	public native int igraph_transitivity_undirected(Pointer graph, DoubleByReference res, int mode);
 	
+	/*
+	 * int igraph_isomorphic(const igraph_t *graph1, const igraph_t *graph2,
+		      igraph_bool_t *iso);
+
+	 */
+	public native int igraph_isomorphic(Pointer graph1, Pointer graph2,
+		      IntByReference iso);
+
+	/*
+	 * int igraph_count_isomorphisms_vf2(const igraph_t *graph1, const igraph_t *graph2, 
+				  const igraph_vector_int_t *vertex_color1,
+				  const igraph_vector_int_t *vertex_color2,
+				  const igraph_vector_int_t *edge_color1,
+				  const igraph_vector_int_t *edge_color2,
+				  igraph_integer_t *count,
+				  igraph_isocompat_t *node_compat_fn,
+				  igraph_isocompat_t *edge_compat_fn,
+				  void *arg);
+
+	 */
+	public native int igraph_count_isomorphisms_vf2(Pointer graph1, Pointer graph2, 
+			  Igraph_vector_t vertex_color1,
+			  Igraph_vector_t vertex_color2,
+			  Igraph_vector_t edge_color1,
+			  Igraph_vector_t edge_color2,
+			  IntByReference count,
+			  Pointer node_compat_fn,
+			  Pointer edge_compat_fn,
+			  Pointer arg
+			  );
+	/*
+	 * int igraph_isomorphic_vf2(const igraph_t *graph1, const igraph_t *graph2, 
+			  const igraph_vector_int_t *vertex_color1,
+			  const igraph_vector_int_t *vertex_color2,
+			  const igraph_vector_int_t *edge_color1,
+			  const igraph_vector_int_t *edge_color2,
+			  igraph_bool_t *iso, igraph_vector_t *map12, 
+			  igraph_vector_t *map21,
+			  igraph_isocompat_t *node_compat_fn,
+			  igraph_isocompat_t *edge_compat_fn,
+			  void *arg);
+	 */
+	public native int igraph_isomorphic_vf2(Pointer graph1, Pointer graph2, 
+			  Igraph_vector_t vertex_color1,
+			  Igraph_vector_t vertex_color2,
+			  Igraph_vector_t edge_color1,
+			  Igraph_vector_t edge_color2,
+			  IntByReference iso, 
+			  Igraph_vector_t map12, 
+			  Igraph_vector_t map21,
+			  Pointer node_compat_fn,
+			  Pointer edge_compat_fn,
+			  Pointer arg
+			  );
 	
 	/*
 	public native int int igraph_transitivity_local_undirected(const igraph_t *graph,

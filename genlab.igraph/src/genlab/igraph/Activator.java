@@ -1,11 +1,15 @@
 package genlab.igraph;
 
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.igraph.algos.generation.lcffamous.FamousLCFGraphs;
 import genlab.igraph.natjna.IGraphRawLibrary;
 
 import org.eclipse.core.runtime.Plugin;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
 
 
 public class Activator extends Plugin implements BundleActivator {
@@ -36,8 +40,29 @@ public class Activator extends Plugin implements BundleActivator {
 			// TODO warn user as well
 			// TODO deactivate all the igraph algorithms
 		}
+		
+		final Bundle b = getBundle();
+		
+		// declare the LCF algos
+		bundleContext.addBundleListener(new BundleListener() {
+			
+			@Override
+			public void bundleChanged(BundleEvent event) {
+				
+				if (event.getType() != BundleEvent.STARTED) 
+					return;
+				
+				if (!event.getBundle().getSymbolicName().equals("genlab.core"))
+					return;
+				
+				GLLogger.infoTech("declaring famous LCF graphs", getClass());
+				FamousLCFGraphs.declareFamousLCF();
+			}
+		});
+		
 	}
 
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)

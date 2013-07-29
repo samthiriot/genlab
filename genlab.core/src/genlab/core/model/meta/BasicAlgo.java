@@ -44,7 +44,7 @@ public abstract class BasicAlgo implements IAlgo {
 			String imagePath
 			) {
 		
-		this.id = name.replaceAll("[-+.^:, ]","_");;
+		this.id = constructId(name);
 		this.name = name;
 		this.description = description;
 
@@ -56,6 +56,11 @@ public abstract class BasicAlgo implements IAlgo {
 		this.imageRelativePath = imagePath;
 	}
 	
+	protected String constructId(String name) {
+		
+		// return name.replaceAll("[-+.^:, ]","_");
+		return getClass().getCanonicalName();
+	}
 
 	public BasicAlgo(
 			String name,

@@ -10,6 +10,8 @@ import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.exec.IComputationProgressSimpleListener;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
+import genlab.gui.actions.ClearMessagesAction;
+import genlab.gui.actions.ClearProgressAction;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -153,6 +155,9 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		
 		thread = new ProgressThread(this);
 		thread.start();
+		
+		getViewSite().getActionBars().getToolBarManager().add(new ClearProgressAction());  
+
 	}
 
 	@Override
@@ -423,6 +428,79 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 	@Override
 	public void computationStateChanged(IComputationProgress progress) {
 		notifyTaskAdded(progress.getAlgoExecution());
+	}
+	
+	protected void clear(ITask task) {
+		
+		synchronized (task2item) {
+			
+			TreeItem item = task2item.remove(task);
+			item.dispose();
+			
+			TreeEditor editor = task2editor.remove(task);
+			if (editor != null)
+				editor.dispose();
+			
+			ProgressBar bar = task2progress.remove(task);
+			if (bar != null)
+				bar.dispose();
+			
+	
+		}
+		
+		synchronized (tasksToUpdate) {
+			
+			tasksToUpdate.remove(task);
+
+		}
+		
+	}
+	
+	public void clearFinished() {
+		
+		Set<ITask> toRemove = new HashSet<ITask>(task2item.size());
+		
+		synchronized (task2item) {
+			
+			// detect parent tasks to remove
+			for (ITask task: task2item.keySet()) {
+				
+				// do not clean
+				if (
+						// subtasks
+						(task.getParent() != null 
+						|| 
+						// or running or queued tasks
+						!task.getProgress().getComputationState().isFinished()))
+					continue;
+				
+				toRemove.add(task);
+			}
+			
+			// detect children to remove
+			for (ITask task: task2item.keySet()) {
+				
+				// do not clean
+				if (
+						// subtasks
+						(task.getParent() == null 
+						|| 
+						// or running or queued tasks
+						!task.getProgress().getComputationState().isFinished()))
+					continue;
+				
+				if (toRemove.contains(task.getTopParent()))
+					toRemove.add(task);
+				
+			}
+			
+		}
+		
+		// now remove all those listen
+		for (ITask taskToRemove : toRemove) {
+			clear(taskToRemove);
+		}
+		
 	}
 
 }

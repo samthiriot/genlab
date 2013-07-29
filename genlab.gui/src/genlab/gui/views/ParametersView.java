@@ -8,6 +8,7 @@ import genlab.core.parameters.DoubleParameter;
 import genlab.core.parameters.FileParameter;
 import genlab.core.parameters.IntParameter;
 import genlab.core.parameters.Parameter;
+import genlab.core.parameters.StringBasedParameter;
 import genlab.core.projects.GenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
@@ -18,6 +19,8 @@ import java.util.Map;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -27,6 +30,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -38,7 +42,7 @@ import org.eclipse.ui.part.ViewPart;
  * 
  * @author Samuel Thiriot
  */ 
-public class ParametersView extends ViewPart implements IPropertyChangeListener, SelectionListener {
+public class ParametersView extends ViewPart implements IPropertyChangeListener, SelectionListener, ModifyListener {
 
 	public static final String PROPERTY_PROJECT_ID = "targetProject";
 	public static final String PROPERTY_WORKFLOW_ID = "targetWorkflow";
@@ -126,6 +130,9 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 			
 			Object value = algo.getValueForParameter(param.getId());
 			
+			if (value == null)
+				value = param.getDefaultValue();
+			
 			Label label = new Label(form.getBody(), SWT.NULL);
 			label.setText(param.getName()+":");
 			label.setBackground(form.getBackground());
@@ -170,14 +177,20 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				if (p.getStep() != null)
 					sp.setMinimum((int)Math.round(p.getStep()*Math.pow(10, p.getPrecision())));
 
-				if (value == null)
-					sp.setSelection((int)Math.round(p.getDefaultValue()*Math.pow(10, p.getPrecision())));
-				else
-					sp.setSelection((int)Math.round(((Double)value)*Math.pow(10, p.getPrecision())));
+				sp.setSelection((int)Math.round(((Double)value)*Math.pow(10, p.getPrecision())));
 				
 				createdWidget = sp;
 				
 				sp.addSelectionListener(this);
+			} else if (param instanceof StringBasedParameter<?>) {
+				StringBasedParameter p = (StringBasedParameter)param;
+				Text txt = new Text(form.getBody(), SWT.BORDER);
+				
+				txt.setText(value.toString());
+								
+				createdWidget = txt;
+				txt.addModifyListener(this);
+				
 			} else if (param instanceof BooleanParameter) {
 				
 				BooleanParameter b = (BooleanParameter)param;
@@ -295,8 +308,33 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 
 	@Override
 	public void widgetDefaultSelected(SelectionEvent e) {
-		// TODO Auto-generated method stub
+
+		Parameter<?> param = widget2param.get(e.widget);
 		
+		if (param == null) {
+			GLLogger.warnTech("received a strange event which will be ignored: "+e, getClass());
+			return;
+		}
+	}
+
+
+	@Override
+	public void modifyText(ModifyEvent e) {
+		
+		Parameter<?> param = widget2param.get(e.widget);
+		
+		if (param == null) {
+			GLLogger.warnTech("received a strange event which will be ignored: "+e, getClass());
+			return;
+		}
+		
+		// TODO depends of the type !
+		if (param instanceof StringBasedParameter) {
+			String value = ((Text)e.widget).getText();
+			algo.setValueForParameter(param.getId(), param.parseFromString(value));
+		} else {
+			throw new ProgramException("unable to deal with this type of widget: "+e.getClass());
+		}
 	}
 
 

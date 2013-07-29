@@ -77,6 +77,14 @@ public class ContainerTask implements IContainerTask {
 	public void setParent(IContainerTask parent) {
 		this.parent = parent;		
 	}
+
+	@Override
+	public ITask getTopParent() {
+		if (parent == null)
+			return this;
+		else 
+			return parent.getTopParent();
+	}
 	
 
 

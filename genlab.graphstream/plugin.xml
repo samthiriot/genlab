@@ -113,6 +113,10 @@
             class="genlab.graphstream.algos.generators.LobsterAlgo"
             id="genlab.graphstream.algos.generators.LobsterAlgo">
       </algo>
+      <algo
+            class="genlab.graphstream.algos.measure.ColoringWelshPowell"
+            id="genlab.graphstream.algos.measure.ColoringWelshPowell">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -347,6 +351,55 @@
                content="definition in wikipedia"
                url="http://en.wikipedia.org/wiki/List_of_graphs#Lobster">
          </more_info>
+      </docalgo>
+      <author
+            id="genlab.graphstream.doc.authors.FrédéricGuinand"
+            name="Frédéric Guinand">
+      </author>
+      <author
+            id="genlab.graphstream.doc.authors.AntoineDutot"
+            name="Antoine Dutot">
+      </author>
+      <author
+            id="genlab.graphstream.doc.authors.YoannPigné"
+            name="Yoann Pigné">
+      </author>
+      <docalgo
+            algo_id="genlab.graphstream.algos.measure.ColoringWelshPowell"
+            library_id="genlab.graphstream.doc.library.graphstream">
+         <more_info
+               content="graphstream description of this algo"
+               url="http://graphstream-project.org/doc/Algorithms/Welsh-Powell_1.0/">
+         </more_info>
+         <more_info
+               content="Welsh, D. J. A.; Powell, M. B. (1967), &quot;An upper bound for the chromatic number of a graph and its application to timetabling problems&quot;, The Computer Journal 10 (1): 85–86, doi:10.1093/comjnl/10.1.85">
+         </more_info>
+         <more_info
+               content="graphstream javadoc for this algorithm"
+               url="http://graphstream-project.org/api/gs-algo/org/graphstream/algorithm/coloring/WelshPowell.html#WelshPowell()">
+         </more_info>
+         <original_author_id
+               id="genlab.graphstream.doc.authors.FrédéricGuinand">
+         </original_author_id>
+         <original_author_id
+               id="genlab.graphstream.doc.authors.AntoineDutot">
+         </original_author_id>
+         <original_author_id
+               id="genlab.graphstream.doc.authors.YoannPigné">
+         </original_author_id>
+         <more_info
+               content="graph coloring page in wikipedia"
+               url="http://en.wikipedia.org/wiki/Graph_coloring">
+         </more_info>
+         <original_author_id
+               id="genlab.graphstream.doc.authors.FrédéricGuinand">
+         </original_author_id>
+         <original_author_id
+               id="genlab.graphstream.doc.authors.AntoineDutot">
+         </original_author_id>
+         <original_author_id
+               id="genlab.graphstream.doc.authors.YoannPigné">
+         </original_author_id>
       </docalgo>
    </extension>
 <!-- TODO

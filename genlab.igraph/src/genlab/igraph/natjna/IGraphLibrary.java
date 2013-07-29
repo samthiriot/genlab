@@ -8,7 +8,10 @@ import genlab.core.usermachineinteraction.ListsOfMessages;
 
 import java.util.Iterator;
 
+import com.sun.jna.Memory;
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.WinDef.BOOLbyReference;
 import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
@@ -107,6 +110,12 @@ public class IGraphLibrary {
 	}
 	
 	public void clearGraphMemory(IGraphGraph g) {
+		
+		if (rawLib == null)
+			return;
+		
+		if (g == null)
+			return;
 		
 		rawLib.igraph_destroy(g.getPointer());
 	}
@@ -302,6 +311,52 @@ public class IGraphLibrary {
 		}
 	}
 	
+	public IGraphGraph generateLCF(int nodes, int[] paramShifts, int repeats) {
+		
+		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+		
+		if (repeats < 1)
+			throw new WrongParametersException("argument repeat should be positive");
+		if (nodes < 1)
+			throw new WrongParametersException("argument nodes should be positive");
+
+		// init the shifts param
+		IGraphRawLibrary.Igraph_vector_t shifts = new IGraphRawLibrary.Igraph_vector_t();
+		{
+			Pointer shitsPointer = new Memory(paramShifts.length * Native.getNativeSize(Double.TYPE));
+			for (int dloop=0; dloop<paramShifts.length; dloop++) {
+				// populate the array with junk data (just for the sake of the example)
+				shitsPointer.setDouble(dloop * Native.getNativeSize(Double.TYPE), (double)paramShifts[dloop]);
+			}
+			rawLib.igraph_vector_init_copy(shifts, shitsPointer, paramShifts.length);
+
+		}
+
+		try {
+		
+			//GLLogger.debugTech("calling igraph", getClass());
+			final long startTime = System.currentTimeMillis();
+			int res = rawLib.igraph_lcf_vector(
+					g, 
+					nodes, 
+					shifts, 
+					repeats
+					);
+			final long duration = System.currentTimeMillis() - startTime;
+			//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+	
+			// detect errors
+			checkIGraphResult(res);
+			
+			IGraphGraph result = new IGraphGraph(this, rawLib, g, false);
+
+			return result;
+
+		} finally {
+			rawLib.igraph_vector_destroy(shifts);
+		}
+	}
+	
 
 	public IGraphGraph copyGraph(IGraphGraph original) {
 
@@ -360,6 +415,17 @@ public class IGraphLibrary {
 	}
 	
 	
+	public void rewire(IGraphGraph g, int count) {
+		
+		g.graphChanged();
+		
+		if (count <= 0)
+			throw new WrongParametersException("count of nodes should be positive");
+		
+		final int res = rawLib.igraph_rewire(g.getPointer(), count, 0);
+		
+		checkIGraphResult(res);
+	}
 	
 	public int getVertexCount(IGraphGraph g) {
 		
@@ -411,6 +477,109 @@ public class IGraphLibrary {
 		//System.err.println("igraph/ average path length: "+length);
 
 		return length;
+		
+	}
+	
+	public boolean computeIsomorphicm(IGraphGraph g1, IGraphGraph g2) {
+		
+		IntByReference res = new IntByReference();
+		
+		//GLLogger.debugTech("calling igraph to compute average path length...", getClass());
+
+		final long startTime = System.currentTimeMillis();
+
+		
+		final int res2 = rawLib.igraph_isomorphic(g1.getPointer(), g2.getPointer(), res);
+
+		final long duration = System.currentTimeMillis() - startTime;
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		
+		checkIGraphResult(res2);
+		
+		final Boolean iso = (res.getValue() != 0);
+		
+
+		return iso;
+		
+	}
+	
+	public boolean computeIsomorphismVF2(IGraphGraph g1, IGraphGraph g2) {
+		
+		IntByReference res = new IntByReference();
+		
+		//GLLogger.debugTech("calling igraph to compute average path length...", getClass());
+
+		final long startTime = System.currentTimeMillis();
+
+		
+		final int res2 = rawLib.igraph_isomorphic_vf2(
+				g1.getPointer(), g2.getPointer(), 
+				null, null, null, null, 
+				res, 
+				null, null, 
+				null, 
+				null, null
+				);
+
+		final long duration = System.currentTimeMillis() - startTime;
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		
+		checkIGraphResult(res2);
+		
+		final Boolean iso = (res.getValue() != 0);
+		
+
+		return iso;
+		
+	}
+	
+	
+	public int computeIsomorphismVF2Count(IGraphGraph g1, IGraphGraph g2) {
+		
+		IntByReference res = new IntByReference();
+		
+		//GLLogger.debugTech("calling igraph to compute average path length...", getClass());
+
+		final long startTime = System.currentTimeMillis();
+
+		
+		final int res2 = rawLib.igraph_count_isomorphisms_vf2(
+				g1.getPointer(), g2.getPointer(), 
+				null, null, null, null, 
+				res, 
+				null, null, 
+				null
+				);
+
+		final long duration = System.currentTimeMillis() - startTime;
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		
+		checkIGraphResult(res2);
+		
+		return res.getValue();
+	
+	}
+	
+	public boolean computeVF2Isomorphicm(IGraphGraph g1, IGraphGraph g2) {
+		
+		IntByReference res = new IntByReference();
+		
+		//GLLogger.debugTech("calling igraph to compute average path length...", getClass());
+
+		final long startTime = System.currentTimeMillis();
+
+		
+		final int res2 = rawLib.igraph_isomorphic(g1.getPointer(), g2.getPointer(), res);
+
+		final long duration = System.currentTimeMillis() - startTime;
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		
+		checkIGraphResult(res2);
+		
+		final Boolean iso = res.getValue()==0;
+		
+
+		return iso;
 		
 	}
 	

@@ -39,6 +39,22 @@
             class="genlab.igraph.algos.generation.ErdosRenyiGNMGeneratorAlgo"
             id="genlab.igraph.algos.generation.ErdosRenyiGNMGeneratorAlgo">
       </algo>
+      <algo
+            class="genlab.igraph.algos.transform.RewireGraph"
+            id="genlab.igraph.algos.transform.RewireGraph">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.generation.LCFGenerator"
+            id="genlab.igraph.algos.generation.LCFGenerator">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.compare.Isomorphic"
+            id="genlab.igraph.algos.compare.Isomorphic">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.compare.VF2Isomorphic"
+            id="genlab.igraph.algos.compare.VF2Isomorphic">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -205,6 +221,45 @@
          <more_info
                content="igraph documentation for this algorithm"
                url="http://igraph.sourceforge.net/doc/html/ch09s02.html#igraph_erdos_renyi_game">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.transform.RewireGraph"
+            library_id="genlab.igraph.doc.library.igraph"
+            time_complexity="O(count)">
+         <more_info
+               content="igraph documentation"
+               url="http://igraph.sourceforge.net/doc/html/ch09s02.html#igraph_rewire">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.generation.LCFGenerator"
+            library_id="genlab.igraph.doc.library.igraph">
+         <more_info
+               content="description of the LCF notation in Worlfram Alpha"
+               url="http://mathworld.wolfram.com/LCFNotation.html">
+         </more_info>
+         <more_info
+               content="igraph documentation for this function"
+               url="http://igraph.sourceforge.net/doc/html/ch09s01.html#igraph_lcf">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.compare.Isomorphic"
+            library_id="genlab.igraph.doc.library.igraph"
+            time_complexity="exponential">
+         <more_info
+               content="the igraph documentation for this algorithm"
+               url="http://igraph.sourceforge.net/doc/html/ch16s01.html#igraph_isomorphic">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.compare.VF2Isomorphic"
+            library_id="genlab.igraph.doc.library.igraph"
+            time_complexity="exponential">
+         <more_info
+               content="igraph documentation"
+               url="http://igraph.sourceforge.net/doc/html/ch16s03.html#igraph_count_isomorphisms_vf2">
          </more_info>
       </docalgo>
    </extension>

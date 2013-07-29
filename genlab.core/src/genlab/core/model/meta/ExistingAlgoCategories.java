@@ -63,7 +63,7 @@ public class ExistingAlgoCategories {
 			"generate graphs", 
 			"graphs" 
 			);
-	
+
 	public static final AlgoCategory STATIC = new AlgoCategory(
 			null, 
 			"static", 
@@ -78,6 +78,15 @@ public class ExistingAlgoCategories {
 			"classic graphs", 
 			"graphs" 
 			);
+	
+	
+	public static final AlgoCategory STATIC_GRAPHS_LCF = new AlgoCategory(
+			STATIC_GRAPHS, 
+			"LCF", 
+			"LCF-based graphs", 
+			"famous LCF graphs" 
+			);
+	
 	
 	public static final AlgoCategory ANALYSIS = new AlgoCategory(
 			null, 
@@ -135,12 +144,42 @@ public class ExistingAlgoCategories {
 			"loops", 
 			"loops"
 			);
+	
+	public static final AlgoCategory NOISE = new AlgoCategory(
+			null, 
+			"noise", 
+			"noise", 
+			"add noise"
+			);
+
+	public static final AlgoCategory NOISE_GRAPH = new AlgoCategory(
+			NOISE, 
+			"graphs", 
+			"graphs", 
+			"add noise to graphs"
+			);
+
+	public static final AlgoCategory COMPARISON = new AlgoCategory(
+			null, 
+			"compare", 
+			"comparison", 
+			"compare inputs"
+			);
+
+	public static final AlgoCategory COMPARISON_GRAPHS = new AlgoCategory(
+			COMPARISON, 
+			"graphs", 
+			"graph isomorphisms", 
+			"graph isomorphisms"
+			);
 
 	private ExistingAlgoCategories() {
 		declareCategory(PARSER);
 		declareCategory(PARSER_GRAPH);
 		declareCategory(GENERATORS);
 		declareCategory(GENERATORS_GRAPHS);
+		declareCategory(STATIC_GRAPHS_LCF);
+		
 		declareCategory(WRITER);
 		declareCategory(WRITER_GRAPH);
 		declareCategory(ANALYSIS);
@@ -152,6 +191,11 @@ public class ExistingAlgoCategories {
 		declareCategory(CASTING);
 		declareCategory(DISPLAY);
 		declareCategory(LOOPS);
+		declareCategory(NOISE);
+		declareCategory(NOISE_GRAPH);
+		
+		declareCategory(COMPARISON);
+		declareCategory(COMPARISON_GRAPHS);
 	}
 
 	public AlgoCategory getCategoryForId(String id) {

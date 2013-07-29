@@ -81,20 +81,18 @@ public class IGraph2GenLabConvertor {
 		return glGraph;
 		
 	}
-
-	public static IGraphGraph getIGraphGraphForGenlabGraph(IGenlabGraph genlabGraph, ListOfMessages messages) {
+	
+	public static IGraphGraph getIGraphGraphForGenlabGraph(IGenlabGraph genlabGraph, ListOfMessages messages, IGraphLibrary lib) {
+	
+		if (genlabGraph.getVerticesCount() > Integer.MAX_VALUE)
+			throw new WrongParametersException("The network is too large for igraph conversion.");
 		
 		// TODO emit messages
 		
 		// TODO check parameters
-		if (genlabGraph.getVerticesCount() > Integer.MAX_VALUE)
-			throw new WrongParametersException("The network is too large for igraph conversion.");
 		
 		// TODO check directionaliy
-		
-		// find one library for the processing
-		IGraphLibrary lib = IGraphRawLibraryPool.singleton.getLibrary();
-	
+			
 		// init the igraph network
 		IGraphGraph igraphGraph = lib.generateEmpty(
 				(int)genlabGraph.getVerticesCount(), 
@@ -116,6 +114,17 @@ public class IGraph2GenLabConvertor {
 		
 		// end !
 		return igraphGraph;
+		
+	}
+	
+
+	public static IGraphGraph getIGraphGraphForGenlabGraph(IGenlabGraph genlabGraph, ListOfMessages messages) {
+		
+		return getIGraphGraphForGenlabGraph(
+				genlabGraph, 
+				messages, 
+				IGraphRawLibraryPool.singleton.getLibrary()
+				);
 
 	}
 	

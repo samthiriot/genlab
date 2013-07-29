@@ -39,10 +39,13 @@ public interface IGenlabGraph {
 
 	public void addVertex(String id);
 	public boolean removeVertex(String id);
+	public String getVertex(int index);
+	public boolean removeVertex(int index);
 
 	
 	public void setVertexAttribute(String vertexId, String attributeId, Object value);
-	
+	public void setVertexAttributes(String vertexId, Map<String,Object> values);
+
 	
 	public Collection<String> getVertices();
 	
@@ -55,9 +58,13 @@ public interface IGenlabGraph {
 	public void addEdge(String id, String vertexIdFrom, String vertexIdTo, boolean directed);
 	
 	public void setEdgeAttribute(String vertexId, String attributeId, Object value);
+	public void setEdgeAttributes(String vertexId, Map<String,Object> values);
+
 	public boolean removeEdge(String id);
+	public boolean removeEdge(int index);
 	public boolean containsEdge(String vertexFrom, String vertexTo);
 	public boolean containsEdge(String edgeId);
+	public String getEdge(int index);
 	
 	/**
 	 * Returns true if one can create several edges between the 
@@ -129,5 +136,6 @@ public interface IGenlabGraph {
 
 	
 	public void addAll(IGenlabGraph otherGraph, boolean copyGraphAttributes, boolean copyNodeAttributes, boolean copyEdgesAttributes);
+
 	
 }

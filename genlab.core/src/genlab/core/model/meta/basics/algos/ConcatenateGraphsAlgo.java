@@ -16,6 +16,7 @@ import genlab.core.model.meta.basics.flowtypes.GraphInOut;
 import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.GraphFactory;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.parameters.BooleanParameter;
 
 public class ConcatenateGraphsAlgo extends BasicAlgo {
 
@@ -32,6 +33,30 @@ public class ConcatenateGraphsAlgo extends BasicAlgo {
 			"concatenated graph"
 			);
 	
+	
+	public static final BooleanParameter PARAM_KEEP_EDGES_ATTRIBUTES = new BooleanParameter(
+			"param_keep_edges_attr", 
+			"keep edges attributes", 
+			"keep the edges attributes", 
+			true
+			);
+	
+	public static final BooleanParameter PARAM_KEEP_GRAPH_ATTRIBUTES = new BooleanParameter(
+			"param_keep_graph_attr", 
+			"keep graph attributes", 
+			"keep the attributes of the graphs", 
+			true
+			);
+	
+	public static final BooleanParameter PARAM_KEEP_VERTEX_ATTRIBUTES = new BooleanParameter(
+			"param_keep_vertex_attr", 
+			"keep vertex attributes", 
+			"keep the vertex attributes", 
+			true
+			);
+	
+
+	
 	public ConcatenateGraphsAlgo() {
 		super(
 				"concatenate graphs", 
@@ -42,6 +67,10 @@ public class ConcatenateGraphsAlgo extends BasicAlgo {
 
 		inputs.add(INPUT_GRAPH);
 		outputs.add(OUTPUT_GRAPH);
+
+		registerParameter(PARAM_KEEP_VERTEX_ATTRIBUTES);
+		registerParameter(PARAM_KEEP_EDGES_ATTRIBUTES);
+		registerParameter(PARAM_KEEP_GRAPH_ATTRIBUTES);
 	}
 
 	
@@ -93,7 +122,12 @@ public class ConcatenateGraphsAlgo extends BasicAlgo {
 				IGenlabGraph outGraph = GraphFactory.createGraph("conc", dir, false);
 				for (Object graph : inputs.values()) {
 					
-					outGraph.addAll((IGenlabGraph)graph, true, true, true);
+					outGraph.addAll(
+							(IGenlabGraph)graph, 
+							(Boolean)algoInst.getValueForParameter(PARAM_KEEP_GRAPH_ATTRIBUTES.getId()),
+							(Boolean)algoInst.getValueForParameter(PARAM_KEEP_VERTEX_ATTRIBUTES.getId()),
+							(Boolean)algoInst.getValueForParameter(PARAM_KEEP_EDGES_ATTRIBUTES.getId())
+							);
 					
 				}
 				

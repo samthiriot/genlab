@@ -37,8 +37,8 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 		writer.setValue(algo.getId());
 		writer.endNode();
 		
-		writer.startNode("algoClassName");
-		writer.setValue(algo.getAlgo().getClass().getCanonicalName());
+		writer.startNode("algoId");
+		writer.setValue(algo.getAlgo().getId());
 		writer.endNode();
 		
 		writer.startNode("algoName");
@@ -84,7 +84,7 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 							new StoreExpectedParser(
 									new HashMap<String, Boolean>() {{
 										put(GenlabPersistence.XMLTAG_ID, true);
-										put("algoClassName", true);
+										put("algoId", true);
 										put("algoName", true);
 										put("container", false);
 									}}
@@ -110,12 +110,12 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 				);
 		
 		
-		final String algoClassName = (String) data.get("algoClassName");
-		GLLogger.traceTech("looking for class name "+algoClassName, getClass());
+		final String algoId = (String) data.get("algoId");
+		GLLogger.traceTech("looking for class name "+algoId, getClass());
 		
-		final IAlgo algo = ExistingAlgos.getExistingAlgos().getAlgoForClass(algoClassName);
+		final IAlgo algo = ExistingAlgos.getExistingAlgos().getAlgoForId(algoId);
 		if (algo == null)
-			throw new WrongParametersException("error during the loading of the project: unable to find the algo for class "+algoClassName+"");
+			throw new WrongParametersException("error during the loading of the project: unable to find the algo for class "+algoId+"");
 			// TODO user friendly message
 		GLLogger.traceTech("found the corresponding available algo: "+algo, getClass());
 

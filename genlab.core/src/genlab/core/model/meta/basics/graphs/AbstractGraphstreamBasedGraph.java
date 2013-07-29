@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.graphstream.graph.Edge;
@@ -129,12 +130,68 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 		if (attributeType == null) {
 			throw new WrongParametersException("no vertex attribute "+attributeId+" defined for this graph");
 		}
-		if (!attributeType.isInstance(value)) {
-			throw new WrongParametersException("type "+attributeType.getSimpleName()+" is expected for attribute "+attributeId);
+		if (!attributeType.isAssignableFrom(value.getClass())) {
+			// special case of numbers
+			if ( (attributeType.equals(Double.class)) && (value instanceof Number)) {
+				Double valueDouble = ((Number)value).doubleValue();
+				gsNode.setAttribute(attributeId, valueDouble);
+			} else 
+				throw new WrongParametersException("type "+attributeType.getSimpleName()+" is expected for attribute "+attributeId);
 		}
 		// finally add value
 		gsNode.setAttribute(attributeId, value);
 		 
+	}
+
+
+
+	@Override
+	public void setVertexAttributes(String vertexId, Map<String, Object> values) {
+		// ensure existence of the node
+		Node gsNode = gsGraph.getNode(vertexId); 
+		if (gsNode == null) {
+			throw new WrongParametersException("no vertex "+vertexId+" declared");
+		}
+		// ensure compliance of parameters
+		for (Entry<String,Object> entry: values.entrySet()) {
+
+			Class attributeType = vertexAttributes2type.get(entry.getKey());
+			if (attributeType == null) {
+				throw new WrongParametersException("no vertex attribute "+entry.getKey()+" defined for this graph");
+			}
+			if (!attributeType.isInstance(entry.getValue())) {
+				throw new WrongParametersException("type "+attributeType.getSimpleName()+" is expected for attribute "+entry.getKey());
+			}
+
+			// finally add value
+			gsNode.setAttribute(entry.getKey(), entry.getValue());	
+		}
+		
+	}
+
+	@Override
+	public void setEdgeAttributes(String edgeId, Map<String, Object> values) {
+		
+		// ensure existence of the node
+		Edge gsEdge = gsGraph.getEdge(edgeId); 
+		if (gsEdge == null) {
+			throw new WrongParametersException("no edge  "+edgeId+" declared");
+		}
+		// ensure compliance of parameters
+		for (Entry<String,Object> entry: values.entrySet()) {
+
+			Class attributeType = edgeAttributes2type.get(entry.getKey());
+			if (attributeType == null) {
+				throw new WrongParametersException("no edge attribute "+entry.getKey()+" defined for this graph");
+			}
+			if (!attributeType.isInstance(entry.getValue())) {
+				throw new WrongParametersException("type "+attributeType.getSimpleName()+" is expected for attribute "+entry.getKey());
+			}
+
+			// finally add value
+			gsEdge.setAttribute(entry.getKey(), entry.getValue());	
+		}
+		
 	}
 
 	@Override
@@ -304,6 +361,7 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 		gsGraph.setAttribute(attributeId, value);
 		 
 	}
+	
 
 	@Override
 	public Object getGraphAttribute(String attributeId) {
@@ -481,6 +539,19 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 		return gsGraph.removeNode(id) != null;
 	}
 
+
+	@Override
+	public boolean removeVertex(int index) {
+		return gsGraph.removeNode(index) != null;
+	}
+
+	@Override
+	public boolean removeEdge(int index) {
+		return gsGraph.removeEdge(index) != null;
+	}
+
+
+	
 	@Override
 	public boolean containsEdge(String edgeId) {
 		return gsGraph.getEdge(edgeId) != null;
@@ -678,7 +749,20 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 		
 	}
 
+	@Override
+	public String getVertex(int index) {
 
+		return gsGraph.getNode(index).getId();
+	}
+
+	@Override
+	public String getEdge(int index) {
+		
+		return gsGraph.getEdge(index).getId();
+	}
+
+	
+	
 	
 
 }

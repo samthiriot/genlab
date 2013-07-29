@@ -4,12 +4,16 @@ import genlab.gui.Activator;
 import genlab.gui.views.MessagesViewAbstract;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 
+/**
+ * Clears a list of messagesd
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class ClearMessagesAction extends Action implements IWorkbenchAction {
 
 	private static final String ID = "genlab.gui.actions.clearMessages";  

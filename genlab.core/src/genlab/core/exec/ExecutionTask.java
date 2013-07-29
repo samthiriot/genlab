@@ -43,6 +43,12 @@ public abstract class ExecutionTask implements IExecutionTask {
 		this.parent = parent;
 	}
 
-
+	@Override
+	public ITask getTopParent() {
+		if (parent == null)
+			return this;
+		else 
+			return parent.getTopParent();
+	}
 
 }

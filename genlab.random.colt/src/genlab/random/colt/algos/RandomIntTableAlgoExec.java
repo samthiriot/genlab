@@ -1,13 +1,12 @@
 package genlab.random.colt.algos;
 
-import cern.jet.random.Uniform;
-import cern.jet.random.engine.MersenneTwister;
-import cern.jet.random.engine.RandomEngine;
-import cern.jet.random.engine.RandomGenerator;
 import genlab.core.exec.IExecution;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.algos.AbstractTableGeneratorExec;
 import genlab.core.usermachineinteraction.GLLogger;
+import cern.jet.random.Uniform;
+import cern.jet.random.engine.MersenneTwister;
+import cern.jet.random.engine.RandomEngine;
 
 // TODO doc ! http://en.wikipedia.org/wiki/Colt_(libraries)
 // see also http://vanillajava.blogspot.fr/2012/02/high-performance-libraries-in-java.html

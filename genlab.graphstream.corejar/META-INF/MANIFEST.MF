@@ -46,4 +46,4 @@ Export-Package: genlab.graphstream.corejar,
  org.miv.pherd.ntree,
  org.miv.pherd.ntree.util
 Bundle-ClassPath: .,
- ext/gs-core-1.1.2.jar
+ ext/gs-core-1.2-nightly_20130729.jar

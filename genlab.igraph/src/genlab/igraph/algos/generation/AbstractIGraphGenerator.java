@@ -2,13 +2,9 @@ package genlab.igraph.algos.generation;
 
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
-import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.GraphInOut;
-import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
-import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.igraph.Activator;
 
-import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.Bundle;
 
 public abstract class AbstractIGraphGenerator extends BasicAlgo {
@@ -24,11 +20,19 @@ public abstract class AbstractIGraphGenerator extends BasicAlgo {
 			String name, 
 			String description
 			) {
+		this(name, description, ExistingAlgoCategories.GENERATORS_GRAPHS.getTotalId());
+	}
+	
+	public AbstractIGraphGenerator(
+			String name, 
+			String description,
+			String categoryId
+			) {
 		super(
 				name, 
 				description, 
 				null,
-				ExistingAlgoCategories.GENERATORS_GRAPHS.getTotalId(),
+				categoryId,
 				"/icons/igraph.gif"
 				);
 		

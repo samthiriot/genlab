@@ -11,6 +11,18 @@
             class="genlab.random.colt.algos.RandomDoubleTableAlgo"
             id="genlab.random.colt.algos.RandomDoubleTableAlgo">
       </algo>
+      <algo
+            class="genlab.random.colt.algos.graph.GraphAddRandomEdges"
+            id="genlab.random.colt.algos.graph.GraphAddRandomEdges">
+      </algo>
+      <algo
+            class="genlab.random.colt.algos.graph.GraphRemoveRandomEdges"
+            id="genlab.random.colt.algos.graph.GraphRemoveRandomEdges">
+      </algo>
+      <algo
+            class="genlab.random.colt.algos.graph.GraphRewireAlgo"
+            id="genlab.random.colt.algos.graph.GraphRewireAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">

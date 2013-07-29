@@ -1,5 +1,7 @@
 package genlab.core.model.meta.basics.graphs;
 
+import java.util.Map;
+
 import org.graphstream.graph.implementations.SingleGraph;
 
 /**
@@ -32,7 +34,6 @@ public class SimpleGraphstreamBasedGraph extends AbstractGraphstreamBasedGraph {
 		return new SimpleGraphstreamBasedGraph(cloneId, directionality);
 	}
 
-	
 	
 	
 

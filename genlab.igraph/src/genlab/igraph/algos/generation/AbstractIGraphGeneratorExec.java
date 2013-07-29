@@ -1,5 +1,6 @@
 package genlab.igraph.algos.generation;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
@@ -75,6 +76,9 @@ public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecution 
 				result.setResult(AbstractIGraphGenerator.OUTPUT_GRAPH, genlabGraph);
 				
 				
+			} catch (RuntimeException e) {
+				messages.errorTech("error during the igraph call: "+e.getMessage(), getClass(), e);
+				throw new ProgramException("error during the igraph call: "+e.getMessage(), e);
 			} finally {
 				// clear memory
 				lib.clearGraphMemory(igraphGraph);

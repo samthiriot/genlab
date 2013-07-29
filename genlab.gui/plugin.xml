@@ -136,6 +136,7 @@
             allowMultiple="false"
             category="genlab.gui.views.categorygenlab"
             class="genlab.gui.views.TasksProgressView"
+            icon="icons/progress_view.gif"
             id="genlab.gui.views.ProgressView"
             name="Progress"
             restorable="true">

@@ -3,6 +3,8 @@ package genlab.gui.graphiti.features;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IConstantAlgo;
+import genlab.gui.graphiti.UIUtils;
+import genlab.gui.graphiti.Utils;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IReason;
@@ -94,7 +96,7 @@ public class AlgoUpdateFeature extends AbstractUpdateFeature {
 	            for (Shape shape : cs.getChildren()) {
 	                if (shape.getGraphicsAlgorithm() instanceof Text) {
 	                    Text text = (Text) shape.getGraphicsAlgorithm();
-	                    text.setValue(ai.getName());
+	                    UIUtils.setValueInTransaction(text, ai.getName());
 	                    replacedName = true;
 	                    break;
 	                }

@@ -47,6 +47,9 @@ public interface ITask {
 	 */
 	public IContainerTask getParent();
 	
+	public ITask getTopParent();
+
+	
 	public void setParent(IContainerTask parent);
 	
 }

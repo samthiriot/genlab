@@ -127,7 +127,15 @@ public abstract class GraphStreamGeneratorAlgo extends GraphStreamAlgo {
 							size,
 							result.getMessages(),
 							shouldCountIterations(),
-							directed?GraphDirectionality.DIRECTED:GraphDirectionality.UNDIRECTED
+							directed?GraphDirectionality.DIRECTED:GraphDirectionality.UNDIRECTED,
+							new IGenlabGraphInitializer() {
+								
+								@Override
+								public void initGraph(IGenlabGraph glGraph) {
+									glGraph.declareVertexAttribute("x", Double.class);
+									glGraph.declareVertexAttribute("y", Double.class);
+								}
+							}
 							);
 					result.setResult(OUTPUT_GRAPH, graph);
 					

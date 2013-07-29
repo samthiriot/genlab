@@ -6,11 +6,9 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.parameters.Parameter;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -24,7 +22,6 @@ import java.util.Set;
  * @author Samuel Thiriot
  */
 public interface IAlgo extends IGenlabResource {
-
 	
 	public String getName();
 	

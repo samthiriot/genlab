@@ -9,6 +9,7 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.MessageAudience;
 import genlab.core.usermachineinteraction.MessageLevel;
 import genlab.core.usermachineinteraction.TextMessage;
+import genlab.graphstream.algos.generators.IGenlabGraphInitializer;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,14 +43,22 @@ public class GraphstreamConvertors {
 		protected Set<String> ignoredAttributesEdge = new HashSet<String>();
 		protected Set<String> ignoredAttributesVertex = new HashSet<String>();
 
-		public GenLabGraphSink (String graphId, ListOfMessages messages,  GraphDirectionality directionality) {
+		public GenLabGraphSink (String graphId, ListOfMessages messages,  GraphDirectionality directionality, IGenlabGraphInitializer initializer) {
 			
 			this.messages = messages;
 			
 			// TODO hard to predict what will be found into the graph...
 			graph = GraphFactory.createGraph(graphId, directionality, false);
 			
+			if (initializer != null)
+				initializer.initGraph(graph);
+			
 		}
+		
+		public GenLabGraphSink (String graphId, ListOfMessages messages,  GraphDirectionality directionality) {
+			this(graphId, messages, directionality, null);
+		}
+
 		
 		public void ignoreEdgeAttribute(String name) {
 			ignoredAttributesEdge.add(name.toLowerCase());
@@ -189,7 +198,7 @@ public class GraphstreamConvertors {
 			} catch (WrongParametersException e) {
 
 				if (!graph.hasVertexAttribute(attribute)) {
-					messages.traceTech("the graph had no vertex attribute "+attribute+"; we automatically define it", getClass());
+					messages.traceTech("the graph had no vertex attribute "+attribute+"; we automatically define it as "+newValue.getClass(), getClass());
 					graph.declareVertexAttribute(attribute, newValue.getClass());
 					graph.setVertexAttribute(nodeId, attribute, newValue);
 				} else {
@@ -237,11 +246,15 @@ public class GraphstreamConvertors {
 	}
 	
 	public static IGenlabGraph loadGraphWithGraphstreamFromGeneratorSource(String graphId, BaseGenerator generator, int maxNodes, ListOfMessages messages, boolean countIterations, GraphDirectionality directionality) {
+		return loadGraphWithGraphstreamFromGeneratorSource(graphId, generator, maxNodes, messages, countIterations, directionality, null);
+	}
+	
+	public static IGenlabGraph loadGraphWithGraphstreamFromGeneratorSource(String graphId, BaseGenerator generator, int maxNodes, ListOfMessages messages, boolean countIterations, GraphDirectionality directionality, IGenlabGraphInitializer initializer) {
 
 
 			messages.debugTech("loading the graph from a source into a genlab graph...", GraphstreamConvertors.class);
 		
-			GenLabGraphSink ourSink = new GenLabGraphSink(graphId, messages, directionality);
+			GenLabGraphSink ourSink = new GenLabGraphSink(graphId, messages, directionality, initializer);
 			// TODO ??? ourSink.ignoreVertexAttribute("xy");
 			generator.addSink(ourSink);
 

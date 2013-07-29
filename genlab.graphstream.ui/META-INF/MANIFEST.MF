@@ -8,13 +8,16 @@ Bundle-Vendor: Samuel Thiriot
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  genlab.core,
- genlab.graphstream,
  genlab.graphstream.corejar;bundle-version="1.0.0",
+ genlab.graphstream;bundle-version="0.0.1",
  genlab.gui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: ext/gs-ui-1.1.2.jar,
- .
+Bundle-ClassPath: .,
+ ext/gs-ui-1.2-nightly_20130729.jar,
+ bin/
 Export-Package: genlab.graphstream.ui,
  genlab.graphstream.ui.algos,
- genlab.graphstream.ui.views
+ genlab.graphstream.ui.views,
+ org.graphstream.ui.j2dviewer,
+ org.graphstream.ui.j2dviewer.a
