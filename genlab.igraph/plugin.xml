@@ -35,6 +35,10 @@
             class="genlab.igraph.algos.generation.SIIGeneratorAlgo"
             id="genlab.igraph.algos.generation.SIIGeneratorAlgo">
       </algo>
+      <algo
+            class="genlab.igraph.algos.generation.ErdosRenyiGNMGeneratorAlgo"
+            id="genlab.igraph.algos.generation.ErdosRenyiGNMGeneratorAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -164,7 +168,8 @@
       </docalgo>
       <docalgo
             algo_id="genlab.igraph.algos.generation.ErdosRenyiGNPGeneratorAlgo"
-            library_id="genlab.igraph.doc.library.igraph">
+            library_id="genlab.igraph.doc.library.igraph"
+            time_complexity=": O(|V|+|E|), the number of vertices plus the number of edges in the graph.">
          <more_info
                content="igraph documentation on this algorithm"
                url="http://igraph.sourceforge.net/doc/html/ch09s02.html#igraph_grg_game">
@@ -191,6 +196,15 @@
          <more_info
                content="igraph documentation"
                url="http://igraph.sourceforge.net/doc/html/ch09s02.html">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.generation.ErdosRenyiGNMGeneratorAlgo"
+            library_id="genlab.igraph.doc.library.igraph"
+            time_complexity=": O(|V|+|E|), the number of vertices plus the number of edges in the graph.">
+         <more_info
+               content="igraph documentation for this algorithm"
+               url="http://igraph.sourceforge.net/doc/html/ch09s02.html#igraph_erdos_renyi_game">
          </more_info>
       </docalgo>
    </extension>

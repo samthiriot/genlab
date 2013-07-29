@@ -97,6 +97,14 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 		return Collections.unmodifiableMap(edgeAttributes2type);
 
 	}
+	
+	public String addVertex() {
+		
+		String id = Integer.toString(gsGraph.getNodeCount());
+		gsGraph.addNode(id);
+		
+		return id;
+	}
 
 	@Override
 	public void addVertex(String id) {
@@ -159,13 +167,15 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 	}
 
 	@Override
-	public void addEdge(String vertexIdFrom, String vertexIdTo, boolean directed) {
+	public String addEdge(String vertexIdFrom, String vertexIdTo, boolean directed) {
+		String edgeId = vertexIdFrom+"_to_"+vertexIdTo;
 		addEdge(
-				vertexIdFrom+"_to_"+vertexIdTo, 
+				edgeId, 
 				vertexIdFrom, 
 				vertexIdTo, 
 				directed
 				);
+		return edgeId;
 	}
 
 	@Override
@@ -591,6 +601,81 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 			res.add(e.getNode0().getId());
 		}
 		return res;
+	}
+
+	@Override
+	public void addAll(IGenlabGraph otherGraph, boolean copyGraphAttributes,
+			boolean copyNodeAttributes, boolean copyEdgesAttributes) {
+	
+		// copy graph attributes
+		if (copyGraphAttributes) {
+			Map<String,Object> attributes = otherGraph.getGraphAttributes();
+			for (String key: attributes.keySet()) {
+				
+				if (hasGraphAttribute(key))
+					continue;
+				
+				Object value = attributes.get(key);
+				setGraphAttribute(key, value);
+				
+			}
+		}
+		
+		// copy node attributes
+		if (copyNodeAttributes) {
+			Map<String,Class> attributes = otherGraph.getDeclaredVertexAttributesAndTypes();
+			for (String key: attributes.keySet()) {
+				
+				if (hasVertexAttribute(key))
+					continue;
+				
+				Class type = attributes.get(key);
+				declareVertexAttribute(key, type);
+			}
+		}
+		// copy edge attributes
+		if (copyEdgesAttributes) {
+			Map<String,Class> attributes = otherGraph.getDeclaredEdgeAttributesAndTypes();
+			for (String key: attributes.keySet()) {
+				
+				if (hasEdgeAttribute(key))
+					continue;
+				
+				Class type = attributes.get(key);
+				declareEdgeAttribute(key, type);
+			}
+		}
+		
+		// copy nodes
+		Map<String,String> other2thisId = new HashMap<String, String>((int)otherGraph.getVerticesCount());
+		for (String nodeId: otherGraph.getVertices()) {
+			String createdId = addVertex();
+			other2thisId.put(
+					nodeId, 
+					createdId
+					);
+			if (copyNodeAttributes) {
+				for (Map.Entry<String,Object> attValue : otherGraph.getVertexAttributes(nodeId).entrySet()) {
+					setVertexAttribute(createdId, attValue.getKey(), attValue.getValue());
+				}
+			}
+		}
+		
+		// copy edges
+		for (String edgeId: otherGraph.getEdges()) {
+			
+			String nodeIdFrom = other2thisId.get(otherGraph.getEdgeVertexFrom(edgeId));
+			String nodeIdTo = other2thisId.get(otherGraph.getEdgeVertexTo(edgeId));
+			
+			String createdEdgeId = addEdge(nodeIdFrom, nodeIdTo, otherGraph.isEdgeDirected(edgeId));
+				
+			if (copyEdgesAttributes) {
+				for (Map.Entry<String,Object> attValue : otherGraph.getEdgeAttributes(edgeId).entrySet()) {
+					setEdgeAttribute(createdEdgeId, attValue.getKey(), attValue.getValue());
+				}
+			}
+		}
+		
 	}
 
 

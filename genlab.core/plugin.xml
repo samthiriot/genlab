@@ -50,6 +50,10 @@
             class="genlab.core.model.meta.basics.algos.GraphBasicPropertiesAlgo"
             id="genlab.core.model.meta.basics.algos.GraphBasicPropertiesAlgo">
       </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.ConcatenateGraphsAlgo"
+            id="genlab.core.model.meta.basics.algos.ConcatenateGraphsAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">

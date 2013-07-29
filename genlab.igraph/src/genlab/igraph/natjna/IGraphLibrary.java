@@ -151,6 +151,35 @@ public class IGraphLibrary {
 		
 	}
 	
+
+	public IGraphGraph generateErdosRenyiGNM(int size, double m, boolean directed, boolean allowLoops) {
+
+		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+				
+		//GLLogger.debugTech("calling igraph", getClass());
+		final long startTime = System.currentTimeMillis();
+		final int res = rawLib.igraph_erdos_renyi_game_gnm(
+				g,
+				size,
+				m,
+				directed,
+				allowLoops
+		);
+		final long duration = System.currentTimeMillis() - startTime;
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		listOfMessages.debugTech("processing took "+duration+" ms", getClass());
+		// detect errors
+		checkIGraphResult(res);
+		
+		IGraphGraph result = new IGraphGraph(this, rawLib, g, directed);
+		
+		// basic checks
+		// TODO
+		
+		return result;
+		
+	}
+	
 	public IGraphGraph generateForestFire(int size, double fw_prob, double bw_factor,
 		    int pambs, boolean directed) {
 

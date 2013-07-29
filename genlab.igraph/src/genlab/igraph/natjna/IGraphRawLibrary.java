@@ -281,6 +281,8 @@ int igraph_version(const char **version_string,
 		    Igraph_vector_t x, 
 		    Igraph_vector_t y
 		    );
+	
+	
 	/*
 	 * igraph_game.h
 	 */
@@ -306,8 +308,7 @@ int igraph_erdos_renyi_game(igraph_t *graph, igraph_erdos_renyi_t type,
 			    igraph_bool_t directed, igraph_bool_t loops);
 int igraph_erdos_renyi_game_gnp(igraph_t *graph, igraph_integer_t n, igraph_real_t p,
 				igraph_bool_t directed, igraph_bool_t loops);
-int igraph_erdos_renyi_game_gnm(igraph_t *graph, igraph_integer_t n, igraph_real_t m,
-				igraph_bool_t directed, igraph_bool_t loops);
+
 int igraph_degree_sequence_game(igraph_t *graph, const igraph_vector_t *out_deg,
 				const igraph_vector_t *in_deg, 
 				igraph_degseq_t method);
@@ -355,9 +356,7 @@ int igraph_establishment_game(igraph_t *graph, igraph_integer_t nodes,
 			      igraph_vector_t *type_dist,
 			      igraph_matrix_t *pref_matrix,
 			      igraph_bool_t directed);
-int igraph_grg_game(igraph_t *graph, igraph_integer_t nodes,
-		    igraph_real_t radius, igraph_bool_t torus,
-		    igraph_vector_t *x, igraph_vector_t *y);
+
 int igraph_preference_game(igraph_t *graph, igraph_integer_t nodes,
 			   igraph_integer_t types, 
 			   const igraph_vector_t *type_dist,
@@ -375,10 +374,6 @@ int igraph_asymmetric_preference_game(igraph_t *graph, igraph_integer_t nodes,
 
 int igraph_rewire_edges(igraph_t *graph, igraph_real_t prob, 
 			igraph_bool_t loops, igraph_bool_t multiple);
-int igraph_watts_strogatz_game(igraph_t *graph, igraph_integer_t dim,
-			       igraph_integer_t size, igraph_integer_t nei,
-			       igraph_real_t p, igraph_bool_t loops, 
-			       igraph_bool_t multiple);
 
 int igraph_lastcit_game(igraph_t *graph, 
 			igraph_integer_t nodes, igraph_integer_t edges_per_node, 
@@ -409,15 +404,13 @@ int igraph_citing_cited_type_game(igraph_t *graph, igraph_integer_t nodes,
 		    int pambs, boolean directed);
 
 	/*
-int igraph_simple_interconnected_islands_game(
+	int igraph_simple_interconnected_islands_game(
 				igraph_t *graph, 
 				igraph_integer_t islands_n, 
 				igraph_integer_t islands_size,
 				igraph_real_t islands_pin, 
 				igraph_integer_t n_inter);
-*/
-
-	
+	 */
 	public native int igraph_simple_interconnected_islands_game(
 			InternalGraphStruct graph, 
 			int islands_n, 
@@ -466,6 +459,13 @@ int igraph_k_regular_game(igraph_t *graph,
 			InternalGraphStruct graph, 
 			int n, 
 			double p,
+			boolean directed, 
+			boolean loops
+			);
+	public native int igraph_erdos_renyi_game_gnm(
+			InternalGraphStruct graph, 
+			int n, 
+			double m,
 			boolean directed, 
 			boolean loops
 			);

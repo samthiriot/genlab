@@ -50,7 +50,7 @@ public interface IGenlabGraph {
 	
 	public void addEdge(String id, String vertexIdFrom, String vertexIdTo);
 	
-	public void addEdge(String vertexIdFrom, String vertexIdTo, boolean directed);
+	public String addEdge(String vertexIdFrom, String vertexIdTo, boolean directed);
 
 	public void addEdge(String id, String vertexIdFrom, String vertexIdTo, boolean directed);
 	
@@ -127,5 +127,7 @@ public interface IGenlabGraph {
 	 */
 	public IGenlabGraph clone(String cloneId);
 
+	
+	public void addAll(IGenlabGraph otherGraph, boolean copyGraphAttributes, boolean copyNodeAttributes, boolean copyEdgesAttributes);
 	
 }
