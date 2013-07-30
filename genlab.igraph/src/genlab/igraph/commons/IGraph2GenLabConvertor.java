@@ -5,7 +5,6 @@ import genlab.core.commons.WrongParametersException;
 import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.GraphFactory;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
-import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
 import genlab.igraph.natjna.IGraphEdge;
@@ -33,6 +32,7 @@ public class IGraph2GenLabConvertor {
 			glGraph.declareVertexAttribute("x", Double.class);
 			glGraph.declareVertexAttribute("y", Double.class);
 			
+			messages.debugUser("x and y attributes are provided by igraph; will copy them", IGraph2GenLabConvertor.class);
 		}
 		
 		// add nodes
@@ -72,7 +72,7 @@ public class IGraph2GenLabConvertor {
 		}
 		
 		{
-			GLLogger.traceTech(
+			messages.traceTech(
 					"transformed an igraph graph with "+totalNodes+" vertices and "+glGraph.getEdgesCount()+" edges in "+
 					UserMachineInteractionUtils.getHumanReadableTimeRepresentation(System.currentTimeMillis()-timestampStart), 
 					IGraph2GenLabConvertor.class
