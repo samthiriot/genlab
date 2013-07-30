@@ -12,4 +12,11 @@ public class IGraphEdge {
 		this.node2id = b;
 	}
 
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(id).append(": ");
+		sb.append(node1id).append("->").append(node2id);
+		return sb.toString();
+	}
 }

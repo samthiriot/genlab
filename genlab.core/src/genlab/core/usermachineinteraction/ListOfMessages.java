@@ -42,9 +42,9 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	/**
 	 * If true, relays every message to a log4j logger.
 	 */
-	public static boolean RELAY_TO_LOG4J = false;
+	public static boolean RELAY_TO_LOG4J = true;
 	
-	protected MessageLevel filterIgnoreBelow = MessageLevel.WARNING;
+	protected MessageLevel filterIgnoreBelow = null; //MessageLevel.WARNING;
 	
 	private long countMessagesCanBeDeleted = 0;
 	

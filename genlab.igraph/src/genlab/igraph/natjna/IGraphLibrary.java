@@ -1,23 +1,33 @@
 package genlab.igraph.natjna;
 
+import genlab.core.commons.FileUtils;
 import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
+import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Iterator;
+
+import org.eclipse.core.runtime.FileLocator;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
-// TODO a pool for igraph libs
 public class IGraphLibrary {
 
+	/**
+	 * THE native library to use.
+	 */
 	private final IGraphRawLibrary rawLib;
 	
 	public String versionString = null; 
@@ -49,18 +59,79 @@ public class IGraphLibrary {
 	// TODO errors !
 	//private final static int IGRAPH_ERROR_IGRAPH_ENOMEM = ;
 	
+
+	
+	/**
+	 * Creates a novel accessor to a raw (native) igraph library.
+	 * Loads another instance after a copy to a tmp file.
+	 */
 	public IGraphLibrary() {
 
-		//GLLogger.debugTech("init igraph native library...", getClass());
 		
-		if (!IGraphRawLibrary.isAvailable) 
-			throw new ProgramException("unable to use the igraph native library");
+		String filenameOriginal = "/ext/native/linux/x86_64/libigraph.so";
+		String libNameOriginal = "igraph";
+				
+		URL url = genlab.igraph.Activator.getDefault().getBundle().getEntry(filenameOriginal);
+        URL resolvedURL = null;
+		try {
+			resolvedURL = FileLocator.toFileURL(url);
+		} catch (IOException e) {
+			throw new ProgramException("unable to locale the root of the plugin; icons will not be added for algorithms", e);
+		}
+		        
+		//File originalDll = Activator.getDefault().getBundle().
+		File originalDll = new File(resolvedURL.getFile());
 		
-		rawLib = new IGraphRawLibrary();
+		if (!originalDll.exists() || !originalDll.isFile() || !originalDll.canRead())
+			throw new ProgramException("unable to read the igraph shared library from the file "+filenameOriginal);
+
+		// found; let's copy it somewhere
+		File copy;
+		final String prefix = FileUtils.extractFilenameWithoutExtension(filenameOriginal);
+		final String suffix = "."+FileUtils.getExtension(filenameOriginal);
+		try {
+			copy = File.createTempFile(
+					prefix, 
+					suffix
+					);
+		} catch (IOException e) {
+			throw new ProgramException("unable to copy the native library to a temporary space", e);
+		}
+
+		FileUtils.copyFiles(originalDll, copy);
+
+		String tmpLibraryUndecoratedName = copy.getName();
+		tmpLibraryUndecoratedName = libNameOriginal+tmpLibraryUndecoratedName.substring(prefix.length(), tmpLibraryUndecoratedName.length()-suffix.length());
 		
+		
+		GLLogger.debugTech("adding as a search path :"+FileUtils.extractPath(copy.getAbsolutePath())+" for library named "+tmpLibraryUndecoratedName, getClass());
+		NativeLibrary.addSearchPath(tmpLibraryUndecoratedName, FileUtils.extractPath(copy.getAbsolutePath()));
+		try{
+    		final String previousValue = System.getProperty("jna.library.path");
+    		StringBuffer sb = new StringBuffer();
+    		sb.append(tmpLibraryUndecoratedName).append(File.pathSeparator);
+    		// add previous value
+    		if (previousValue != null)
+    			sb.append(previousValue);
+    		// actually set the value
+    		System.setProperty("jna.library.path", sb.toString());
+		} catch(IllegalStateException ise){
+    		GLLogger.errorTech(
+    				"error during the initialization of the system property jna.library.path", 
+    				IGraphRawLibrary.class
+    				);
+    	}
+		
+		GLLogger.debugTech("actual load of the library "+tmpLibraryUndecoratedName, getClass());
+		try {
+		rawLib = (IGraphRawLibrary)Native.loadLibrary(tmpLibraryUndecoratedName, IGraphRawLibrary.class);
+		} catch (UnsatisfiedLinkError e) {
+			throw new ProgramException("error while loading the igraph copy: "+e.getMessage(), e);
+		}
+		GLLogger.debugTech("testing access to igraph with a retrieval of the version...", getClass());
 		retrieveVersion();
 		
-		//GLLogger.debugTech("detected version: "+versionString, getClass());
+		GLLogger.debugTech("loaded igraph successfully, version: "+versionString, getClass());
 		
 	}
 
@@ -104,8 +175,8 @@ public class IGraphLibrary {
 		return versionString;
 	}
 	
-	protected IGraphRawLibrary.InternalGraphStruct createEmptyGraph() {
-		return new IGraphRawLibrary.InternalGraphStruct(rawLib);
+	protected InternalGraphStruct createEmptyGraph() {
+		return new InternalGraphStruct(rawLib);
 	}
 	
 	public void clearGraphMemory(IGraphGraph g) {
@@ -133,7 +204,7 @@ public class IGraphLibrary {
 	
 	public IGraphGraph generateErdosRenyiGNP(int size, double proba, boolean directed, boolean allowLoops) {
 
-		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+		final InternalGraphStruct g = createEmptyGraph();
 				
 		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
@@ -162,7 +233,7 @@ public class IGraphLibrary {
 
 	public IGraphGraph generateErdosRenyiGNM(int size, double m, boolean directed, boolean allowLoops) {
 
-		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+		final InternalGraphStruct g = createEmptyGraph();
 				
 		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
@@ -191,7 +262,7 @@ public class IGraphLibrary {
 	public IGraphGraph generateForestFire(int size, double fw_prob, double bw_factor,
 		    int pambs, boolean directed) {
 
-		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+		final InternalGraphStruct g = createEmptyGraph();
 				
 		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
@@ -224,7 +295,7 @@ public class IGraphLibrary {
 			double islands_pin, 
 			int n_inter) {
 
-		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+		final InternalGraphStruct g = createEmptyGraph();
 				
 		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
@@ -247,7 +318,7 @@ public class IGraphLibrary {
 	
 	public IGraphGraph generateWattsStrogatz(int size, int dimension, double proba, int nei, boolean directed, boolean allowLoops) {
 		
-		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+		final InternalGraphStruct g = createEmptyGraph();
 		
 		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
@@ -273,11 +344,11 @@ public class IGraphLibrary {
 	
 	public IGraphGraph generateGRG(int nodes, double radius, boolean torus) {
 		
-		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+		final InternalGraphStruct g = createEmptyGraph();
 		
-		IGraphRawLibrary.Igraph_vector_t x = new IGraphRawLibrary.Igraph_vector_t();
+		Igraph_vector_t x = new Igraph_vector_t();
 		rawLib.igraph_vector_init(x, 0);
-		IGraphRawLibrary.Igraph_vector_t y = new IGraphRawLibrary.Igraph_vector_t();
+		Igraph_vector_t y = new Igraph_vector_t();
 		rawLib.igraph_vector_init(y, 0);
 		
 		try {
@@ -312,7 +383,7 @@ public class IGraphLibrary {
 	
 	public IGraphGraph generateLCF(int nodes, int[] paramShifts, int repeats) {
 		
-		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+		final InternalGraphStruct g = createEmptyGraph();
 		
 		if (repeats < 1)
 			throw new WrongParametersException("argument repeat should be positive");
@@ -320,7 +391,7 @@ public class IGraphLibrary {
 			throw new WrongParametersException("argument nodes should be positive");
 
 		// init the shifts param
-		IGraphRawLibrary.Igraph_vector_t shifts = new IGraphRawLibrary.Igraph_vector_t();
+		Igraph_vector_t shifts = new Igraph_vector_t();
 		{
 			Pointer shitsPointer = new Memory(paramShifts.length * Native.getNativeSize(Double.TYPE));
 			for (int dloop=0; dloop<paramShifts.length; dloop++) {
@@ -359,7 +430,7 @@ public class IGraphLibrary {
 
 	public IGraphGraph copyGraph(IGraphGraph original) {
 
-		final IGraphRawLibrary.InternalGraphStruct theCopy = createEmptyGraph();
+		final InternalGraphStruct theCopy = createEmptyGraph();
 
 		rawLib.igraph_copy(original.getStruct(), theCopy);
 		
@@ -371,7 +442,7 @@ public class IGraphLibrary {
 	
 	public IGraphGraph generateEmpty(int size, boolean directed) {
 	
-		final IGraphRawLibrary.InternalGraphStruct g = createEmptyGraph();
+		final InternalGraphStruct g = createEmptyGraph();
 				
 		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
@@ -431,7 +502,7 @@ public class IGraphLibrary {
 		return rawLib.igraph_vcount(g.getPointer());
 	}
 	
-	public int getVertexCount(IGraphRawLibrary.InternalGraphStruct g) {
+	public int getVertexCount(InternalGraphStruct g) {
 		
 		return rawLib.igraph_vcount(g.getPointer());
 	}
@@ -667,9 +738,9 @@ public class IGraphLibrary {
 		
 		//GLLogger.debugTech("calling igraph to initialize vectors...", getClass());
 
-		IGraphRawLibrary.Igraph_vector_t membership = new IGraphRawLibrary.Igraph_vector_t();
+		Igraph_vector_t membership = new Igraph_vector_t();
 		rawLib.igraph_vector_init(membership, 0);
-		IGraphRawLibrary.Igraph_vector_t csize = new IGraphRawLibrary.Igraph_vector_t();
+		Igraph_vector_t csize = new Igraph_vector_t();
 		rawLib.igraph_vector_init(csize, 0);
 		IntByReference count = new IntByReference();
 		

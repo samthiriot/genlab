@@ -18,7 +18,7 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 
 	public final IGraphRawLibrary baseLib;
 	
-	public final IGraphRawLibrary.InternalGraphStruct graphStruct;
+	public final InternalGraphStruct graphStruct;
 	
 	public boolean directed;
 	
@@ -38,7 +38,7 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 	public double[] yPositions = null;
 	
 	
-	public IGraphGraph(IGraphLibrary lib, IGraphRawLibrary baseLib, IGraphRawLibrary.InternalGraphStruct graphStruct, boolean directed) {
+	public IGraphGraph(IGraphLibrary lib, IGraphRawLibrary baseLib, InternalGraphStruct graphStruct, boolean directed) {
 		this.lib = lib;
 		this.baseLib = baseLib;
 		this.graphStruct = graphStruct;
@@ -54,7 +54,7 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 	 * @param baseLib
 	 * @param graphStruct
 	 */
-	public IGraphGraph(IGraphLibrary lib, IGraphRawLibrary baseLib, IGraphRawLibrary.InternalGraphStruct graphStruct, boolean directed, int initSize) {
+	public IGraphGraph(IGraphLibrary lib, IGraphRawLibrary baseLib, InternalGraphStruct graphStruct, boolean directed, int initSize) {
 		this.lib = lib;
 		this.baseLib = baseLib;
 		this.graphStruct = graphStruct;
@@ -64,7 +64,7 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 		
 	}
 	
-	public IGraphGraph(IGraphGraph original, IGraphLibrary lib, IGraphRawLibrary baseLib, IGraphRawLibrary.InternalGraphStruct graphStruct) {
+	public IGraphGraph(IGraphGraph original, IGraphLibrary lib, IGraphRawLibrary baseLib, InternalGraphStruct graphStruct) {
 		this.lib = lib;
 		this.baseLib = baseLib;
 		this.graphStruct = graphStruct;
@@ -84,7 +84,7 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 		 return res;
 	}
 	
-	final public IGraphRawLibrary.InternalGraphStruct getStruct() {
+	final public InternalGraphStruct getStruct() {
 		return graphStruct;
 	}
 	
@@ -126,6 +126,8 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 	}
 
 	public Iterator<IGraphEdge> iterator() {
+		// TODO direct memory access to the graph (more efficient than ont JNA call per edge...)
+		//return graphStruct.iterator();
 		return lib.getEdgeIterator(this);
 	}
 	

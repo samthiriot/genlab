@@ -48,9 +48,8 @@ public abstract class BasicAlgo implements IAlgo {
 		this.name = name;
 		this.description = description;
 
+		// TODO remove html description
 		this.longHtmlDescription = longHtmlDescription;
-		if (longHtmlDescription == null)
-			GLLogger.warnTech("this algo has no detailed description: "+id, getClass());
 		this.categoryId = categoryId;
 		
 		this.imageRelativePath = imagePath;

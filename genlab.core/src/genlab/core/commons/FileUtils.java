@@ -27,6 +27,19 @@ public class FileUtils {
 		}
 	}
 	
+	public static final String extractFilenameWithoutExtension(final String filename) {
+		
+		String filenameOnly = extractFilename(filename);
+		
+		final int index = indexOfExtension(filenameOnly);
+		
+		if (index == -1) {
+			return "";
+		} else {
+			return filenameOnly.substring(0, index);
+		}
+	}
+	
 	public static final String extractFilename(final String filename) {
 		final int index = filename.lastIndexOf(File.separator);
 		if (index < 0) {
