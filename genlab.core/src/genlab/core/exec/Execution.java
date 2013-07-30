@@ -104,7 +104,7 @@ public class Execution implements IExecution {
 				sb.append("- ").append(e.getKey()).append(": ").append(e.getValue()).append("\n");
 			}
 		}
-		messages.infoTech("here are the technical informations: "+sb.toString(), getClass());
+		messages.infoTech("here are some technical informations for this execution: "+sb.toString(), getClass());
 
 	}
 

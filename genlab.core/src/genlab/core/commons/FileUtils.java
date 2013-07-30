@@ -10,6 +10,12 @@ import java.nio.channels.FileChannel;
 
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 
+/**
+ * TODO propose a "link or copy" command
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class FileUtils {
 
 	/**

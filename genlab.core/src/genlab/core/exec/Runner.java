@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public class Runner extends Thread implements IComputationProgressSimpleListener {
 	
-	final static int MAX_THREADS = 5;
+	final static int MAX_THREADS = 10;
 	
 	final Set<IAlgoExecution> all = new HashSet<IAlgoExecution>();
 

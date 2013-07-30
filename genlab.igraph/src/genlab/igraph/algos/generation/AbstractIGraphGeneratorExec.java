@@ -55,7 +55,7 @@ public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecution 
 		
 			// decode parameters
 			
-			IGraphLibrary lib = IGraphRawLibraryPool.singleton.getLibrary();
+			IGraphLibrary lib = IGraphRawLibraryPool.singleton.getLibrary(exec);
 					
 			IGraphGraph igraphGraph = null;
 					

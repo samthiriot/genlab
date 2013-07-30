@@ -16,10 +16,15 @@ import genlab.igraph.natjna.InternalVectorStruct;
 
 public class IGraph2GenLabConvertor {
 
-	public static final String KEY_INFO_CONVERT_GENLAB_TO_IGRAPH = "count of graph conversions from genlab to igraph";
-	public static final String KEY_INFO_CONVERT_GENLAB_TO_IGRAPH_TIME = "cumulated time of graph conversions from genlab to igraph (ms)";
-	public static final String KEY_INFO_CONVERT_IGRAPH_TO_GENLAB = "count of graph conversions from igraph to genlab";
-	public static final String KEY_INFO_CONVERT_IGRAPH_TO_GENLAB_TIME = "cumulated time of graph conversions from igraph to genlab (ms)";
+	/**
+	 * Number of edges to create at the same time (should be even)
+	 */
+	public static final int BUFFER_EDGES_CREATION = 1000;
+	
+	public static final String KEY_INFO_CONVERT_GENLAB_TO_IGRAPH = "igraph / count of graph conversions from genlab to igraph";
+	public static final String KEY_INFO_CONVERT_GENLAB_TO_IGRAPH_TIME = "igraph / cumulated time for graph conversions from genlab to igraph (ms)";
+	public static final String KEY_INFO_CONVERT_IGRAPH_TO_GENLAB = "igraph / count of graph conversions from igraph to genlab";
+	public static final String KEY_INFO_CONVERT_IGRAPH_TO_GENLAB_TIME = "igraph / cumulated time for graph conversions from igraph to genlab (ms)";
 	
 	
 	public static IGenlabGraph getGenlabGraphForIgraph(IGraphGraph graph, IExecution execution) {
@@ -98,10 +103,6 @@ public class IGraph2GenLabConvertor {
 		
 	}
 	
-	/**
-	 * Number of edges to create (should be even)
-	 */
-	public static final int BUFFER_EDGES_CREATION = 1000;
 	
 	public static IGraphGraph getIGraphGraphForGenlabGraph(IGenlabGraph genlabGraph, IExecution execution, IGraphLibrary lib) {
 	
@@ -190,7 +191,7 @@ public class IGraph2GenLabConvertor {
 		return getIGraphGraphForGenlabGraph(
 				genlabGraph, 
 				execution, 
-				IGraphRawLibraryPool.singleton.getLibrary()
+				IGraphRawLibraryPool.singleton.getLibrary(execution)
 				);
 
 	}

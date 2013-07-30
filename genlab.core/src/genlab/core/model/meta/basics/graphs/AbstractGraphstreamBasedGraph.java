@@ -40,6 +40,9 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 	@SuppressWarnings("rawtypes")
 	protected final Map<String,Class> graphAttribute2type = new HashMap<String, Class>();
 	
+	public static final String KEY_TECHNICAL_INFO_COUNT_CLONES = "core / count of graphs cloned";
+	public static final String KEY_TECHNICAL_INFO_COUNT_CREATED = "core / count of graphs created";
+	
 	/**
 	 * Please always active strict checking for the graphstream graph.
 	 * @param gsGraph

@@ -59,7 +59,7 @@ public class GraphBasicPropertiesAlgo extends BasicAlgo {
 	
 	public GraphBasicPropertiesAlgo() {
 		super(
-				"graph properties", 
+				"basic properties", 
 				"basic graph properties", 
 				null, 
 				ExistingAlgoCategories.ANALYSIS_GRAPH.getTotalId(), 

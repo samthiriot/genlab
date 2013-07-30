@@ -60,6 +60,9 @@ public class IGraphLibrary {
 	//private final static int IGRAPH_ERROR_IGRAPH_ENOMEM = ;
 	
 
+	static {
+		Native.setProtected(false);
+	}
 	
 	/**
 	 * Creates a novel accessor to a raw (native) igraph library.
@@ -124,7 +127,8 @@ public class IGraphLibrary {
 		
 		GLLogger.debugTech("actual load of the library "+tmpLibraryUndecoratedName, getClass());
 		try {
-		rawLib = (IGraphRawLibrary)Native.loadLibrary(tmpLibraryUndecoratedName, IGraphRawLibrary.class);
+			rawLib = (IGraphRawLibrary)Native.loadLibrary(tmpLibraryUndecoratedName, IGraphRawLibrary.class);
+			// System.err.println("loaded raw library: "+rawLib);
 		} catch (UnsatisfiedLinkError e) {
 			throw new ProgramException("error while loading the igraph copy: "+e.getMessage(), e);
 		}
