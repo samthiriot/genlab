@@ -1,5 +1,7 @@
 package genlab.core.exec;
 
+import java.util.Map;
+
 import genlab.core.usermachineinteraction.ListOfMessages;
 
 /**
@@ -27,5 +29,16 @@ public interface IExecution {
 	public void setExecutionForced(boolean f);
 	
 	public String getId();
+	
+	public Map<String,Object> getAllTechnicalInformations();
+	
+	public void setTechnicalInformation(String key, Object value);
+	
+	public Object getTechnicalInformation(String key);
+	
+	public void incrementTechnicalInformationLong(String key, long increment);
+	public void incrementTechnicalInformationLong(String key);
+
+	public void displayTechnicalInformationsOnMessages();
 	
 }

@@ -67,7 +67,7 @@ public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecution 
 				// generate
 				igraphGraph = generateGraph(lib, messages);
 				
-				IGenlabGraph genlabGraph = IGraph2GenLabConvertor.getGenlabGraphForIgraph(igraphGraph, messages);
+				IGenlabGraph genlabGraph = IGraph2GenLabConvertor.getGenlabGraphForIgraph(igraphGraph, exec);
 
 				result.setResult(AbstractIGraphGenerator.OUTPUT_GRAPH, genlabGraph);
 				

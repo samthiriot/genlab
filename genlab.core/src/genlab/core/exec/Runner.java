@@ -49,11 +49,13 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	
 	private final IContainerTask task;
 	
+	private final IExecution execution;
 	
 	public Runner(IExecution execution, IComputationProgress progress, Collection<IAlgoExecution> allTasks, IContainerTask task) {
 		
 		this.progress = progress;
 		
+		this.execution = execution;
 		messages = execution.getListOfMessages();
 		
 		for (IAlgoExecution e: allTasks)
@@ -267,6 +269,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			synchronized (all) {
 				if (running.isEmpty() && ready.isEmpty() && notReady.isEmpty()) {
 					messages.infoUser("all tasks done", getClass());
+					execution.displayTechnicalInformationsOnMessages();
 					return;
 				}
 			}

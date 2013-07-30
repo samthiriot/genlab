@@ -58,7 +58,7 @@ public abstract class AbstractIGraphTransformExec extends AbstractAlgoExecution 
 			final IGenlabGraph glGraph = (IGenlabGraph) getInputValueForInput(AbstractIGraphTransform.INPUT_GRAPH);
 			
 			// retrieve an igraph graph
-			IGraphGraph igraphGraph = IGraph2GenLabConvertor.getIGraphGraphForGenlabGraph(glGraph, result.getMessages());
+			IGraphGraph igraphGraph = IGraph2GenLabConvertor.getIGraphGraphForGenlabGraph(glGraph, exec);
 			
 			try {
 				
@@ -70,7 +70,7 @@ public abstract class AbstractIGraphTransformExec extends AbstractAlgoExecution 
 				
 				// use outputs
 				// transform back it
-				IGenlabGraph outGraph = IGraph2GenLabConvertor.getGenlabGraphForIgraph(igraphGraph, messages);
+				IGenlabGraph outGraph = IGraph2GenLabConvertor.getGenlabGraphForIgraph(igraphGraph, exec);
 				
 				result.setResult(AbstractIGraphTransform.OUTPUT_GRAPH, outGraph);
 				

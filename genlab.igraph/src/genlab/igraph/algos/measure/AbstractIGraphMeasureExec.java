@@ -60,7 +60,7 @@ public abstract class AbstractIGraphMeasureExec extends AbstractAlgoExecution {
 			// decode parameters
 			final IGenlabGraph glGraph = (IGenlabGraph) getInputValueForInput(AbstractIGraphMeasure.INPUT_GRAPH);
 			
-			IGraphGraph igraphGraph = IGraph2GenLabConvertor.getIGraphGraphForGenlabGraph(glGraph, result.getMessages());
+			IGraphGraph igraphGraph = IGraph2GenLabConvertor.getIGraphGraphForGenlabGraph(glGraph, exec);
 			
 			try {
 				

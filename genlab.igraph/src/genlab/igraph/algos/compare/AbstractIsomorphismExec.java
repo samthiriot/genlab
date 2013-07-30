@@ -68,8 +68,8 @@ public abstract class AbstractIsomorphismExec extends AbstractAlgoExecution {
 			try {
 				
 				
-				igraphGraph1 = IGraph2GenLabConvertor.getIGraphGraphForGenlabGraph(glGraph1, messages);
-				igraphGraph2 = IGraph2GenLabConvertor.getIGraphGraphForGenlabGraph(glGraph2, messages, igraphGraph1.lib);
+				igraphGraph1 = IGraph2GenLabConvertor.getIGraphGraphForGenlabGraph(glGraph1, exec);
+				igraphGraph2 = IGraph2GenLabConvertor.getIGraphGraphForGenlabGraph(glGraph2, exec, igraphGraph1.lib);
 				
 				iso = compareGraphs(igraphGraph1, igraphGraph2);
 				

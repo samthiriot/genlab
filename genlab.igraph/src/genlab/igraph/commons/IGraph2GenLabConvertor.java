@@ -2,6 +2,7 @@ package genlab.igraph.commons;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
+import genlab.core.exec.IExecution;
 import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.GraphFactory;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
@@ -14,9 +15,17 @@ import genlab.igraph.natjna.IGraphRawLibraryPool;
 
 public class IGraph2GenLabConvertor {
 
-	public static IGenlabGraph getGenlabGraphForIgraph(IGraphGraph graph, ListOfMessages messages) {
+	public static final String KEY_INFO_CONVERT_GENLAB_TO_IGRAPH = "count of graph conversions from genlab to igraph";
+	public static final String KEY_INFO_CONVERT_GENLAB_TO_IGRAPH_TIME = "cumulated time of graph conversions from genlab to igraph (ms)";
+	public static final String KEY_INFO_CONVERT_IGRAPH_TO_GENLAB = "count of graph conversions from igraph to genlab";
+	public static final String KEY_INFO_CONVERT_IGRAPH_TO_GENLAB_TIME = "cumulated time of graph conversions from igraph to genlab (ms)";
+	
+	
+	public static IGenlabGraph getGenlabGraphForIgraph(IGraphGraph graph, IExecution execution) {
 		
-		long timestampStart = System.currentTimeMillis();
+		final ListOfMessages messages = execution.getListOfMessages();
+		
+		final long timestampStart = System.currentTimeMillis();
 		
 		IGenlabGraph glGraph = GraphFactory.createGraph(
 				"igraphGen", 
@@ -72,9 +81,14 @@ public class IGraph2GenLabConvertor {
 		}
 		
 		{
+			long timeElapsed = System.currentTimeMillis()-timestampStart;
+			
+			execution.incrementTechnicalInformationLong(KEY_INFO_CONVERT_IGRAPH_TO_GENLAB);
+			execution.incrementTechnicalInformationLong(KEY_INFO_CONVERT_IGRAPH_TO_GENLAB_TIME, timeElapsed);
+
 			messages.traceTech(
 					"transformed an igraph graph with "+totalNodes+" vertices and "+glGraph.getEdgesCount()+" edges in "+
-					UserMachineInteractionUtils.getHumanReadableTimeRepresentation(System.currentTimeMillis()-timestampStart), 
+					UserMachineInteractionUtils.getHumanReadableTimeRepresentation(timeElapsed), 
 					IGraph2GenLabConvertor.class
 					);
 		}
@@ -83,11 +97,15 @@ public class IGraph2GenLabConvertor {
 		
 	}
 	
-	public static IGraphGraph getIGraphGraphForGenlabGraph(IGenlabGraph genlabGraph, ListOfMessages messages, IGraphLibrary lib) {
+	public static IGraphGraph getIGraphGraphForGenlabGraph(IGenlabGraph genlabGraph, IExecution execution, IGraphLibrary lib) {
 	
 		if (genlabGraph.getVerticesCount() > Integer.MAX_VALUE)
 			throw new WrongParametersException("The network is too large for igraph conversion.");
-		
+	
+		final ListOfMessages messages = execution.getListOfMessages();
+
+		final long timestampStart = System.currentTimeMillis();
+
 		// TODO emit messages
 		
 		// TODO check parameters
@@ -113,17 +131,25 @@ public class IGraph2GenLabConvertor {
 		if (genlabGraph.getEdgesCount() != lib.getEdgeCount(igraphGraph))
 			throw new ProgramException("wrong edge count after copy");
 		
+
+		{ // communicate
+			long timeElapsed = System.currentTimeMillis()-timestampStart;
+	
+			execution.incrementTechnicalInformationLong(KEY_INFO_CONVERT_GENLAB_TO_IGRAPH);
+			execution.incrementTechnicalInformationLong(KEY_INFO_CONVERT_GENLAB_TO_IGRAPH_TIME, timeElapsed);
+
+		}
 		// end !
 		return igraphGraph;
 		
 	}
 	
 
-	public static IGraphGraph getIGraphGraphForGenlabGraph(IGenlabGraph genlabGraph, ListOfMessages messages) {
+	public static IGraphGraph getIGraphGraphForGenlabGraph(IGenlabGraph genlabGraph, IExecution execution) {
 		
 		return getIGraphGraphForGenlabGraph(
 				genlabGraph, 
-				messages, 
+				execution, 
 				IGraphRawLibraryPool.singleton.getLibrary()
 				);
 
