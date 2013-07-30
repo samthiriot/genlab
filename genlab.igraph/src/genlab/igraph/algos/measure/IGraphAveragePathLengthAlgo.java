@@ -1,8 +1,5 @@
 package genlab.igraph.algos.measure;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
@@ -14,6 +11,9 @@ import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.natjna.IGraphGraph;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class IGraphAveragePathLengthAlgo extends AbstractIGraphMeasure {
 

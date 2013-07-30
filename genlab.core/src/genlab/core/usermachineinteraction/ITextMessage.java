@@ -29,6 +29,7 @@ public interface ITextMessage extends Comparable<ITextMessage> {
 	
 	public Throwable getException();
 	
+	@SuppressWarnings("rawtypes")
 	public Class getEmitter();
 	
 	public String getShortEmitter();

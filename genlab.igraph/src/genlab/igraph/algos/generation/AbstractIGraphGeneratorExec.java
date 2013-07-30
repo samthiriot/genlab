@@ -6,9 +6,7 @@ import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
-import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
@@ -16,8 +14,6 @@ import genlab.igraph.commons.IGraph2GenLabConvertor;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphLibrary;
 import genlab.igraph.natjna.IGraphRawLibraryPool;
-
-import java.util.Map;
 
 public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecution {
 

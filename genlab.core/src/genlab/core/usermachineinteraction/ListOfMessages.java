@@ -24,6 +24,7 @@ import org.apache.log4j.Priority;
  * @author Samuel Thiriot
  *
  */
+@SuppressWarnings("rawtypes")
 public class ListOfMessages implements Iterable<ITextMessage> {
 
 	/**
@@ -41,9 +42,9 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	/**
 	 * If true, relays every message to a log4j logger.
 	 */
-	public static boolean RELAY_TO_LOG4J = true;
+	public static boolean RELAY_TO_LOG4J = false;
 	
-	protected MessageLevel filterIgnoreBelow = null; //MessageLevel.WARNING;
+	protected MessageLevel filterIgnoreBelow = MessageLevel.WARNING;
 	
 	private long countMessagesCanBeDeleted = 0;
 	

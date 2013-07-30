@@ -20,7 +20,14 @@ typedef int    igraph_integer_t;
 typedef double igraph_real_t;
 typedef int    igraph_bool_t;
  */
-public class IGraphRawLibrary {
+/**
+ * 
+ * For debug: VM option jna.debug_load=true
+ * 
+ * @author Samuel Thiriot
+ *
+ */
+public class IGraphRawLibrary  {
 
 
 	//IGraphLibrary INSTANCE = (IGraphLibrary) Native.loadLibrary("igraph", IGraphLibrary.class);

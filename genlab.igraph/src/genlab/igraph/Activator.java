@@ -5,7 +5,6 @@ import genlab.igraph.algos.generation.lcffamous.FamousLCFGraphs;
 import genlab.igraph.natjna.IGraphRawLibrary;
 
 import org.eclipse.core.runtime.Plugin;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -40,9 +39,7 @@ public class Activator extends Plugin implements BundleActivator {
 			// TODO warn user as well
 			// TODO deactivate all the igraph algorithms
 		}
-		
-		final Bundle b = getBundle();
-		
+				
 		// declare the LCF algos
 		bundleContext.addBundleListener(new BundleListener() {
 			

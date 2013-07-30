@@ -13,6 +13,9 @@ public class TextMessage implements ITextMessage {
 	protected int count = 1;
 	public final Throwable exception;
 	public final String fromShort;
+	
+	
+	@SuppressWarnings("rawtypes")
 	public final Class emitter;
 	
 	public TextMessage(MessageLevel level, MessageAudience audience, String fromShort, Class emitter, String message, Throwable exception) {

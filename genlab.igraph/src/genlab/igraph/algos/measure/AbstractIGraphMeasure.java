@@ -7,7 +7,6 @@ import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.igraph.Activator;
 
-import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.Bundle;
 
 public abstract class AbstractIGraphMeasure extends BasicAlgo {

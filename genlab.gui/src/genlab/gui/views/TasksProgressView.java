@@ -10,7 +10,6 @@ import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.exec.IComputationProgressSimpleListener;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
-import genlab.gui.actions.ClearMessagesAction;
 import genlab.gui.actions.ClearProgressAction;
 
 import java.util.HashMap;
@@ -251,15 +250,6 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 				
 			}
 			
-			// its children ? 
-			if (t instanceof IContainerTask) {
-				IContainerTask cont = (IContainerTask)t;
-				
-				for (ITask sub : cont.getTasks()) {
-					getOrCreateItemForTask(sub);
-				}
-			}
-			
 			// ... its expanded state
 			item.setExpanded(t instanceof IContainerTask);
 
@@ -277,8 +267,17 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		
 		//GLLogger.debugTech("updating for task "+t, getClass());
 		
-		
+		// create (or get) it ?
 		TreeItem item = getOrCreateItemForTask(t);
+		
+		// also create its children ? 
+		if (t instanceof IContainerTask) {
+			IContainerTask cont = (IContainerTask)t;
+			
+			for (ITask sub : cont.getTasks()) {
+				getOrCreateItemForTask(sub);
+			}
+		}
 		
 		if (item.isDisposed()) {
 			task2item.remove(t);
@@ -331,6 +330,8 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 			task2editor.remove(t);
 		}
 		// TODO hide ?
+		
+		
 		
 	}
 	

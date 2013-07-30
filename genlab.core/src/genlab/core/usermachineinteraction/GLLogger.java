@@ -7,6 +7,7 @@ package genlab.core.usermachineinteraction;
  * @author Samuel Thiriot
  *
  */
+@SuppressWarnings("rawtypes")
 public class GLLogger {
 
 	public static void debugUser(String message, String fromShort, Class fromClass) {
