@@ -117,7 +117,6 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		
 
 	}
-
 	
 	
 	@Override

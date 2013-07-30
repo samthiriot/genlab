@@ -26,14 +26,14 @@ public interface IGraphRawLibrary extends Library {
 	/*
 	 * int igraph_vector_init      (igraph_vector_t* v, int long size);
      */
-	public int igraph_vector_init (Igraph_vector_t v, int size);
+	public int igraph_vector_init (InternalVectorStruct v, int size);
 
 	/*
 	 * int igraph_vector_init_copy(igraph_vector_t *v, 
 				      igraph_real_t *data, long int length);
 	 */
 	public int igraph_vector_init_copy(
-			Igraph_vector_t v, 
+			InternalVectorStruct v, 
 		    Pointer data, 
 		    int length
 		    );
@@ -41,13 +41,13 @@ public interface IGraphRawLibrary extends Library {
 	/*
 	 * void igraph_vector_destroy   (igraph_vector_t* v);
 	 */
-	public void igraph_vector_destroy(Igraph_vector_t v);
+	public void igraph_vector_destroy(InternalVectorStruct v);
 
 	
 	/*
 	 * 
      */
-	public int igraph_vector_size (Igraph_vector_t v);
+	public int igraph_vector_size (InternalVectorStruct v);
 
 	/*
 	 * igraph_version.h
@@ -104,8 +104,8 @@ int igraph_version(const char **version_string,
 			int nodes,
 		    double radius, 
 		    boolean torus,
-		    Igraph_vector_t x, 
-		    Igraph_vector_t y
+		    InternalVectorStruct x, 
+		    InternalVectorStruct y
 		    );
 
 	/*
@@ -311,7 +311,7 @@ int igraph_k_regular_game(igraph_t *graph,
 	public int igraph_lcf_vector(
 			InternalGraphStruct graph, 
 			int n,
-		    Igraph_vector_t shifts, 
+		    InternalVectorStruct shifts, 
 		    int repeats
 		    );
 	
@@ -398,8 +398,8 @@ int igraph_k_regular_game(igraph_t *graph,
 		    igraph_connectedness_t mode);
 		    mode: IGRAPH_WEAK=1, IGRAPH_STRONG=2 (ignored for undirected)
 	 */
-	public int igraph_clusters(Pointer graph, Igraph_vector_t membership, 
-			Igraph_vector_t csize, IntByReference no,
+	public int igraph_clusters(Pointer graph, InternalVectorStruct membership, 
+			InternalVectorStruct csize, IntByReference no,
 		    int mode);
 	
 	/*
@@ -432,10 +432,10 @@ int igraph_k_regular_game(igraph_t *graph,
 
 	 */
 	public int igraph_count_isomorphisms_vf2(Pointer graph1, Pointer graph2, 
-			  Igraph_vector_t vertex_color1,
-			  Igraph_vector_t vertex_color2,
-			  Igraph_vector_t edge_color1,
-			  Igraph_vector_t edge_color2,
+			  InternalVectorStruct vertex_color1,
+			  InternalVectorStruct vertex_color2,
+			  InternalVectorStruct edge_color1,
+			  InternalVectorStruct edge_color2,
 			  IntByReference count,
 			  Pointer node_compat_fn,
 			  Pointer edge_compat_fn,
@@ -454,13 +454,13 @@ int igraph_k_regular_game(igraph_t *graph,
 			  void *arg);
 	 */
 	public int igraph_isomorphic_vf2(Pointer graph1, Pointer graph2, 
-			  Igraph_vector_t vertex_color1,
-			  Igraph_vector_t vertex_color2,
-			  Igraph_vector_t edge_color1,
-			  Igraph_vector_t edge_color2,
+			  InternalVectorStruct vertex_color1,
+			  InternalVectorStruct vertex_color2,
+			  InternalVectorStruct edge_color1,
+			  InternalVectorStruct edge_color2,
 			  IntByReference iso, 
-			  Igraph_vector_t map12, 
-			  Igraph_vector_t map21,
+			  InternalVectorStruct map12, 
+			  InternalVectorStruct map21,
 			  Pointer node_compat_fn,
 			  Pointer edge_compat_fn,
 			  Pointer arg

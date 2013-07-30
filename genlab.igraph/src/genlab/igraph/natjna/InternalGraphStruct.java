@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.sun.jna.Native;
-import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 
@@ -23,9 +22,16 @@ import com.sun.jna.Structure;
   igraph_vector_t is;
   void *attr;
 } igraph_t;
-http://igraph.sourcearchive.com/documentation/0.5.4/structigraph__t.html
+
 */
 
+/**
+ * Reflects the internal igraph structure for graphs storage
+ * @see http://igraph.sourcearchive.com/documentation/0.5.4/structigraph__t.html
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class InternalGraphStruct extends Structure implements Iterable<IGraphEdge> {
 	
 	public static class ByReference extends InternalGraphStruct implements Structure.ByReference {
@@ -37,12 +43,12 @@ public class InternalGraphStruct extends Structure implements Iterable<IGraphEdg
 	
 	public int n;
 	public boolean directed;
-	public Igraph_vector_t from;
-	public Igraph_vector_t to;
-	public Igraph_vector_t oi;
-	public Igraph_vector_t ii;
-	public Igraph_vector_t os;
-	public Igraph_vector_t is;
+	public InternalVectorStruct from;
+	public InternalVectorStruct to;
+	public InternalVectorStruct oi;
+	public InternalVectorStruct ii;
+	public InternalVectorStruct os;
+	public InternalVectorStruct is;
 	public Pointer attr;
 	
 	public InternalGraphStruct(Pointer p) {
@@ -54,23 +60,13 @@ public class InternalGraphStruct extends Structure implements Iterable<IGraphEdg
 		
 		n = 0;
 		directed = false;
-		from = new Igraph_vector_t();
-		to = new Igraph_vector_t();
-		oi = new Igraph_vector_t();
-		ii = new Igraph_vector_t();
-		os = new Igraph_vector_t();
-		is = new Igraph_vector_t();
+		from = new InternalVectorStruct();
+		to = new InternalVectorStruct();
+		oi = new InternalVectorStruct();
+		ii = new InternalVectorStruct();
+		os = new InternalVectorStruct();
+		is = new InternalVectorStruct();
 		
-		/*
-		rawlib.igraph_vector_init(from, 0);
-		rawlib.igraph_vector_init(to, 0);
-		rawlib.igraph_vector_init(oi, 0);
-		rawlib.igraph_vector_init(ii, 0);
-		rawlib.igraph_vector_init(os, 0);
-		rawlib.igraph_vector_init(is, 0);
-		
-		attr = new Pointer(Pointer.SIZE);
-		*/
 		ensureAllocated();
 
 		n = 0;
@@ -82,22 +78,28 @@ public class InternalGraphStruct extends Structure implements Iterable<IGraphEdg
 		return Arrays.asList(new String[] { "n", "directed", "from", "to", "oi", "ii", "os", "is", "attr" });
 	}
 	 
-	
+
+	/**
+	 * A very efficient iterator with direct memory access to the igraph structure
+	 * in the share memory
+	 * 
+	 * @author Samuel Thiriot
+	 *
+	 */
 	private final class EdgesIterator implements Iterator<IGraphEdge> {
 
 		private int i = 0;
 		
 		private int edgesCount;
 		
-		final int INT_SIZE = Native.getNativeSize(Integer.class);
-		final int LONG_SIZE = Native.getNativeSize(NativeLong.class);
+		final int DOUBLE_SIZE = Native.getNativeSize(Double.class);
 
 
 		public EdgesIterator() {
 			
 			long diffSize = Pointer.nativeValue(oi.end)-Pointer.nativeValue(oi.stor_begin);
 			// maxi should be the number of edges in the graph.
-			edgesCount = (int)(diffSize/LONG_SIZE);
+			edgesCount = (int)(diffSize/DOUBLE_SIZE);
 			
 		}
 		
@@ -109,12 +111,12 @@ public class InternalGraphStruct extends Structure implements Iterable<IGraphEdg
 		@Override
 		public IGraphEdge next() {
 			
-			final long edgeId = oi.stor_begin.getLong(LONG_SIZE*i);
-			
+			final int edgeId = (int)oi.stor_begin.getDouble(DOUBLE_SIZE*i);
+			i++;
 			return new IGraphEdge(
-					i++,
-					(int)from.stor_begin.getLong(edgeId), 
-					(int)to.stor_begin.getLong(edgeId)
+					edgeId,
+					(int)from.stor_begin.getDouble(edgeId*DOUBLE_SIZE), 
+					(int)to.stor_begin.getDouble(edgeId*DOUBLE_SIZE)
 					);
 		}
 
@@ -125,6 +127,10 @@ public class InternalGraphStruct extends Structure implements Iterable<IGraphEdg
 		
 	}
 	
+	/**
+	 * Returns a very efficient iterator based on a direct memory access to the graph.
+	 * @return
+	 */
 	public Iterator<IGraphEdge> iterator() {
 		return new EdgesIterator();
 	}

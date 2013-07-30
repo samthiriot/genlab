@@ -16,15 +16,15 @@ import com.sun.jna.Structure;
  * @author Samuel Thiriot
  *
  */
-public class Igraph_vector_t extends Structure {
+public class InternalVectorStruct extends Structure {
 	
 	public Pointer stor_begin;
 	public Pointer stor_end;
 	public Pointer end;
 
-	public static class ByReference extends Igraph_vector_t implements Structure.ByReference {}
+	public static class ByReference extends InternalVectorStruct implements Structure.ByReference {}
 
-	public Igraph_vector_t() {
+	public InternalVectorStruct() {
 		stor_begin = new Pointer(Pointer.SIZE);
 		stor_end = new Pointer(Pointer.SIZE);
 		end = new Pointer(Pointer.SIZE);
@@ -33,7 +33,7 @@ public class Igraph_vector_t extends Structure {
 
 	}
 	
-	public Igraph_vector_t(Pointer p) {
+	public InternalVectorStruct(Pointer p) {
 		super(p);
 		read();
 	}

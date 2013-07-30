@@ -346,9 +346,9 @@ public class IGraphLibrary {
 		
 		final InternalGraphStruct g = createEmptyGraph();
 		
-		Igraph_vector_t x = new Igraph_vector_t();
+		InternalVectorStruct x = new InternalVectorStruct();
 		rawLib.igraph_vector_init(x, 0);
-		Igraph_vector_t y = new Igraph_vector_t();
+		InternalVectorStruct y = new InternalVectorStruct();
 		rawLib.igraph_vector_init(y, 0);
 		
 		try {
@@ -391,7 +391,7 @@ public class IGraphLibrary {
 			throw new WrongParametersException("argument nodes should be positive");
 
 		// init the shifts param
-		Igraph_vector_t shifts = new Igraph_vector_t();
+		InternalVectorStruct shifts = new InternalVectorStruct();
 		{
 			Pointer shitsPointer = new Memory(paramShifts.length * Native.getNativeSize(Double.TYPE));
 			for (int dloop=0; dloop<paramShifts.length; dloop++) {
@@ -738,9 +738,9 @@ public class IGraphLibrary {
 		
 		//GLLogger.debugTech("calling igraph to initialize vectors...", getClass());
 
-		Igraph_vector_t membership = new Igraph_vector_t();
+		InternalVectorStruct membership = new InternalVectorStruct();
 		rawLib.igraph_vector_init(membership, 0);
-		Igraph_vector_t csize = new Igraph_vector_t();
+		InternalVectorStruct csize = new InternalVectorStruct();
 		rawLib.igraph_vector_init(csize, 0);
 		IntByReference count = new IntByReference();
 		
@@ -893,7 +893,13 @@ public class IGraphLibrary {
 		
 	}
 	
-	
+	/**
+	 * An edge iterator which uses igraph JNA calls to retrieve edge
+	 * information. Slow. Use the internal graph struct iterator instead.
+	 * 
+	 * @author Samuel Thiriot
+	 *
+	 */
 	protected class EdgesIterator implements Iterator<IGraphEdge> {
 
 		private final IGraphGraph g;
@@ -928,6 +934,12 @@ public class IGraphLibrary {
 		
 	}
 
+	/**
+	 * Returns a slow iterator which relies on igraph JNA calls to retrieve
+	 * the list of edges and each edge. Use is not recommanded.
+	 * @param g
+	 * @return
+	 */
 	public Iterator<IGraphEdge> getEdgeIterator(IGraphGraph g) {
 		return new EdgesIterator(g);
 	}

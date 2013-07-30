@@ -126,9 +126,13 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 	}
 
 	public Iterator<IGraphEdge> iterator() {
-		// TODO direct memory access to the graph (more efficient than ont JNA call per edge...)
-		//return graphStruct.iterator();
-		return lib.getEdgeIterator(this);
+		
+		// uses a direct memory access
+		return graphStruct.iterator();
+		
+		// could be replaced by explicit JNA calls to the igraph library
+		// but they are slower; so this remains only a good test :-)
+		//	return lib.getEdgeIterator(this);
 	}
 	
 
