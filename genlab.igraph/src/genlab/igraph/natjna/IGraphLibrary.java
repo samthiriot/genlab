@@ -179,6 +179,10 @@ public class IGraphLibrary {
 		return new InternalGraphStruct(rawLib);
 	}
 	
+	public InternalGraphStruct createEmptyGraph(int nodesPlanned, int edgesPlanned, boolean directed) {
+		return new InternalGraphStruct(rawLib, directed, nodesPlanned, edgesPlanned);
+	}
+	
 	public void clearGraphMemory(IGraphGraph g) {
 		
 		if (rawLib == null)
@@ -440,6 +444,23 @@ public class IGraphLibrary {
 		
 	}
 	
+	public InternalVectorStruct createEmptyVector(int size) {
+	
+		final InternalVectorStruct vector = new InternalVectorStruct();
+		
+		if (size > 0) {
+			int res = rawLib.igraph_vector_init(vector, size);
+			checkIGraphResult(res);
+		}
+		
+		return vector;
+	}
+	
+	public void clearVector(InternalVectorStruct vector) {
+		
+		rawLib.igraph_vector_destroy(vector);
+	}
+	
 	public IGraphGraph generateEmpty(int size, boolean directed) {
 	
 		final InternalGraphStruct g = createEmptyGraph();
@@ -459,6 +480,7 @@ public class IGraphLibrary {
 		
 		IGraphGraph result = new IGraphGraph(this, rawLib, g, directed, size);
 
+		
 		// basic checks
 		// TODO
 		
@@ -468,6 +490,28 @@ public class IGraphLibrary {
 	
 	public IGraphGraph generateErdosRenyiGNP(int size, double proba) {
 		return generateErdosRenyiGNP(size, proba, false, false);
+	}
+	
+	/**
+	 * adds count vertices to this igraph graph
+	 * @param g
+	 * @param count
+	 */
+	public void addVertices(IGraphGraph g, int count) {
+		
+		if (count == 0)
+			return;
+		
+		g.graphChanged();
+
+		if (count < 0)
+			throw new WrongParametersException("count of vertices should be positive");
+
+		final int res = rawLib.igraph_add_vertices(g.getPointer(), count, null);
+		
+		checkIGraphResult(res);
+		
+		
 	}
 	
 	public void addEdge(IGraphGraph g, int from, int to) {
@@ -480,6 +524,16 @@ public class IGraphLibrary {
 		// TODO check parameters
 		
 		final int res = rawLib.igraph_add_edge(g.getPointer(), from, to);
+		
+		checkIGraphResult(res);
+	}
+	
+	public void addEdges(IGraphGraph g, InternalVectorStruct edges) {
+		
+		g.graphChanged();
+		
+		
+		final int res = rawLib.igraph_add_edges(g.getPointer(), edges, null);
 		
 		checkIGraphResult(res);
 	}

@@ -56,6 +56,29 @@ public class InternalGraphStruct extends Structure implements Iterable<IGraphEdg
 		read();
 	}
 	
+	public InternalGraphStruct(IGraphRawLibrary rawLib, boolean directed, int nodesPlanned, int edgesPlanned) {
+
+		n = 0;
+		this.directed = directed;
+		from = new InternalVectorStruct();
+		to = new InternalVectorStruct();
+		oi = new InternalVectorStruct();
+		ii = new InternalVectorStruct();
+		os = new InternalVectorStruct();
+		is = new InternalVectorStruct();
+		
+		n = 0;
+		
+		ensureAllocated();
+
+		rawLib.igraph_vector_init(from, edgesPlanned);
+		rawLib.igraph_vector_init(to, edgesPlanned);
+		rawLib.igraph_vector_init(oi, edgesPlanned);
+		rawLib.igraph_vector_init(ii, edgesPlanned);
+		
+		
+	}
+	
 	public InternalGraphStruct(IGraphRawLibrary rawlib) {
 		
 		n = 0;
@@ -73,6 +96,8 @@ public class InternalGraphStruct extends Structure implements Iterable<IGraphEdg
 		directed = false;
 		
 	}
+	
+
 	@Override
 	protected List getFieldOrder() {
 		return Arrays.asList(new String[] { "n", "directed", "from", "to", "oi", "ii", "os", "is", "attr" });

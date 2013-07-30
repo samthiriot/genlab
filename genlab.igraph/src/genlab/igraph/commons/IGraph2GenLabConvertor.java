@@ -12,6 +12,7 @@ import genlab.igraph.natjna.IGraphEdge;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphLibrary;
 import genlab.igraph.natjna.IGraphRawLibraryPool;
+import genlab.igraph.natjna.InternalVectorStruct;
 
 public class IGraph2GenLabConvertor {
 
@@ -97,6 +98,11 @@ public class IGraph2GenLabConvertor {
 		
 	}
 	
+	/**
+	 * Number of edges to create (should be even)
+	 */
+	public static final int BUFFER_EDGES_CREATION = 1000;
+	
 	public static IGraphGraph getIGraphGraphForGenlabGraph(IGenlabGraph genlabGraph, IExecution execution, IGraphLibrary lib) {
 	
 		if (genlabGraph.getVerticesCount() > Integer.MAX_VALUE)
@@ -112,17 +118,51 @@ public class IGraph2GenLabConvertor {
 		
 		// TODO check directionaliy
 			
-		// init the igraph network
+		// init the igraph network (with the good directionality and vertex count)
 		IGraphGraph igraphGraph = lib.generateEmpty(
 				(int)genlabGraph.getVerticesCount(), 
 				genlabGraph.getDirectionality()==GraphDirectionality.DIRECTED
 				);
 		
 		// copy links
-		for (String edgeId : genlabGraph.getEdges()) {
-			final Integer id1 = igraphGraph.getIGraphNodeIdForGenlabId(genlabGraph.getEdgeVertexFrom(edgeId)); 
-			final Integer id2 = igraphGraph.getIGraphNodeIdForGenlabId(genlabGraph.getEdgeVertexTo(edgeId));
-			lib.addEdge(igraphGraph, id1, id2);
+		if (genlabGraph.getEdgesCount() > 0) {
+			
+			int sizeBuffer = 	Math.min(
+					BUFFER_EDGES_CREATION, 
+					(int)genlabGraph.getEdgesCount()*2
+					);
+			InternalVectorStruct vectorEdges = lib.createEmptyVector(
+					sizeBuffer
+					);
+			int filledInBuffer = 0;
+					
+			double[] buffer = new double[sizeBuffer];
+			
+			try {
+			
+			
+			for (String edgeId : genlabGraph.getEdges()) {
+				
+				final Integer id1 = igraphGraph.getIGraphNodeIdForGenlabId(genlabGraph.getEdgeVertexFrom(edgeId)); 
+				final Integer id2 = igraphGraph.getIGraphNodeIdForGenlabId(genlabGraph.getEdgeVertexTo(edgeId));
+				buffer[filledInBuffer++] = id1.doubleValue();
+				buffer[filledInBuffer++] = id2.doubleValue();
+
+				if (sizeBuffer - filledInBuffer < 2) {
+					// no more place in this buffer...
+					// fill the vector with this data
+					vectorEdges.fillWithArray(buffer, sizeBuffer);
+					// write this data
+					lib.addEdges(igraphGraph, vectorEdges);
+					// continue
+					filledInBuffer = 0;
+				}
+				//lib.addEdge(igraphGraph, id1, id2);
+			}
+			
+			} finally {
+				lib.clearVector(vectorEdges);
+			}
 		}
 		
 		// basic checks

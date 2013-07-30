@@ -1,6 +1,7 @@
 package genlab.igraph.natjna;
 
 import genlab.core.commons.NotImplementedException;
+import genlab.core.commons.WrongParametersException;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -71,46 +72,18 @@ public class InternalVectorStruct extends Structure {
 		return stor_begin.getDoubleArray(0, size);
 	}
 	
-	/**
-	 * Iterates the content of the vector, assuming it contains integers
-	 * @author Samuel Thiriot
-	 *
-	 */
-	protected final class IntegerIterator implements Iterator<Integer> {
-
-		int i=0;
-		int maxi;
-		
-		final int INT_SIZE = Native.getNativeSize(Integer.class);
-		
-		public IntegerIterator() {
-			long diffSize = Pointer.nativeValue(end)-Pointer.nativeValue(stor_begin);
-			// maxi should be the number of edges in the graph.
-			maxi = (int)(diffSize/INT_SIZE);
-		}
-		
-		@Override
-		public boolean hasNext() {
-			return i < maxi;
-		}
-
-		@Override
-		public Integer next() {
-			
-			int res = stor_begin.getInt(INT_SIZE*i);
-			i++;
-			return res;
-		}
-
-		@Override
-		public void remove() {
-			throw new NotImplementedException();
-		}
-		
-	}
 	
-	public Iterator<Integer> intIterator() {
-		return new IntegerIterator();
+	public void fillWithArray(double[] values, int length) {
+		
+		long requiredSize = Native.getNativeSize(Double.class)*values.length;
+		long pointerLastFuture = Pointer.nativeValue(stor_begin)+requiredSize;
+		
+		if (pointerLastFuture > Pointer.nativeValue(stor_end))
+			throw new WrongParametersException("too many values for the size of this pointer !");
+		
+		stor_begin.write(0, values, 0, length);
+		Pointer.nativeValue(end, pointerLastFuture);
+		
 	}
 
 }

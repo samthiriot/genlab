@@ -353,12 +353,15 @@ int igraph_k_regular_game(igraph_t *graph,
 	 */
 	public int igraph_destroy(Pointer graph);
 
-	
+	public int igraph_add_vertices(Pointer graph, int nv, Pointer attr);
+
 	/*
 	 * int igraph_add_edge(igraph_t *graph, igraph_integer_t from, igraph_integer_t to);
 	 */
 	public int igraph_add_edge(Pointer graph, int from, int to);
 	
+	public int igraph_add_edges(Pointer graph, InternalVectorStruct edges, Pointer attr);
+
 	/*
 	 * int igraph_edge(const igraph_t *graph, igraph_integer_t eid, 
 		igraph_integer_t *from, igraph_integer_t *to);
