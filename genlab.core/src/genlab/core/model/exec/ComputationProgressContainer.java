@@ -2,6 +2,7 @@ package genlab.core.model.exec;
 
 import genlab.core.commons.UniqueTimestamp;
 import genlab.core.exec.IContainerTask;
+import genlab.core.exec.ITask;
 import genlab.core.model.meta.IAlgo;
 
 public class ComputationProgressContainer implements IComputationProgress {
@@ -9,7 +10,6 @@ public class ComputationProgressContainer implements IComputationProgress {
 	private IContainerTask algoExec = null;
 	
 	public ComputationProgressContainer() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -25,7 +25,7 @@ public class ComputationProgressContainer implements IComputationProgress {
 
 	@Override
 	public Long getTimestampEnd() {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -67,14 +67,20 @@ public class ComputationProgressContainer implements IComputationProgress {
 
 	@Override
 	public Long getProgressTotalToDo() {
-		// TODO Auto-generated method stub
-		return null;
+		long total = 0;
+		for (ITask sub: algoExec.getTasks()) {
+			total += sub.getProgress().getProgressTotalToDo();
+		}
+		return total;
 	}
 
 	@Override
 	public Long getProgressDone() {
-		// TODO Auto-generated method stub
-		return null;
+		long done = 0;
+		for (ITask sub: algoExec.getTasks()) {
+			done += sub.getProgress().getProgressDone();
+		}
+		return done;
 	}
 
 	@Override

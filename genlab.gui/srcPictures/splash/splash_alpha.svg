@@ -15,7 +15,7 @@
    version="1.1"
    inkscape:version="0.47 r22583"
    sodipodi:docname="splash_alpha.svg"
-   inkscape:export-filename="/tmp/splash.bmp.png"
+   inkscape:export-filename="/home/B12772/workspaceJunoRCP/genlab/genlab.gui/splash.bmp.png"
    inkscape:export-xdpi="169.9299"
    inkscape:export-ydpi="169.9299">
   <defs
@@ -51,7 +51,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
      inkscape:cx="147.86707"
-     inkscape:cy="885.5055"
+     inkscape:cy="884.49535"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -68,7 +68,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -144,7 +144,21 @@
            y="6.3492212"
            style="fill:#808080" /></flowRegion><flowPara
          id="flowPara3877"
-         style="font-size:8px;text-align:justify;text-anchor:start;fill:#808080">synthetic populations . population resizing . network generation . populations matching . multi-scale populations . complex networks . reproductible research . open-source . plugin-oriented . agent-based modeling . micro modeling . social simulation . igraph . graphstream . jung . gephi . yang . neo4j . cern colt . </flowPara></flowRoot>    <rect
+         style="font-size:8px;text-align:justify;text-anchor:start;fill:#808080">synthetic populations . population resizing . <flowSpan
+   style="fill:#6c5353"
+   id="flowSpan2828">jung</flowSpan> . <flowSpan
+   style="fill:#6c5353"
+   id="flowSpan2834">gephi</flowSpan> . network generation . populations matching . <flowSpan
+   style="fill:#6c5353"
+   id="flowSpan2870">cytoscape</flowSpan> . multi-scale populations . <flowSpan
+   style="fill:#6c5353"
+   id="flowSpan2858">neo4j</flowSpan> . complex networks . reproductible research . <flowSpan
+   style="fill:#6c5353"
+   id="flowSpan2872">graphstream</flowSpan> . open-source . plugin-oriented . agent-based modeling . micro modeling . social simulation . <flowSpan
+   style="fill:#6c5353"
+   id="flowSpan2862">igraph</flowSpan> . <flowSpan
+   style="fill:#6c5353"
+   id="flowSpan2868">cern colt</flowSpan> . </flowPara></flowRoot>    <rect
        style="fill:none;stroke:#000000;stroke-width:0.94501566999999997;stroke-opacity:1"
        id="rect3893"
        width="359.66928"

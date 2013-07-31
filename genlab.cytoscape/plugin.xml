@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.cytoscape.plugin.randomnetworks.generators.WattsStrogatzAlgo"
+            id="genlab.cytoscape.plugin.randomnetworks.WattsStrogatzAlgo">
+      </algo>
+      <algo
+            class="genlab.cytoscape.plugin.randomnetworks.generators.BarabasiAlbertAlgo"
+            id="genlab.cytoscape.plugin.randomnetworks.BarabasiAlbertAlgo">
+      </algo>
+      <algo
+            class="genlab.cytoscape.plugin.randomnetworks.generators.ERGNPAlgo"
+            id="genlab.cytoscape.plugin.randomnetworks.ERGNPAlgo">
+      </algo>
+      <algo
+            class="genlab.cytoscape.plugin.randomnetworks.generators.ERGNMAlgo"
+            id="genlab.cytoscape.plugin.randomnetworks.ERGNMAlgo">
+      </algo>
+      <algo
+            class="genlab.cytoscape.plugin.randomnetworks.analysis.ClusteringCoefficientAlgo"
+            id="genlab.cytoscape.plugin.randomnetworks.analysis.ClusteringCoefficientAlgo">
+      </algo>
+      <algo
+            class="genlab.cytoscape.plugin.randomnetworks.analysis.MeanShortestPathAlgo"
+            id="genlab.cytoscape.plugin.randomnetworks.analysis.MeanShortestPathAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <author
+            id="genlab.cytoscape.authors.cytoscapeteam"
+            name="Cytoscape Development Team"
+            url="http://www.cytoscape.org/development_team.html">
+      </author>
+      <library
+            description="Cytoscape is an open source software platform for visualizing complex networks and integrating these with any type of attribute data. A lot of Apps are available for various kinds of problem domains, including bioinformatics, social network analysis, and semantic web."
+            id="genlab.cytoscape.doc.library"
+            licence_name="LGPL"
+            name="Cytoscape"
+            url="http://www.cytoscape.org/">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.cytoscape.authors.cytoscapeteam">
+         </original_author_id>
+         <more_info
+               content="the wikipedia page on Cytoscape"
+               url="http://en.wikipedia.org/wiki/Cytoscape">
+         </more_info>
+      </library>
+      <author
+            id="genlab.cytoscape.doc.authors.PatrickMcsweeney"
+            name="Patrick J. Mcsweeney"
+            url="http://web.ecs.syr.edu/~pjmcswe">
+      </author>
+      <library
+            description="this cytoscape plugin "
+            id="genlab.cytoscape.library.randomnetworks"
+            name="Random networks Cytoscape plugin"
+            url="https://sites.google.com/site/randomnetworkplugin/">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.gephi.doc.authors.PatrickMcSweeney">
+         </original_author_id>
+         <more_info
+               content="Generates random network or randomizes already loaded network."
+               url="http://apps.cytoscape.org/apps/randomnetworks">
+         </more_info>
+      </library>
+   </extension>
+
+</plugin>
