@@ -13,7 +13,6 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.commons.IGraph2GenLabConvertor;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphLibrary;
-import genlab.igraph.natjna.IGraphRawLibraryPool;
 
 public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecution {
 
@@ -55,7 +54,7 @@ public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecution 
 		
 			// decode parameters
 			
-			IGraphLibrary lib = IGraphRawLibraryPool.singleton.getLibrary(exec);
+			IGraphLibrary lib = new IGraphLibrary();
 					
 			IGraphGraph igraphGraph = null;
 					
@@ -79,7 +78,6 @@ public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecution 
 				// clear memory
 				lib.clearGraphMemory(igraphGraph);
 				lib.setListOfMessages(null);
-				IGraphRawLibraryPool.singleton.returnLibrary(lib);
 
 			}
 			

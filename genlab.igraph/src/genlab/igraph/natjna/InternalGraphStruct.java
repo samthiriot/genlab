@@ -36,8 +36,8 @@ public class InternalGraphStruct extends Structure implements Iterable<IGraphEdg
 	
 	public static class ByReference extends InternalGraphStruct implements Structure.ByReference {
 
-		public ByReference(IGraphRawLibrary rawlib) {
-			super(rawlib);
+		public ByReference() {
+			super();
 		}
 	}
 	
@@ -56,7 +56,7 @@ public class InternalGraphStruct extends Structure implements Iterable<IGraphEdg
 		read();
 	}
 	
-	public InternalGraphStruct(IGraphRawLibrary rawLib, boolean directed, int nodesPlanned, int edgesPlanned) {
+	public InternalGraphStruct(boolean directed, int nodesPlanned, int edgesPlanned) {
 
 		n = 0;
 		this.directed = directed;
@@ -71,15 +71,15 @@ public class InternalGraphStruct extends Structure implements Iterable<IGraphEdg
 		
 		ensureAllocated();
 
-		rawLib.igraph_vector_init(from, edgesPlanned);
-		rawLib.igraph_vector_init(to, edgesPlanned);
-		rawLib.igraph_vector_init(oi, edgesPlanned);
-		rawLib.igraph_vector_init(ii, edgesPlanned);
+		IGraphRawLibrary.igraph_vector_init(from, edgesPlanned);
+		IGraphRawLibrary.igraph_vector_init(to, edgesPlanned);
+		IGraphRawLibrary.igraph_vector_init(oi, edgesPlanned);
+		IGraphRawLibrary.igraph_vector_init(ii, edgesPlanned);
 		
 		
 	}
 	
-	public InternalGraphStruct(IGraphRawLibrary rawlib) {
+	public InternalGraphStruct() {
 		
 		n = 0;
 		directed = false;

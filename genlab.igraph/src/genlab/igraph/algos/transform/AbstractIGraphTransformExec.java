@@ -12,7 +12,6 @@ import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.commons.IGraph2GenLabConvertor;
 import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphRawLibraryPool;
 
 public abstract class AbstractIGraphTransformExec extends AbstractAlgoExecution {
 
@@ -78,7 +77,6 @@ public abstract class AbstractIGraphTransformExec extends AbstractAlgoExecution 
 				// clear memory
 				igraphGraph.lib.clearGraphMemory(igraphGraph);
 				igraphGraph.lib.setListOfMessages(null);
-				IGraphRawLibraryPool.singleton.returnLibrary(igraphGraph.lib);
 
 			}
 			

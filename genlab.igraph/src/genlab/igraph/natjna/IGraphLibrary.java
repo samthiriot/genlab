@@ -1,23 +1,15 @@
 package genlab.igraph.natjna;
 
-import genlab.core.commons.FileUtils;
 import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
-import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.util.Iterator;
-
-import org.eclipse.core.runtime.FileLocator;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
@@ -28,7 +20,7 @@ public class IGraphLibrary {
 	/**
 	 * THE native library to use.
 	 */
-	private final IGraphRawLibrary rawLib;
+	//private final IGraphIGraphRawLibraryrary IGraphRawLibrary;
 	
 	public String versionString = null; 
 	
@@ -60,83 +52,13 @@ public class IGraphLibrary {
 	//private final static int IGRAPH_ERROR_IGRAPH_ENOMEM = ;
 	
 
-	static {
-		Native.setProtected(false);
-	}
+
 	
 	/**
 	 * Creates a novel accessor to a raw (native) igraph library.
-	 * Loads another instance after a copy to a tmp file.
 	 */
 	public IGraphLibrary() {
 
-		
-		String filenameOriginal = "/ext/native/linux/x86_64/libigraph.so";
-		String libNameOriginal = "igraph";
-				
-		URL url = genlab.igraph.Activator.getDefault().getBundle().getEntry(filenameOriginal);
-        URL resolvedURL = null;
-		try {
-			resolvedURL = FileLocator.toFileURL(url);
-		} catch (IOException e) {
-			throw new ProgramException("unable to locale the root of the plugin; icons will not be added for algorithms", e);
-		}
-		        
-		//File originalDll = Activator.getDefault().getBundle().
-		File originalDll = new File(resolvedURL.getFile());
-		
-		if (!originalDll.exists() || !originalDll.isFile() || !originalDll.canRead())
-			throw new ProgramException("unable to read the igraph shared library from the file "+filenameOriginal);
-
-		// found; let's copy it somewhere
-		File copy;
-		final String prefix = FileUtils.extractFilenameWithoutExtension(filenameOriginal);
-		final String suffix = "."+FileUtils.getExtension(filenameOriginal);
-		try {
-			copy = File.createTempFile(
-					prefix, 
-					suffix
-					);
-		} catch (IOException e) {
-			throw new ProgramException("unable to copy the native library to a temporary space", e);
-		}
-
-		FileUtils.copyFiles(originalDll, copy);
-
-		String tmpLibraryUndecoratedName = copy.getName();
-		tmpLibraryUndecoratedName = libNameOriginal+tmpLibraryUndecoratedName.substring(prefix.length(), tmpLibraryUndecoratedName.length()-suffix.length());
-		
-		
-		GLLogger.debugTech("adding as a search path :"+FileUtils.extractPath(copy.getAbsolutePath())+" for library named "+tmpLibraryUndecoratedName, getClass());
-		NativeLibrary.addSearchPath(tmpLibraryUndecoratedName, FileUtils.extractPath(copy.getAbsolutePath()));
-		try{
-    		final String previousValue = System.getProperty("jna.library.path");
-    		StringBuffer sb = new StringBuffer();
-    		sb.append(tmpLibraryUndecoratedName).append(File.pathSeparator);
-    		// add previous value
-    		if (previousValue != null)
-    			sb.append(previousValue);
-    		// actually set the value
-    		System.setProperty("jna.library.path", sb.toString());
-		} catch(IllegalStateException ise){
-    		GLLogger.errorTech(
-    				"error during the initialization of the system property jna.library.path", 
-    				IGraphRawLibrary.class
-    				);
-    	}
-		
-		GLLogger.debugTech("actual load of the library "+tmpLibraryUndecoratedName, getClass());
-		try {
-			rawLib = (IGraphRawLibrary)Native.loadLibrary(tmpLibraryUndecoratedName, IGraphRawLibrary.class);
-			// System.err.println("loaded raw library: "+rawLib);
-		} catch (UnsatisfiedLinkError e) {
-			throw new ProgramException("error while loading the igraph copy: "+e.getMessage(), e);
-		}
-		GLLogger.debugTech("testing access to igraph with a retrieval of the version...", getClass());
-		retrieveVersion();
-		
-		GLLogger.debugTech("loaded igraph successfully, version: "+versionString, getClass());
-		
 	}
 
 
@@ -151,7 +73,7 @@ public class IGraphLibrary {
 		IntByReference minor = new IntByReference();
 		IntByReference subminor = new IntByReference();
 		
-		rawLib.igraph_version(str, major, minor, subminor);
+		IGraphRawLibrary.igraph_version(str, major, minor, subminor);
 				
 		Pointer p = str.getValue();
 		versionString = p.getString(0);
@@ -180,22 +102,20 @@ public class IGraphLibrary {
 	}
 	
 	protected InternalGraphStruct createEmptyGraph() {
-		return new InternalGraphStruct(rawLib);
+		return new InternalGraphStruct();
 	}
 	
 	public InternalGraphStruct createEmptyGraph(int nodesPlanned, int edgesPlanned, boolean directed) {
-		return new InternalGraphStruct(rawLib, directed, nodesPlanned, edgesPlanned);
+		return new InternalGraphStruct(directed, nodesPlanned, edgesPlanned);
 	}
 	
 	public void clearGraphMemory(IGraphGraph g) {
 		
-		if (rawLib == null)
-			return;
 		
 		if (g == null)
 			return;
 		
-		rawLib.igraph_destroy(g.getPointer());
+		IGraphRawLibrary.igraph_destroy(g.getPointer());
 	}
 	
 	/**
@@ -216,7 +136,7 @@ public class IGraphLibrary {
 				
 		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
-		final int res = rawLib.igraph_erdos_renyi_game_gnp(
+		final int res = IGraphRawLibrary.igraph_erdos_renyi_game_gnp(
 				g,
 				size,
 				proba,
@@ -229,7 +149,7 @@ public class IGraphLibrary {
 		// detect errors
 		checkIGraphResult(res);
 		
-		IGraphGraph result = new IGraphGraph(this, rawLib, g, directed);
+		IGraphGraph result = new IGraphGraph(this, g, directed);
 		
 		// basic checks
 		// TODO
@@ -245,7 +165,7 @@ public class IGraphLibrary {
 				
 		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
-		final int res = rawLib.igraph_erdos_renyi_game_gnm(
+		final int res = IGraphRawLibrary.igraph_erdos_renyi_game_gnm(
 				g,
 				size,
 				m,
@@ -258,7 +178,7 @@ public class IGraphLibrary {
 		// detect errors
 		checkIGraphResult(res);
 		
-		IGraphGraph result = new IGraphGraph(this, rawLib, g, directed);
+		IGraphGraph result = new IGraphGraph(this, g, directed);
 		
 		// basic checks
 		// TODO
@@ -274,7 +194,7 @@ public class IGraphLibrary {
 				
 		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
-		final int res = rawLib.igraph_forest_fire_game(
+		final int res = IGraphRawLibrary.igraph_forest_fire_game(
 				g, 
 				size, 
 				fw_prob, 
@@ -288,7 +208,7 @@ public class IGraphLibrary {
 		// detect errors
 		checkIGraphResult(res);
 		
-		IGraphGraph result = new IGraphGraph(this, rawLib, g, directed);
+		IGraphGraph result = new IGraphGraph(this, g, directed);
 		
 		// basic checks
 		// TODO
@@ -307,7 +227,7 @@ public class IGraphLibrary {
 				
 		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
-		final int res = rawLib.igraph_simple_interconnected_islands_game(g, islands_n, islands_size, islands_pin, n_inter);
+		final int res = IGraphRawLibrary.igraph_simple_interconnected_islands_game(g, islands_n, islands_size, islands_pin, n_inter);
 		
 		final long duration = System.currentTimeMillis() - startTime;
 		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
@@ -315,7 +235,7 @@ public class IGraphLibrary {
 		// detect errors
 		checkIGraphResult(res);
 		
-		IGraphGraph result = new IGraphGraph(this, rawLib, g, false);
+		IGraphGraph result = new IGraphGraph(this, g, false);
 		
 		// basic checks
 		// TODO
@@ -330,7 +250,7 @@ public class IGraphLibrary {
 		
 		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
-		int res = rawLib.igraph_watts_strogatz_game(
+		int res = IGraphRawLibrary.igraph_watts_strogatz_game(
 				g,
 				dimension, 
 				size, 
@@ -345,7 +265,7 @@ public class IGraphLibrary {
 		// detect errors
 		checkIGraphResult(res);
 		
-		IGraphGraph result = new IGraphGraph(this, rawLib, g, directed);
+		IGraphGraph result = new IGraphGraph(this, g, directed);
 		
 		return result;
 	}
@@ -355,15 +275,15 @@ public class IGraphLibrary {
 		final InternalGraphStruct g = createEmptyGraph();
 		
 		InternalVectorStruct x = new InternalVectorStruct();
-		rawLib.igraph_vector_init(x, 0);
+		IGraphRawLibrary.igraph_vector_init(x, 0);
 		InternalVectorStruct y = new InternalVectorStruct();
-		rawLib.igraph_vector_init(y, 0);
+		IGraphRawLibrary.igraph_vector_init(y, 0);
 		
 		try {
 		
 			//GLLogger.debugTech("calling igraph", getClass());
 			final long startTime = System.currentTimeMillis();
-			int res = rawLib.igraph_grg_game(
+			int res = IGraphRawLibrary.igraph_grg_game(
 					g,
 					nodes,
 					radius,
@@ -377,15 +297,15 @@ public class IGraphLibrary {
 			// detect errors
 			checkIGraphResult(res);
 			
-			IGraphGraph result = new IGraphGraph(this, rawLib, g, false);
+			IGraphGraph result = new IGraphGraph(this, g, false);
 			result.xPositions = x.asDoubleArray(nodes);
 			result.yPositions = y.asDoubleArray(nodes);
 					
 			return result;
 
 		} finally {
-			rawLib.igraph_vector_destroy(x);
-			rawLib.igraph_vector_destroy(y);
+			IGraphRawLibrary.igraph_vector_destroy(x);
+			IGraphRawLibrary.igraph_vector_destroy(y);
 		}
 	}
 	
@@ -406,7 +326,7 @@ public class IGraphLibrary {
 				// populate the array with junk data (just for the sake of the example)
 				shitsPointer.setDouble(dloop * Native.getNativeSize(Double.TYPE), (double)paramShifts[dloop]);
 			}
-			rawLib.igraph_vector_init_copy(shifts, shitsPointer, paramShifts.length);
+			IGraphRawLibrary.igraph_vector_init_copy(shifts, shitsPointer, paramShifts.length);
 
 		}
 
@@ -414,7 +334,7 @@ public class IGraphLibrary {
 		
 			//GLLogger.debugTech("calling igraph", getClass());
 			final long startTime = System.currentTimeMillis();
-			int res = rawLib.igraph_lcf_vector(
+			int res = IGraphRawLibrary.igraph_lcf_vector(
 					g, 
 					nodes, 
 					shifts, 
@@ -426,12 +346,12 @@ public class IGraphLibrary {
 			// detect errors
 			checkIGraphResult(res);
 			
-			IGraphGraph result = new IGraphGraph(this, rawLib, g, false);
+			IGraphGraph result = new IGraphGraph(this, g, false);
 
 			return result;
 
 		} finally {
-			rawLib.igraph_vector_destroy(shifts);
+			IGraphRawLibrary.igraph_vector_destroy(shifts);
 		}
 	}
 	
@@ -440,9 +360,9 @@ public class IGraphLibrary {
 
 		final InternalGraphStruct theCopy = createEmptyGraph();
 
-		rawLib.igraph_copy(original.getStruct(), theCopy);
+		IGraphRawLibrary.igraph_copy(original.getStruct(), theCopy);
 		
-		IGraphGraph theCopyRes = new IGraphGraph(original, this, rawLib, theCopy);
+		IGraphGraph theCopyRes = new IGraphGraph(original, this, theCopy);
 		
 		return theCopyRes;
 		
@@ -453,7 +373,7 @@ public class IGraphLibrary {
 		final InternalVectorStruct vector = new InternalVectorStruct();
 		
 		if (size > 0) {
-			int res = rawLib.igraph_vector_init(vector, size);
+			int res = IGraphRawLibrary.igraph_vector_init(vector, size);
 			checkIGraphResult(res);
 		}
 		
@@ -462,7 +382,7 @@ public class IGraphLibrary {
 	
 	public void clearVector(InternalVectorStruct vector) {
 		
-		rawLib.igraph_vector_destroy(vector);
+		IGraphRawLibrary.igraph_vector_destroy(vector);
 	}
 	
 	public IGraphGraph generateEmpty(int size, boolean directed) {
@@ -471,7 +391,7 @@ public class IGraphLibrary {
 				
 		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
-		final int res = rawLib.igraph_empty(
+		final int res = IGraphRawLibrary.igraph_empty(
 				g, 
 				size, 
 				directed
@@ -482,7 +402,7 @@ public class IGraphLibrary {
 		// detect errors
 		checkIGraphResult(res);
 		
-		IGraphGraph result = new IGraphGraph(this, rawLib, g, directed, size);
+		IGraphGraph result = new IGraphGraph(this, g, directed, size);
 
 		
 		// basic checks
@@ -511,7 +431,7 @@ public class IGraphLibrary {
 		if (count < 0)
 			throw new WrongParametersException("count of vertices should be positive");
 
-		final int res = rawLib.igraph_add_vertices(g.getPointer(), count, null);
+		final int res = IGraphRawLibrary.igraph_add_vertices(g.getPointer(), count, null);
 		
 		checkIGraphResult(res);
 		
@@ -527,7 +447,7 @@ public class IGraphLibrary {
 		
 		// TODO check parameters
 		
-		final int res = rawLib.igraph_add_edge(g.getPointer(), from, to);
+		final int res = IGraphRawLibrary.igraph_add_edge(g.getPointer(), from, to);
 		
 		checkIGraphResult(res);
 	}
@@ -537,7 +457,7 @@ public class IGraphLibrary {
 		g.graphChanged();
 		
 		
-		final int res = rawLib.igraph_add_edges(g.getPointer(), edges, null);
+		final int res = IGraphRawLibrary.igraph_add_edges(g.getPointer(), edges, null);
 		
 		checkIGraphResult(res);
 	}
@@ -550,31 +470,31 @@ public class IGraphLibrary {
 		if (count <= 0)
 			throw new WrongParametersException("count of nodes should be positive");
 		
-		final int res = rawLib.igraph_rewire(g.getPointer(), count, 0);
+		final int res = IGraphRawLibrary.igraph_rewire(g.getPointer(), count, 0);
 		
 		checkIGraphResult(res);
 	}
 	
 	public int getVertexCount(IGraphGraph g) {
 		
-		return rawLib.igraph_vcount(g.getPointer());
+		return IGraphRawLibrary.igraph_vcount(g.getPointer());
 	}
 	
 	public int getVertexCount(InternalGraphStruct g) {
 		
-		return rawLib.igraph_vcount(g.getPointer());
+		return IGraphRawLibrary.igraph_vcount(g.getPointer());
 	}
 	
 
 	public int getEdgeCount(IGraphGraph g) {
 				
-		return rawLib.igraph_ecount(g.getPointer());
+		return IGraphRawLibrary.igraph_ecount(g.getPointer());
 	}
 	
 	
 	public boolean isDirected(IGraphGraph g) {
 	
-		return rawLib.igraph_is_directed(g.getPointer());
+		return IGraphRawLibrary.igraph_is_directed(g.getPointer());
 		
 	}
 	
@@ -590,7 +510,7 @@ public class IGraphLibrary {
 
 		final long startTime = System.currentTimeMillis();
 		
-		final int res2 = rawLib.igraph_average_path_length(g.getPointer(), res, g.directed, true);
+		final int res2 = IGraphRawLibrary.igraph_average_path_length(g.getPointer(), res, g.directed, true);
 
 		final long duration = System.currentTimeMillis() - startTime;
 		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
@@ -617,7 +537,7 @@ public class IGraphLibrary {
 		final long startTime = System.currentTimeMillis();
 
 		
-		final int res2 = rawLib.igraph_isomorphic(g1.getPointer(), g2.getPointer(), res);
+		final int res2 = IGraphRawLibrary.igraph_isomorphic(g1.getPointer(), g2.getPointer(), res);
 
 		final long duration = System.currentTimeMillis() - startTime;
 		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
@@ -640,7 +560,7 @@ public class IGraphLibrary {
 		final long startTime = System.currentTimeMillis();
 
 		
-		final int res2 = rawLib.igraph_isomorphic_vf2(
+		final int res2 = IGraphRawLibrary.igraph_isomorphic_vf2(
 				g1.getPointer(), g2.getPointer(), 
 				null, null, null, null, 
 				res, 
@@ -671,7 +591,7 @@ public class IGraphLibrary {
 		final long startTime = System.currentTimeMillis();
 
 		
-		final int res2 = rawLib.igraph_count_isomorphisms_vf2(
+		final int res2 = IGraphRawLibrary.igraph_count_isomorphisms_vf2(
 				g1.getPointer(), g2.getPointer(), 
 				null, null, null, null, 
 				res, 
@@ -697,7 +617,7 @@ public class IGraphLibrary {
 		final long startTime = System.currentTimeMillis();
 
 		
-		final int res2 = rawLib.igraph_isomorphic(g1.getPointer(), g2.getPointer(), res);
+		final int res2 = IGraphRawLibrary.igraph_isomorphic(g1.getPointer(), g2.getPointer(), res);
 
 		final long duration = System.currentTimeMillis() - startTime;
 		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
@@ -725,7 +645,7 @@ public class IGraphLibrary {
 
 		final long startTime = System.currentTimeMillis();
 		
-		final int res2 = rawLib.igraph_diameter(
+		final int res2 = IGraphRawLibrary.igraph_diameter(
 				g.getPointer(), 
 				res,
 				null, 
@@ -766,7 +686,7 @@ public class IGraphLibrary {
 
 		final long startTime = System.currentTimeMillis();
 		
-		final int res2 = rawLib.igraph_is_connected(
+		final int res2 = IGraphRawLibrary.igraph_is_connected(
 				g.getPointer(), 
 				res,
 				1
@@ -797,15 +717,15 @@ public class IGraphLibrary {
 		//GLLogger.debugTech("calling igraph to initialize vectors...", getClass());
 
 		InternalVectorStruct membership = new InternalVectorStruct();
-		rawLib.igraph_vector_init(membership, 0);
+		IGraphRawLibrary.igraph_vector_init(membership, 0);
 		InternalVectorStruct csize = new InternalVectorStruct();
-		rawLib.igraph_vector_init(csize, 0);
+		IGraphRawLibrary.igraph_vector_init(csize, 0);
 		IntByReference count = new IntByReference();
 		
 		try {
 			//GLLogger.debugTech("calling igraph to compute the clusters...", getClass());
 	
-			final int res2 = rawLib.igraph_clusters(
+			final int res2 = IGraphRawLibrary.igraph_clusters(
 					g.getPointer(), 
 					membership, 
 					csize, 
@@ -830,14 +750,14 @@ public class IGraphLibrary {
 			
 			// memberships
 			{
-				final int membershipSize = rawLib.igraph_vector_size(membership);
+				final int membershipSize = IGraphRawLibrary.igraph_vector_size(membership);
 				final double[] memberships = membership.asDoubleArray(membershipSize);
 				g.setCachedProperty(GRAPH_KEY_COMPONENTS_MEMBERSHIP, membership);
 			}
 			
 			// size
 			{
-				final int csizeSize = rawLib.igraph_vector_size(csize);
+				final int csizeSize = IGraphRawLibrary.igraph_vector_size(csize);
 				final double[] csizes = csize.asDoubleArray(csizeSize);
 				g.setCachedProperty(GRAPH_KEY_COMPONENTS_CLUSTER_SIZES, csizes);
 				double max = 0;
@@ -849,8 +769,8 @@ public class IGraphLibrary {
 			}
 			
 		} finally {
-			rawLib.igraph_vector_destroy(csize);
-			rawLib.igraph_vector_destroy(membership);
+			IGraphRawLibrary.igraph_vector_destroy(csize);
+			IGraphRawLibrary.igraph_vector_destroy(membership);
 		}
 		
 	}
@@ -892,7 +812,7 @@ public class IGraphLibrary {
 
 		final long startTime = System.currentTimeMillis();
 		
-		final int res2 = rawLib.igraph_transitivity_undirected(
+		final int res2 = IGraphRawLibrary.igraph_transitivity_undirected(
 				g.getPointer(), 
 				res,
 				0
@@ -928,7 +848,7 @@ public class IGraphLibrary {
 
 		final long startTime = System.currentTimeMillis();
 		
-		final int res2 = rawLib.igraph_transitivity_avglocal_undirected(
+		final int res2 = IGraphRawLibrary.igraph_transitivity_avglocal_undirected(
 				g.getPointer(), 
 				res,
 				0
@@ -980,7 +900,7 @@ public class IGraphLibrary {
 		public IGraphEdge next() {
 			IntByReference from = new IntByReference();
 			IntByReference to = new IntByReference();
-			rawLib.igraph_edge(g.getPointer(), lastEdgeId, from, to);
+			IGraphRawLibrary.igraph_edge(g.getPointer(), lastEdgeId, from, to);
 			
 			return new IGraphEdge(lastEdgeId++, from.getValue(), to.getValue());
 		}

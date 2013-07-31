@@ -11,7 +11,6 @@ import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.igraph.commons.IGraph2GenLabConvertor;
 import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphRawLibraryPool;
 
 public abstract class AbstractIsomorphismExec extends AbstractAlgoExecution {
 
@@ -81,7 +80,6 @@ public abstract class AbstractIsomorphismExec extends AbstractAlgoExecution {
 				if (igraphGraph2 != null)
 					igraphGraph2.lib.clearGraphMemory(igraphGraph2);
 				
-				IGraphRawLibraryPool.singleton.returnLibrary(igraphGraph1.lib);
 				
 			}
 		}

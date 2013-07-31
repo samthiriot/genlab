@@ -11,7 +11,6 @@ import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
 import genlab.igraph.natjna.IGraphEdge;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphLibrary;
-import genlab.igraph.natjna.IGraphRawLibraryPool;
 import genlab.igraph.natjna.InternalVectorStruct;
 
 public class IGraph2GenLabConvertor {
@@ -191,7 +190,7 @@ public class IGraph2GenLabConvertor {
 		return getIGraphGraphForGenlabGraph(
 				genlabGraph, 
 				execution, 
-				IGraphRawLibraryPool.singleton.getLibrary(execution)
+				new IGraphLibrary()
 				);
 
 	}

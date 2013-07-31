@@ -15,8 +15,6 @@ import com.sun.jna.Pointer;
 public class IGraphGraph implements Iterable<IGraphEdge> {
 
 	public final IGraphLibrary lib;
-
-	public final IGraphRawLibrary baseLib;
 	
 	public final InternalGraphStruct graphStruct;
 	
@@ -38,9 +36,8 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 	public double[] yPositions = null;
 	
 	
-	public IGraphGraph(IGraphLibrary lib, IGraphRawLibrary baseLib, InternalGraphStruct graphStruct, boolean directed) {
+	public IGraphGraph(IGraphLibrary lib, InternalGraphStruct graphStruct, boolean directed) {
 		this.lib = lib;
-		this.baseLib = baseLib;
 		this.graphStruct = graphStruct;
 		this.directed = directed;
 		
@@ -54,9 +51,8 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 	 * @param baseLib
 	 * @param graphStruct
 	 */
-	public IGraphGraph(IGraphLibrary lib, IGraphRawLibrary baseLib, InternalGraphStruct graphStruct, boolean directed, int initSize) {
+	public IGraphGraph(IGraphLibrary lib, InternalGraphStruct graphStruct, boolean directed, int initSize) {
 		this.lib = lib;
-		this.baseLib = baseLib;
 		this.graphStruct = graphStruct;
 		this.directed = directed;
 		
@@ -64,9 +60,8 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 		
 	}
 	
-	public IGraphGraph(IGraphGraph original, IGraphLibrary lib, IGraphRawLibrary baseLib, InternalGraphStruct graphStruct) {
+	public IGraphGraph(IGraphGraph original, IGraphLibrary lib, InternalGraphStruct graphStruct) {
 		this.lib = lib;
-		this.baseLib = baseLib;
 		this.graphStruct = graphStruct;
 		
 		// copy properties
