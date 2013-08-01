@@ -17,6 +17,8 @@ public class ExecutionListener implements ITasksListener {
 
 	public ExecutionListener() {
 		GLLogger.traceTech("registering myself against the genlab central dispatcher...", getClass());
+		if (ExecutionHooks.singleton == null)
+			throw new RuntimeException("pfffff.... stupid !");
 		ExecutionHooks.singleton.addListener(this);
 	}
 	
