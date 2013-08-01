@@ -3,7 +3,6 @@
 
 <product name="Genlab" uid="genlab.product.gui" id="genlab.gui.product" application="genlab.gui.application" version="0.0.1" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -26,17 +25,11 @@
       </win>
    </launcher>
 
-
    <vm>
    </vm>
 
-
    <plugins>
-      <plugin id="ch.qos.logback.classic"/>
-      <plugin id="ch.qos.logback.core"/>
-      <plugin id="ch.qos.logback.slf4j" fragment="true"/>
       <plugin id="com.ibm.icu"/>
-      <plugin id="com.ning.async-http-client"/>
       <plugin id="genlab.core"/>
       <plugin id="genlab.cytoscape"/>
       <plugin id="genlab.gephi"/>
@@ -51,7 +44,6 @@
       <plugin id="genlab.random.colt"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
-      <plugin id="javax.servlet"/>
       <plugin id="javax.xml"/>
       <plugin id="org.apache.ant"/>
       <plugin id="org.apache.batik.css"/>
@@ -61,14 +53,6 @@
       <plugin id="org.apache.batik.util"/>
       <plugin id="org.apache.batik.util.gui"/>
       <plugin id="org.apache.batik.xml"/>
-      <plugin id="org.apache.lucene"/>
-      <plugin id="org.apache.lucene.analysis"/>
-      <plugin id="org.apache.lucene.core"/>
-      <plugin id="org.apache.lucene.misc"/>
-      <plugin id="org.apache.lucene.queries"/>
-      <plugin id="org.apache.xerces"/>
-      <plugin id="org.apache.xml.resolver"/>
-      <plugin id="org.apache.xml.serializer"/>
       <plugin id="org.eclipse.ant.core"/>
       <plugin id="org.eclipse.ant.launching"/>
       <plugin id="org.eclipse.ant.ui"/>
@@ -95,11 +79,6 @@
       <plugin id="org.eclipse.core.filesystem.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.core.filesystem.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.core.jobs"/>
-      <plugin id="org.eclipse.core.net"/>
-      <plugin id="org.eclipse.core.net.linux.x86" fragment="true"/>
-      <plugin id="org.eclipse.core.net.linux.x86_64" fragment="true"/>
-      <plugin id="org.eclipse.core.net.win32.x86" fragment="true"/>
-      <plugin id="org.eclipse.core.net.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.core.resources"/>
       <plugin id="org.eclipse.core.resources.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.core.runtime"/>
@@ -150,13 +129,10 @@
       <plugin id="org.eclipse.emf.workspace"/>
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.common"/>
-      <plugin id="org.eclipse.equinox.concurrent"/>
       <plugin id="org.eclipse.equinox.ds"/>
       <plugin id="org.eclipse.equinox.event"/>
       <plugin id="org.eclipse.equinox.frameworkadmin"/>
       <plugin id="org.eclipse.equinox.frameworkadmin.equinox"/>
-      <plugin id="org.eclipse.equinox.http.jetty"/>
-      <plugin id="org.eclipse.equinox.http.servlet"/>
       <plugin id="org.eclipse.equinox.p2.artifact.repository"/>
       <plugin id="org.eclipse.equinox.p2.core"/>
       <plugin id="org.eclipse.equinox.p2.director"/>
@@ -176,7 +152,6 @@
       <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse"/>
       <plugin id="org.eclipse.equinox.p2.transport.ecf"/>
       <plugin id="org.eclipse.equinox.p2.ui"/>
-      <plugin id="org.eclipse.equinox.p2.updatesite"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.registry"/>
       <plugin id="org.eclipse.equinox.security"/>
@@ -200,8 +175,6 @@
       <plugin id="org.eclipse.graphiti.ui"/>
       <plugin id="org.eclipse.graphiti.ui.capabilities"/>
       <plugin id="org.eclipse.help"/>
-      <plugin id="org.eclipse.help.base"/>
-      <plugin id="org.eclipse.help.ui"/>
       <plugin id="org.eclipse.jdt.compiler.apt" fragment="true"/>
       <plugin id="org.eclipse.jdt.compiler.tool" fragment="true"/>
       <plugin id="org.eclipse.jdt.core"/>
@@ -213,29 +186,13 @@
       <plugin id="org.eclipse.jdt.junit.runtime"/>
       <plugin id="org.eclipse.jdt.launching"/>
       <plugin id="org.eclipse.jdt.ui"/>
-      <plugin id="org.eclipse.jem.util"/>
-      <plugin id="org.eclipse.jetty.continuation"/>
-      <plugin id="org.eclipse.jetty.http"/>
-      <plugin id="org.eclipse.jetty.io"/>
-      <plugin id="org.eclipse.jetty.security"/>
-      <plugin id="org.eclipse.jetty.server"/>
-      <plugin id="org.eclipse.jetty.servlet"/>
-      <plugin id="org.eclipse.jetty.util"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
       <plugin id="org.eclipse.jface.text"/>
       <plugin id="org.eclipse.ltk.core.refactoring"/>
       <plugin id="org.eclipse.ltk.ui.refactoring"/>
-      <plugin id="org.eclipse.m2e.archetype.common"/>
-      <plugin id="org.eclipse.m2e.core"/>
-      <plugin id="org.eclipse.m2e.core.ui"/>
-      <plugin id="org.eclipse.m2e.logback.appender" fragment="true"/>
-      <plugin id="org.eclipse.m2e.maven.indexer"/>
-      <plugin id="org.eclipse.m2e.maven.runtime"/>
-      <plugin id="org.eclipse.m2e.model.edit"/>
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.osgi.services"/>
-      <plugin id="org.eclipse.osgi.util"/>
       <plugin id="org.eclipse.pde.build"/>
       <plugin id="org.eclipse.pde.core"/>
       <plugin id="org.eclipse.pde.launching"/>
@@ -277,32 +234,16 @@
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
       <plugin id="org.eclipse.update.configurator"/>
-      <plugin id="org.eclipse.wst.common.core"/>
-      <plugin id="org.eclipse.wst.common.emf"/>
-      <plugin id="org.eclipse.wst.common.emfworkbench.integration"/>
-      <plugin id="org.eclipse.wst.common.environment"/>
-      <plugin id="org.eclipse.wst.common.frameworks"/>
-      <plugin id="org.eclipse.wst.common.project.facet.core"/>
-      <plugin id="org.eclipse.wst.common.uriresolver"/>
-      <plugin id="org.eclipse.wst.sse.core"/>
-      <plugin id="org.eclipse.wst.validation"/>
-      <plugin id="org.eclipse.wst.xml.core"/>
-      <plugin id="org.eclipse.wst.xsd.core"/>
-      <plugin id="org.eclipse.xsd"/>
       <plugin id="org.hamcrest.core"/>
-      <plugin id="org.jboss.netty"/>
       <plugin id="org.junit"/>
       <plugin id="org.sat4j.core"/>
       <plugin id="org.sat4j.pb"/>
-      <plugin id="org.slf4j.api"/>
       <plugin id="org.w3c.css.sac"/>
       <plugin id="org.w3c.dom.smil"/>
       <plugin id="org.w3c.dom.svg"/>
    </plugins>
 
    <configurations>
-      <plugin id="org.eclipse.core.runtime.compatibility" autoStart="true" startLevel="0" />
-      <plugin id="org.eclipse.equinox.p2.discovery.compatibility" autoStart="true" startLevel="0" />
       <property name="sun.java2d.opengl" value="True" />
    </configurations>
 

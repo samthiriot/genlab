@@ -10,8 +10,7 @@ Require-Bundle: org.eclipse.core.runtime,
  genlab.graphstream.corejar;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: com.sun.jna;uses:="new com.sun.jna",
- genlab.basics.javaTypes.graphs,
+Export-Package: genlab.basics.javaTypes.graphs,
  genlab.core;uses:="org.osgi.framework",
  genlab.core.commons,
  genlab.core.exec;uses:="genlab.core.model.exec,genlab.core.model.instance,genlab.core.usermachineinteraction",
@@ -59,4 +58,3 @@ Bundle-ClassPath: .,
  ext/jna-3.5.2.jar,
  ext/platform-3.5.2.jar,
  ext/gs-core-1.1.2.jar
-Import-Package: com.sun.jna

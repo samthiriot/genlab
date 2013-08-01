@@ -23,7 +23,7 @@ public class IGraphLibrary {
 	 */
 	//private final IGraphIGraphRawLibraryrary IGraphRawLibrary;
 	
-	public String versionString = null; 
+	public static String versionString = null; 
 	
 	public final static String GRAPH_KEY_DIAMETER = "diameter";
 	public final static String GRAPH_KEY_AVERAGE_PATH_LENGTH = "average path length";
@@ -52,7 +52,6 @@ public class IGraphLibrary {
 	// TODO errors !
 	//private final static int IGRAPH_ERROR_IGRAPH_ENOMEM = ;
 	
-	public static String version = null;
 
 	
 	/**
@@ -60,10 +59,10 @@ public class IGraphLibrary {
 	 */
 	public IGraphLibrary() {
 
-		if (version == null)
+		if (versionString == null)
 			retrieveVersion();
 		
-		GLLogger.debugTech("loaded igraph library "+version, getClass());
+		GLLogger.debugTech("loaded igraph library "+versionString, getClass());
 	}
 
 
