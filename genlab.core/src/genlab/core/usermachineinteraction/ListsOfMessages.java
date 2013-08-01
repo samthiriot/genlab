@@ -1,9 +1,9 @@
 package genlab.core.usermachineinteraction;
 
+import genlab.core.model.exec.IGenLabExecution;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import genlab.core.model.exec.IGenLabExecution;
 
 /**
  * TODO add a "end" or "destroyed" event for a list of messages, so we can clear it.

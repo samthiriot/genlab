@@ -2,7 +2,6 @@ package genlab.gui.algos;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ComputationState;
-import genlab.core.model.exec.ConnectionExec;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;

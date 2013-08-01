@@ -3,7 +3,6 @@ package genlab.gui.actions;
 import genlab.core.exec.GenlabExecution;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.Activator;
 import genlab.gui.editors.IWorkflowEditor;
 
 import org.eclipse.jface.action.Action;

@@ -8,8 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-
 /**
  * TODO propose a "link or copy" command
  * 

@@ -1,6 +1,5 @@
 package genlab.gui.views;
 
-import genlab.core.exec.IExecution;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 
 import org.eclipse.swt.SWT;

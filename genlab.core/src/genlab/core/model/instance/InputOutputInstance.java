@@ -7,7 +7,6 @@ import genlab.core.usermachineinteraction.GLLogger;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Set;
 
 public abstract class InputOutputInstance implements IInputOutputInstance {

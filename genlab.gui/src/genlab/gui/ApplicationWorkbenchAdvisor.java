@@ -10,7 +10,6 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.internal.ide.model.WorkbenchAdapterBuilder;
 
 /**
  * This workbench advisor creates the window advisor, and specifies

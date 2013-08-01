@@ -1,9 +1,9 @@
 package genlab.core.parameters;
 
+import genlab.core.commons.WrongParametersException;
+
 import java.util.Collections;
 import java.util.Map;
-
-import genlab.core.commons.WrongParametersException;
 
 
 public class BooleanParameter extends Parameter<Boolean> {

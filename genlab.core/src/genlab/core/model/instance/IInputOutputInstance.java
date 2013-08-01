@@ -1,10 +1,10 @@
 package genlab.core.model.instance;
 
-import java.util.Collection;
-
 import genlab.core.model.IGenlabResource;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.parameters.IParameterConstraint;
+
+import java.util.Collection;
 
 public interface IInputOutputInstance extends IGenlabResource {
 

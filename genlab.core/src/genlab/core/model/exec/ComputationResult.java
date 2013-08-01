@@ -3,10 +3,7 @@ package genlab.core.model.exec;
 import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IInputOutputInstance;
-import genlab.core.model.instance.InputOutputInstance;
-import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
-import genlab.core.model.meta.InputOutput;
 import genlab.core.usermachineinteraction.ITextMessage;
 import genlab.core.usermachineinteraction.ListOfMessages;
 

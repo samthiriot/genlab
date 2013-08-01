@@ -1,10 +1,10 @@
 package genlab.core.parameters;
 
+import genlab.core.commons.WrongParametersException;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
-import genlab.core.commons.WrongParametersException;
 
 
 public class FileParameter extends Parameter<File> {

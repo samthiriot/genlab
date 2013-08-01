@@ -2,8 +2,6 @@ package genlab.core.model.meta;
 
 import genlab.core.parameters.Parameter;
 
-import java.util.Set;
-
 /**
  * Tags the algos which are in fact constants.
  * 

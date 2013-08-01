@@ -1,9 +1,5 @@
 package genlab.core.model.meta.basics.algos;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
-
 import genlab.core.commons.FileUtils;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
@@ -18,6 +14,10 @@ import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import genlab.core.model.meta.basics.flowtypes.TableFlowType;
 import genlab.core.parameters.FileParameter;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 
 public class WriteTableCSV extends BasicAlgo {
 

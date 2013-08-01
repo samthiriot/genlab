@@ -1,7 +1,5 @@
 package genlab.core.model.meta.basics.graphs;
 
-import java.util.Map;
-
 import org.graphstream.graph.implementations.SingleGraph;
 
 /**

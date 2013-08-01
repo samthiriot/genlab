@@ -1,7 +1,5 @@
 package genlab.core.model.meta.basics.algos;
 
-import java.util.Map;
-
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
@@ -17,6 +15,8 @@ import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.GraphFactory;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.parameters.BooleanParameter;
+
+import java.util.Map;
 
 public class ConcatenateGraphsAlgo extends BasicAlgo {
 

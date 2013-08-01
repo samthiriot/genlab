@@ -1,10 +1,8 @@
 package genlab.igraph.natjna;
 
-import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.WrongParametersException;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import com.sun.jna.Native;

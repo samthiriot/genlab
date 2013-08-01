@@ -3,7 +3,6 @@ package genlab.gui.views;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IWorkflowListener;
 import genlab.core.model.instance.WorkflowHooks;
-import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.Utils;

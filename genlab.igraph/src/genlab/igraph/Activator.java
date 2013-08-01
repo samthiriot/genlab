@@ -2,7 +2,6 @@ package genlab.igraph;
 
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.igraph.algos.generation.lcffamous.FamousLCFGraphs;
-import genlab.igraph.natjna.IGraphRawLibrary;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleActivator;

@@ -1,6 +1,5 @@
 package genlab.core.model.exec;
 
-import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
 /**

@@ -1,8 +1,5 @@
 package genlab.graphstream.ui.algos;
 
-import java.io.File;
-
-import genlab.core.commons.FileUtils;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
@@ -10,16 +7,15 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
-import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.parameters.FileParameter;
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.graphstream.algos.GraphStreamAlgo;
 import genlab.graphstream.ui.views.AbstractGraphView;
-import genlab.graphstream.ui.views.GraphView;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
+
+import java.io.File;
 
 /**
  * The algorithm that takes a graph as input

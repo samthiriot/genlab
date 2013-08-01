@@ -1,11 +1,6 @@
 package genlab.jung.generators;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import edu.uci.ics.jung.algorithms.generators.EvolvingGraphGenerator;
 import edu.uci.ics.jung.algorithms.generators.random.BarabasiAlbertGenerator;
-import edu.uci.ics.jung.algorithms.generators.random.EppsteinPowerLawGenerator;
 import edu.uci.ics.jung.graph.Graph;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
@@ -16,6 +11,9 @@ import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.GraphFactory;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.jung.utils.Converters;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.collections15.Factory;
 

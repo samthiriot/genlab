@@ -1,7 +1,6 @@
 package genlab.core.model.meta.basics.algos;
 
 import genlab.core.parameters.DoubleParameter;
-import genlab.core.parameters.IntParameter;
 import genlab.core.parameters.Parameter;
 
 // TODO doc !

@@ -2,13 +2,11 @@ package genlab.core.model.doc;
 
 import genlab.core.commons.WrongParametersException;
 import genlab.core.model.meta.ExistingAlgos;
-import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 

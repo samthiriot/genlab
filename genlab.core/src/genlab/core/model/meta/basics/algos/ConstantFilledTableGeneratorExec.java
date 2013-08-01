@@ -1,9 +1,9 @@
 package genlab.core.model.meta.basics.algos;
 
-import java.util.Arrays;
-
 import genlab.core.exec.IExecution;
 import genlab.core.model.instance.IAlgoInstance;
+
+import java.util.Arrays;
 
 public class ConstantFilledTableGeneratorExec extends
 		AbstractTableGeneratorExec {

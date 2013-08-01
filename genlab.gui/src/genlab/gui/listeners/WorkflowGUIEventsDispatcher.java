@@ -1,7 +1,6 @@
 package genlab.gui.listeners;
 
 import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;

@@ -1,7 +1,5 @@
 package genlab.core.model.meta.basics.algos;
 
-import org.osgi.framework.Bundle;
-
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
@@ -11,6 +9,8 @@ import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.AnythingFlowType;
 import genlab.core.model.meta.basics.flowtypes.HeterogeneousMapFlowType;
 import genlab.core.model.meta.basics.flowtypes.IHeterogeneousMap;
+
+import org.osgi.framework.Bundle;
 
 /**
  * Takes many values as inputs, and 

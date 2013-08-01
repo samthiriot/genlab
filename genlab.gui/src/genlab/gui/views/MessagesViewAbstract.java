@@ -6,7 +6,6 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 import genlab.gui.VisualResources;
 import genlab.gui.actions.ClearMessagesAction;
-import genlab.gui.actions.RunAction;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

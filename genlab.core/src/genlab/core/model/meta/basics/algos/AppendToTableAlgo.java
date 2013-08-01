@@ -1,7 +1,5 @@
 package genlab.core.model.meta.basics.algos;
 
-import java.util.Map;
-
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
@@ -17,7 +15,8 @@ import genlab.core.model.meta.basics.flowtypes.AnythingFlowType;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import genlab.core.model.meta.basics.flowtypes.TableFlowType;
-import genlab.core.usermachineinteraction.GLLogger;
+
+import java.util.Map;
 
 public class AppendToTableAlgo extends BasicAlgo {
 

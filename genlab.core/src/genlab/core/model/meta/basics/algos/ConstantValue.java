@@ -1,8 +1,5 @@
 package genlab.core.model.meta.basics.algos;
 
-import org.eclipse.core.runtime.Plugin;
-import org.osgi.framework.Bundle;
-
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
@@ -13,6 +10,8 @@ import genlab.core.model.meta.IConstantAlgo;
 import genlab.core.model.meta.IFlowType;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.parameters.Parameter;
+
+import org.osgi.framework.Bundle;
 
 /**
  * A constant value is a very simple algorithm that has a value as a parameter, no input values,

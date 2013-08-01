@@ -1,8 +1,8 @@
 package genlab.core.exec;
 
-import java.util.Collection;
-
 import genlab.core.model.exec.IComputationProgress;
+
+import java.util.Collection;
 
 /**
  * A task that may be running somewhere

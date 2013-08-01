@@ -2,16 +2,10 @@ package genlab.core.model.meta;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractContainerExecution;
-import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
-import genlab.core.model.instance.AlgoContainerInstance;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoContainerInstance;
-import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IConnection;
-import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.parameters.IntParameter;
-import genlab.core.usermachineinteraction.GLLogger;
 
 public class LoopForAlgo extends AlgoContainer {
 

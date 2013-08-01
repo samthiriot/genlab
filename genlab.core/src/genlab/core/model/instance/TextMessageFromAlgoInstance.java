@@ -2,7 +2,7 @@ package genlab.core.model.instance;
 
 import genlab.core.usermachineinteraction.MessageAudience;
 import genlab.core.usermachineinteraction.MessageLevel;
-import genlab.core.usermachineinteraction.TextMessage;;
+import genlab.core.usermachineinteraction.TextMessage;
 
 /**
  * A test message sent during checling before run: each message is associated with algo instance.

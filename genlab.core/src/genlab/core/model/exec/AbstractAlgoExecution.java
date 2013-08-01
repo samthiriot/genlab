@@ -7,7 +7,6 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IInputOutput;
-import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.util.Collection;

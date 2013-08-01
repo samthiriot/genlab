@@ -103,6 +103,11 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		
 		// create a panel that does not clears its background into the AWT frame
 		awtPanel = new Panel(new BorderLayout()) {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			public void update(java.awt.Graphics g) {
 				/* Do not erase the background */
 				paint(g);

@@ -1,20 +1,11 @@
 package genlab.core.model.meta.basics.algos;
 
-import genlab.core.exec.IExecution;
-import genlab.core.model.exec.AbstractAlgoExecution;
-import genlab.core.model.exec.ComputationProgressWithSteps;
-import genlab.core.model.exec.IAlgoExecution;
-import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
-import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.model.meta.basics.flowtypes.TableFlowType;
-
-import java.util.Collection;
-import java.util.LinkedList;
 
 /**
  * Abstract class for any algo which intends to create a table from nothing (random, empty, filled...)

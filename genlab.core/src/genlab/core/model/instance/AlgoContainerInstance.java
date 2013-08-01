@@ -2,8 +2,6 @@ package genlab.core.model.instance;
 
 import genlab.core.model.meta.IAlgo;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 

@@ -1,13 +1,13 @@
 package genlab.core.exec;
 
+import genlab.core.commons.UniqueTimestamp;
+import genlab.core.usermachineinteraction.ListOfMessages;
+import genlab.core.usermachineinteraction.ListsOfMessages;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import genlab.core.commons.UniqueTimestamp;
-import genlab.core.usermachineinteraction.ListOfMessages;
-import genlab.core.usermachineinteraction.ListsOfMessages;
 
 public class Execution implements IExecution {
 

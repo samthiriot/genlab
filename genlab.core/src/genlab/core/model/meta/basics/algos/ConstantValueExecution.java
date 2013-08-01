@@ -1,6 +1,5 @@
 package genlab.core.model.meta.basics.algos;
 
-import genlab.core.exec.IContainerTask;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;

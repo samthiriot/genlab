@@ -1,12 +1,11 @@
 package genlab.core.model.exec;
 
-import java.util.Collection;
-import java.util.LinkedList;
-
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.UniqueTimestamp;
 import genlab.core.model.meta.IAlgo;
-import genlab.core.usermachineinteraction.GLLogger;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * TODO state

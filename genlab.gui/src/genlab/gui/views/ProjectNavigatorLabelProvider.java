@@ -8,7 +8,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.navigator.IPipelinedTreeContentProvider2;
 
 /**
  * TODO IPipelinedTreeContentProvider2

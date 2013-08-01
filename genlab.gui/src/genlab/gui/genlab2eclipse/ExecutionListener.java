@@ -1,19 +1,17 @@
 package genlab.gui.genlab2eclipse;
 
+import genlab.core.exec.IExecution;
+import genlab.core.model.exec.ExecutionHooks;
+import genlab.core.model.exec.ITasksListener;
+import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.views.MessagesView;
+
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.WorkbenchPart;
-
-import genlab.core.exec.IExecution;
-import genlab.core.model.exec.ComputationState;
-import genlab.core.model.exec.ExecutionHooks;
-import genlab.core.model.exec.ITasksListener;
-import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.views.ConsoleView;
-import genlab.gui.views.MessagesView;
 
 public class ExecutionListener implements ITasksListener {
 

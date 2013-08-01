@@ -1,18 +1,16 @@
 package genlab.core.model.meta.basics.algos;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
-import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 public abstract class AbstractTableGeneratorExec extends AbstractAlgoExecution {
 

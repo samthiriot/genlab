@@ -1,20 +1,14 @@
 package genlab.gui.views;
 
-import genlab.core.commons.FileUtils;
 import genlab.core.model.doc.AvailableInfo;
-import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.parameters.Parameter;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.VisualResources;
 
-import java.io.File;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.swing.JOptionPane;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;

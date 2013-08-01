@@ -1,11 +1,11 @@
 package genlab.core.model.exec;
 
-import java.util.Map;
-
 import genlab.core.exec.IExecution;
 import genlab.core.exec.IExecutionTask;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IInputOutputInstance;
+
+import java.util.Map;
 
 /**
  * Represents an atomic execution of an algo 

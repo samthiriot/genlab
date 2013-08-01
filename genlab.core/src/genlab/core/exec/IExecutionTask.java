@@ -1,7 +1,6 @@
 package genlab.core.exec;
 
 
-import java.util.Collection;
 
 /**
  * A task

@@ -1,10 +1,5 @@
 package genlab.core.model.meta.basics.algos;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.osgi.framework.Bundle;
-
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
@@ -18,7 +13,9 @@ import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.IDisplayAlgo;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.AnythingFlowType;
-import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
+
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * This algo writes any input in the standard output.

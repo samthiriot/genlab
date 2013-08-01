@@ -1,10 +1,9 @@
 package genlab.core.model.exec;
 
-import java.util.LinkedList;
-
 import genlab.core.exec.IExecution;
-import genlab.core.exec.ITask;
 import genlab.core.usermachineinteraction.GLLogger;
+
+import java.util.LinkedList;
 
 public class ExecutionHooks {
 

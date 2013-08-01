@@ -1,7 +1,5 @@
 package genlab.core.model.meta.basics.algos;
 
-import org.osgi.framework.Bundle;
-
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
 import genlab.core.parameters.DoubleParameter;

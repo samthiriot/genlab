@@ -39,3 +39,7 @@ Export-Package: genlab.gui.graphiti.genlab2graphiti,
  genlab.gui.graphiti.handlers
 Bundle-ClassPath: ext/xstream-1.4.4.jar,
  .
+Import-Package: org.eclipse.core.resources,
+ org.eclipse.emf.common.util,
+ org.eclipse.emf.ecore.resource,
+ org.eclipse.emf.ecore.resource.impl

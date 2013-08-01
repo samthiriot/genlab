@@ -1,6 +1,5 @@
 package genlab.core;
 
-import genlab.core.usermachineinteraction.ListOfMessages;
 
 /**
  * Publishes everything singletonized.

@@ -1,13 +1,11 @@
 package genlab.gui;
 
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.views.WorkflowRoot;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.ContentViewer;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IViewPart;
