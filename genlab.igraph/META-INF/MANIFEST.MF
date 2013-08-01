@@ -13,6 +13,9 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
  ext/platform-3.5.2.jar,
  ext/jna-3.5.2.jar
-Export-Package: genlab.igraph,
+Export-Package: com.sun.jna,
+ com.sun.jna.platform,
+ com.sun.jna.ptr,
+ genlab.igraph,
  genlab.igraph.algos.measure
 
