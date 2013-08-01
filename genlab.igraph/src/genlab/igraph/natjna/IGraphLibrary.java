@@ -3,6 +3,7 @@ package genlab.igraph.natjna;
 import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
+import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
@@ -51,7 +52,7 @@ public class IGraphLibrary {
 	// TODO errors !
 	//private final static int IGRAPH_ERROR_IGRAPH_ENOMEM = ;
 	
-
+	public static String version = null;
 
 	
 	/**
@@ -59,6 +60,10 @@ public class IGraphLibrary {
 	 */
 	public IGraphLibrary() {
 
+		if (version == null)
+			retrieveVersion();
+		
+		GLLogger.debugTech("loaded igraph library "+version, getClass());
 	}
 
 

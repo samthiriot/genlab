@@ -42,27 +42,66 @@ public class IGraphRawLibrary {
 			// in this block, register which native library is supposed to be directly mapped to this method
 			Native.setProtected(false);
 	
-	
-			
-			String filenameOriginal = "/ext/native/linux/x86_64/libigraph.so";
-			String libNameOriginal = "igraph";
-					
-			URL url = genlab.igraph.Activator.getDefault().getBundle().getEntry(filenameOriginal);
-	        URL resolvedURL = null;
-			try {
-				resolvedURL = FileLocator.toFileURL(url);
-			} catch (IOException e) {
-				throw new ProgramException("unable to locale the root of the plugin; icons will not be added for algorithms", e);
+			String filenameOriginal = null; 
+			{
+				StringBuffer sb = new StringBuffer();
+				sb.append("/ext/native/");
+				// detect system & arch
+				final String os = System.getProperty("os.name").toLowerCase();
+				final String arch = System.getProperty("os.arch").toLowerCase();
+
+				if (os.contains("win")) {
+					sb.append("win/");
+					// windows does not informs the JVM of the good architecture, so correct it.
+					// (sure, I love windows !)
+					// see http://stackoverflow.com/questions/4748673/how-can-i-check-the-bitness-of-my-os-using-java-j2se-not-os-arch
+					final String envArch = System.getenv("PROCESSOR_ARCHITECTURE");
+					final String envArch64 = System.getenv("PROCESSOR_ARCHITEW6432");
+					if (envArch.endsWith("64") || 
+							(envArch64 != null && envArch64.endsWith("64"))
+							)
+						sb.append("x86_64/");
+					else 
+						sb.append("x86/");
+
+					sb.append("igraph.dll");
+				} else if (os.contains("nux") || os.contains("nix") || os.contains("aix")) {
+					sb.append("linux/");
+					if (arch.endsWith("64"))
+							sb.append("x86_64/");
+					else 
+						sb.append("x86/");
+					sb.append("libigraph.so");
+				} else {
+					throw new ProgramException("platform not supported: "+os);
+				}
+
+				
 			}
-			        
-			//File originalDll = Activator.getDefault().getBundle().
-			File originalDll = new File(resolvedURL.getFile());
+				
+			final String libNameOriginal = "igraph";
 			
-			if (!originalDll.exists() || !originalDll.isFile() || !originalDll.canRead())
-				throw new ProgramException("unable to read the igraph shared library from the file "+filenameOriginal);
+			File originalDll = null;
+			{
+				URL url = genlab.igraph.Activator.getDefault().getBundle().getEntry(filenameOriginal);
+		        URL resolvedURL = null;
+				try {
+					resolvedURL = FileLocator.toFileURL(url);
+				} catch (IOException e) {
+					throw new ProgramException("unable to locale the root of the plugin; icons will not be added for algorithms", e);
+				}
+				        
+				//File originalDll = Activator.getDefault().getBundle().
+				originalDll = new File(resolvedURL.getFile());
+				if (!originalDll.exists() || !originalDll.isFile() || !originalDll.canRead())
+					throw new ProgramException("unable to read the igraph shared library from the file "+filenameOriginal);
+		
+			}
+			
 	
 			// found; let's copy it somewhere
 			File copy;
+			
 			final String prefix = FileUtils.extractFilenameWithoutExtension(filenameOriginal);
 			final String suffix = "."+FileUtils.getExtension(filenameOriginal);
 			try {
@@ -73,12 +112,12 @@ public class IGraphRawLibrary {
 			} catch (IOException e) {
 				throw new ProgramException("unable to copy the native library to a temporary space", e);
 			}
-	
+
 			FileUtils.copyFiles(originalDll, copy);
 	
 			String tmpLibraryUndecoratedName = copy.getName();
 			tmpLibraryUndecoratedName = libNameOriginal+tmpLibraryUndecoratedName.substring(prefix.length(), tmpLibraryUndecoratedName.length()-suffix.length());
-			
+		
 			
 			GLLogger.debugTech("adding as a search path :"+FileUtils.extractPath(copy.getAbsolutePath())+" for library named "+tmpLibraryUndecoratedName, IGraphRawLibrary.class);
 			NativeLibrary.addSearchPath(tmpLibraryUndecoratedName, FileUtils.extractPath(copy.getAbsolutePath()));
@@ -109,13 +148,13 @@ public class IGraphRawLibrary {
 	/*
 	 * int igraph_vector_init      (igraph_vector_t* v, int long size);
      */
-	public static native int igraph_vector_init (InternalVectorStruct v, int size);
+	public static native  int igraph_vector_init (InternalVectorStruct v, int size);
 
 	/*
 	 * int igraph_vector_init_copy(igraph_vector_t *v, 
 				      igraph_real_t *data, long int length);
 	 */
-	public static native int igraph_vector_init_copy(
+	public static native  int igraph_vector_init_copy(
 			InternalVectorStruct v, 
 		    Pointer data, 
 		    int length
@@ -124,13 +163,13 @@ public class IGraphRawLibrary {
 	/*
 	 * void igraph_vector_destroy   (igraph_vector_t* v);
 	 */
-	public static native void igraph_vector_destroy(InternalVectorStruct v);
+	public static native  void igraph_vector_destroy(InternalVectorStruct v);
 
 	
 	/*
 	 * 
      */
-	public static native int igraph_vector_size (InternalVectorStruct v);
+	public static native  int igraph_vector_size (InternalVectorStruct v);
 
 	/*
 	 * igraph_version.h
@@ -142,7 +181,7 @@ int igraph_version(const char **version_string,
 		   int *minor,
 		   int *subminor);
 	 */
-	public static native int igraph_version(				
+	public static native  int igraph_version(				
 				PointerByReference version_string,
 				IntByReference major,
 				IntByReference minor,
@@ -158,7 +197,7 @@ int igraph_version(const char **version_string,
 	/**
 	 * @see http://igraph.sourceforge.net/doc/html/ch09s02.html#igraph_watts_strogatz_game
 	 */
-	public static native int igraph_watts_strogatz_game (
+	public static native  int igraph_watts_strogatz_game (
 			InternalGraphStruct graph,
 			int dim,
 			int size,
@@ -182,7 +221,7 @@ int igraph_version(const char **version_string,
 		    );
 	
 */
-	public static native int igraph_grg_game(
+	public static native  int igraph_grg_game(
 			InternalGraphStruct graph, 
 			int nodes,
 		    double radius, 
@@ -195,7 +234,7 @@ int igraph_version(const char **version_string,
 	int igraph_rewire(igraph_t *graph, igraph_integer_t n, igraph_rewiring_t mode);
 	IGRAPH_REWIRING_SIMPLE=0 
 	 */
-	public static native int igraph_rewire(Pointer graph, int n, int mode);
+	public static native  int igraph_rewire(Pointer graph, int n, int mode);
 
 	
 	/*
@@ -314,7 +353,7 @@ int igraph_citing_cited_type_game(igraph_t *graph, igraph_integer_t nodes,
 				    igraph_real_t fw_prob, igraph_real_t bw_factor,
 				    igraph_integer_t ambs, igraph_bool_t directed);
 	*/
-	public static native int igraph_forest_fire_game(InternalGraphStruct graph, int nodes,
+	public static native  int igraph_forest_fire_game(InternalGraphStruct graph, int nodes,
 		    double fw_prob, double bw_factor,
 		    int pambs, boolean directed);
 
@@ -326,7 +365,7 @@ int igraph_citing_cited_type_game(igraph_t *graph, igraph_integer_t nodes,
 				igraph_real_t islands_pin, 
 				igraph_integer_t n_inter);
 	 */
-	public static native int igraph_simple_interconnected_islands_game(
+	public static native  int igraph_simple_interconnected_islands_game(
 			InternalGraphStruct graph, 
 			int islands_n, 
 			int islands_size,
@@ -364,20 +403,20 @@ int igraph_k_regular_game(igraph_t *graph,
 	 * @param directed
 	 * @return
 	 */
-	public static native int igraph_empty(InternalGraphStruct graph, int n, boolean directed);
+	public static native  int igraph_empty(InternalGraphStruct graph, int n, boolean directed);
 
 	/*
 	int igraph_erdos_renyi_game_gnp(igraph_t *graph, igraph_integer_t n, igraph_real_t p,
 			igraph_bool_t directed, igraph_bool_t loops);
 	*/
-	public static native int igraph_erdos_renyi_game_gnp(
+	public static native  int igraph_erdos_renyi_game_gnp(
 			InternalGraphStruct graph, 
 			int n, 
 			double p,
 			boolean directed, 
 			boolean loops
 			);
-	public static native int igraph_erdos_renyi_game_gnm(
+	public static native  int igraph_erdos_renyi_game_gnm(
 			InternalGraphStruct graph, 
 			int n, 
 			double m,
@@ -391,7 +430,7 @@ int igraph_k_regular_game(igraph_t *graph,
 		      const igraph_vector_t *shifts, 
 		      igraph_integer_t repeats);
 	 */
-	public static native int igraph_lcf_vector(
+	public static native  int igraph_lcf_vector(
 			InternalGraphStruct graph, 
 			int n,
 		    InternalVectorStruct shifts, 
@@ -406,7 +445,7 @@ int igraph_k_regular_game(igraph_t *graph,
 	 * @param graph
 	 * @return
 	 */
-	public static native int igraph_vcount(Pointer graph);
+	public static native  int igraph_vcount(Pointer graph);
 	
 	 
 	/*
@@ -417,46 +456,45 @@ int igraph_k_regular_game(igraph_t *graph,
 	 * @param graph
 	 * @return
 	 */
-	public static native int igraph_ecount(Pointer graph);
+	public static native  int igraph_ecount(Pointer graph);
 		
 	/*
 	 * igraph_bool_t igraph_is_directed(const igraph_t *graph);
 	 */
-	public static native boolean igraph_is_directed(Pointer graph);
+	public static native  boolean igraph_is_directed(Pointer graph);
 
 	/*
 	 * int igraph_copy(igraph_t *to, const igraph_t *from);
 	 */
-	public static native int igraph_copy(InternalGraphStruct to, InternalGraphStruct from);
+	public static native  int igraph_copy(InternalGraphStruct to, InternalGraphStruct from);
 
 
-	// TODO free memory !
 	/*
 	 * int igraph_destroy(igraph_t *graph);
 	 */
-	public static native int igraph_destroy(Pointer graph);
+	public static native  int igraph_destroy(Pointer graph);
 
-	public static native int igraph_add_vertices(Pointer graph, int nv, Pointer attr);
+	public static native  int igraph_add_vertices(Pointer graph, int nv, Pointer attr);
 
 	/*
 	 * int igraph_add_edge(igraph_t *graph, igraph_integer_t from, igraph_integer_t to);
 	 */
-	public static native int igraph_add_edge(Pointer graph, int from, int to);
+	public static native  int igraph_add_edge(Pointer graph, int from, int to);
 	
-	public static native int igraph_add_edges(Pointer graph, InternalVectorStruct edges, Pointer attr);
+	public static native  int igraph_add_edges(Pointer graph, InternalVectorStruct edges, Pointer attr);
 
 	/*
 	 * int igraph_edge(const igraph_t *graph, igraph_integer_t eid, 
 		igraph_integer_t *from, igraph_integer_t *to);
 	 */
-	public static native int igraph_edge(Pointer graph, int eid, 
+	public static native  int igraph_edge(Pointer graph, int eid, 
 			IntByReference from, IntByReference to);
 	
 	/*
 	 * int igraph_average_path_length(const igraph_t *graph, igraph_real_t *res,
 			       igraph_bool_t directed, igraph_bool_t unconn);
 	 */
-	public static native int igraph_average_path_length(Pointer graph, DoubleByReference res,
+	public static native  int igraph_average_path_length(Pointer graph, DoubleByReference res,
 		       boolean directed, boolean unconn);
 
 	/*
@@ -465,7 +503,7 @@ int igraph_k_regular_game(igraph_t *graph,
 		    igraph_vector_t *path,
 		    igraph_bool_t directed, igraph_bool_t unconn);
 	 */
-	public static native int igraph_diameter(Pointer graph, IntByReference pres, 
+	public static native  int igraph_diameter(Pointer graph, IntByReference pres, 
 			IntByReference pfrom,  IntByReference pto, 
 		    PointerByReference path,
 		    boolean directed, boolean unconn);
@@ -475,7 +513,7 @@ int igraph_k_regular_game(igraph_t *graph,
 			igraph_connectedness_t mode);
 	 * mode: IGRAPH_WEAK=1, IGRAPH_STRONG=2 (ignored for undirected)
 	 */
-	public static native int igraph_is_connected(Pointer graph, IntByReference res, 
+	public static native  int igraph_is_connected(Pointer graph, IntByReference res, 
 			int mode);
 	
 	/*
@@ -484,7 +522,7 @@ int igraph_k_regular_game(igraph_t *graph,
 		    igraph_connectedness_t mode);
 		    mode: IGRAPH_WEAK=1, IGRAPH_STRONG=2 (ignored for undirected)
 	 */
-	public static native int igraph_clusters(Pointer graph, InternalVectorStruct membership, 
+	public static native  int igraph_clusters(Pointer graph, InternalVectorStruct membership, 
 			InternalVectorStruct csize, IntByReference no,
 		    int mode);
 	
@@ -495,14 +533,14 @@ int igraph_k_regular_game(igraph_t *graph,
 				   
 				   mode: Defines how to treat graphs with no connected triples. IGRAPH_TRANSITIVITY_NAN=0 returns NaN in this case, IGRAPH_TRANSITIVITY_ZERO=1 returns zero.
 	 */
-	public static native int igraph_transitivity_undirected(Pointer graph, DoubleByReference res, int mode);
+	public static native  int igraph_transitivity_undirected(Pointer graph, DoubleByReference res, int mode);
 	
 	/*
 	 * int igraph_isomorphic(const igraph_t *graph1, const igraph_t *graph2,
 		      igraph_bool_t *iso);
 
 	 */
-	public static native int igraph_isomorphic(Pointer graph1, Pointer graph2,
+	public static native  int igraph_isomorphic(Pointer graph1, Pointer graph2,
 		      IntByReference iso);
 
 	/*
@@ -517,7 +555,7 @@ int igraph_k_regular_game(igraph_t *graph,
 				  void *arg);
 
 	 */
-	public static native int igraph_count_isomorphisms_vf2(Pointer graph1, Pointer graph2, 
+	public static native  int igraph_count_isomorphisms_vf2(Pointer graph1, Pointer graph2, 
 			  InternalVectorStruct vertex_color1,
 			  InternalVectorStruct vertex_color2,
 			  InternalVectorStruct edge_color1,
@@ -539,7 +577,7 @@ int igraph_k_regular_game(igraph_t *graph,
 			  igraph_isocompat_t *edge_compat_fn,
 			  void *arg);
 	 */
-	public static native int igraph_isomorphic_vf2(Pointer graph1, Pointer graph2, 
+	public static native  int igraph_isomorphic_vf2(Pointer graph1, Pointer graph2, 
 			  InternalVectorStruct vertex_color1,
 			  InternalVectorStruct vertex_color2,
 			  InternalVectorStruct edge_color1,
@@ -553,7 +591,7 @@ int igraph_k_regular_game(igraph_t *graph,
 			  );
 	
 	/*
-	public static native int int igraph_transitivity_local_undirected(const igraph_t *graph,
+	public static native  int int igraph_transitivity_local_undirected(const igraph_t *graph,
 			 igraph_vector_t *res,
 			 const igraph_vs_t vids,
 			 igraph_transitivity_mode_t mode);
@@ -565,7 +603,7 @@ int igraph_k_regular_game(igraph_t *graph,
 		    igraph_real_t *res,
 		    igraph_transitivity_mode_t mode);
 	*/
-	public static native int igraph_transitivity_avglocal_undirected(Pointer graph,
+	public static native  int igraph_transitivity_avglocal_undirected(Pointer graph,
 			DoubleByReference res,
 		    int mode);
 	
