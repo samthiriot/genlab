@@ -11,11 +11,7 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
- ext/jna-3.5.2.jar,
- ext/native/linux/x86/,
- ext/native/linux/x86_64/,
- ext/native/windows/x86/
-Bundle-NativeCode: /ext/native/linux/x86_64/libigraph.so; osname="linux"; processor=x86_64
+ ext/jna-3.5.2.jar
 Export-Package: genlab.igraph,
  genlab.igraph.algos.measure
 
