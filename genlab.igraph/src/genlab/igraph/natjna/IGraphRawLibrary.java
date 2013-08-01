@@ -102,6 +102,7 @@ public class IGraphRawLibrary {
 			
 			isAvailable = true;
 		} catch (RuntimeException e) {
+			GLLogger.errorTech("unable to initialize igraph: "+e.getMessage(), IGraphRawLibrary.class, e);
 			isAvailable = false;
 		}
 	}
