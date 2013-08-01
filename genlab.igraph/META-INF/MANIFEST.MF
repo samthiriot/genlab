@@ -11,7 +11,17 @@ Require-Bundle: org.eclipse.core.runtime,
  org.junit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+<<<<<<< HEAD
+Bundle-ClassPath: .,
+ ext/platform-3.5.2.jar,
+ ext/jna-3.5.2.jar
+Export-Package: com.sun.jna,
+ com.sun.jna.platform,
+ com.sun.jna.ptr,
+ genlab.igraph,
+=======
 Bundle-ClassPath: .
 Export-Package: genlab.igraph,
+>>>>>>> 3fbfdad873adc27dca22f641918838bbfc81a6b5
  genlab.igraph.algos.measure
 
