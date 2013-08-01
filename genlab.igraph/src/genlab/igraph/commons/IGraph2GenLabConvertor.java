@@ -18,7 +18,7 @@ public class IGraph2GenLabConvertor {
 	/**
 	 * Number of edges to create at the same time (should be even)
 	 */
-	public static final int BUFFER_EDGES_CREATION = 1000;
+	public static final int BUFFER_EDGES_CREATION = 2000;
 	
 	public static final String KEY_INFO_CONVERT_GENLAB_TO_IGRAPH = "igraph / count of graph conversions from genlab to igraph";
 	public static final String KEY_INFO_CONVERT_GENLAB_TO_IGRAPH_TIME = "igraph / cumulated time for graph conversions from genlab to igraph (ms)";
