@@ -6,13 +6,12 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: genlab.igraph.Activator
 Bundle-Vendor: Samuel Thiriot
 Require-Bundle: org.eclipse.core.runtime,
+ genlab.jna.corejar,
  genlab.core;bundle-version="0.0.1",
  org.junit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .,
- ext/platform-3.5.2.jar,
- ext/jna-3.5.2.jar
+Bundle-ClassPath: .
 Export-Package: genlab.igraph,
  genlab.igraph.algos.measure
 

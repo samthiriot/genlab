@@ -34,8 +34,8 @@ typedef int    igraph_bool_t;
  */
 public class IGraphRawLibrary {
 
-	public static Boolean isAvailable = null;
-	
+	public static Boolean isAvailable = false;
+
 	static {
 		
 		try {
@@ -76,6 +76,7 @@ public class IGraphRawLibrary {
 					throw new ProgramException("platform not supported: "+os);
 				}
 
+				filenameOriginal = sb.toString();
 				
 			}
 				
@@ -145,6 +146,9 @@ public class IGraphRawLibrary {
 			isAvailable = false;
 		}
 	}
+	
+
+	
 	/*
 	 * int igraph_vector_init      (igraph_vector_t* v, int long size);
      */
