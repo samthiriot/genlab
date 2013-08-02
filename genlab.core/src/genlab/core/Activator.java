@@ -7,6 +7,8 @@ import genlab.core.usermachineinteraction.GLLogger;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
+import org.osgi.framework.BundleListener;
 
 public class Activator implements BundleActivator {
 
@@ -25,14 +27,31 @@ public class Activator implements BundleActivator {
 		Activator.context = bundleContext;
 		GLLogger.infoTech("initializing the genlab core...", getClass());
 		
-		// preload the list of algos
-		ExistingAlgos.getExistingAlgos();
+		// once we will have been started, we will be able to init things
+		bundleContext.addBundleListener(new BundleListener() {
+			
+			@Override
+			public void bundleChanged(BundleEvent event) {
+				
+				if (event.getType() != BundleEvent.STARTED) 
+					return;
+				
+				if (!event.getBundle().getSymbolicName().equals("genlab.core"))
+					return;
+				
+				GLLogger.infoTech("detecting algos and infos", getClass());
+
+				// preload the list of algos
+				ExistingAlgos.getExistingAlgos();
+				
+				// preload the doc
+				AvailableInfo.getAvailableInfo().detectFromExtensions();
+			
+				// preload listeners
+				WorkflowHooks.getWorkflowHooks();
+			}
+		});
 		
-		// preload the doc
-		AvailableInfo.getAvailableInfo().detectFromExtensions();
-	
-		// preload listeners
-		WorkflowHooks.getWorkflowHooks();
 	}
 
 	/*
@@ -41,6 +60,7 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
+		
 	}
 
 }

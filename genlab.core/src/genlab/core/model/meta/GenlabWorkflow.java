@@ -12,6 +12,8 @@ import genlab.core.parameters.Parameter;
 import java.util.Collection;
 import java.util.Set;
 
+import org.osgi.framework.Bundle;
+
 public class GenlabWorkflow implements IGenlabWorkflow {
 
 	public static final String ALGO_CATEGORY = "containers";
@@ -97,6 +99,12 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 
 	@Override
 	public String getImagePath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Bundle getBundle() {
 		// TODO Auto-generated method stub
 		return null;
 	}

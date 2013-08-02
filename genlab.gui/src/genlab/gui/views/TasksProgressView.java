@@ -8,6 +8,7 @@ import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.exec.IComputationProgressSimpleListener;
+import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
 import genlab.gui.actions.ClearProgressAction;
@@ -128,6 +129,11 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		
 		treeWidget.dispose();
 		
+		for (Image img : algo2image.values()) {
+			img.dispose();
+		}
+		algo2image.clear();
+
 		super.dispose();
 	}
 
@@ -202,6 +208,8 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 			
 	}
 	
+	private Map<IAlgo,Image> algo2image = new HashMap<IAlgo, Image>(50);
+	
 	private TreeItem getOrCreateItemForTask(ITask t) {
 		
 		
@@ -231,20 +239,26 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 			// ... its image...
 			if (t instanceof IAlgoExecution) {
 				IAlgoExecution ae = (IAlgoExecution)t;
-				try {
-				String imagePath = ae.getAlgoInstance().getAlgo().getImagePath();
-				if (imagePath != null) {
 				
-					try {
-						// TODO avoid to reload this image each time
-						Image img = new Image(display, imagePath);
-						item.setImage(img);
-					} catch (RuntimeException e) {
-						GLLogger.warnTech("unable to find image "+imagePath, getClass());
+				try {
+					IAlgo algo = ae.getAlgoInstance().getAlgo();
+					String imagePath = algo.getImagePath();
+					Image img = algo2image.get(algo);
+					if (imagePath != null && img == null) {
+					
+						try {
+							// TODO avoid to reload this image each time
+							img = new Image(display, algo.getClass().getClassLoader().getResourceAsStream(imagePath));
+							algo2image.put(algo, img);
+						} catch (RuntimeException e) {
+							GLLogger.warnTech("unable to find image "+imagePath, getClass());
+						}
 					}
-				}
+					if (img != null) {
+						item.setImage(img);
+					}
 				} catch (NullPointerException e) {
-					GLLogger.warnTech("unable to find an image", getClass());
+					GLLogger.warnTech("unable to find an image to display a task", getClass());
 				}
 				
 			}

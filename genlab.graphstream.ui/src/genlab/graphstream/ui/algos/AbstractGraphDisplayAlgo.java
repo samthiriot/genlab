@@ -11,11 +11,14 @@ import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.parameters.FileParameter;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.graphstream.algos.GraphStreamAlgo;
+import genlab.graphstream.ui.Activator;
 import genlab.graphstream.ui.views.AbstractGraphView;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
 
 import java.io.File;
+
+import org.osgi.framework.Bundle;
 
 /**
  * The algorithm that takes a graph as input
@@ -52,6 +55,15 @@ public abstract class AbstractGraphDisplayAlgo extends GraphStreamAlgo {
 
 	}
 	
+	
+	
+	@Override
+	public Bundle getBundle() {
+		return Activator.getDefault().getBundle();
+	}
+
+
+
 	protected abstract String getViewId();
 	
 

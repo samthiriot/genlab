@@ -4,8 +4,11 @@ import genlab.core.usermachineinteraction.GLLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 
 /**
@@ -59,6 +62,7 @@ public class FileUtils {
 	 * @return
 	 */
 	public static final String getExtension(final String filename) {
+		
 		if (filename == null) {
 			return null;
 		}
@@ -88,33 +92,37 @@ public class FileUtils {
 		return filename.lastIndexOf(File.separator);
 	}
 	 
+	 public static boolean copyFiles (InputStream in, File destFile) {
+		 
+		try {
+			OutputStream out = new FileOutputStream(destFile);
+			try {
+				byte[] buffer = new byte[1024];
+				int len;
+				while ((len = in.read(buffer)) != -1) {
+				    out.write(buffer, 0, len);
+				}
+				out.flush();
+
+				return true;
+			} finally {
+				out.close();
+				in.close();
+			}
+		} catch (FileNotFoundException e) {
+			throw new ProgramException("error during file copy: "+e.getMessage(), e);
+		} catch (IOException e) {
+			throw new ProgramException("error during file copy: "+e.getMessage(), e);
+		}
+		
+		
+	 }
+	 
 	 public static boolean copyFiles (File sourceFile, File destFile) {
 		 
 		GLLogger.debugTech("copying file "+sourceFile+" to "+destFile, FileUtils.class);
 		try {
-			if(!destFile.exists()) {
-		        destFile.createNewFile();
-		    }
-
-		    FileChannel source = null;
-		    FileChannel destination = null;
-		    try {
-		        source = new FileInputStream(sourceFile).getChannel();
-		        destination = new FileOutputStream(destFile).getChannel();
-
-		        // previous code: destination.transferFrom(source, 0, source.size());
-		        // to avoid infinite loops, should be:
-		        long count = 0;
-		        long size = source.size();              
-		        while((count += destination.transferFrom(source, count, size-count))<size);
-		    } finally {
-		        if(source != null) {
-		            source.close();
-		        }
-		        if(destination != null) {
-		            destination.close();
-		        }
-		    }
+			 org.apache.commons.io.FileUtils.copyFile(sourceFile, destFile);
 		
 		} catch (IOException e) {
 			GLLogger.errorTech("error during the file copy from "+sourceFile+" to "+destFile+": "+e.getMessage(), FileUtils.class, e);
@@ -126,6 +134,87 @@ public class FileUtils {
 
 	public static File getHomeDirectoryFile() {
 		return new File(System.getProperty("user.home"));
+	}
+
+	public static String osPath2ressourcePath(String filenameOriginal) {
+		if (File.separator == "/")
+			return filenameOriginal;
+		else
+			return filenameOriginal.replace(File.separatorChar, '/');
+		
+	}
+	
+	protected static File genlabTmpDirectory = null;
+	
+	public static File getGenlabTmpDirectory() {
+		
+		if (genlabTmpDirectory == null) {
+		
+			// TODO jvm7: simpler method in java 7
+			
+			GLLogger.debugTech("creating the directory for tmp data...", FileUtils.class);
+			try {
+				// first ask for a tmp file...
+				genlabTmpDirectory = File.createTempFile("genlab_tmpdata", "");
+				// then delete it...
+				genlabTmpDirectory.delete();
+				// then create it as a directory !
+				genlabTmpDirectory.mkdirs();
+			} catch (IOException e) {
+				GLLogger.debugTech("error while creating the directory for tmp data: "+e, FileUtils.class, e);
+				throw new ProgramException("unable to create the tmp directory for genlab",e);
+			}
+			
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+
+				@Override
+				public void run() {
+					FileUtils.clearTmpData();
+				}
+				
+			});
+			// attempt to redirect all the other temp resources there. Not this is not guaranteed
+			try {
+				System.setProperty("java.io.tmpdir", genlabTmpDirectory.getAbsolutePath());
+			} catch (Throwable t) {
+			}
+			
+		}
+		
+		return genlabTmpDirectory;
+	}
+	
+	/**
+	 * Creates a tmp file into a special tmp directory created for genlab (more clean !).
+	 * Ensures the directory structure is less dirty; also ensures files are going to be
+	 * deleted at exit 
+	 * @param prefix
+	 * @param suffix
+	 * @return
+	 */
+	public static File createTmpFile(String prefix, String suffix) {
+		
+		try {
+			return File.createTempFile(
+					prefix, 
+					suffix, 
+					getGenlabTmpDirectory()
+					);
+		} catch (IOException e) {
+			throw new ProgramException("unable to create a tmp file: "+e, e);
+		}
+	}
+	
+	public static void clearTmpData() {
+		if (genlabTmpDirectory != null) {
+			GLLogger.debugTech("clearing genlab tmp data...", FileUtils.class);
+			try {
+				// the sub lib manages the recursive deletion in all cases (symlinks etc)
+				org.apache.commons.io.FileUtils.deleteDirectory(genlabTmpDirectory);
+			} catch (IOException e) {
+				GLLogger.warnTech("unable to clear tmp data :-(", FileUtils.class, e);
+			}
+		}
 	}
 	
 }

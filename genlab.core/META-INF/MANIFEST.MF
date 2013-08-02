@@ -5,7 +5,9 @@ Bundle-SymbolicName: genlab.core;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Activator: genlab.core.Activator
 Bundle-Vendor: Samuel Thiriot
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: org.eclipse.equinox.ds;bundle-version="1.4.1",
+ org.eclipse.equinox.event;bundle-version="1.2.200",
+ org.eclipse.core.runtime,
  org.junit,
  genlab.graphstream.corejar;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -55,6 +57,4 @@ Export-Package: genlab.basics.javaTypes.graphs,
 Bundle-ClassPath: .,
  ext/xstream-1.4.4.jar,
  ext/log4j-1.2.8.jar,
- ext/jna-3.5.2.jar,
- ext/platform-3.5.2.jar,
- ext/gs-core-1.1.2.jar
+ ext/commons-io-2.4.jar

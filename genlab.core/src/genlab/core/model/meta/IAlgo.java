@@ -11,6 +11,8 @@ import genlab.core.parameters.Parameter;
 import java.util.Collection;
 import java.util.Set;
 
+import org.osgi.framework.Bundle;
+
 /**
  * An algo is a basic processing entity that works this way:
  * can be plugged to inputs, can process these inputs to provide outputs.
@@ -82,4 +84,11 @@ public interface IAlgo extends IGenlabResource {
 	 * @return
 	 */
 	public String getImagePath();
+	
+	/**
+	 * Returns the OSGI bundle which provides this algo. Usefull
+	 * to load related infos like images. 
+	 * @return
+	 */
+	public Bundle getBundle();
 }

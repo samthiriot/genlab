@@ -74,6 +74,7 @@ public abstract class BasicAlgo implements IAlgo {
 	 * Should be overriden and implemented if an image is provided
 	 * @return
 	 */
+	@Override
 	public Bundle getBundle() {
 		throw new NotImplementedException();
 	}
@@ -175,6 +176,8 @@ public abstract class BasicAlgo implements IAlgo {
 	@Override
 	public String getImagePath() {
 		
+		return imageRelativePath;
+		/*
 		if (absoluteImagePath == null && imageRelativePath != null) {
 			File file = null;
 			try {
@@ -193,6 +196,7 @@ public abstract class BasicAlgo implements IAlgo {
 		
 		
 		return absoluteImagePath;
+		*/
 	}
 
 }

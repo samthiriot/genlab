@@ -80,7 +80,7 @@ public final class ExistingAlgos {
 				} else {
 					GLLogger.warnTech("detected something which is not an algo: "+o, getClass());
 				}
-			} catch (CoreException e1) {
+			} catch (Throwable e1) {
 				GLLogger.errorTech("error while detecting available algorithms: error with extension point "+e.getName(), getClass(), e1);
 				e1.printStackTrace();
 			}

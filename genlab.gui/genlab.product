@@ -3,13 +3,14 @@
 
 <product name="Genlab" uid="genlab.product.gui" id="genlab.gui.product" application="genlab.gui.application" version="0.0.1" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
       <vmArgs>-Dosgi.requiredJavaVersion=1.5 -Dhelp.lucene.tokenizer=standard -XX:MaxPermSize=256m -Xms40m -Xmx512m</vmArgs>
+      <vmArgsLin>-Dsun.java2d.opengl=True</vmArgsLin>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
+      <vmArgsWin>-Dsun.java2d.opengl=True</vmArgsWin>
    </launcherArgs>
 
    <windowImages/>
@@ -26,10 +27,8 @@
       </win>
    </launcher>
 
-
    <vm>
    </vm>
-
 
    <plugins>
       <plugin id="com.ibm.icu"/>
@@ -249,19 +248,12 @@
    </plugins>
 
    <configurations>
-      <plugin id="genlab.core" autoStart="true" startLevel="1" />
-      <plugin id="genlab.cytoscape" autoStart="true" startLevel="2" />
-      <plugin id="genlab.gephi" autoStart="true" startLevel="2" />
-      <plugin id="genlab.graphiti" autoStart="true" startLevel="3" />
-      <plugin id="genlab.graphstream" autoStart="true" startLevel="2" />
-      <plugin id="genlab.graphstream.corejar" autoStart="true" startLevel="2" />
-      <plugin id="genlab.graphstream.ui" autoStart="true" startLevel="3" />
-      <plugin id="genlab.gui" autoStart="true" startLevel="2" />
-      <plugin id="genlab.igraph" autoStart="true" startLevel="3" />
-      <plugin id="genlab.jna.corejar" autoStart="true" startLevel="2" />
-      <plugin id="genlab.jung" autoStart="true" startLevel="2" />
-      <plugin id="genlab.neo4j" autoStart="true" startLevel="2" />
-      <plugin id="genlab.random.colt" autoStart="true" startLevel="2" />
+      <plugin id="genlab.core" autoStart="true" startLevel="4" />
+      <plugin id="genlab.igraph" autoStart="true" startLevel="5" />
+      <plugin id="genlab.jna.corejar" autoStart="true" startLevel="4" />
+      <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="2" />
+      <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="3" />
+      <plugin id="org.eclipse.equinox.event" autoStart="true" startLevel="3" />
       <property name="sun.java2d.opengl" value="True" />
    </configurations>
 

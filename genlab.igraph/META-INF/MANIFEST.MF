@@ -6,22 +6,50 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: genlab.igraph.Activator
 Bundle-Vendor: Samuel Thiriot
 Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources;bundle-version="3.8.1",
+ org.junit,
  genlab.jna.corejar,
- genlab.core;bundle-version="0.0.1",
- org.junit
+ genlab.core;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-<<<<<<< HEAD
-Bundle-ClassPath: .,
- ext/platform-3.5.2.jar,
- ext/jna-3.5.2.jar
-Export-Package: com.sun.jna,
- com.sun.jna.platform,
- com.sun.jna.ptr,
- genlab.igraph,
-=======
-Bundle-ClassPath: .
-Export-Package: genlab.igraph,
->>>>>>> 3fbfdad873adc27dca22f641918838bbfc81a6b5
- genlab.igraph.algos.measure
-
+Bundle-NativeCode: ext/native/linux/x86/libigraph.so ; 
+ osname=Linux ;
+ processor=x86 , 
+ ext/native/linux/x86_64/libigraph.so ; 
+ osname=Linux ; 
+ processor=x86-64,
+ ext/native/windows/x86/igraph.dll ; 
+ osname=Windows95 ; 
+ osname=Windows98 ;
+ osname=WindowsNT ;
+ osname=WindowsCE ;
+ osname=Windows2000 ;
+ osname=WindowsXP ;
+ osname=Windows2003 ;
+ osname=WindowsVista ;
+ osname=Windows7 ;
+ osname=Windows8 ;
+ osname=WindowsServer2008 ;
+ osname=WindowsServer2012 ;
+ processor=x86,
+ ext/native/windows/x86_64/igraph.dll ; 
+ osname=Windows95 ; 
+ osname=Windows98 ;
+ osname=WindowsNT ;
+ osname=WindowsCE ;
+ osname=Windows2000 ;
+ osname=WindowsXP ;
+ osname=Windows2003 ;
+ osname=WindowsVista ;
+ osname=Windows7 ;
+ osname=Windows8 ;
+ osname=WindowsServer2008 ;
+ osname=WindowsServer2012 ;
+ processor=x86-64,
+ ext/native/macosx/igraph.dylib ; 
+ osname=MacOSX ; 
+ osname=MacOS ; 
+ processor=x86 ;
+ processor=x86-64 ;
+ processor=PowerPC
+ 

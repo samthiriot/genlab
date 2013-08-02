@@ -3,12 +3,10 @@ package genlab.igraph.natjna;
 import genlab.core.commons.FileUtils;
 import genlab.core.commons.ProgramException;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.igraph.Activator;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-
-import org.eclipse.core.runtime.FileLocator;
+import java.io.InputStream;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
@@ -27,7 +25,12 @@ typedef int    igraph_bool_t;
 /**
  * 
  * For debug: VM option jna.debug_load=true .
- * Allows multi thread access
+ * Allows multi thread access.
+ * On how to store a native lib: use OSGI bunder
+ * http://wiki.eclipse.org/Eclipse_Plug-in_Development_FAQ#How_do_I_include_native_libraries_in_my_bundle.3F
+ * http://blog.vogella.com/2010/07/27/osgi/
+ * http://holistictendencies.wordpress.com/2011/03/28/bundle-nativecode-using-platform-specific-dlls-from-osgi/
+ * http://wiki.apidesign.org/wiki/OSGi
  * 
  * @author Samuel Thiriot
  *
@@ -36,22 +39,119 @@ public class IGraphRawLibrary {
 
 	public static Boolean isAvailable = false;
 
+	public static final String LIB_UNDECORATED_NAME = "igraph";
+	
+	
+	
+	public static final String[] LIBRARIES_LINUX = new String[] {
+		"libigraph.so"
+		};
+	public static final String[] LIBRARIES_WINDOWS_32 = new String[] {
+		"cygwin1.dll",
+		"cyggcc_s-1.dll", // needs cygwin1		
+		"cyggmp-10.dll", // needs cygwin1.dll
+		"cygstdc++-6.dll",
+		
+		"cyglzma-5.dll", 
+		"CYGICONV-2.DLL", 
+		"CYGZ.DLL",
+		
+		"cygxml2-2.dll",
+		"igraph.dll"
+		};
+	public static final String[] LIBRARIES_WINDOWS_64 = new String[] {
+
+		"cygwin1.dll",
+		
+		"cyggcc_s-seh-1.dll",
+
+		"cyggmp-10.dll", // needs cygwin1.dll
+		"cygstdc++-6.dll",
+		
+		"cyglzma-5.dll", 
+		"CYGICONV-2.DLL", 
+		"CYGZ.DLL",
+		
+		"cygxml2-2.dll",
+		"igraph.dll"
+		
+		};
+	public static final String[] LIBRARIES_MAC = new String[] {
+		"libigraph.dylib"
+		};
+
+	/**
+	 * Copy a library stored in the original path to the destination folder
+	 * @param originalPath
+	 * @param libraryName
+	 * @param destinationFolder
+	 */
+	public static void copyLibrary(String originalPath, String libraryName, File destinationFolder) {
+		
+		libraryName = libraryName.toLowerCase();
+		GLLogger.traceTech("copy of "+originalPath+"/"+libraryName+" to "+destinationFolder, IGraphRawLibrary.class);
+		InputStream originalDllStream = null;
+		{
+			originalDllStream  = Activator.getDefault().getClass().getClassLoader().getResourceAsStream(
+					FileUtils.osPath2ressourcePath(originalPath)+libraryName
+					);
+		
+			if (originalDllStream == null) {
+				GLLogger.errorTech("unable to find the DLL path: "+libraryName, IGraphRawLibrary.class);
+				return;
+			}
+		
+		}
+		GLLogger.traceTech("found the stream from this ressource", IGraphRawLibrary.class);
+		
+
+		// found; let's copy it somewhere
+		final File destinationFile = new File(FileUtils.getGenlabTmpDirectory(), libraryName);
+		GLLogger.traceTech("will copy the library to tmp file: "+destinationFile.getAbsolutePath(), IGraphRawLibrary.class);
+		
+		FileUtils.copyFiles(originalDllStream, destinationFile);
+		destinationFile.deleteOnExit();
+		
+		GLLogger.traceTech("library copied to: "+destinationFile.getAbsolutePath(), IGraphRawLibrary.class);
+		
+		GLLogger.traceTech("it exists: "+(new File(destinationFile.getAbsolutePath()).exists()), IGraphRawLibrary.class);
+		GLLogger.traceTech("it can be read: "+(new File(destinationFile.getAbsolutePath()).canRead()), IGraphRawLibrary.class);
+		
+		GLLogger.traceTech("calling system.loadlibrary to increase our chances of success", IGraphRawLibrary.class);
+		try {
+			//Thread.sleep(300); // wait for the file to exist ??? 
+			System.load(destinationFile.getAbsolutePath());	
+			//System.loadLibrary(tmpLibraryUndecoratedName);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void copyLibraries(String originalPath, String[] librariesNames, File destinationFolder) {
+		
+		GLLogger.traceTech("according to the OS and architecture, we are going to use the libraries stored in: "+originalPath, IGraphRawLibrary.class);
+
+		for (String libraryName: librariesNames) {
+			copyLibrary(originalPath, libraryName, destinationFolder);
+		}
+	}
+	
+	
 	static {
 		
 		try {
 			// in this block, register which native library is supposed to be directly mapped to this method
 			Native.setProtected(false);
 	
-			String filenameOriginal = null; 
 			{
 				StringBuffer sb = new StringBuffer();
-				sb.append("/ext/native/");
+				sb.append(File.separator).append("ext").append(File.separator).append("native").append(File.separator);
 				// detect system & arch
 				final String os = System.getProperty("os.name").toLowerCase();
 				final String arch = System.getProperty("os.arch").toLowerCase();
-
+				
 				if (os.contains("win")) {
-					sb.append("win/");
+					sb.append("windows").append(File.separator);
 					// windows does not informs the JVM of the good architecture, so correct it.
 					// (sure, I love windows !)
 					// see http://stackoverflow.com/questions/4748673/how-can-i-check-the-bitness-of-my-os-using-java-j2se-not-os-arch
@@ -59,87 +159,89 @@ public class IGraphRawLibrary {
 					final String envArch64 = System.getenv("PROCESSOR_ARCHITEW6432");
 					if (envArch.endsWith("64") || 
 							(envArch64 != null && envArch64.endsWith("64"))
-							)
-						sb.append("x86_64/");
-					else 
-						sb.append("x86/");
-
-					sb.append("igraph.dll");
+							) {
+						sb.append("x86_64").append(File.separator);
+						copyLibraries(sb.toString(), LIBRARIES_WINDOWS_64, FileUtils.getGenlabTmpDirectory());
+					} else { 
+						sb.append("x86").append(File.separator);
+						copyLibraries(sb.toString(), LIBRARIES_WINDOWS_32, FileUtils.getGenlabTmpDirectory());
+					}
+					
+					//sb.append(LIB_UNDECORATED_NAME).append(".dll");
 				} else if (os.contains("nux") || os.contains("nix") || os.contains("aix")) {
-					sb.append("linux/");
+					sb.append("linux").append(File.separator);
 					if (arch.endsWith("64"))
-							sb.append("x86_64/");
+							sb.append("x86_64").append(File.separator);
 					else 
-						sb.append("x86/");
-					sb.append("libigraph.so");
+						sb.append("x86").append(File.separator);
+					//sb.append("lib").append(LIB_UNDECORATED_NAME).append(".so");
+					copyLibraries(sb.toString(), LIBRARIES_LINUX, FileUtils.getGenlabTmpDirectory());
+				} else if (os.contains("mac")) {
+					sb.append("macosx").append(File.separator);
+					//sb.append("lib").append(LIB_UNDECORATED_NAME).append(".dylib");
+					copyLibraries(sb.toString(), LIBRARIES_MAC, FileUtils.getGenlabTmpDirectory());
 				} else {
 					throw new ProgramException("platform not supported: "+os);
 				}
-
-				filenameOriginal = sb.toString();
 				
 			}
-				
-			final String libNameOriginal = "igraph";
 			
-			File originalDll = null;
-			{
-				URL url = genlab.igraph.Activator.getDefault().getBundle().getEntry(filenameOriginal);
-		        URL resolvedURL = null;
-				try {
-					resolvedURL = FileLocator.toFileURL(url);
-				} catch (IOException e) {
-					throw new ProgramException("unable to locale the root of the plugin; icons will not be added for algorithms", e);
-				}
-				        
-				//File originalDll = Activator.getDefault().getBundle().
-				originalDll = new File(resolvedURL.getFile());
-				if (!originalDll.exists() || !originalDll.isFile() || !originalDll.canRead())
-					throw new ProgramException("unable to read the igraph shared library from the file "+filenameOriginal);
-		
-			}
-			
-	
-			// found; let's copy it somewhere
-			File copy;
-			
-			final String prefix = FileUtils.extractFilenameWithoutExtension(filenameOriginal);
-			final String suffix = "."+FileUtils.getExtension(filenameOriginal);
-			try {
-				copy = File.createTempFile(
-						prefix, 
-						suffix
-						);
-			} catch (IOException e) {
-				throw new ProgramException("unable to copy the native library to a temporary space", e);
-			}
-
-			FileUtils.copyFiles(originalDll, copy);
-	
-			String tmpLibraryUndecoratedName = copy.getName();
-			tmpLibraryUndecoratedName = libNameOriginal+tmpLibraryUndecoratedName.substring(prefix.length(), tmpLibraryUndecoratedName.length()-suffix.length());
+						
+			String tmpLibraryUndecoratedName = LIB_UNDECORATED_NAME;
 		
 			
-			GLLogger.debugTech("adding as a search path :"+FileUtils.extractPath(copy.getAbsolutePath())+" for library named "+tmpLibraryUndecoratedName, IGraphRawLibrary.class);
-			NativeLibrary.addSearchPath(tmpLibraryUndecoratedName, FileUtils.extractPath(copy.getAbsolutePath()));
+			GLLogger.debugTech("adding as a search path :"+FileUtils.getGenlabTmpDirectory().getAbsolutePath()+" for library named "+tmpLibraryUndecoratedName, IGraphRawLibrary.class);
+			NativeLibrary.addSearchPath(tmpLibraryUndecoratedName, FileUtils.getGenlabTmpDirectory().getAbsolutePath());
+			// change the JNA path
 			try{
 	    		final String previousValue = System.getProperty("jna.library.path");
 	    		StringBuffer sb = new StringBuffer();
-	    		sb.append(tmpLibraryUndecoratedName).append(File.pathSeparator);
+	    		sb.append(FileUtils.getGenlabTmpDirectory().getAbsolutePath()).append(File.pathSeparator);
 	    		// add previous value
 	    		if (previousValue != null)
 	    			sb.append(previousValue);
 	    		// actually set the value
 	    		System.setProperty("jna.library.path", sb.toString());
+	    		GLLogger.traceTech("jna.library.path is now: "+System.getProperty("jna.library.path"), IGraphRawLibrary.class);
 			} catch(IllegalStateException ise){
 	    		GLLogger.errorTech(
 	    				"error during the initialization of the system property jna.library.path", 
 	    				IGraphRawLibrary.class
 	    				);
 	    	}
+			try{
+	    		final String previousValue = System.getProperty("java.library.path");
+	    		StringBuffer sb = new StringBuffer();
+	    		sb.append(FileUtils.getGenlabTmpDirectory().getAbsolutePath()).append(File.pathSeparator);
+	    		// add previous value
+	    		if (previousValue != null)
+	    			sb.append(previousValue);
+	    		// actually set the value
+	    		System.setProperty("java.library.path", sb.toString());
+	    		GLLogger.traceTech("java.library.path is now: "+System.getProperty("java.library.path"), IGraphRawLibrary.class);
+			} catch(IllegalStateException ise){
+	    		GLLogger.errorTech(
+	    				"error during the initialization of the system property java.library.path", 
+	    				IGraphRawLibrary.class
+	    				);
+	    	}
 			
-			Native.register(tmpLibraryUndecoratedName);
 			
+			
+			
+			GLLogger.traceTech("registering the library for JNA", IGraphRawLibrary.class);
+			Native.register(LIB_UNDECORATED_NAME);
+			
+			GLLogger.debugTech("library loaded", IGraphRawLibrary.class);
+
+			/*
+			// is osgi aware :-)
+			System.err.println("attempting to system load library "+LIB_UNDECORATED_NAME);
+		    System.loadLibrary(LIB_UNDECORATED_NAME);
+			// not osgi aware, but will found the library because of the previous call
+		    System.err.println("attempting to JNA register library "+LIB_UNDECORATED_NAME);
+			Native.register(LIB_UNDECORATED_NAME);
+			*/
 			isAvailable = true;
 		} catch (RuntimeException e) {
 			GLLogger.errorTech("unable to initialize igraph: "+e.getMessage(), IGraphRawLibrary.class, e);

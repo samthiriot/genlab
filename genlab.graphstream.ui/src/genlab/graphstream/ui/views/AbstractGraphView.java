@@ -160,7 +160,7 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 	}
 	
 	protected void configureViewer(Viewer gsViewer) {
-		gsViewer.disableAutoLayout();
+		//gsViewer.disableAutoLayout();
 		gsViewer.setCloseFramePolicy(CloseFramePolicy.CLOSE_VIEWER);
 	}
 	
@@ -183,7 +183,7 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 				
 				messages.traceTech("create the view...", getClass());
 				gsView = gsViewer.addDefaultView(false); // false indicates "no JFrame".
-				//gsView.setDoubleBuffered(false);
+				gsView.setDoubleBuffered(true); // test for windows !
 				//gsView.setIgnoreRepaint(true);
 				gsView.setBackground(Color.CYAN);
 				

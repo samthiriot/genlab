@@ -10,8 +10,9 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.graphiti.ui.internal.GraphitiUIPlugin;
 import org.eclipse.graphiti.ui.platform.AbstractImageProvider;
+import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
  * Provides images for our use of graphiti.
@@ -68,6 +69,7 @@ public class GraphitiImageProvider extends AbstractImageProvider {
         
         String algoImg = null;
 
+        /*
         // 
     	File directory = null;
         {
@@ -91,16 +93,36 @@ public class GraphitiImageProvider extends AbstractImageProvider {
 	        	directory.mkdirs();
 	        }
         }
+        */
         
         for (IAlgo algo : ExistingAlgos.getExistingAlgos().getAlgos()) {
         	algoImg = algo.getImagePath();
         	if (algoImg != null) {
         		GLLogger.traceTech("attempting to load image for algo "+algo.getName()+": "+algoImg, getClass());
+        		
         		// ensure this image can be readen
+        		/*
         		if (!ensureFileExists(algo.getName(),  algoImg)) {
         			GLLogger.warnTech("unable to find icon "+algoImg+"; this picture will not be available", getClass());
         			continue;
         		}
+        		*/
+        		
+        		// open this image !
+        		URL url = algo.getBundle().getEntry(
+						algoImg
+						);
+        		if (url == null) {
+        			GLLogger.warnTech("the bundle was unable to provide an URL for image: "+algoImg+"; this image will not be added", getClass());
+        			continue;
+        		}        			
+        		addImageFilePath(
+        				getImageIdForAlgo(algo), 
+        				url.toString()
+        				);
+        		
+        		/*
+        		// 
         		File filedest = new File(directory, FileUtils.extractFilename(FileUtils.extractFilename(algoImg)));
         		boolean copied = FileUtils.copyFiles(
         				new File(algoImg), 
@@ -115,6 +137,7 @@ public class GraphitiImageProvider extends AbstractImageProvider {
         		GLLogger.debugTech("adding "+localPluginFile+" for "+getImageIdForAlgo(algo), getClass());
 
         		addImageFilePath(getImageIdForAlgo(algo), localPluginFile);
+        		*/
         	}
         }
         
