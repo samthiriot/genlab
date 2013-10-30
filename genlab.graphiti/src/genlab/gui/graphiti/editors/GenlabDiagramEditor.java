@@ -19,6 +19,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -35,7 +36,6 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 
 	public static final String EDITOR_ID = "genlab.gui.graphiti.editors.GenlabDiagramEditor";
 	
-	private GenlabDomainModelChangeListener domainModelListener = null;
 	private Diagram diagram = null;
 	private String filename  = null;
 	
@@ -54,18 +54,11 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 
 	
 	@Override
-	protected void registerBusinessObjectsListener() {
-		domainModelListener = new GenlabDomainModelChangeListener(this);
-		// TODO add this as a listener of workflows
+	protected DiagramBehavior createDiagramBehavior() {
+
+		return new GenlabDiagramBehavior(this);
 	}
-	
-	@Override
-	protected void unregisterBusinessObjectsListener() {
-		if (domainModelListener != null) {
-			// TODO remove 
-			domainModelListener = null;
-		}
-	}
+
 	
 	/**
 	 * Is overridden only to retrieve the file
