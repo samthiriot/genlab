@@ -1,7 +1,6 @@
 package genlab.gui.graphiti.editors;
 
 import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -10,7 +9,6 @@ import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
 import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
 import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
 import genlab.gui.graphiti.genlab2graphiti.Genlab2GraphitiUtils;
-import genlab.gui.graphiti.genlab2graphiti.GenlabDomainModelChangeListener;
 import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
 
 import java.io.File;
@@ -35,7 +33,6 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 
 	public static final String EDITOR_ID = "genlab.gui.graphiti.editors.GenlabDiagramEditor";
 	
-	private GenlabDomainModelChangeListener domainModelListener = null;
 	private Diagram diagram = null;
 	private String filename  = null;
 	
@@ -52,20 +49,6 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 		GLLogger.debugTech("Diagram editor created.", getClass());
 	}
 
-	
-	@Override
-	protected void registerBusinessObjectsListener() {
-		domainModelListener = new GenlabDomainModelChangeListener(this);
-		// TODO add this as a listener of workflows
-	}
-	
-	@Override
-	protected void unregisterBusinessObjectsListener() {
-		if (domainModelListener != null) {
-			// TODO remove 
-			domainModelListener = null;
-		}
-	}
 	
 	/**
 	 * Is overridden only to retrieve the file
