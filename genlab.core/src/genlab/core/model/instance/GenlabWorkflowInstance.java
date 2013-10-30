@@ -577,5 +577,4 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	}
 
 	
-	
 }

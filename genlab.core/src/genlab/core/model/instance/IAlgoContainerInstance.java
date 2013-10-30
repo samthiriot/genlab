@@ -19,5 +19,11 @@ public interface IAlgoContainerInstance extends IAlgoInstance {
 	public void addChildren(IAlgoInstance child);
 	
 	public void removeChildren(IAlgoInstance child);
+
+	public Collection<IAlgoInstance> getAlgoInstancesDependingToOurChildren();
+
+	public Collection<IConnection> getConnectionsComingFromOutside();
 	
+	public Collection<IConnection> getConnectionsGoingToOutside();
+
 }

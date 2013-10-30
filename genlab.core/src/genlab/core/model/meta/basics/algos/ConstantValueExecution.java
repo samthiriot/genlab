@@ -72,7 +72,7 @@ public class ConstantValueExecution<JavaType> extends AbstractAlgoExecution {
 
 	@Override
 	public String getName() {
-		return "execute constant";
+		return "execute \""+algoInst.getName()+"\"";
 	}
 
 	@Override

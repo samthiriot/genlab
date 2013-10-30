@@ -5,16 +5,22 @@ import genlab.core.exec.IContainerTask;
 import genlab.core.exec.IExecution;
 import genlab.core.exec.ITask;
 import genlab.core.exec.Runner;
+import genlab.core.model.DebugGraphviz;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
-public class WorkflowExecution extends AbstractAlgoExecution implements IContainerTask, IComputationProgressSimpleListener {
+public class WorkflowExecution 
+						extends AbstractAlgoExecution 
+						implements 	IContainerTask, 
+									IComputationProgressSimpleListener{
 
 	private final IGenlabWorkflowInstance workflowInstance;
 	protected Map<IAlgoInstance, IAlgoExecution> instance2execution = null;
@@ -44,34 +50,72 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 		
 		instance2execution = new HashMap<IAlgoInstance, IAlgoExecution>(workflowInstance.getAlgoInstances().size());
 
-		// first create execution for each sub algo
+		// first create execution for each direct sub algo
 		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
-						
-			messages.traceTech("creating the execution task for algo "+sub, getClass());
-			IAlgoExecution subExec = sub.execute(exec);
+
+			if (sub.getContainer() != null && sub.getContainer() != this) {
+				// ignored ! this is contained in something, and this something will be in charge of creating execs
+				
+			} else {
+				messages.traceTech("creating the execution task for algo "+sub, getClass());
+				IAlgoExecution subExec = sub.execute(exec);
+				
+				if (subExec == null)
+					throw new ProgramException("an algorithm was unable to prepare an execution "+sub);
+				
+				instance2execution.put(
+						sub, 
+						subExec
+						);
+			}
+		}
+		
+		// special case of container algos: for each container exec, assume it represents the 
+		// exec instance for each children.
+		// so all the algos interested in the results of containers' child
+		// will actually listen for the container
+		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
+
+			if (sub.getContainer() != null && sub.getContainer() != this) {
+				// ignored ! this is contained in something, and this something 
+				instance2execution.put(
+						sub, 
+						instance2execution.get(sub.getContainer())
+						);
+			} 
+		}
+		
+		// display
+		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
+			System.err.print(sub.getName());
 			
-			if (subExec == null)
-				throw new ProgramException("an algorithm was unable to prepare an execution "+sub);
+			IAlgoExecution exec = instance2execution.get(sub);
+			if (exec != null) {
+				System.err.print("\t->\t");
+				System.err.print(exec.getName());
+			} else {
+				System.err.print("\t->\t???");
+			}
 			
-			instance2execution.put(
-					sub, 
-					subExec
-					);
-			
+			System.err.println();
 		}
 		
 		// now add the parent relationship to each task 
-		// (something the parent is a container algo; 
+		// (sometimes the parent is a container algo; 
 		//  else it is the workflow that, that is "this")
 		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
 			
 			IAlgoExecution subExec = instance2execution.get(sub);
 			
 			if (sub.getContainer() != null) {
+				// container will manage that itself.
+				
+				/* TODO for container exec !
 				// tasks with a container will have a container task
 				IContainerTask subExecContainer = (IContainerTask)instance2execution.get(sub.getContainer());
 				subExec.setParent(subExecContainer);
 				subExecContainer.addTask(subExec);
+				*/
 			} else {
 				// standard: 
 				subExec.setParent(this);
@@ -102,7 +146,12 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 		
 		// call each algo and ask him to create its executable connections
 		Map<IAlgoInstance, IAlgoExecution> unmodifiableMap = Collections.unmodifiableMap(instance2execution);
-		for (IAlgoExecution exec : instance2execution.values()) {
+		for (IAlgoExecution exec : new HashSet<IAlgoExecution>(instance2execution.values())) {
+			
+			// do not create links for the algos contained elsewhere (this is the responsability of the container)
+			if (exec.getAlgoInstance().getContainer() != null)
+				continue;
+	
 			
 			messages.traceTech("init links for "+exec, getClass());
 			exec.initInputs(unmodifiableMap);
@@ -119,6 +168,8 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 		ExecutionHooks.singleton.notifyParentTaskAdded(exec);
 	
 		r = new Runner(exec, progress, instance2execution.values(), this);
+		DebugGraphviz.exportExecutionNetwork("/tmp/test.dot", this);
+
 		r.run();
 		
 		// plan the execution time
@@ -137,6 +188,7 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 		// TODO
 		
 		// build the execution graph
+		
 		
 		
 		
@@ -210,6 +262,7 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 
 	@Override
 	public void computationStateChanged(IComputationProgress progress) {
+		
 		switch (progress.getComputationState()) {
 		case FINISHED_CANCEL:
 		case FINISHED_FAILURE:
@@ -236,6 +289,24 @@ public class WorkflowExecution extends AbstractAlgoExecution implements IContain
 	@Override
 	public int getThreadsUsed() {
 		return 0;
+	}
+
+
+
+	@Override
+	public void collectEntities(
+			Set<IAlgoExecution> execs,
+			Set<ConnectionExec> connections
+			) {
+		
+		super.collectEntities(execs, connections);
+		
+		// also collect my subentities
+		for (IAlgoExecution e: instance2execution.values()) {
+			e.collectEntities(execs, connections);
+		}
+		
+		
 	}
 
 

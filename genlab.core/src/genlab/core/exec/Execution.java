@@ -19,6 +19,8 @@ public class Execution implements IExecution {
 	
 	private Map<String, Object> key2value = new HashMap<String, Object>(30);
 	
+	private Runner runner = null;
+	
 	public Execution() {
 		
 		// init stamp 
@@ -26,6 +28,8 @@ public class Execution implements IExecution {
 		
 		// create messages 
 		messages = new ListOfMessages();
+		
+		this.runner = runner;
 		
 		// and register them !
 		ListsOfMessages.registerListOfMessages(getId(), messages);
@@ -108,7 +112,14 @@ public class Execution implements IExecution {
 
 	}
 
-	
+	public Runner getRunner() {
+		return runner;
+	}
+
+	@Override
+	public void setRunner(Runner r) {
+		this.runner = r;
+	}
 
 
 }

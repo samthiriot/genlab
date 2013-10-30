@@ -52,6 +52,8 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	
 	public Runner(IExecution execution, IComputationProgress progress, Collection<IAlgoExecution> allTasks, IContainerTask task) {
 		
+		execution.setRunner(this);
+		
 		this.progress = progress;
 		
 		this.execution = execution;
@@ -68,11 +70,35 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		setDaemon(true);
 	}
 	
-	protected void addTask(IAlgoExecution exec) {
+	public void addTask(IAlgoExecution exec) {
 		
-		all.add(exec);
+		synchronized (all) {
+			all.add(exec);
+		
+			switch (exec.getProgress().getComputationState()) {
+			case READY:
+				ready.add(exec);
+				break;
+			case CREATED:
+			case WAITING_DEPENDENCY:
+				notReady.add(exec);
+				break;
+			case FINISHED_CANCEL:
+			case FINISHED_FAILURE:
+			case FINISHED_OK:
+				// adding a task at this state is... weird.
+				done.add(exec);
+				break;
+			case STARTED:
+				// weird too
+				running.add(exec);
+				break;
+			default: 
+				throw new ProgramException("state of this task unknown: "+exec.getProgress().getComputationState());
+			}
+		}
+		
 		//ExecutionHooks.singleton.notifyParentTaskAdded(exec);
-
 		
 	}
 
@@ -99,6 +125,9 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		}
 	}
 	
+	/**
+	 * Called at the begining of the start method
+	 */
 	protected void initRun() {
 
 		// prepare our task
@@ -217,19 +246,21 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				@Override
 				public void uncaughtException(Thread arg0, Throwable arg1) {
 					
-					e2.getProgress().setComputationState(ComputationState.FINISHED_FAILURE);
-
 					arg1.printStackTrace();
 					messages.errorUser(
-							"this algorithm ended with an error: "+arg1.getMessage(), 
+							"thie algorithm \""+e2.getAlgoInstance().getName()+"\" ended with an error: "+arg1.getMessage(), 
 							getClass(), 
 							arg1
 							);
 					messages.warnTech(
-							"an algorithm raised an error that was not properly catched at its level: "+e2+", "+arg1.getClass(), 
+							"an algorithm "+e2.getAlgoInstance().getAlgo()+" raised an error that was not properly catched at its level: "+e2+", "+arg1.getClass(), 
 							getClass(),
 							arg1
 							);
+					
+					
+					e2.getProgress().setComputationState(ComputationState.FINISHED_FAILURE);
+
 				}
 			});
 			
@@ -267,9 +298,8 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		while (!cancel) {
 			synchronized (all) {
 				if (running.isEmpty() && ready.isEmpty() && notReady.isEmpty()) {
-					messages.infoUser("all tasks done", getClass());
+					messages.infoUser("all tasks done. ", getClass());
 					execution.displayTechnicalInformationsOnMessages();
-					return;
 				}
 			}
 			try {
@@ -308,8 +338,10 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		IAlgoExecution e = progress.getAlgoExecution();
 	
 		// check event
-		if (!all.contains(e))
-			throw new ProgramException("oops, I receive events which are not really of interest to me !");
+		if (!all.contains(e)) {
+			all.add(e);
+		}
+			//throw new ProgramException("oops, I receive events which are not really of interest to me, like: "+progress.getAlgoExecution().getAlgoInstance());
 		
 		switch (progress.getComputationState()) {
 		

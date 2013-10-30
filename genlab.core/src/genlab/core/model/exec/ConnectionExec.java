@@ -29,6 +29,12 @@ public class ConnectionExec implements IComputationProgressSimpleListener {
 		if (check && (c.getFrom().getAlgoInstance() != from.getAlgoInstance() || c.getTo().getAlgoInstance() != to.getAlgoInstance()))
 			throw new ProgramException("inconsistant executable connection");
 		
+		if (from == to)
+			throw new ProgramException("inconsistant executable connection (short loop)");
+		
+		if (from == null || to == null)
+			throw new ProgramException("inconsistant executable connection (null)");
+		
 		// store them
 		this.c = c;
 		this.from = from;

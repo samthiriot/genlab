@@ -14,6 +14,17 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+/**
+ * A task container which executes subtasks by creating one unique execution graph, then executes them.
+ * 
+ * This version is now deprecated
+ * 
+ * 
+ * 
+ * @deprecated
+ * @author Samuel Thiriot
+ *
+ */
 public abstract class AbstractContainerExecution extends AbstractAlgoExecution implements IContainerTask {
 
 	private final IAlgoContainerInstance algoInst;

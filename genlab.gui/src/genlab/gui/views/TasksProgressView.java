@@ -1,5 +1,6 @@
 package genlab.gui.views;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.IContainerTask;
 import genlab.core.exec.ITask;
 import genlab.core.exec.ITaskManagerListener;
@@ -211,7 +212,6 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 	private Map<IAlgo,Image> algo2image = new HashMap<IAlgo, Image>(50);
 	
 	private TreeItem getOrCreateItemForTask(ITask t) {
-		
 		
 		TreeItem item = task2item.get(t);
 		

@@ -35,6 +35,20 @@ public class ContainerTask implements IContainerTask {
 		}
 	}
 
+
+	@Override
+	public void kill() {
+		// kill contained subtasks
+		for (ITask t: tasks) {
+			try {
+				t.kill();
+			} catch (RuntimeException e) {
+				GLLogger.errorTech("error while cancelling task "+t+": "+e.getMessage(), getClass(), e);
+			}
+		}
+	}
+	
+
 	@Override
 	public String getName() {
 		return name;
@@ -85,7 +99,6 @@ public class ContainerTask implements IContainerTask {
 		else 
 			return parent.getTopParent();
 	}
-	
 
 
 }
