@@ -36,6 +36,7 @@ public class ConnectionExecFromIterationToChild extends AbstractConnectionExec {
 	@Override
 	public void computationStateChanged(IComputationProgress progress) {
 		
+		/*
 		if (progress != from.getProgress())
 			return;	// no reason for this case...
 
@@ -43,8 +44,7 @@ public class ConnectionExecFromIterationToChild extends AbstractConnectionExec {
 		
 		if (state != ComputationState.STARTED) 
 			return;
-		
-		
+				
 		// retrieve the value
 		try {
 			value = from.getResult().getResults().get(c.getFrom());
@@ -58,7 +58,7 @@ public class ConnectionExecFromIterationToChild extends AbstractConnectionExec {
 
 		// warn children
 		to.notifyInputAvailable(c.getTo());
-
+	*/
 		
 	}
 	

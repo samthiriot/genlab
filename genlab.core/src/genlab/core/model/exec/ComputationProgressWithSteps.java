@@ -26,7 +26,7 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 	private IAlgo algo = null;
 	private ComputationState state = null;
 	// locks the state. Used to avoid the state to be changed while we are dispatching the event on state change.
-	private Object stateLock = new Object();
+	private final Object stateLock = new Object();
 	
 	private String currentTaskName = "";
 	
@@ -83,12 +83,12 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 
 	@Override
 	public Long getProgressTotalToDo() {
-		return total;
+		return (total == null?0l:total); // TODO more efficient
 	}
 
 	@Override
 	public Long getProgressDone() {
-		return made;
+		return (made == null?0l:made); // TODO more efficient
 	}
 
 	@Override
@@ -153,6 +153,9 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 		
 		if (state == this.state)
 			return; // quick exit
+		
+		if (state == null)
+			throw new ProgramException("state should not be null");
 		
 		synchronized (stateLock) {
 

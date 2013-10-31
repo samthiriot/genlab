@@ -69,19 +69,29 @@ public abstract class AbstractContainerExecution
 			return; 
 					
 		// ensure all tasks are done !
-		ComputationState ourState = null;
 		synchronized (tasks) {
 			
+			ComputationState ourState = null;
+			boolean somethingNotFinished = false;
 			boolean somethingFailed = false;
 			boolean somethingCanceled = false;
+			long totalToDo = 0;
+			long totalDone = 0;
 			
 			loop: for (ITask sub: tasks) {
 				
 				final ComputationState subState = sub.getProgress().getComputationState(); 
 				
+				totalToDo ++;
+				totalToDo += sub.getProgress().getProgressTotalToDo();
+								
 				if (!subState.isFinished()) {
-					return; // don't change our status as long as all the tasks are not finished
-				} 
+					somethingNotFinished = true;
+					totalDone += sub.getProgress().getProgressDone();
+					continue;
+				}  else {
+					totalDone ++;
+				}
 				
 				switch (receivedState) {
 				case FINISHED_FAILURE:
@@ -101,16 +111,23 @@ public abstract class AbstractContainerExecution
 			
 			// if we reached this step, then all our children have finished.
 			
-			if (somethingFailed)
-				ourState = ComputationState.FINISHED_FAILURE;
-			else if (somethingCanceled)
-				ourState = ComputationState.FINISHED_CANCEL;
-			else 
-				ourState = ComputationState.FINISHED_OK;
+			if (somethingNotFinished) {
+				this.progress.setProgressTotal(totalToDo);
+				this.progress.setProgressMade(totalDone);
+			} else { 
+				if (somethingFailed)
+					ourState = ComputationState.FINISHED_FAILURE;
+				else if (somethingCanceled)
+					ourState = ComputationState.FINISHED_CANCEL;
+				else 
+					ourState = ComputationState.FINISHED_OK;
+				
+				messages.traceTech("all subs terminated; should transmit results", getClass());
+				this.progress.setComputationState(ourState);
+				
+			}
 		}
 			
-		messages.traceTech("all subs terminated; should transmit results", getClass());
-		this.progress.setComputationState(ourState);
 		
 		// suggest a garbage collecting now
 		Runtime.getRuntime().gc();
