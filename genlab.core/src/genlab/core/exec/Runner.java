@@ -25,23 +25,34 @@ import java.util.Set;
  */
 public class Runner extends Thread implements IComputationProgressSimpleListener {
 	
-	final static int MAX_THREADS = 7;
+	final static int MAX_THREADS = 3;
 	
-	final Set<IAlgoExecution> all = new HashSet<IAlgoExecution>();
+	final static int START_TASKS_SIZE = 500;
+	
+	final Set<IAlgoExecution> all = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
 
 	final Set<IAlgoExecution> roots = new HashSet<IAlgoExecution>();;
 
-	final Set<IAlgoExecution> done = new HashSet<IAlgoExecution>();
-	final Set<IAlgoExecution> ready = new HashSet<IAlgoExecution>();
-	final Set<IAlgoExecution> running = new HashSet<IAlgoExecution>();
-	final Set<IAlgoExecution> notReady = new HashSet<IAlgoExecution>();	
+	final Set<IAlgoExecution> done = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
+	final Set<IAlgoExecution> ready = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
+	final Set<IAlgoExecution> running = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
+	final Set<IAlgoExecution> notReady = new HashSet<IAlgoExecution>(START_TASKS_SIZE);	
 	
-	final Map<IAlgoExecution, Thread> exec2thread = new HashMap<IAlgoExecution, Thread>();
+	final Set<ITasksDynamicProducer> tasksProducers = new HashSet<ITasksDynamicProducer>();
 	
+	final Map<IAlgoExecution, Thread> exec2thread = new HashMap<IAlgoExecution, Thread>(START_TASKS_SIZE);
+	
+	/**
+	 * The number of threads used currently. Based on the number of thread displayed by tasks, 
+	 * not an objective measure.
+	 */
 	private int usedThreads = 0;
 	
 	IComputationProgress progress;
 	
+	/**
+	 * If true, all tasks should be canceled as soon as possible.
+	 */
 	boolean cancel = false;
 	
 	private ListOfMessages messages = null;
@@ -101,9 +112,13 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		exec.getProgress().addListener(this);
 		
 		// wake up the thread an make him think about the idea of working.
-		attemptToDoThings();
+		wakeUp();
 		
 		//ExecutionHooks.singleton.notifyParentTaskAdded(exec);
+		
+	}
+	
+	protected void wakeUp() {
 		
 	}
 
@@ -195,17 +210,42 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		
 	}
 	
-	
+	protected boolean proposeDynamicProducersToWork() {
+		
+		synchronized (tasksProducers) {
+			
+			if (tasksProducers.isEmpty())
+				return false;
+			
+			messages.debugTech("proposing to tasks producers to submit novel tasks...", getClass());
+			
+			ITasksDynamicProducer producer = tasksProducers.iterator().next();
+			
+			messages.debugTech("proposing to task producer "+producer+" to submit novel tasks...", getClass());
+				
+			IAlgoExecution t = producer.provideMoreTasks();
+					
+			if (t == null) {
+				tasksProducers.remove(producer);
+				messages.debugTech("task producer "+producer+" has no more tasks", getClass());
+				return false;
+			} else {
+				addTask(t);
+				return true;
+			}
+			
+		}
+	}
 	
 	protected boolean attemptToDoSomething() {
 		
-		messages.traceTech("attempting to do something", getClass());
+		//messages.traceTech("attempting to do something", getClass());
 		
-		printState();
+		//printState();
 		
 		// are there enough resources ?
 		if (usedThreads >= MAX_THREADS) {
-			messages.debugTech("all threads used, wait...", getClass());
+			//messages.debugTech("all threads used, wait...", getClass());
 			return false;	// threads limit reached, do nothing.
 		}
 		
@@ -215,11 +255,14 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		synchronized (all) {
 			
 			if (ready.isEmpty()) {
-				messages.traceTech("nothing ready, wait...", getClass());
+				
+				//messages.traceTech("nothing ready, wait...", getClass());
 				if (running.isEmpty()) {
 					// TODO wait, nothing is gonna happen there ?
 					
 				}
+				
+				
 				return false; // nothing ready for run, leave.
 			}
 			
@@ -234,8 +277,9 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				t.setDaemon(false);
 				t.setPriority(NORM_PRIORITY);
 				exec2thread.put(e, t);
-				usedThreads += e.getThreadsUsed();
 			}
+			usedThreads += e.getThreadsUsed();
+			messages.debugUser("now using "+usedThreads+" over "+MAX_THREADS, getClass());
 		}
 		
 		if (t==null) {
@@ -293,18 +337,35 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	public void attemptToDoThings() {
 		
 		if (doingSomething) { // avoids simultaneous execs
-			messages.debugTech("already doing something.", getClass());
+			messages.debugTech("already doing something !", getClass());
 			return;
 		}
 		
-		doingSomething = true;
-		
-		messages.debugTech("trying to do things.", getClass());
-		while (attemptToDoSomething()) {}
-		messages.debugTech("nothing to do yet.", getClass());
+		try {
+			
+			
+			doingSomething = true;
+			
+			while (true) {
 
-		doingSomething = false;
+					//messages.debugTech("trying to do things.", getClass());
+				while (attemptToDoSomething()) {}
+				//messages.debugTech("nothing to do yet.", getClass());
 		
+				// when nothing more can be done, we may propose novel tasks :-) 
+				//System.err.println("threads used: "+usedThreads);
+				synchronized (all) {
+					if (ready.isEmpty() && usedThreads < MAX_THREADS) {	// well, we could create new tasks !
+						if (!proposeDynamicProducersToWork())
+							break;
+					}
+				}
+			}
+			
+			
+		} finally {
+			doingSomething = false;
+		}
 	}
 	
 	public void run() {
@@ -313,27 +374,38 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		
 		initRun();
 	
-		attemptToDoThings();
 	
 		while (!cancel) {
 			synchronized (all) {
+				
 				if (running.isEmpty() && ready.isEmpty() && notReady.isEmpty()) {
+					
+					// really, there is nothing to do.
+					
 					if (displayMessage) {
 						messages.infoUser("all tasks done. ", getClass());
 						execution.displayTechnicalInformationsOnMessages();
 						displayMessage = false;
-					}					
+					}		
+				
+				
 				} else {
 					displayMessage = true;
+					
+					attemptToDoThings();
+					
+					try {
+						//GLLogger.debugTech("wait", getClass());
+						Thread.sleep(500);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+
 				}
 			}
-			try {
-				//GLLogger.debugTech("wait", getClass());
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			
 		}
 		
 	}
@@ -377,12 +449,14 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		case FINISHED_CANCEL:
 			messages.traceTech("task finished: "+e+" ("+progress.getDurationMs()+" ms)", getClass());
 			synchronized (all) {
-				running.remove(e);
-				done.add(e);
-				exec2thread.remove(e);
-				usedThreads -= e.getThreadsUsed();
+				if (running.contains(e)) {
+					running.remove(e);
+					done.add(e);
+					exec2thread.remove(e);
+					usedThreads -= e.getThreadsUsed();
+				}
 			}
-			attemptToDoThings();
+			wakeUp();
 			break;
 			
 		// a task was waiting for dependancy, and received all inputs
@@ -392,7 +466,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				notReady.remove(e);
 				ready.add(e);
 			}
-			attemptToDoThings();
+			wakeUp();
 			break;
 			
 		case WAITING_DEPENDENCY:
@@ -415,5 +489,12 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	public void kill() {
 		// TODO
 		cancelTasks();
+	}
+	
+	public void registerTasksDynamicProducer(ITasksDynamicProducer producer) {
+		synchronized (tasksProducers) {
+			messages.debugTech("registered a novel tasks producer: "+producer, getClass());
+			tasksProducers.add(producer);
+		}
 	}
 }

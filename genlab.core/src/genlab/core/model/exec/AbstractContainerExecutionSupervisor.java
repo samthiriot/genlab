@@ -3,6 +3,7 @@ package genlab.core.model.exec;
 import genlab.core.exec.IContainerTask;
 import genlab.core.exec.IExecution;
 import genlab.core.exec.ITask;
+import genlab.core.exec.ITasksDynamicProducer;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
@@ -13,6 +14,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import javax.security.auth.Subject;
+
 /**
  * A basis for container algo executions. 
  * The supervisor starts subexecution iterations. 
@@ -22,7 +25,9 @@ import java.util.Set;
  * @author Samuel Thiriot
  *
  */
-public abstract class AbstractContainerExecutionSupervisor extends AbstractContainerExecution  {
+public abstract class AbstractContainerExecutionSupervisor 
+							extends AbstractContainerExecution 
+							implements ITasksDynamicProducer  {
 
 	
 	
@@ -48,59 +53,61 @@ public abstract class AbstractContainerExecutionSupervisor extends AbstractConta
 	
 	protected abstract void endOfRun();
 	
+	public void createNewTasks() {
+		
+	}
+	
+	@Override
+	public IAlgoExecution provideMoreTasks() {
+		
+		if (canceled) {
+			messages.infoUser("cancelled; interrupting iterations.", getClass());
+			progress.setComputationState(ComputationState.FINISHED_CANCEL);
+			return null;
+		}
+		
+		if (shouldContinueRun()) {
+			
+			startOfIteration();
+		
+			IAlgoExecution subExec =  createNextExecutionForOneIteration();
+			
+			// define several properties of this "sub"
+			subExec.setParent(this);
+			addTask(subExec);
+			subExec.getProgress().addListener(this);
+					
+			return subExec;
+			
+		} else {
+			
+			// deliver results
+			messages.debugTech("queued all iterations.", getClass());
+			
+			return null;
+		}
+	}
+
 	@Override
 	public void run() {
 
 		messages.debugTech("starting", getClass());
 		
+		ComputationResult res = new ComputationResult(algoInst, progress, messages);
+		setResult(res);
+		
+		
 		initFirstRun();
 		
 		progress.setComputationState(ComputationState.STARTED);
 		
-		while (shouldContinueRun()) {
+		exec.getRunner().registerTasksDynamicProducer(this);
 		
-			if (canceled) {
-				messages.infoUser("cancelled; interrupting iterations.", getClass());
-				progress.setComputationState(ComputationState.FINISHED_CANCEL);
-				return;
-			}
-				
-			startOfIteration();
-			
-			{
-				IAlgoExecution subExec =  createNextExecutionForOneIteration();
-				
-				// define several properties of this "sub"
-				subExec.setParent(this);
-				addTask(subExec);
-				subExec.getProgress().addListener(this);
-				
-				// and, provide them with inputs !
-				
-				
-			}
-			
-			// TODO ?
-
-			
-			// suggest garbage collecting right now
-		}
 		
-		// deliver results
-		messages.debugTech("queued all iterations.", getClass());
-		/*
-		for (IConnection c: connection2InsideToMe.keySet()) {
-			
-			Object value = connection2InsideToMe.get(c).getValue();
-			messages.debugTech("transmitting value "+value+" to "+c.getTo().getAlgoInstance(), getClass());
-			connection2MeToOutside.get(c).forceValue(value);
-		}
-		*/
+		
 		// TODO tell each mapreduce that computation is finished
 		
 		// here the result is empty (nothing exported by the loop itself)
-		ComputationResult res = new ComputationResult(algoInst, progress, messages);
-		setResult(res);
 		
 		
 	}

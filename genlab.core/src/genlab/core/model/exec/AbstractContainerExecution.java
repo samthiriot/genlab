@@ -54,7 +54,6 @@ public abstract class AbstractContainerExecution
 	}
 	
 
-
 	@Override
 	public final void computationStateChanged(IComputationProgress progress) {
 		
