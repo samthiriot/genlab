@@ -84,6 +84,7 @@ public class WattsStrogatzGeneratorAlgo extends AbstractIGraphGenerator {
 			protected IGraphGraph generateGraph(IGraphLibrary lib,
 					ListOfMessages messages) {
 
+				
 				int N = (Integer)getInputValueForInput(INPUT_N);
 				int nei = (Integer)getInputValueForInput(INPUT_NEI);
 				double p= (Double)getInputValueForInput(INPUT_P);

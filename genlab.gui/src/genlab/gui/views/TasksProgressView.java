@@ -397,7 +397,12 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		
 		// now update each task / widget
 		for (ITask t : tasksUpdating) {
-			updateWidget(t);
+			try {
+				updateWidget(t);
+			} catch (RuntimeException e) {
+				// log ? 
+				GLLogger.warnTech("catched an error while updating a progress: "+e.getMessage(), getClass(), e);
+			}
 		}
 		
 		

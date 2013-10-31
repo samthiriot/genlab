@@ -10,6 +10,6 @@ public interface IDumpAsExecutionNetwork {
 	 * @param execs
 	 * @param connections
 	 */
-	public void collectEntities(Set<IAlgoExecution> execs, Set<ConnectionExec> connections);
+	public void collectEntities(Set<IAlgoExecution> execs, Set<IConnectionExecution> connections);
 	
 }

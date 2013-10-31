@@ -12,6 +12,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 import genlab.core.model.exec.ConnectionExec;
 import genlab.core.model.exec.IAlgoExecution;
+import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.exec.IDumpAsExecutionNetwork;
 import genlab.core.usermachineinteraction.GLLogger;
 
@@ -37,7 +38,7 @@ public class DebugGraphviz {
 	protected static void addSubgraph(
 			PrintStream ps, 
 			Map<IAlgoExecution, Collection<IAlgoExecution>> exec2children, 
-			Set<ConnectionExec> connections,
+			Set<IConnectionExecution> connections,
 			IAlgoExecution e,
 			int countTabs
 			) {
@@ -83,29 +84,29 @@ public class DebugGraphviz {
 			
 			// add possible links
 
-			for (ConnectionExec cex: connections) {
+			for (IConnectionExecution cex: connections) {
 				
 				// don't display the edge if it connects to something 
 				// which is not this parent or one direct children
 				if (	
-						cex.from != e 
-						&& !children.contains(cex.from) 
+						cex.getFrom() != e 
+						&& !children.contains(cex.getFrom()) 
 					)
 					continue; 
-				if ( 	cex.to != e
-						&& !children.contains(cex.to)
+				if ( 	cex.getTo() != e
+						&& !children.contains(cex.getTo())
 						)
 					continue;
 				
 				ps.print(tabulations);
 				ps.print("\t");
-				if (exec2children.containsKey(cex.from))
+				if (exec2children.containsKey(cex.getTo()))
 					ps.print("cluster");
-				ps.print(cex.from.hashCode());
+				ps.print(cex.getFrom().hashCode());
 				ps.print(" -> ");
-				if (exec2children.containsKey(cex.to))
+				if (exec2children.containsKey(cex.getTo()))
 					ps.print("cluster");
-				ps.print(cex.to.hashCode());
+				ps.print(cex.getTo().hashCode());
 				ps.println(";");
 			}
 			
@@ -119,7 +120,7 @@ public class DebugGraphviz {
 	public static void exportExecutionNetwork(PrintStream ps, IDumpAsExecutionNetwork dumpable) {
 	
 		Set<IAlgoExecution> execs = new HashSet<IAlgoExecution>();
-		Set<ConnectionExec> connections = new HashSet<ConnectionExec>();
+		Set<IConnectionExecution> connections = new HashSet<IConnectionExecution>();
 		
 		// collect
 		try {
@@ -197,14 +198,14 @@ public class DebugGraphviz {
 		// then connections 
 		//ps.println("\tedge [shape=\"ellipse\"];");
 		
-		for (ConnectionExec cex: connections) {
-			if (cex.from.getParent() != null || cex.to.getParent() != null)
+		for (IConnectionExecution cex: connections) {
+			if (cex.getFrom().getParent() != null || cex.getTo().getParent() != null)
 				continue; 
 			
 			ps.print("\t");
-			ps.print(cex.from.hashCode());
+			ps.print(cex.getFrom().hashCode());
 			ps.print(" -> ");
-			ps.print(cex.to.hashCode());
+			ps.print(cex.getTo().hashCode());
 			ps.println(";");
 		}
 	

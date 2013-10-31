@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class Runner extends Thread implements IComputationProgressSimpleListener {
 	
-	final static int MAX_THREADS = 10;
+	final static int MAX_THREADS = 1;
 	
 	final Set<IAlgoExecution> all = new HashSet<IAlgoExecution>();
 
@@ -97,6 +97,11 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				throw new ProgramException("state of this task unknown: "+exec.getProgress().getComputationState());
 			}
 		}
+		
+		exec.getProgress().addListener(this);
+		
+		// wake up the thread an make him think about the idea of working.
+		attemptToDoThings();
 		
 		//ExecutionHooks.singleton.notifyParentTaskAdded(exec);
 		
@@ -283,13 +288,28 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		
 	}
 	
+	private boolean doingSomething = false;
+	
 	public void attemptToDoThings() {
 		
+		if (doingSomething) { // avoids simultaneous execs
+			messages.debugTech("already doing something.", getClass());
+			return;
+		}
+		
+		doingSomething = true;
+		
+		messages.debugTech("trying to do things.", getClass());
 		while (attemptToDoSomething()) {}
+		messages.debugTech("nothing to do yet.", getClass());
+
+		doingSomething = false;
 		
 	}
 	
 	public void run() {
+		
+		boolean displayMessage = false;
 		
 		initRun();
 	
@@ -298,8 +318,13 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		while (!cancel) {
 			synchronized (all) {
 				if (running.isEmpty() && ready.isEmpty() && notReady.isEmpty()) {
-					messages.infoUser("all tasks done. ", getClass());
-					execution.displayTechnicalInformationsOnMessages();
+					if (displayMessage) {
+						messages.infoUser("all tasks done. ", getClass());
+						execution.displayTechnicalInformationsOnMessages();
+						displayMessage = false;
+					}					
+				} else {
+					displayMessage = true;
 				}
 			}
 			try {

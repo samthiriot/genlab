@@ -1,19 +1,14 @@
 package genlab.core.model.exec;
 
-import genlab.core.exec.IContainerTask;
 import genlab.core.exec.IExecution;
-import genlab.core.exec.ITask;
 import genlab.core.model.instance.AlgoContainerInstance;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
+import genlab.core.model.instance.IInputOutputInstance;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * An iteration execution (meaning: one run of all the algos into the container) is driven like:
@@ -28,28 +23,33 @@ import java.util.Set;
  * @author Samuel Thiriot
  *
  */
-public class AbstractContainerExecutionIteration 
-						extends AbstractAlgoExecution 
-						implements IContainerTask, IComputationProgressSimpleListener {
+public class AbstractContainerExecutionIteration extends AbstractContainerExecution {
 
-	protected final IAlgoContainerInstance algoInst;
-	
-	/**
-	 * All the subtasks for this iteration
-	 */
-	protected final Collection<ITask> tasks = new LinkedList<ITask>();
-	
 	protected final Map<IConnection,Object> inputConnection2value;
 	
 	protected final String nameSuffix;
 	
 	public AbstractContainerExecutionIteration(IExecution exec,
-			IAlgoContainerInstance algoInst, IComputationProgress progress, Map<IConnection,Object> inputConnection2value, String suffix) {
+			IAlgoContainerInstance algoInst, 
+			IComputationProgress progress, 
+			Map<IConnection,Object> inputConnection2value, 
+			Map<IAlgoInstance,IAlgoExecution> instance2exec,
+			String suffix
+			) {
+		
 		super(exec, algoInst, progress);
 	
-		this.algoInst = algoInst;
 		this.inputConnection2value = inputConnection2value;
 		this.nameSuffix = suffix;
+		
+		// prepare links for internal use
+		instance2execOriginal = instance2exec;
+		instance2execForSubtasks = new HashMap<IAlgoInstance, IAlgoExecution>(instance2exec);
+		for (IConnection cIn : algoInst.getConnectionsComingFromOutside()) {
+			// let's assume that each connection coming from outside actually comes from ME
+			instance2execForSubtasks.put(cIn.getFrom().getAlgoInstance(), this);
+		}
+		
 		initSubtasks();
 		progress.setComputationState(ComputationState.WAITING_DEPENDENCY);
 
@@ -60,10 +60,14 @@ public class AbstractContainerExecutionIteration
 	@Override
 	public void initInputs(Map<IAlgoInstance,IAlgoExecution> instance2exec) {
 		
+		// creates links from this iteration to its supervisor
 		
 		for (IConnection cIn : ((AlgoContainerInstance)algoInst).getConnectionsComingFromOutside()) {
 			
-			createInputExecutableConnection(cIn.getTo(), instance2exec);
+			createInputExecutableConnection(
+					cIn.getTo(), 
+					instance2exec
+					);
 
 		}
 		
@@ -71,50 +75,84 @@ public class AbstractContainerExecutionIteration
 
 	private void initSubtasks() {
 		
-		Map<IAlgoInstance, IAlgoExecution> instance2exec = new HashMap<IAlgoInstance, IAlgoExecution>();
+		messages.debugTech("init subtasks for this iteration", getClass());
 		
 		// first create each child execution...
+		messages.traceTech("create executables for child tasks", getClass());
 		for (IAlgoInstance child : algoInst.getChildren()) {
 			IAlgoExecution childExec = child.execute(exec);
-			instance2exec.put(child, childExec);
+			instance2execForSubtasks.put(child, childExec);
 			childExec.setParent(this);
 			addTask(childExec);
 		}
 		
-		// ... complete the list with us as a parent 
-		for (IConnection inputConnection : algoInst.getConnectionsComingFromOutside()) {
-			instance2exec.put(
-					inputConnection.getFrom().getAlgoInstance(), 
-					this
-					);
+		// and let each child initiate its links
+		messages.traceTech("init links for child tasks", getClass());
+		for (IAlgoInstance child : algoInst.getChildren()) {
+			IAlgoExecution childExec = instance2execForSubtasks.get(child);
+			childExec.initInputs(instance2execForSubtasks);
 		}
 		
-		// and let them init their links
-		for (IAlgoExecution exec: instance2exec.values()) {
-			exec.initInputs(instance2exec);
-		}
 		
 		// also listen for their state so we know when they finished !
+		messages.traceTech("setting up the monitoring of child statuses", getClass());
 		for (IConnection outputConnection : algoInst.getConnectionsGoingToOutside()) {
 			
-			instance2exec.get(outputConnection.getFrom().getAlgoInstance()).getProgress().addListener(this);
+			instance2execForSubtasks.get(outputConnection.getFrom().getAlgoInstance()).getProgress().addListener(this);
 		}
 		
 	}
 
 	@Override
-	public long getTimeout() {
-		return -1;
-	}
+	protected IConnectionExecution createInputExecutableConnection(IInputOutputInstance input, IConnection c, Map<IAlgoInstance,IAlgoExecution> instance2exec) {
+		
+		// for the "from" side, we deal with connection from out of this iteration to something;
+		// so let's refer to the mapping provided as a parameter
+		final IAlgoExecution fromExec = instance2exec.get(c.getFrom().getAlgoInstance());
+		
+		// for the "to" side, we deal with internal executions known by us only;
+		// so let's use our internal mapping
+		IAlgoExecution toExec = null;
+		if (c.getTo().getAlgoInstance().getContainer() == this.getAlgoInstance()) {
+			toExec = this;
+		} else {
+			toExec = instance2execForSubtasks.get(c.getTo().getAlgoInstance());
+		}
+				
 
+		IConnectionExecution cEx = new ConnectionExecFromIterationToChild(
+				c, 
+				fromExec, 
+				toExec,
+				false	// don't check when we do fancy things
+				);
+		
+		getOrCreateConnectionsForInput(input).add(cEx);
+		
+		
+		addPrerequire(fromExec);
+
+		return cEx;
+		
+	}
+	
 	@Override
 	public void run() {
+		
+		ComputationResult res = new ComputationResult(algoInst, progress, messages);
+		setResult(res);
+		
+		messages.debugTech("starting this iteration", getClass());
+		
+		progress.setComputationState(ComputationState.STARTED);
 		
 		messages.debugTech("defining the inputs of the iteration executions", getClass());
 		
 		for (IConnection c: inputConnection2value.keySet()) {
 			
-			for (ConnectionExec cEx : getConnectionsForInput(c.getTo())) {
+			final IAlgoExecution toExec = instance2execForSubtasks.get(c.getTo().getAlgoInstance());
+			
+			for (IConnectionExecution cEx : toExec.getConnectionsForInput(c.getTo())) {
 				Object value = inputConnection2value.get(c);
 				messages.traceTech("defining for "+c+": "+value, getClass());
 				cEx.forceValue(value);
@@ -125,109 +163,18 @@ public class AbstractContainerExecutionIteration
 		}
 		
 		// done.
-		
-		// empty result
-		ComputationResult res = new ComputationResult(algoInst, progress, messages);
-		setResult(res);
-		
+		messages.debugTech("initialized all the children inputs; now waiting for them to finish", getClass());
+
+	
+		// we DO NOT set the progress to finished, because this container task will only be assumed to be finished once its childrne will be finiched as well
 		
 		
 	}
 
-	@Override
-	public void kill() {
-		// pass the messages to children
-		for (ITask subTask : tasks) {
-			try {
-				subTask.kill();
-			} catch (RuntimeException e) {
-				messages.warnTech("catched an exception while attempting to cancel subtask "+subTask+": "+e.getMessage(), getClass(), e);
-			}
-		}
-	}
-
-	@Override
-	public void cancel() {
-		// pass the messages to children
-		for (ITask subTask : tasks) {
-			try {
-				subTask.cancel();
-			} catch (RuntimeException e) {
-				messages.warnTech("catched an exception while attempting to cancel subtask "+subTask+": "+e.getMessage(), getClass(), e);
-			}
-		}
-	}
-
-	@Override
-	public final int getThreadsUsed() {
-		return 0;
-	}
-
-	@Override
-	public void addTask(ITask t) {
-		if (!tasks.contains(t))
-			tasks.add(t);
-	}
-
-	@Override
-	public Collection<ITask> getTasks() {
-		return tasks;
-	}
-
-	@Override
-	public void computationStateChanged(IComputationProgress progress) {
-		
-		// ignore intermediate messages
-		if (!progress.getComputationState().isFinished())
-			return;
-		
-		
-		
-		// ensure all done !
-		ComputationState ourState = null;
-		for (ITask sub: tasks) {
-			switch (sub.getProgress().getComputationState()) {
-			case FINISHED_OK:
-				if (ourState == null)
-					ourState = sub.getProgress().getComputationState();
-				break;
-			case FINISHED_FAILURE:
-			case FINISHED_CANCEL:
-				ourState = sub.getProgress().getComputationState();
-				break;
-			default:
-				// not finished; let's stop analyzing this stuff !
-				return;
-			}
-		}
-
-		messages.traceTech("all subs terminated; should transmit results", getClass());
-		progress.setComputationState(ourState);
-		
-		// suggest a garbage collecting now
-		Runtime.getRuntime().gc();
-				
-		// TODO transmit all the values to the reduce steps
-	}
 
 	@Override
 	public String getName() {
 		return algoInst.getName()+nameSuffix;
-	}
-	
-	@Override
-	public void collectEntities(
-			Set<IAlgoExecution> execs,
-			Set<ConnectionExec> connections
-			) {
-		
-		super.collectEntities(execs, connections);
-		
-		// also collect my subentities
-		for (ITask t: tasks) {
-			((IAlgoExecution)t).collectEntities(execs, connections);
-		}		
-		
 	}
 	
 }

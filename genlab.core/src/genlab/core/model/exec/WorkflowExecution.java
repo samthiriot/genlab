@@ -85,7 +85,7 @@ public class WorkflowExecution
 			} 
 		}
 		
-		// display
+		// display TODO debug
 		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
 			System.err.print(sub.getName());
 			
@@ -168,7 +168,7 @@ public class WorkflowExecution
 		ExecutionHooks.singleton.notifyParentTaskAdded(exec);
 	
 		r = new Runner(exec, progress, instance2execution.values(), this);
-		DebugGraphviz.exportExecutionNetwork("/tmp/test.dot", this);
+		DebugGraphviz.exportExecutionNetwork("/tmp/testBefore.dot", this);
 
 		r.run();
 		
@@ -188,7 +188,8 @@ public class WorkflowExecution
 		// TODO
 		
 		// build the execution graph
-		
+		DebugGraphviz.exportExecutionNetwork("/tmp/test.dot", this);
+
 		
 		
 		
@@ -296,7 +297,7 @@ public class WorkflowExecution
 	@Override
 	public void collectEntities(
 			Set<IAlgoExecution> execs,
-			Set<ConnectionExec> connections
+			Set<IConnectionExecution> connections
 			) {
 		
 		super.collectEntities(execs, connections);

@@ -3,6 +3,7 @@ package genlab.core.model.exec;
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.UniqueTimestamp;
 import genlab.core.model.meta.IAlgo;
+import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -155,7 +156,6 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 		
 		synchronized (stateLock) {
 
-			this.state = state;	
 			switch (state) {
 			case STARTED:
 				this.timestampStart = System.currentTimeMillis();
@@ -166,6 +166,8 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 				this.timestampEnd = System.currentTimeMillis();
 				break;
 			}
+			this.state = state;	
+
 			dispatchComputationStateChanged();
 		}
 		
@@ -189,13 +191,22 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 	
 	protected void dispatchComputationStateChanged() {
 		LinkedList<IComputationProgressSimpleListener> listenersCopy = null; 
+		
 		synchronized (listeners) {
 			listenersCopy = new LinkedList<IComputationProgressSimpleListener>(listeners);
 		}
 		// produce a clone, so a change during dispatching would not raise a problem
 		//ComputationProgressWithSteps clone = (ComputationProgressWithSteps) this.clone();
 		for (IComputationProgressSimpleListener l:  listenersCopy) {
-			l.computationStateChanged(this);
+			try {
+				l.computationStateChanged(this);
+			} catch (RuntimeException e) {
+				GLLogger.warnTech(
+						"catched an exception while notifying listener "+l+" of computation state change ("+this+")", 
+						getClass(), 
+						e
+						);
+			}
 		}	
 		
 	}

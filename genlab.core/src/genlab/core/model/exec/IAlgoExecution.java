@@ -5,6 +5,7 @@ import genlab.core.exec.IExecutionTask;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -68,6 +69,13 @@ public interface IAlgoExecution extends IExecutionTask, IDumpAsExecutionNetwork 
 	 * Asks the execution to reset its internal state so it will run again. 
 	 */
 	public void reset();
+	
+	/**
+	 * Returns the list of executable connections for a given input.
+	 * @param input
+	 * @return
+	 */
+	public Collection<IConnectionExecution> getConnectionsForInput(IInputOutputInstance input);
 
 	
 }
