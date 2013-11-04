@@ -6,6 +6,7 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.exec.IComputationProgressSimpleListener;
 import genlab.core.usermachineinteraction.ListOfMessages;
+import genlab.core.usermachineinteraction.ListsOfMessages;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -52,38 +53,32 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	 */
 	private int usedThreads = 0;
 	
-	IComputationProgress progress;
-	
+		
 	/**
 	 * If true, all tasks should be canceled as soon as possible.
 	 */
 	boolean cancel = false;
 	
-	private ListOfMessages messages = null;
+	private ListOfMessages messagesRun = null;
 	
-	private final IContainerTask task;
+	private final Object lockerMainLoop = new Object();
 	
-	private final IExecution execution;
-	
-	public Runner(IExecution execution, IComputationProgress progress, Collection<IAlgoExecution> allTasks, IContainerTask task) {
+	public Runner() {
 		
-		execution.setRunner(this);
-		
-		this.progress = progress;
-		
-		this.execution = execution;
-		messages = execution.getListOfMessages();
-		
-		for (IAlgoExecution e: allTasks)
-			addTask(e);
-	
-		
-		this.task = task;
+		this.messagesRun =  ListsOfMessages.getGenlabMessages();
 		
 		setName("glRunner");
 		setPriority(MAX_PRIORITY);
 		setDaemon(true);
+		
 	}
+	
+	public void addTasks(Collection<IAlgoExecution> allTasks) {
+		for (IAlgoExecution e: allTasks)
+			addTask(e);	
+		
+	}
+
 	
 	public void addTask(IAlgoExecution exec) {
 		
@@ -127,7 +122,13 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	}
 	
 	protected void wakeUp() {
-		System.err.println("should wake up !");
+		
+		messagesRun.traceTech("attempting to wake up the runner: \"Knock knock, Neo !\"", getClass());
+
+		synchronized (lockerMainLoop) {
+			lockerMainLoop.notifyAll();
+		}
+		
 	}
 
 	protected Collection<IAlgoExecution> detectRoots() {
@@ -141,7 +142,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			}				
 		}
 		
-		messages.traceTech("found root tasks: "+res, getClass());
+		messagesRun.traceTech("found root tasks: "+res, getClass());
 		
 		return res;
 		
@@ -169,13 +170,12 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			}
 		}
 		*/
-		TasksManager.singleton.notifyListenersOfTaskAdded(task);
 
 		
 		// init progress
-		// TODO
-		progress.setComputationState(ComputationState.STARTED);
-		progress.setProgressTotal(1);
+		// TODO remove
+		//progress.setComputationState(ComputationState.STARTED);
+		//progress.setProgressTotal(1);
 		
 		// register listener
 		registerListeners();
@@ -216,7 +216,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			
 		}
 		
-		messages.traceTech(sb.toString(), getClass());
+		messagesRun.traceTech(sb.toString(), getClass());
 		
 	}
 	
@@ -227,17 +227,17 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			if (tasksProducers.isEmpty())
 				return false;
 			
-			messages.debugTech("proposing to tasks producers to submit novel tasks...", getClass());
+			messagesRun.debugTech("proposing to tasks producers to submit novel tasks...", getClass());
 			
 			ITasksDynamicProducer producer = tasksProducers.iterator().next();
 			
-			messages.debugTech("proposing to task producer "+producer+" to submit novel tasks...", getClass());
+			messagesRun.debugTech("proposing to task producer "+producer+" to submit novel tasks...", getClass());
 				
 			IAlgoExecution t = producer.provideMoreTasks();
 					
 			if (t == null) {
 				tasksProducers.remove(producer);
-				messages.debugTech("task producer "+producer+" has no more tasks", getClass());
+				messagesRun.debugTech("task producer "+producer+" has no more tasks", getClass());
 				return false;
 			} else {
 				addTask(t);
@@ -282,7 +282,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		
 			if (!e.isCostless()) {
 				t = new Thread(e);
-				t.setName("gl_task_"+exec2thread.size());
+				t.setName("gl_task_"+System.currentTimeMillis());
 				t.setDaemon(false);
 				t.setPriority(NORM_PRIORITY);
 				exec2thread.put(e, t);
@@ -291,11 +291,15 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				
 		}
 		
-		messages.debugUser("now using "+usedThreads+" over "+MAX_THREADS, getClass());
+		
+		final ListOfMessages messages = e.getExecution().getListOfMessages();
+		
+		messagesRun.debugUser("now using "+usedThreads+" threads over "+MAX_THREADS, getClass());
 		
 		// actually run something
 	
 		if (t==null) {
+			
 			messages.debugUser("running task "+e+" (no thread, it is costless)", getClass());
 			e.run();
 		} else {
@@ -347,10 +351,11 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	
 	private boolean doingSomething = false;
 	
+	
 	public void attemptToDoThings() {
 		
 		if (doingSomething) { // avoids simultaneous execs
-			messages.debugTech("already doing something !", getClass());
+			messagesRun.debugTech("already doing something !", getClass());
 			return;
 		}
 		
@@ -391,21 +396,18 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	
 	
 		while (!cancel) {
-			
+	
 			boolean nothingToDo;
 			synchronized (all) {
-				
 				nothingToDo = running.isEmpty() && ready.isEmpty() && notReady.isEmpty(); 
-				
 			}
 			
 			if (nothingToDo) {
 				
 				// really, there is nothing to do.
-				
 				if (displayMessage) {
-					messages.infoUser("all tasks done. ", getClass());
-					execution.displayTechnicalInformationsOnMessages();
+					messagesRun.infoUser("all tasks done. ", getClass());
+					// we may display something there is relevant
 					displayMessage = false;
 				}		
 			
@@ -415,11 +417,15 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				
 				attemptToDoThings();
 				
+				
 				try {
-					//GLLogger.debugTech("wait", getClass());
-					Thread.sleep(500);
+					messagesRun.traceTech("nothing to do, sleeping.", getClass());
+					synchronized (lockerMainLoop) {
+						lockerMainLoop.wait();	
+					}
+					messagesRun.traceTech("wake up !", getClass());
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					messagesRun.traceTech("Runner thread interrupted o_O. This is not supposed to happen.", getClass());
 					e.printStackTrace();
 				}
 				
@@ -455,6 +461,8 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		IAlgoExecution e = progress.getAlgoExecution();
 
 		boolean wakeUp = false;
+		
+		final ListOfMessages messages = e.getExecution().getListOfMessages();
 		
 		synchronized (all) {
 	
@@ -519,7 +527,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	
 	public void registerTasksDynamicProducer(ITasksDynamicProducer producer) {
 		synchronized (tasksProducers) {
-			messages.debugTech("registered a novel tasks producer: "+producer, getClass());
+			messagesRun.debugTech("registered a novel tasks producer: "+producer, getClass());
 			tasksProducers.add(producer);
 		}
 		wakeUp();

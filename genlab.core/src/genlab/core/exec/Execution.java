@@ -21,7 +21,7 @@ public class Execution implements IExecution {
 	
 	private Runner runner = null;
 	
-	public Execution() {
+	public Execution(Runner runner) {
 		
 		// init stamp 
 		stamp = new UniqueTimestamp();

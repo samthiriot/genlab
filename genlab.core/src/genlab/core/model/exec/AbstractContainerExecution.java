@@ -18,6 +18,8 @@ import java.util.Set;
 /**
  * A task container
  * 
+ * TODO prepare to clean tasks (we should clean iterations as there are done in order to save resources)
+ * 
  * @author Samuel Thiriot
  *
  */

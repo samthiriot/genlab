@@ -1,6 +1,7 @@
 package genlab.core.exec;
 
 import genlab.core.model.exec.ComputationState;
+import genlab.core.model.exec.ExecutionHooks;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.exec.IComputationProgressSimpleListener;
@@ -31,15 +32,18 @@ public class GenlabExecution {
 			return null;
 		}
 	
-		Execution exec = new Execution();
+		Runner r = LocalComputationNode.getSingleton().getRunner();
+
+		Execution exec = new Execution(r);
 		exec.setExecutionForced(true);
 
+		ExecutionHooks.singleton.notifyParentTaskAdded(exec);	// TODO something clean...
 		IAlgoExecution execution = workflow.execute(exec);
+		TasksManager.singleton.notifyListenersOfTaskAdded(execution); // TODO something clean...
 
+		
 		GLLogger.infoUser("start run !", GenlabExecution.class);
-
-		Thread t = new Thread(execution);
-		t.start();
+		r.addTask(execution);
 
 		GLLogger.infoUser("launched.", GenlabExecution.class);
 		

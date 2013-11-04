@@ -4,9 +4,11 @@ import genlab.core.commons.ProgramException;
 import genlab.core.exec.IContainerTask;
 import genlab.core.exec.IExecution;
 import genlab.core.exec.ITask;
+import genlab.core.exec.LocalComputationNode;
 import genlab.core.exec.Runner;
 import genlab.core.model.DebugGraphviz;
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 
 import java.util.Collection;
@@ -18,17 +20,13 @@ import java.util.Map;
 import java.util.Set;
 
 public class WorkflowExecution 
-						extends AbstractAlgoExecution 
+						extends AbstractContainerExecution 
 						implements 	IContainerTask, 
 									IComputationProgressSimpleListener{
 
 	private final IGenlabWorkflowInstance workflowInstance;
 	protected Map<IAlgoInstance, IAlgoExecution> instance2execution = null;
 
-	protected Runner r = null;
-	
-	private Collection<ITask> subTasks = new LinkedList<ITask>();
-	
 	
 	public WorkflowExecution(IExecution exec, IGenlabWorkflowInstance workflowInstance) {
 		super(
@@ -40,6 +38,10 @@ public class WorkflowExecution
 		this.workflowInstance = workflowInstance;
 
 		initTasks();
+		
+		// till now, a workflow is always ready for exec
+		progress.setComputationState(ComputationState.READY);
+
 	}
 	
 
@@ -51,6 +53,7 @@ public class WorkflowExecution
 		instance2execution = new HashMap<IAlgoInstance, IAlgoExecution>(workflowInstance.getAlgoInstances().size());
 
 		// first create execution for each direct sub algo
+		
 		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
 
 			if (sub.getContainer() != null && sub.getContainer() != this) {
@@ -119,7 +122,6 @@ public class WorkflowExecution
 			} else {
 				// standard: 
 				subExec.setParent(this);
-				this.addTask(subExec);
 			}
 			
 		}
@@ -152,22 +154,82 @@ public class WorkflowExecution
 			if (exec.getAlgoInstance().getContainer() != null)
 				continue;
 	
-			
 			messages.traceTech("init links for "+exec, getClass());
 			exec.initInputs(unmodifiableMap);
 		}
 		
+		// now (and only now), call addSubtask on each task
+		// this will also register the task to the runner !
+		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
+			
+			IAlgoExecution subExec = instance2execution.get(sub);
+			
+			if (sub.getContainer() != null) {
+				// container will manage that itself.
+				
+				/* TODO for container exec !
+				// tasks with a container will have a container task
+				IContainerTask subExecContainer = (IContainerTask)instance2execution.get(sub.getContainer());
+				subExec.setParent(subExecContainer);
+				subExecContainer.addTask(subExec);
+				*/
+			} else {
+				this.addTask(subExec);
+			}
+			
+		}
+
 		
 	}
+	
 
 	@Override
 	public void run() {
 		
-		messages.traceTech("starting the execution of worklow "+workflowInstance, getClass());
+		ComputationResult res = new ComputationResult(algoInst, progress, messages);
+		setResult(res);
+		
+		messages.debugTech("starting this iteration", getClass());
+		
+		progress.setComputationState(ComputationState.STARTED);
+	
 
+	
+		// nothing to do there; 
+		// the subtasks are ready as well
+		
+		// so they should run, and our state will switch to finished ok/cancel/failure depending to their state
+		
+		// TODO later, we should manage variables
+		
+		// done.
+		messages.debugTech("initialized all the children inputs; now waiting for them to finish", getClass());
+
+	
+		// we DO NOT set the progress to finished, because this container task will only be assumed to be finished once its childrne will be finiched as well
+		
+		
+	}
+/*
+
+	@Override
+	public void run() {
+		
+		// start
+		messages.traceTech("starting the execution of worklow "+workflowInstance, getClass());
+		progress.setComputationState(ComputationState.STARTED);
+
+		// create subtasks
+		
 		ExecutionHooks.singleton.notifyParentTaskAdded(exec);
 	
-		r = new Runner(exec, progress, instance2execution.values(), this);
+		// TODO ??? TasksManager.singleton.notifyListenersOfTaskAdded(task);
+		
+		Runner r = LocalComputationNode.getSingleton().getRunner();
+		
+		//r = new Runner(exec, progress, , this);
+		r.addTasks(instance2execution.values());
+		
 		DebugGraphviz.exportExecutionNetwork("/tmp/testBefore.dot", this);
 
 		r.run();
@@ -178,46 +240,17 @@ public class WorkflowExecution
 		// probably: already create the exec for each child, so we can use it.
 		// and even, use a progress container instead of our own.
 		
-		/*
-		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
-			totalTimeRequired += workflowInstance.get
-		}
-		*/
-		
 		
 		// TODO
 		
 		// build the execution graph
 		DebugGraphviz.exportExecutionNetwork("/tmp/test.dot", this);
 
-		
+		exec.displayTechnicalInformationsOnMessages();
 		
 		
 	}
-
-
-
-	@Override
-	public void cancel() {
-		if (r == null)
-				return;
-		
-		messages.debugTech("attempts to cancel this execution", getClass());
-		
-		r.cancel();
-	}
-
-
-
-	@Override
-	public void kill() {
-		if (r == null)
-			return;
-		
-		messages.debugTech("attempts to kill this execution", getClass());
-		
-		r.kill();
-	}
+*/
 
 
 
@@ -232,83 +265,6 @@ public class WorkflowExecution
 	}
 
 
-
-	@Override
-	public long getTimeout() {
-		return -1;
-	}
-
-
-	@Override
-	public void addTask(ITask t) {
-		if (!subTasks.contains(t)) {
-			subTasks.add(t);
-			t.getProgress().addListener(this);
-		}
-	}
-
-
-	@Override
-	public Collection<ITask> getTasks() {
-		return subTasks;
-	}
-
-	protected boolean allSubtasksSucceed() {
-		for (ITask t: subTasks) {
-			if (t.getProgress().getComputationState() != ComputationState.FINISHED_OK)
-				return false;
-		}
-		return true;
-	}
-
-	@Override
-	public void computationStateChanged(IComputationProgress progress) {
-		
-		switch (progress.getComputationState()) {
-		case FINISHED_CANCEL:
-		case FINISHED_FAILURE:
-			// if one of our child fails or is canceled, the whole is.
-			this.progress.setComputationState(progress.getComputationState());
-			// and we stop listening it.
-			progress.removeListener(this);
-			break;
-		case FINISHED_OK:
-			// stop listen for this one
-			progress.removeListener(this);
-			// if one of our childs succeeds... we still have to wait for all of them
-			if (allSubtasksSucceed()) {
-				this.progress.setComputationState(ComputationState.FINISHED_OK);
-			}
-			break;
-		default:
-			// do nothing :-)
-		}
-	}
-
-
-
-	@Override
-	public int getThreadsUsed() {
-		return 0;
-	}
-
-
-
-	@Override
-	public void collectEntities(
-			Set<IAlgoExecution> execs,
-			Set<IConnectionExecution> connections
-			) {
-		
-		super.collectEntities(execs, connections);
-		
-		// also collect my subentities
-		for (IAlgoExecution e: instance2execution.values()) {
-			e.collectEntities(execs, connections);
-		}
-		
-		
-	}
 
 
 }

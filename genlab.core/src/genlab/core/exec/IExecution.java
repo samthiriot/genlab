@@ -1,11 +1,15 @@
 package genlab.core.exec;
 
+import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.util.Map;
 
 /**
- * Identifies a unique execution, which often manages sub executions.
+ * Identifies a unique execution (for the user, a click on "run"), 
+ * which often manages sub executions. This execution may have parameters (like: always compute even if this is useless).
+ * It is also associated with technical informations (we did X times this operation).
+ * It is also attached with a channel of messages. 
  * Looks like an execution context.
  * 
  * @author Samuel Thiriot
@@ -44,5 +48,6 @@ public interface IExecution {
 	public Runner getRunner();
 	
 	public void setRunner(Runner r);
+	
 	
 }

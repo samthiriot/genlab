@@ -30,6 +30,10 @@ public class ConstantValueExecution<JavaType> extends AbstractAlgoExecution {
 				new ComputationProgressWithSteps()
 				);
 		this.value = value;
+		
+		// a constant is always ready
+		progress.setComputationState(ComputationState.READY);
+
 	}
 
 	@Override
