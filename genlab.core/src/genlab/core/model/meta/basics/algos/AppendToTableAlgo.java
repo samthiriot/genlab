@@ -10,6 +10,7 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
+import genlab.core.model.meta.IReduceAlgo;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.AnythingFlowType;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
@@ -18,7 +19,7 @@ import genlab.core.model.meta.basics.flowtypes.TableFlowType;
 
 import java.util.Map;
 
-public class AppendToTableAlgo extends BasicAlgo {
+public class AppendToTableAlgo extends BasicAlgo implements IReduceAlgo {
 
 	public static final InputOutput<Object> INPUT_ANYTHING = new InputOutput<Object>(
 			AnythingFlowType.SINGLETON, 

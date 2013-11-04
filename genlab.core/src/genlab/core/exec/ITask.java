@@ -17,6 +17,14 @@ public interface ITask {
 	 */
 	public void cancel();
 	
+	
+	/**
+	 * Kills the task. Cancellation should be tried first.
+	 */
+	public void kill();
+	
+		
+	
 	/**
 	 * Returns a human readable name (one short line)
 	 * @return

@@ -1,5 +1,6 @@
 package genlab.core.exec;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.LinkedList;
@@ -35,6 +36,9 @@ public class TasksManager {
 	
 	public void notifyListenersOfTaskAdded(ITask t) {
 		
+		if (t == null)
+			throw new ProgramException("task should not be null");
+			
 		synchronized (listeners) {
 			for (ITaskManagerListener l : listeners) {
 				try {
@@ -48,6 +52,9 @@ public class TasksManager {
 
 
 	protected void notifyListenersOfTaskRemoved(ITask t) {
+	
+		if (t == null)
+			throw new ProgramException("task should not be null");
 		
 		synchronized (listeners) {
 			for (ITaskManagerListener l : listeners) {
@@ -59,4 +66,5 @@ public class TasksManager {
 			}
 		}
 	}
+
 }

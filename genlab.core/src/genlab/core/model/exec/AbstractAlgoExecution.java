@@ -10,6 +10,7 @@ import genlab.core.model.meta.IInputOutput;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -25,7 +26,7 @@ import java.util.Set;
  *
  * @param 
  */
-public abstract class AbstractAlgoExecution extends ExecutionTask implements IAlgoExecution {
+public abstract class AbstractAlgoExecution extends ExecutionTask implements IAlgoExecution  {
 
 	protected final IAlgoInstance algoInst;
 	protected final IComputationProgress progress;
@@ -36,7 +37,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	/**
 	 * For each input, associates it with the incoming connections for this input.
 	 */
-	protected Map<IInputOutputInstance,Collection<ConnectionExec>> input2connection = new HashMap<IInputOutputInstance, Collection<ConnectionExec>>();
+	protected Map<IInputOutputInstance,Collection<IConnectionExecution>> input2connection = new HashMap<IInputOutputInstance, Collection<IConnectionExecution>>();
 
 	protected Set<IInputOutputInstance> inputsNotAvailable = null;
 
@@ -62,9 +63,13 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	
 	public void initInputs(Map<IAlgoInstance,IAlgoExecution> instance2exec) {
 		
-		for (IInputOutputInstance input : algoInst.getInputInstances()) {
+		
+		for (IInputOutputInstance input: algoInst.getInputInstances()) {
+			
 			createInputExecutableConnection(input, instance2exec);
+
 		}
+		
 	}
 	
 	protected void createInputExecutableConnection(IInputOutputInstance input, Map<IAlgoInstance,IAlgoExecution> instance2exec) {
@@ -75,59 +80,67 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		
 	}
 	
-	protected Collection<ConnectionExec> getConnectionsForInput(IInputOutputInstance input) {
-		Collection<ConnectionExec> conns = input2connection.get(input);
+	@SuppressWarnings("unchecked")
+	@Override
+	public Collection<IConnectionExecution> getConnectionsForInput(IInputOutputInstance input) {
+		Collection<IConnectionExecution> conns = input2connection.get(input);
+		if (conns == null) 
+			return Collections.EMPTY_LIST;
+		else 
+			return conns;
+	}
+	
+	protected Collection<IConnectionExecution> getOrCreateConnectionsForInput(IInputOutputInstance input) {
+		Collection<IConnectionExecution> conns = input2connection.get(input);
 		if (conns == null) {
-			conns = new LinkedList<ConnectionExec>();
+			conns = new LinkedList<IConnectionExecution>();
 			input2connection.put(input, conns);
 		}
 		return conns;
 	}
-
 	
-	protected void createInputExecutableConnection(IInputOutputInstance input, IConnection c, Map<IAlgoInstance,IAlgoExecution> instance2exec) {
-	
-		// the executable we listen for
-		IAlgoExecution fromExec = null;
-		boolean connectToParent = (
-				// the "from" algo is not in the same container
-				(c.getFrom().getAlgoInstance().getContainer() != algoInst.getContainer())
-				);
-				// ... then I should connect to parent 
+	protected IConnectionExecution getExecutableConnectionForConnection(IConnection c) {
 		
-
-		if (!connectToParent) {
-			// we are in the same container; let's link as usual
-			fromExec = instance2exec.get(c.getFrom().getAlgoInstance());
-			//GLLogger.traceTech("creating an exec link from "+fromExec, getClass());
-		} else {
-			// we are not in the same container; 
-			// so I will listen for this container, which will act as a proxy for this case
-			// maybe i'm in the container and not my parent; so my container will warn me when ready
-			// or i'm out of the container; in this case the targer container will also warn me when necesssary
-			fromExec = instance2exec.get((algoInst.getContainer()==null?c.getFrom().getAlgoInstance().getContainer():algoInst.getContainer()));
-			//GLLogger.traceTech("creating an exec link from the container "+fromExec, getClass());
+		for (IConnectionExecution cEx: getConnectionsForInput(c.getTo())) {
+			if (cEx.getConnection() == c)
+				return cEx;
 		}
 		
-		if (fromExec == null)
-			throw new ProgramException("unable to find an executable for algo instance "+c.getFrom());
+		throw new ProgramException("unable to find an executable connection for connection : "+c);
 		
-		ConnectionExec cEx = new ConnectionExec(
-				c, 
-				fromExec, 
-				this,
-				!connectToParent	// don't check when we do fancy things
-				);
+	}
+
+	
+	protected IConnectionExecution createInputExecutableConnection(IInputOutputInstance input, IConnection c, Map<IAlgoInstance,IAlgoExecution> instance2exec) {
 		
-		getConnectionsForInput(input).add(cEx);
+		final IAlgoExecution fromExec = instance2exec.get(c.getFrom().getAlgoInstance());
+		final IAlgoExecution toExec = instance2exec.get(c.getTo().getAlgoInstance());
+
+		IConnectionExecution cEx = null;
+		
+		// TODO dirty. How do that ?
+		if (fromExec instanceof AbstractContainerExecutionIteration) {
+			cEx = new ConnectionExecFromIterationToChild(
+					c, 
+					fromExec, 
+					toExec,
+					false	// don't check when we do fancy things
+					);
+		} else {
+			cEx = new ConnectionExec(
+					c, 
+					fromExec, 
+					toExec,
+					false	// don't check when we do fancy things
+					);
+		}
+		
+		
+		getOrCreateConnectionsForInput(input).add(cEx);
 		
 		addPrerequire(fromExec);
-		
-		if (connectToParent) {
-			// warn the parent who eager we are to receive orders from him
-			((AbstractContainerExecution)fromExec).declareInputExpected(cEx, input, c, instance2exec);
-		}
-		
+
+		return cEx;
 		
 	}
 
@@ -152,7 +165,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 
 	protected Object getInputValueForInput(IInputOutputInstance input) {
 		
-		Collection<ConnectionExec> cs = input2connection.get(input);
+		Collection<IConnectionExecution> cs = input2connection.get(input);
 		if (cs == null)
 			throw new ProgramException("unable to find the executable connection for this input: "+input);
 		
@@ -160,11 +173,16 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 			throw new ProgramException("unable to find the executable connection for this input: "+input);
 		
 		if (cs.size() > 1)
-			throw new ProgramException("there are several conncetions for this input: "+input);
+			throw new ProgramException("there are several connections for this input: "+input);
 		
-		final ConnectionExec c = cs.iterator().next();
+		final IConnectionExecution c = cs.iterator().next(); 
 		
-		return input.getMeta().decodeFromParameters(c.getValue());
+		Object value = input.getMeta().decodeFromParameters(c.getValue());
+		
+		if (value == null)
+			throw new ProgramException("unable to retrieve the value for input "+input);
+		
+		return value;
 	}
 	
 	public Object getInputValueForInput(IInputOutput<?> input) {
@@ -177,7 +195,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 
 	protected Map<IConnection,Object> getInputValuesForInput(IInputOutputInstance input) {
 		
-		Collection<ConnectionExec> cs = input2connection.get(input);
+		Collection<IConnectionExecution> cs = input2connection.get(input);
 		if (cs == null)
 			throw new ProgramException("unable to find the executable connection for this input: "+input);
 		
@@ -185,9 +203,9 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 			throw new ProgramException("unable to find the executable connection for this input: "+input);
 		
 		Map<IConnection,Object> map = new HashMap<IConnection, Object>();
-		for (ConnectionExec ce : cs) {
+		for (IConnectionExecution ce : cs) {
 			map.put(
-					ce.c, 
+					ce.getConnection(), 
 					input.getMeta().decodeFromParameters(ce.getValue())
 					);
 		}
@@ -219,7 +237,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 			
 			boolean allConnectionsProvidedValue = true;
 			
-			for (ConnectionExec c: input2connection.get(to)) {
+			for (IConnectionExecution c: input2connection.get(to)) {
 				if (c.getValue() == null) {
 					allConnectionsProvidedValue = false;
 					break;
@@ -289,6 +307,25 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	@Override
 	public int getThreadsUsed() {
 		return 1;
+	}
+	
+
+	@Override
+	public void collectEntities(
+			Set<IAlgoExecution> execs,
+			Set<IConnectionExecution> connections
+			) {
+		
+		// collect this entity
+		execs.add(this);
+		
+		// collect my connection execs
+		for (Collection<IConnectionExecution> connexs : input2connection.values()) {
+			connections.addAll(connexs);	
+		}
+		
+		
+		
 	}
 
 }

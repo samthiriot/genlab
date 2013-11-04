@@ -1,5 +1,6 @@
 package genlab.gui.views;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.IContainerTask;
 import genlab.core.exec.ITask;
 import genlab.core.exec.ITaskManagerListener;
@@ -212,7 +213,6 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 	
 	private TreeItem getOrCreateItemForTask(ITask t) {
 		
-		
 		TreeItem item = task2item.get(t);
 		
 		if (item == null) {
@@ -397,7 +397,12 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		
 		// now update each task / widget
 		for (ITask t : tasksUpdating) {
-			updateWidget(t);
+			try {
+				updateWidget(t);
+			} catch (RuntimeException e) {
+				// log ? 
+				GLLogger.warnTech("catched an error while updating a progress: "+e.getMessage(), getClass(), e);
+			}
 		}
 		
 		

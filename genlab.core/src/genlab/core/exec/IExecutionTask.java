@@ -32,11 +32,5 @@ public interface IExecutionTask extends ITask, Runnable  {
 	 */
 	public int getThreadsUsed();
 	
-	
-	/**
-	 * Kills the task. Cancellation should be tried first.
-	 */
-	public void kill();
-	
-		
+
 }

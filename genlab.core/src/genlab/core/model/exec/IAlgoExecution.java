@@ -5,6 +5,7 @@ import genlab.core.exec.IExecutionTask;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -15,7 +16,7 @@ import java.util.Map;
  *
  * @param <ResultType>
  */
-public interface IAlgoExecution extends IExecutionTask {
+public interface IAlgoExecution extends IExecutionTask, IDumpAsExecutionNetwork {
 
 	/**
 	 * Returns the Algo instance executed there
@@ -52,6 +53,7 @@ public interface IAlgoExecution extends IExecutionTask {
 	/**
 	 * Initialize the algo execution: provides enough information
 	 * to create the exec connections that link all the exec instances.
+	 * The algo exec should create there the executable connections
 	 * @param instance2exec
 	 */
 	public void initInputs(Map<IAlgoInstance,IAlgoExecution> instance2exec);
@@ -67,6 +69,13 @@ public interface IAlgoExecution extends IExecutionTask {
 	 * Asks the execution to reset its internal state so it will run again. 
 	 */
 	public void reset();
+	
+	/**
+	 * Returns the list of executable connections for a given input.
+	 * @param input
+	 * @return
+	 */
+	public Collection<IConnectionExecution> getConnectionsForInput(IInputOutputInstance input);
 
 	
 }

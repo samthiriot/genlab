@@ -17,7 +17,7 @@ import java.util.Collection;
  * @author Samuel Thiriot
  *
  */
-public interface IGenlabWorkflowInstance extends IAlgoInstance, IWithAssociatedData {
+public interface IGenlabWorkflowInstance extends IAlgoContainerInstance, IWithAssociatedData {
 
 	public String getName();
 	
@@ -87,5 +87,6 @@ public interface IGenlabWorkflowInstance extends IAlgoInstance, IWithAssociatedD
 	
 	public void addListener(IWorkflowContentListener l);
 	public void removeListener(IWorkflowContentListener l);
+	
 	
 }

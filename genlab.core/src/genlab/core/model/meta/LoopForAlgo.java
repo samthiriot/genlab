@@ -1,8 +1,8 @@
 package genlab.core.model.meta;
 
 import genlab.core.exec.IExecution;
-import genlab.core.model.exec.AbstractContainerExecution;
 import genlab.core.model.exec.IAlgoExecution;
+import genlab.core.model.exec.LoopAlgoExecutionSupervisor;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.parameters.IntParameter;
@@ -27,37 +27,11 @@ public class LoopForAlgo extends AlgoContainer {
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {
 		
-		final int totalIterations = (Integer)algoInstance.getValueForParameter(PARAM_ITERATIONS);
+		return new LoopAlgoExecutionSupervisor(
+				execution, 
+				(IAlgoContainerInstance) algoInstance
+				);
 		
-		return new AbstractContainerExecution(execution, (IAlgoContainerInstance)algoInstance) {
-
-			protected int total = totalIterations;
-			protected int i = 0;
-			
-			@Override
-			protected void initFirstRun() {
-				i = 0;
-				progress.setProgressTotal(total);
-			}
-
-			@Override
-			protected boolean shouldContinueRun() {
-				return i < total;
-			}
-
-			@Override
-			protected void endOfRun() {
-				i++;
-				progress.incProgressMade();
-			}
-
-			@Override
-			protected void startOfIteration() {
-				messages.debugTech("start iteration "+i, getClass());
-			}
-		
-
-		};
 	}
 
 	

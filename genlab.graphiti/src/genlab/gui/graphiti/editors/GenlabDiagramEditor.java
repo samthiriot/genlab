@@ -1,7 +1,6 @@
 package genlab.gui.graphiti.editors;
 
 import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.meta.IGenlabWorkflow;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -10,7 +9,6 @@ import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
 import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
 import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
 import genlab.gui.graphiti.genlab2graphiti.Genlab2GraphitiUtils;
-import genlab.gui.graphiti.genlab2graphiti.GenlabDomainModelChangeListener;
 import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
 
 import java.io.File;
@@ -19,7 +17,6 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.ui.editor.DiagramBehavior;
 import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -50,13 +47,6 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 	}
 	public GenlabDiagramEditor() {
 		GLLogger.debugTech("Diagram editor created.", getClass());
-	}
-
-	
-	@Override
-	protected DiagramBehavior createDiagramBehavior() {
-
-		return new GenlabDiagramBehavior(this);
 	}
 
 	

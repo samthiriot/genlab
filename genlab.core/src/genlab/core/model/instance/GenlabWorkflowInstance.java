@@ -232,7 +232,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	}
 
 	@Override
-	public Collection<IAlgoInstance> getAlgoInstances() {
+	public Collection<IAlgoInstance> getChildren() {
 		return id2algoInstance.values();
 	}
 
@@ -576,6 +576,41 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		this.container = container;
 	}
 
-	
+
+	@Override
+	public void addChildren(IAlgoInstance child) {
+		addAlgoInstance(child);// TODO remove duplicate
+	}
+
+	@Override
+	public void removeChildren(IAlgoInstance child) {
+		removeAlgoInstance(child); // TODO remove duplicate
+	}
+
+	@Override
+	public Collection<IAlgoInstance> getAlgoInstancesDependingToOurChildren() {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+		
+	}
+
+	@Override
+	public Collection<IConnection> getConnectionsComingFromOutside() {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public Collection<IConnection> getConnectionsGoingToOutside() {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+
+	}
+
+	@Override
+	public Collection<IAlgoInstance> getAlgoInstances() {
+		return getChildren(); // TODO remove duplicate
+	}
+
 	
 }
