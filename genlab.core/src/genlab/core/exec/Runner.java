@@ -25,10 +25,14 @@ import java.util.Set;
  */
 public class Runner extends Thread implements IComputationProgressSimpleListener {
 	
-	final static int MAX_THREADS = 3;
+	final static int MAX_THREADS = 8;
 	
 	final static int START_TASKS_SIZE = 500;
 	
+	
+	/**
+	 * Acts as the locker for: all, roots, done, ready, running, notReady
+	 */
 	final Set<IAlgoExecution> all = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
 
 	final Set<IAlgoExecution> roots = new HashSet<IAlgoExecution>();;
@@ -84,6 +88,10 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	public void addTask(IAlgoExecution exec) {
 		
 		synchronized (all) {
+			
+			if (all.contains(exec))
+				return;
+			
 			all.add(exec);
 		
 			switch (exec.getProgress().getComputationState()) {
@@ -119,16 +127,18 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	}
 	
 	protected void wakeUp() {
-		
+		System.err.println("should wake up !");
 	}
 
 	protected Collection<IAlgoExecution> detectRoots() {
 		
 		LinkedList<IAlgoExecution> res = new LinkedList<IAlgoExecution>();
 		
-		for (IAlgoExecution e: all) {
-			if (e.getPrerequires().isEmpty() && e.getAlgoInstance().getContainer()==null)
-				res.add(e);
+		synchronized (all) {
+			for (IAlgoExecution e: all) {
+				if (e.getPrerequires().isEmpty() && e.getAlgoInstance().getContainer()==null)
+					res.add(e);
+			}				
 		}
 		
 		messages.traceTech("found root tasks: "+res, getClass());
@@ -270,18 +280,21 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			ready.remove(e);
 			running.add(e);
 		
-			// actually run something
 			if (!e.isCostless()) {
 				t = new Thread(e);
-				t.setName("gl_task");
+				t.setName("gl_task_"+exec2thread.size());
 				t.setDaemon(false);
 				t.setPriority(NORM_PRIORITY);
 				exec2thread.put(e, t);
 			}
 			usedThreads += e.getThreadsUsed();
-			messages.debugUser("now using "+usedThreads+" over "+MAX_THREADS, getClass());
+				
 		}
 		
+		messages.debugUser("now using "+usedThreads+" over "+MAX_THREADS, getClass());
+		
+		// actually run something
+	
 		if (t==null) {
 			messages.debugUser("running task "+e+" (no thread, it is costless)", getClass());
 			e.run();
@@ -354,12 +367,14 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		
 				// when nothing more can be done, we may propose novel tasks :-) 
 				//System.err.println("threads used: "+usedThreads);
+				boolean proposeDynamicProcudersToWork;
 				synchronized (all) {
-					if (ready.isEmpty() && usedThreads < MAX_THREADS) {	// well, we could create new tasks !
-						if (!proposeDynamicProducersToWork())
-							break;
-					}
+					proposeDynamicProcudersToWork = ready.isEmpty() && usedThreads < MAX_THREADS;
+					// well, we could create new tasks !
 				}
+				if (proposeDynamicProcudersToWork && !proposeDynamicProducersToWork())
+						break;
+				
 			}
 			
 			
@@ -376,34 +391,39 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	
 	
 		while (!cancel) {
+			
+			boolean nothingToDo;
 			synchronized (all) {
 				
-				if (running.isEmpty() && ready.isEmpty() && notReady.isEmpty()) {
-					
-					// really, there is nothing to do.
-					
-					if (displayMessage) {
-						messages.infoUser("all tasks done. ", getClass());
-						execution.displayTechnicalInformationsOnMessages();
-						displayMessage = false;
-					}		
+				nothingToDo = running.isEmpty() && ready.isEmpty() && notReady.isEmpty(); 
 				
+			}
+			
+			if (nothingToDo) {
 				
-				} else {
-					displayMessage = true;
-					
-					attemptToDoThings();
-					
-					try {
-						//GLLogger.debugTech("wait", getClass());
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					
-
+				// really, there is nothing to do.
+				
+				if (displayMessage) {
+					messages.infoUser("all tasks done. ", getClass());
+					execution.displayTechnicalInformationsOnMessages();
+					displayMessage = false;
+				}		
+			
+			
+			} else {
+				displayMessage = true;
+				
+				attemptToDoThings();
+				
+				try {
+					//GLLogger.debugTech("wait", getClass());
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+				
+
 			}
 			
 		}
@@ -433,52 +453,58 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		//messages.traceTech("computation state changed: "+progress.getAlgoExecution()+": "+progress.getComputationState(), getClass());
 		
 		IAlgoExecution e = progress.getAlgoExecution();
+
+		boolean wakeUp = false;
+		
+		synchronized (all) {
 	
-		// check event
-		if (!all.contains(e)) {
-			all.add(e);
-		}
-			//throw new ProgramException("oops, I receive events which are not really of interest to me, like: "+progress.getAlgoExecution().getAlgoInstance());
-		
-		switch (progress.getComputationState()) {
-		
-		// a task was running, and ended
-		case FINISHED_FAILURE:
-			cancelTasks();
-		case FINISHED_OK:
-		case FINISHED_CANCEL:
-			messages.traceTech("task finished: "+e+" ("+progress.getDurationMs()+" ms)", getClass());
-			synchronized (all) {
+			// check event
+			if (!all.contains(e)) {
+				all.add(e);
+			}
+				//throw new ProgramException("oops, I receive events which are not really of interest to me, like: "+progress.getAlgoExecution().getAlgoInstance());
+			
+			switch (progress.getComputationState()) {
+			
+			// a task was running, and ended
+			case FINISHED_FAILURE:
+				cancelTasks();
+				
+			case FINISHED_OK:
+			case FINISHED_CANCEL:
+				messages.traceTech("task finished: "+e+" ("+progress.getDurationMs()+" ms)", getClass());
 				if (running.contains(e)) {
 					running.remove(e);
 					done.add(e);
 					exec2thread.remove(e);
 					usedThreads -= e.getThreadsUsed();
 				}
-			}
-			wakeUp();
-			break;
-			
-		// a task was waiting for dependancy, and received all inputs
-		case READY:
-			messages.traceTech("task is now ready: "+e, getClass());
-			synchronized (all) {
+				wakeUp = true;
+				break;
+				
+			// a task was waiting for dependancy, and received all inputs
+			case READY:
+				messages.traceTech("task is now ready: "+e, getClass());
 				notReady.remove(e);
 				ready.add(e);
+				wakeUp = true;
+				break;
+				
+			case WAITING_DEPENDENCY:
+			case STARTED:
+			case CREATED:
+				// ignore;
+				break;
+				
+			default:
+				throw new ProgramException("unknown state: "+progress.getComputationState());
 			}
-			wakeUp();
-			break;
-			
-		case WAITING_DEPENDENCY:
-		case STARTED:
-		case CREATED:
-			// ignore;
-			break;
-			
-		default:
-			throw new ProgramException("unknown state: "+progress.getComputationState());
+		
 		}
 		
+		if (wakeUp)
+			wakeUp();
+
 	}
 
 	public void cancel() {
@@ -496,5 +522,6 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			messages.debugTech("registered a novel tasks producer: "+producer, getClass());
 			tasksProducers.add(producer);
 		}
+		wakeUp();
 	}
 }
