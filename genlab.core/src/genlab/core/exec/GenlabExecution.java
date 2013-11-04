@@ -8,6 +8,7 @@ import genlab.core.model.exec.IComputationProgressSimpleListener;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.WorkflowCheckResult;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.core.usermachineinteraction.ListsOfMessages;
 
 public class GenlabExecution {
 
@@ -25,6 +26,8 @@ public class GenlabExecution {
 		GLLogger.infoUser("checking the workflow "+workflow+"...", GenlabExecution.class);
 
 		WorkflowCheckResult checkInfo = workflow.checkForRun();
+		ListsOfMessages.getGenlabMessages().addAll(checkInfo.messages); // report errors somewhere they can be viewed !
+		
 		if (checkInfo.isReady()) {
 			GLLogger.infoUser("ready :-)", GenlabExecution.class);
 		} else {
