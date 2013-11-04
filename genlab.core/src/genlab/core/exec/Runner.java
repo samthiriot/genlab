@@ -417,20 +417,22 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				
 				attemptToDoThings();
 				
-				
-				try {
-					messagesRun.traceTech("nothing to do, sleeping.", getClass());
-					synchronized (lockerMainLoop) {
-						lockerMainLoop.wait();	
-					}
-					messagesRun.traceTech("wake up !", getClass());
-				} catch (InterruptedException e) {
-					messagesRun.traceTech("Runner thread interrupted o_O. This is not supposed to happen.", getClass());
-					e.printStackTrace();
-				}
-				
 
 			}
+			
+
+			
+			try {
+				messagesRun.traceTech("nothing to do, sleeping.", getClass());
+				synchronized (lockerMainLoop) {
+					lockerMainLoop.wait();	
+				}
+				messagesRun.traceTech("wake up !", getClass());
+			} catch (InterruptedException e) {
+				messagesRun.traceTech("Runner thread interrupted o_O. This is not supposed to happen.", getClass());
+				e.printStackTrace();
+			}
+			
 			
 		}
 		
