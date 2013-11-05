@@ -1,5 +1,7 @@
 package genlab.core.model.meta;
 
+import genlab.core.model.exec.ComputationState;
+
 /**
  * Tags algorithms which can act as a "reduce" in functional programming,
  * that is take the many inputs of several paralell runs and piece them
@@ -10,4 +12,5 @@ package genlab.core.model.meta;
  */
 public interface IReduceAlgo {
 
+	
 }

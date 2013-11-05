@@ -2,6 +2,7 @@ package genlab.core.model.meta.basics.algos;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionReduce;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -52,7 +53,8 @@ public class AppendToTableAlgo extends BasicAlgo implements IReduceAlgo {
 	@Override
 	public IAlgoExecution createExec(final IExecution execution,
 			final AlgoInstance algoInstance) {
-		return new AbstractAlgoExecution(execution, algoInstance, new ComputationProgressWithSteps()) {
+		
+		return new AbstractAlgoExecutionReduce(execution, algoInstance, new ComputationProgressWithSteps()) {
 			
 			@Override
 			public void cancel() {
@@ -106,6 +108,12 @@ public class AppendToTableAlgo extends BasicAlgo implements IReduceAlgo {
 				progress.setComputationState(ComputationState.FINISHED_OK);
 				
 			}
+			
+
+			public void notifyActualEnd(ComputationState state) {
+				
+			}
+
 			
 			@Override
 			public void kill() {

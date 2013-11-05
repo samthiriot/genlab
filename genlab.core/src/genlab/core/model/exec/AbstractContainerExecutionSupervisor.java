@@ -1,20 +1,16 @@
 package genlab.core.model.exec;
 
-import genlab.core.exec.IContainerTask;
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
-import genlab.core.exec.ITask;
 import genlab.core.exec.ITasksDynamicProducer;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
+import genlab.core.model.instance.IReduceAlgoInstance;
+import genlab.core.model.meta.IReduceAlgo;
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
-
-import javax.security.auth.Subject;
 
 /**
  * A basis for container algo executions. 
@@ -109,6 +105,25 @@ public abstract class AbstractContainerExecutionSupervisor
 		
 		// here the result is empty (nothing exported by the loop itself)
 		
+		
+	}
+	
+	protected void hookContainerExecutionFinished(ComputationState state) {
+	
+		// called at the end of an execution
+		if (state != ComputationState.FINISHED_OK)
+			return;
+		
+		messages.debugTech("notifying dependant children that we finished with success", getClass());
+		
+		for (IAlgoInstance algoInst : this.algoInst.getAlgoInstancesDependingToOurChildren()) {
+			try {
+				IReduceAlgoInstance algoInstReduce = (IReduceAlgoInstance)algoInst;
+				algoInstReduce.notifyActualEnd(state);
+			} catch (ClassCastException e) {
+				throw new ProgramException("Reduce algorithms should always create IReduceAlgoInstance instances.");
+			}
+		}
 		
 	}
 

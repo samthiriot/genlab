@@ -55,6 +55,12 @@ public abstract class AbstractContainerExecution
 
 	}
 	
+	/**
+	 * can be override by children in order to process things when the computation finished
+	 */
+	protected void hookContainerExecutionFinished(ComputationState state) {
+		
+	}
 
 	@Override
 	public final void computationStateChanged(IComputationProgress progress) {
@@ -124,6 +130,7 @@ public abstract class AbstractContainerExecution
 					ourState = ComputationState.FINISHED_OK;
 				
 				messages.traceTech("all subs terminated; should transmit results", getClass());
+				hookContainerExecutionFinished(ourState);
 				this.progress.setComputationState(ourState);
 				
 			}
