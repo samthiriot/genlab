@@ -4,7 +4,8 @@ import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IConnection;
 
 /**
- * This weird connection links an iteration to its children.
+ * This weird connection links an iteration to its one-shot children.
+ * 
  * As soon as the parent iteration is started, it will transmit information
  * to its destination. Also, it will ignore the "finished" status from its parent iteration.
  * In other words, the transmission of information is triggered by the "started" status. 
@@ -12,10 +13,10 @@ import genlab.core.model.instance.IConnection;
  * @author Samuel Thiriot
  *
  */
-public class ConnectionExecFromIterationToChild extends AbstractConnectionExec {
+public class ConnectionExecFromIterationToChild extends AbstractConnectionExec<IAlgoExecution,IAlgoExecutionOneshot> {
 
 	
-	public ConnectionExecFromIterationToChild(IConnection c, IAlgoExecution from, IAlgoExecution to, boolean check) {
+	public ConnectionExecFromIterationToChild(IConnection c, IAlgoExecution from, IAlgoExecutionOneshot to, boolean check) {
 		
 		super(c, from, to);
 		
@@ -25,7 +26,7 @@ public class ConnectionExecFromIterationToChild extends AbstractConnectionExec {
 		
 	}
 	
-	public ConnectionExecFromIterationToChild(IConnection c, IAlgoExecution from, IAlgoExecution to) {
+	public ConnectionExecFromIterationToChild(IConnection c, IAlgoExecution from, IAlgoExecutionOneshot to) {
 		this(c, from, to, true);
 	}
 	
@@ -36,30 +37,14 @@ public class ConnectionExecFromIterationToChild extends AbstractConnectionExec {
 	@Override
 	public void computationStateChanged(IComputationProgress progress) {
 		
-		/*
-		if (progress != from.getProgress())
-			return;	// no reason for this case...
-
-		final ComputationState state = progress.getComputationState();
+		// we just ignore the parent status !
 		
-		if (state != ComputationState.STARTED) 
-			return;
-				
-		// retrieve the value
-		try {
-			value = from.getResult().getResults().get(c.getFrom());
-		} catch (NullPointerException e) {
-			throw new ProgramException("an executable announced a finished with success, but does not publish results.");
-		}
-		
-		// ensure we got one
-		if (value == null)
-			exec.getListOfMessages().errorUser("received a null value...", getClass());
+	}
 
-		// warn children
+	@Override
+	public void forceValue(Object value) {
+		this.value = value;
 		to.notifyInputAvailable(c.getTo());
-	*/
-		
 	}
 	
 

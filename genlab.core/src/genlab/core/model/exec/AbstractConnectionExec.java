@@ -16,17 +16,17 @@ import genlab.core.model.instance.IConnection;
  * @author Samuel Thiriot
  *
  */
-public abstract class AbstractConnectionExec implements IConnectionExecution {
+public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, TypeTo extends IAlgoExecution> implements IConnectionExecution {
 
 	public final IConnection c;
-	public final IAlgoExecution from;
-	public final IAlgoExecution to;
+	public final TypeFrom from;
+	public final TypeTo to;
 	
 	protected final IExecution exec;
 	
 	protected Object value = null;
 	
-	public AbstractConnectionExec(IConnection c, IAlgoExecution from, IAlgoExecution to) {
+	public AbstractConnectionExec(IConnection c, TypeFrom from, TypeTo to) {
 		
 		if (from == to)
 			throw new ProgramException("inconsistant executable connection (short loop)");
@@ -55,19 +55,6 @@ public abstract class AbstractConnectionExec implements IConnectionExecution {
 		return value;
 	}
 
-		
-	/* (non-Javadoc)
-	 * @see genlab.core.model.exec.IConnectionExecution#forceValue(java.lang.Object)
-	 */
-	@Override
-	public void forceValue(Object value) {
-		
-		// store the value
-		this.value = value;
-
-		// warn children
-		to.notifyInputAvailable(c.getTo());
-	}
 	
 	public void reset() {
 		this.value = null;
@@ -76,10 +63,8 @@ public abstract class AbstractConnectionExec implements IConnectionExecution {
 
 	@Override
 	public final IConnection getConnection() {
-		
 		return c;
 	}
-	
 
 	@Override
 	public final IAlgoExecution getFrom() {

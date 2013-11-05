@@ -2,7 +2,7 @@ package genlab.graphstream.algos.readers;
 
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
-import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -19,7 +19,7 @@ import java.io.InputStream;
 import org.graphstream.stream.file.FileSource;
 
 public class AbstractGraphstreamGraphParserExecution extends
-		AbstractAlgoExecution {
+	AbstractAlgoExecutionOneshot {
 	
 	protected final FileSource filesource;
 

@@ -1,24 +1,16 @@
 package genlab.core.model.meta.basics.algos;
 
 import genlab.core.exec.IExecution;
-import genlab.core.model.exec.AbstractAlgoExecution;
-import genlab.core.model.exec.AbstractAlgoExecutionReduce;
-import genlab.core.model.exec.ComputationProgressWithSteps;
-import genlab.core.model.exec.ComputationResult;
-import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.instance.IConnection;
+import genlab.core.model.instance.IReduceAlgoInstance;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.IReduceAlgo;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.AnythingFlowType;
-import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import genlab.core.model.meta.basics.flowtypes.TableFlowType;
-
-import java.util.Map;
 
 public class AppendToTableAlgo extends BasicAlgo implements IReduceAlgo {
 
@@ -54,79 +46,8 @@ public class AppendToTableAlgo extends BasicAlgo implements IReduceAlgo {
 	public IAlgoExecution createExec(final IExecution execution,
 			final AlgoInstance algoInstance) {
 		
-		return new AbstractAlgoExecutionReduce(execution, algoInstance, new ComputationProgressWithSteps()) {
-			
-			@Override
-			public void cancel() {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			protected IGenlabTable outputTable = null;
-			
-			@Override
-			public void run() {
-				
-				messages.traceTech("starting", getClass());
-				progress.setComputationState(ComputationState.STARTED);
-				
-				Map<IConnection,Object> inputs = getInputValuesForInput(INPUT_ANYTHING);
-				progress.setProgressTotal(inputs.size());
-				
-				if (outputTable == null) { 
-					outputTable = new GenlabTable();
-				}
-				
-				messages.traceTech("add row", getClass());
-				final int rowId = outputTable.addRow();
-				
-				for (IConnection c: inputs.keySet()) {
-					
-					final Object value = inputs.get(c);
-
-					//messages.traceTech("connection "+c+" / "+value, getClass());
-					
-					final String columnId = c.getFrom().getAlgoInstance().getName()+"/"+c.getFrom().getMeta().getName();
-					if (!outputTable.containsColumn(columnId))
-						outputTable.declareColumn(columnId);
-					
-					outputTable.setValue(rowId, columnId, value);
-					
-					progress.incProgressMade();
-				}
-				
-				//messages.traceTech("set res", getClass());
-				
-				if (getResult() == null) {
-					ComputationResult result = new ComputationResult(algoInstance, progress, execution.getListOfMessages());
-					setResult(result);
-				}
-				((ComputationResult)getResult()).setResult(OUTPUT_TABLE, outputTable);
-				
-				//messages.traceTech("end", getClass());
-				
-				progress.setComputationState(ComputationState.FINISHED_OK);
-				
-			}
-			
-
-			public void notifyActualEnd(ComputationState state) {
-				
-			}
-
-			
-			@Override
-			public void kill() {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public long getTimeout() {
-				// TODO Auto-generated method stub
-				return 2000;
-			}
-		};
+		return new AppendToTableExecutable(execution, algoInstance);
+	
 	}
 
 }

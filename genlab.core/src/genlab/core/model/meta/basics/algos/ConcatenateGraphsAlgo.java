@@ -2,6 +2,7 @@ package genlab.core.model.meta.basics.algos;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -78,7 +79,8 @@ public class ConcatenateGraphsAlgo extends BasicAlgo {
 	@Override
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {
-		return new AbstractAlgoExecution(execution, algoInstance, new ComputationProgressWithSteps()) {
+		
+		return new AbstractAlgoExecutionOneshot(execution, algoInstance, new ComputationProgressWithSteps()) {
 			
 			@Override
 			public void cancel() {

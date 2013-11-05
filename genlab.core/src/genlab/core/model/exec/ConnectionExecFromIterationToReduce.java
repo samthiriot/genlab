@@ -1,5 +1,6 @@
 package genlab.core.model.exec;
 
+import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IConnection;
 
@@ -15,28 +16,17 @@ import genlab.core.model.instance.IConnection;
  * @author Samuel Thiriot
  *
  */
-public class ConnectionExec extends AbstractConnectionExec<IAlgoExecution, IAlgoExecutionOneshot> {
+public class ConnectionExecFromIterationToReduce extends AbstractConnectionExec<IAlgoExecution, IReduceAlgoExecution> {
 
-	public ConnectionExec(IConnection c, IAlgoExecution from, IAlgoExecutionOneshot to, boolean check) {
+	public ConnectionExecFromIterationToReduce(IConnection c, IAlgoExecution from, IReduceAlgoExecution to) {
 
 		super(c, from, to);
 		
-		// check parameters
-		if (check 
-				&& (
-						c.getFrom().getAlgoInstance() != from.getAlgoInstance() 
-						|| 
-						c.getTo().getAlgoInstance() != to.getAlgoInstance()
-						)
-			)
-			throw new ProgramException("inconsistant executable connection");
-		
+		// TODO check ?
 		
 	}
 	
-	public ConnectionExec(IConnection c, IAlgoExecution from, IAlgoExecutionOneshot to) {
-		this(c, from, to, true);
-	}
+
 	
 	
 	/* (non-Javadoc)
@@ -69,7 +59,11 @@ public class ConnectionExec extends AbstractConnectionExec<IAlgoExecution, IAlgo
 			exec.getListOfMessages().errorUser("received a null value...", getClass());
 
 		// warn children
-		to.notifyInputAvailable(c.getTo());
+		to.receiveInput(
+				(IAlgoExecution)from.getParent(), 
+				this, 
+				value
+				);
 
 		
 	}
@@ -81,11 +75,8 @@ public class ConnectionExec extends AbstractConnectionExec<IAlgoExecution, IAlgo
 	@Override
 	public void forceValue(Object value) {
 		
-		// store the value
-		this.value = value;
-
-		// warn children
-		to.notifyInputAvailable(c.getTo());
+		throw new NotImplementedException();
+		
 	}
 	
 	

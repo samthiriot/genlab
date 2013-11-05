@@ -1,6 +1,5 @@
 package genlab.core.model.meta;
 
-import genlab.core.model.exec.ComputationState;
 
 /**
  * Tags algorithms which can act as a "reduce" in functional programming,

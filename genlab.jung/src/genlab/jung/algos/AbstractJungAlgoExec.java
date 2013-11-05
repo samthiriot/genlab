@@ -3,6 +3,7 @@ package genlab.jung.algos;
 import edu.uci.ics.jung.graph.Graph;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -11,7 +12,7 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.jung.utils.Converters;
 
-public abstract class AbstractJungAlgoExec extends AbstractAlgoExecution {
+public abstract class AbstractJungAlgoExec extends AbstractAlgoExecutionOneshot {
 
 	public AbstractJungAlgoExec(IExecution exec, IAlgoInstance algoInst) {
 		super(exec, algoInst, new ComputationProgressWithSteps());

@@ -2,6 +2,7 @@ package genlab.core.model.meta.basics.algos;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -12,7 +13,7 @@ import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public abstract class AbstractTableGeneratorExec extends AbstractAlgoExecution {
+public abstract class AbstractTableGeneratorExec extends AbstractAlgoExecutionOneshot {
 
 	public AbstractTableGeneratorExec(IExecution exec, IAlgoInstance algoInst) {
 		super(exec, algoInst, new ComputationProgressWithSteps());

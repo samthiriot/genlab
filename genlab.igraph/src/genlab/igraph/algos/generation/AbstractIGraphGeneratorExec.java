@@ -3,6 +3,7 @@ package genlab.igraph.algos.generation;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -14,7 +15,7 @@ import genlab.igraph.commons.IGraph2GenLabConvertor;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphLibrary;
 
-public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecution {
+public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecutionOneshot {
 
 	public AbstractIGraphGeneratorExec(
 			IExecution exec, 

@@ -233,8 +233,17 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			
 			messagesRun.debugTech("proposing to task producer "+producer+" to submit novel tasks...", getClass());
 				
-			IAlgoExecution t = producer.provideMoreTasks();
-					
+			
+			IAlgoExecution t = null;
+			
+			try {
+				t = producer.provideMoreTasks();
+			} catch (RuntimeException e) {
+				messagesRun.errorTech("error while proposing a producer to submit jobs:"+e.getMessage(), getClass(), e);
+				// TODO invalidate something !
+				// TODO change tasks producer so it provides the info about its container task
+			}
+			
 			if (t == null) {
 				tasksProducers.remove(producer);
 				messagesRun.debugTech("task producer "+producer+" has no more tasks", getClass());
@@ -284,7 +293,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				t = new Thread(e);
 				t.setName("gl_task_"+System.currentTimeMillis());
 				t.setDaemon(false);
-				t.setPriority(NORM_PRIORITY);
+				t.setPriority(MIN_PRIORITY);
 				exec2thread.put(e, t);
 			}
 			usedThreads += e.getThreadsUsed();

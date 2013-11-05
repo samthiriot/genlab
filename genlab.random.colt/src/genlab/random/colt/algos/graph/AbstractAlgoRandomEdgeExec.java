@@ -2,6 +2,7 @@ package genlab.random.colt.algos.graph;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -10,7 +11,7 @@ import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import cern.jet.random.engine.MersenneTwister;
 import cern.jet.random.engine.RandomEngine;
 
-public abstract class AbstractAlgoRandomEdgeExec extends AbstractAlgoExecution {
+public abstract class AbstractAlgoRandomEdgeExec extends AbstractAlgoExecutionOneshot {
 
 	public AbstractAlgoRandomEdgeExec(IExecution exec, IAlgoInstance algoInst) {
 		super(exec, algoInst, new ComputationProgressWithSteps());

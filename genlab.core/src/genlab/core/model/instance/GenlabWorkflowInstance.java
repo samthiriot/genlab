@@ -29,6 +29,8 @@ import java.util.Set;
  * 
  * Nota: for persistence, always use the Persistence genlab class to ensure integrity.
  * 
+ * TODO made worflows standart containers
+ * 
  * @author Samuel Thiriot
  *
  */
@@ -610,6 +612,11 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	@Override
 	public Collection<IAlgoInstance> getAlgoInstances() {
 		return getChildren(); // TODO remove duplicate
+	}
+
+	@Override
+	public Collection<IConnection> getAllIncomingConnections() {
+		return Collections.EMPTY_LIST;
 	}
 
 	

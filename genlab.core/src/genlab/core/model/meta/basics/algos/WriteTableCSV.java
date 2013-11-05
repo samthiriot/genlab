@@ -3,7 +3,7 @@ package genlab.core.model.meta.basics.algos;
 import genlab.core.commons.FileUtils;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
-import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
@@ -54,7 +54,7 @@ public class WriteTableCSV extends BasicAlgo {
 		
 		final File file = (File)algoInstance.getValueForParameter(PARAMETER_FILE);
 		
-		return new AbstractAlgoExecution(execution, algoInstance, new ComputationProgressWithSteps()) {
+		return new AbstractAlgoExecutionOneshot(execution, algoInstance, new ComputationProgressWithSteps()) {
 			
 			@Override
 			public void cancel() {

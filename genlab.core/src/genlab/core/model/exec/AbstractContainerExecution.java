@@ -6,11 +6,8 @@ import genlab.core.exec.IExecution;
 import genlab.core.exec.ITask;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IConnection;
-import genlab.core.model.instance.IInputOutputInstance;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -24,7 +21,7 @@ import java.util.Set;
  *
  */
 public abstract class AbstractContainerExecution 
-								extends AbstractAlgoExecution 
+								extends AbstractAlgoExecutionOneshot 
 								implements IContainerTask, IComputationProgressSimpleListener {
 
 	/**

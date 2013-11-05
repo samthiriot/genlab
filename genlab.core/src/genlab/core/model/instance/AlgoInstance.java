@@ -11,6 +11,7 @@ import genlab.core.usermachineinteraction.MessageLevel;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -261,6 +262,18 @@ public class AlgoInstance implements IAlgoInstance {
 	@Override
 	public void setContainer(IAlgoContainerInstance container) {
 		this.container = container;
+	}
+
+	@Override
+	public Collection<IConnection> getAllIncomingConnections() {
+
+		HashSet<IConnection> result = new HashSet<IConnection>();
+		
+		for (IInputOutputInstance inputInstance: inputs2inputInstances.values()) {
+			result.addAll(inputInstance.getConnections());
+		}
+		
+		return result;
 	}
 	
 	

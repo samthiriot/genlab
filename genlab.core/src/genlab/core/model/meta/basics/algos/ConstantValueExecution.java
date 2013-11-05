@@ -1,11 +1,15 @@
 package genlab.core.model.meta.basics.algos;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
+import genlab.core.model.exec.IAlgoExecutionOneshot;
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IInputOutput;
 
 /**
@@ -15,7 +19,7 @@ import genlab.core.model.meta.IInputOutput;
  *
  * @param <JavaType>
  */
-public class ConstantValueExecution<JavaType> extends AbstractAlgoExecution {
+public class ConstantValueExecution<JavaType> extends AbstractAlgoExecutionOneshot implements IAlgoExecutionOneshot {
 
 	protected JavaType value = null;
 	
@@ -82,6 +86,12 @@ public class ConstantValueExecution<JavaType> extends AbstractAlgoExecution {
 	@Override
 	public long getTimeout() {
 		return 500;
+	}
+
+	@Override
+	public void notifyInputAvailable(IInputOutputInstance to) {
+
+		throw new ProgramException("received an input for a constant, which has obviously no input. oops, this should never happen.");
 	}
 
 }

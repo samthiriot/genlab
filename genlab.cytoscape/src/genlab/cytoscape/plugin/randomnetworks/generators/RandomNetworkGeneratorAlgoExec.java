@@ -2,6 +2,7 @@ package genlab.cytoscape.plugin.randomnetworks.generators;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -10,7 +11,7 @@ import genlab.cytoscape.plugin.randomnetworks.Converter;
 import cytoscape.randomnetwork.RandomNetwork;
 import cytoscape.randomnetwork.RandomNetworkModel;
 
-public abstract class RandomNetworkGeneratorAlgoExec extends AbstractAlgoExecution {
+public abstract class RandomNetworkGeneratorAlgoExec extends AbstractAlgoExecutionOneshot {
 
 	public RandomNetworkGeneratorAlgoExec(IExecution exec,
 			IAlgoInstance algoInst) {

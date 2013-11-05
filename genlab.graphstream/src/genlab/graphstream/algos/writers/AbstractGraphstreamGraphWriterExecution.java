@@ -3,6 +3,7 @@ package genlab.graphstream.algos.writers;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -16,7 +17,7 @@ import java.io.IOException;
 import org.graphstream.stream.file.FileSink;
 
 public class AbstractGraphstreamGraphWriterExecution extends
-		AbstractAlgoExecution {
+	AbstractAlgoExecutionOneshot {
 	
 	protected IGenlabGraph inputGraph = null;
 	protected final FileSink fileSink;

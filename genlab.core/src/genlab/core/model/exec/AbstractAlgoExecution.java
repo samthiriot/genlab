@@ -22,7 +22,7 @@ import java.util.Set;
  * 
  * 
  * 
- * @author Samuel THiriot
+ * @author Samuel Thiriot
  *
  * @param 
  */
@@ -33,15 +33,15 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	private IComputationResult result = null;
 	
 	protected final IExecution exec;
+
+	protected ListOfMessages messages;
 	
+
 	/**
 	 * For each input, associates it with the incoming connections for this input.
 	 */
 	protected Map<IInputOutputInstance,Collection<IConnectionExecution>> input2connection = new HashMap<IInputOutputInstance, Collection<IConnectionExecution>>();
 
-	protected Set<IInputOutputInstance> inputsNotAvailable = null;
-
-	protected ListOfMessages messages;
 	
 	/**
 	 * During init, creates the input executable connections
@@ -54,11 +54,9 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		this.progress = progress;
 		progress._setAlgoExecution(this);
 		
-		// at the very beginning, all the inputs are waiting for data
-		inputsNotAvailable = new HashSet<IInputOutputInstance>(algoInst.getInputInstances());
-		progress.setComputationState(ComputationState.WAITING_DEPENDENCY);
-		
 		messages = exec.getListOfMessages();
+		
+		progress.setComputationState(ComputationState.CREATED);
 	}	
 	
 	public void initInputs(Map<IAlgoInstance,IAlgoExecution> instance2exec) {
@@ -116,24 +114,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		final IAlgoExecution fromExec = instance2exec.get(c.getFrom().getAlgoInstance());
 		final IAlgoExecution toExec = instance2exec.get(c.getTo().getAlgoInstance());
 
-		IConnectionExecution cEx = null;
-		
-		// TODO dirty. How do that ?
-		if (fromExec instanceof AbstractContainerExecutionIteration) {
-			cEx = new ConnectionExecFromIterationToChild(
-					c, 
-					fromExec, 
-					toExec,
-					false	// don't check when we do fancy things
-					);
-		} else {
-			cEx = new ConnectionExec(
-					c, 
-					fromExec, 
-					toExec,
-					false	// don't check when we do fancy things
-					);
-		}
+		IConnectionExecution cEx = ExecutableConnectionsFactory.createExecutableConnection(fromExec, toExec, c);
 		
 		
 		getOrCreateConnectionsForInput(input).add(cEx);
@@ -225,39 +206,6 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		return exec;
 	}
 
-	@Override
-	public void notifyInputAvailable(IInputOutputInstance to) {
-		
-		// ignore all 
-		if (progress.getComputationState() != ComputationState.WAITING_DEPENDENCY)
-			return;
-		
-		if (to.getMeta().acceptsMultipleInputs()) {
-			// this input accepts / expects several connection; so we have to check for all these connections !
-			
-			boolean allConnectionsProvidedValue = true;
-			
-			for (IConnectionExecution c: input2connection.get(to)) {
-				if (c.getValue() == null) {
-					allConnectionsProvidedValue = false;
-					break;
-				}
-			}
-			
-			if (allConnectionsProvidedValue)
-				inputsNotAvailable.remove(to);
-			
-		} else
-			// this input only accepts one connection; so we can assume it is satisfied :-)
-			inputsNotAvailable.remove(to);
-		
-		// maybe now we have all the required inputs ?
-		if (inputsNotAvailable.isEmpty()) {
-			exec.getListOfMessages().traceTech("all inputs are available, now ready to run !", getClass());
-			progress.setComputationState(ComputationState.READY);
-		}
-			
-	}
 	
 	/**
 	 * Returns true if the output is used. Children should take care of not computing things that are not useful (for instance, 
@@ -298,9 +246,6 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 
 	@Override
 	public void reset() {
-		progress.setComputationState(ComputationState.WAITING_DEPENDENCY);
-		inputsNotAvailable.clear();
-		inputsNotAvailable.addAll(algoInst.getInputInstances());
 
 	}
 

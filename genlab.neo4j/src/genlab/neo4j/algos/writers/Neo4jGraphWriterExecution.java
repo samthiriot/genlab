@@ -3,6 +3,7 @@ package genlab.neo4j.algos.writers;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -22,7 +23,7 @@ import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
-public class Neo4jGraphWriterExecution extends AbstractAlgoExecution {
+public class Neo4jGraphWriterExecution extends AbstractAlgoExecutionOneshot {
 
 	private static final long UPDATE_PROGRESS_EVERY = 20;
 	

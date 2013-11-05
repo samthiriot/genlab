@@ -3,6 +3,7 @@ package genlab.igraph.algos.compare;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -12,7 +13,7 @@ import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.igraph.commons.IGraph2GenLabConvertor;
 import genlab.igraph.natjna.IGraphGraph;
 
-public abstract class AbstractIsomorphismExec extends AbstractAlgoExecution {
+public abstract class AbstractIsomorphismExec extends AbstractAlgoExecutionOneshot {
 
 	public AbstractIsomorphismExec(IExecution exec, IAlgoInstance algoInst) {
 		super(exec, algoInst, new ComputationProgressWithSteps());

@@ -2,13 +2,14 @@ package genlab.jung.generators;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 
-public abstract class AbstractJungGeneratorExec extends AbstractAlgoExecution {
+public abstract class AbstractJungGeneratorExec extends AbstractAlgoExecutionOneshot {
 
 	public AbstractJungGeneratorExec(IExecution exec, IAlgoInstance algoInst) {
 		super(exec, algoInst, new ComputationProgressWithSteps());

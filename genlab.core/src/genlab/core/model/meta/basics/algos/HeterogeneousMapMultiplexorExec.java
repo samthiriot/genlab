@@ -2,6 +2,7 @@ package genlab.core.model.meta.basics.algos;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IComputationProgress;
@@ -11,7 +12,7 @@ import genlab.core.model.meta.basics.flowtypes.HeterogeneousMap;
 
 import java.util.Map;
 
-public class HeterogeneousMapMultiplexorExec extends AbstractAlgoExecution {
+public class HeterogeneousMapMultiplexorExec extends AbstractAlgoExecutionOneshot {
 
 	public HeterogeneousMapMultiplexorExec(IExecution exec, IAlgoInstance algoInst, IComputationProgress progress) {
 		super(exec, algoInst, progress);

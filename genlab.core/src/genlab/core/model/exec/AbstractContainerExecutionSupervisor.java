@@ -17,6 +17,7 @@ import java.util.Map;
  * The supervisor starts subexecution iterations. 
  * It contains subtasks, each subtask corresponding to one iteration.
  * 
+ * The supervisor has the responsability to transmit to reduce algos the information of processing end.
  * 
  * @author Samuel Thiriot
  *
@@ -25,8 +26,6 @@ public abstract class AbstractContainerExecutionSupervisor
 							extends AbstractContainerExecution 
 							implements ITasksDynamicProducer  {
 
-	
-	
 
 	
 	public AbstractContainerExecutionSupervisor(
@@ -91,8 +90,7 @@ public abstract class AbstractContainerExecutionSupervisor
 		
 		ComputationResult res = new ComputationResult(algoInst, progress, messages);
 		setResult(res);
-		
-		
+			
 		initFirstRun();
 		
 		progress.setComputationState(ComputationState.STARTED);
@@ -111,19 +109,9 @@ public abstract class AbstractContainerExecutionSupervisor
 	protected void hookContainerExecutionFinished(ComputationState state) {
 	
 		// called at the end of an execution
-		if (state != ComputationState.FINISHED_OK)
+		if (!state.isFinished())
 			return;
 		
-		messages.debugTech("notifying dependant children that we finished with success", getClass());
-		
-		for (IAlgoInstance algoInst : this.algoInst.getAlgoInstancesDependingToOurChildren()) {
-			try {
-				IReduceAlgoInstance algoInstReduce = (IReduceAlgoInstance)algoInst;
-				algoInstReduce.notifyActualEnd(state);
-			} catch (ClassCastException e) {
-				throw new ProgramException("Reduce algorithms should always create IReduceAlgoInstance instances.");
-			}
-		}
 		
 	}
 
@@ -192,12 +180,13 @@ public abstract class AbstractContainerExecutionSupervisor
 				algoInst, 
 				new ComputationProgressWithSteps(), // TODO another progress ? 
 				inputConnection2value, 
-				instance2execForSubtasks,
+				instance2execOriginal, // instance2execForSubtasks,
 				getSuffixForCurrentIteration()
 				);
 		
 		// now create the links to call this iteration
 		messages.traceTech("init links for this iteration...", getClass());
+		// note that iterations not only create input, but also output, connections (for connection between children and outside)
 		resExecIteration.initInputs(instance2execForSubtasks);
 				
 		// set values

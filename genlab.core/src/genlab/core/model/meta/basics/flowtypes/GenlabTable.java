@@ -11,6 +11,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Optimized for a given number of columns 
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class GenlabTable implements IGenlabTable {
 
 	private ArrayList<Object[]> content = new ArrayList<Object[]>();
@@ -39,7 +45,7 @@ public class GenlabTable implements IGenlabTable {
 	}
 
 	@Override
-	public void declareColumn(String id) {
+	public int declareColumn(String id) {
 		
 		if (columnId2idx.containsKey(id))
 			throw new WrongParametersException("this column already exists: "+id);
@@ -47,7 +53,7 @@ public class GenlabTable implements IGenlabTable {
 		GLLogger.debugTech("declaring new column "+id, getClass());
 		
 		// create the column id...
-		createNewIdForColumn(id);
+		int intId = createNewIdForColumn(id);
 		
 		// and resize all data
 		int newSize = columnId2idx.size();
@@ -55,10 +61,14 @@ public class GenlabTable implements IGenlabTable {
 			content.set(i, Arrays.copyOf(content.get(i), newSize));
 		}
 		
+		return intId;
+		
 	}
 	
 	@Override
-	public void declareColumns(Collection<String> ids) {
+	public Collection<Integer> declareColumns(Collection<String> ids) {
+		
+		Collection<Integer> intIds = new LinkedList<Integer>();
 		
 		// check parameters
 		for (String id : ids) {
@@ -68,7 +78,7 @@ public class GenlabTable implements IGenlabTable {
 		
 		// create ids 
 		for (String id : ids) {
-			createNewIdForColumn(id);
+			intIds.add(createNewIdForColumn(id));
 		}
 		
 		// and resize all data
@@ -77,6 +87,7 @@ public class GenlabTable implements IGenlabTable {
 			content.set(i, Arrays.copyOf(content.get(i), newSize));
 		}
 
+		return intIds;
 	}
 
 	@Override
@@ -112,6 +123,12 @@ public class GenlabTable implements IGenlabTable {
 		content.get(rowId)[columnId2idx.get(columnId)] = value;
 		
 	}
+
+	@Override
+	public void setValue(int rowId, int columnIdx, Object value) {
+		content.get(rowId)[columnIdx] = value;
+	}
+
 
 	@Override
 	public void setValues(int rowId, Object[] values) {

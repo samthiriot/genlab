@@ -39,17 +39,13 @@ public interface IAlgoExecution extends IExecutionTask, IDumpAsExecutionNetwork 
 	 * @return
 	 */
 	public IComputationProgress getProgress();
-	
+
+	/**
+	 * Returns the execution in for which this algo exec was created.
+	 * @return
+	 */
 	public IExecution getExecution();
 
-	
-	
-	/**
-	 * Called during execution when an input became available
-	 * @param to
-	 */
-	public void notifyInputAvailable(IInputOutputInstance to);
-	
 	/**
 	 * Initialize the algo execution: provides enough information
 	 * to create the exec connections that link all the exec instances.

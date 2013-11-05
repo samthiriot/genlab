@@ -1,7 +1,7 @@
 package genlab.cytoscape.plugin.randomnetworks.analysis;
 
 import genlab.core.exec.IExecution;
-import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -11,7 +11,7 @@ import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.cytoscape.plugin.randomnetworks.Converter;
 import cytoscape.randomnetwork.RandomNetwork;
 
-public abstract class RandomNetworkAnalyzeExec extends AbstractAlgoExecution {
+public abstract class RandomNetworkAnalyzeExec extends AbstractAlgoExecutionOneshot {
 
 	public RandomNetworkAnalyzeExec(IExecution exec, IAlgoInstance algoInst) {
 		

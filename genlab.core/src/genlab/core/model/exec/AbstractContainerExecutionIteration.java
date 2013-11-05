@@ -1,5 +1,6 @@
 package genlab.core.model.exec;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.instance.AlgoContainerInstance;
 import genlab.core.model.instance.IAlgoContainerInstance;
@@ -56,19 +57,56 @@ public class AbstractContainerExecutionIteration extends AbstractContainerExecut
 
 	}
 	
+	protected void createOutputExecutableConnection(
+			IConnection cOut, 
+			Map<IAlgoInstance,IAlgoExecution> instance2exec
+			) {
+		
+		final IAlgoExecution ourChildFrom = instance2execForSubtasks.get(cOut.getFrom().getAlgoInstance());
+		if (ourChildFrom == null)
+			throw new ProgramException("unable to find our own child "+cOut.getFrom().getAlgoInstance());
+		
+		final IAlgoExecution toExec = instance2execOriginal.get(cOut.getTo().getAlgoInstance());
+		if (toExec == null)
+			throw new ProgramException("unable to find the destination executable: "+cOut.getTo().getAlgoInstance());
+		IReduceAlgoExecution toExecReduce = null;
+		try {
+			toExecReduce = (IReduceAlgoExecution)toExec;
+		} catch (ClassCastException e) {
+			throw new ProgramException("children should be reduce algos");
+		}
+	
+		ConnectionExecFromIterationToReduce cEx = new ConnectionExecFromIterationToReduce(
+				cOut, 
+				ourChildFrom, 
+				toExecReduce
+				);
+		
+	}
+	
 
 	@Override
 	public void initInputs(Map<IAlgoInstance,IAlgoExecution> instance2exec) {
 		
-		// creates links from this iteration to its supervisor
+		AlgoContainerInstance algoContainerInst = (AlgoContainerInstance)algoInst;
 		
-		for (IConnection cIn : ((AlgoContainerInstance)algoInst).getConnectionsComingFromOutside()) {
+		// creates links from this iteration to its supervisor
+		for (IConnection cIn : algoContainerInst.getConnectionsComingFromOutside()) {
 			
 			createInputExecutableConnection(
 					cIn.getTo(), 
 					instance2exec
 					);
 
+		}
+		
+		// and create links from this iteration to children
+		for (IConnection cOut: algoContainerInst.getConnectionsGoingToOutside()) {
+			
+			createOutputExecutableConnection(
+					cOut,
+					instance2exec
+					);
 		}
 		
 	}
@@ -119,11 +157,10 @@ public class AbstractContainerExecutionIteration extends AbstractContainerExecut
 			toExec = instance2execForSubtasks.get(c.getTo().getAlgoInstance());
 		}
 				
-
 		IConnectionExecution cEx = new ConnectionExecFromIterationToChild(
 				c, 
 				fromExec, 
-				toExec,
+				(IAlgoExecutionOneshot) toExec,
 				false	// don't check when we do fancy things
 				);
 		

@@ -2,6 +2,7 @@ package genlab.gui.algos;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -27,7 +28,7 @@ import org.eclipse.ui.part.WorkbenchPart;
  * @author Samuel Thiriot
  *
  */
-public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecution {
+public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOneshot {
 
 	/**
 	 * Associates ids of these views with the corresponding instance.

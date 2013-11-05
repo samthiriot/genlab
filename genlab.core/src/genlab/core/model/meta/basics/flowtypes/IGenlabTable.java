@@ -8,8 +8,8 @@ public interface IGenlabTable {
 	
 
 	public int getColumnsCount();
-	public void declareColumns(Collection<String> ids);
-	public void declareColumn(String id);
+	public Collection<Integer> declareColumns(Collection<String> ids);
+	public int declareColumn(String id);
 	public boolean containsColumn(String id);
 	
 	/**
@@ -25,6 +25,7 @@ public interface IGenlabTable {
 	public int addRow();
 	public int getRowsCount();
 	public void setValue(int rowId, String columnId, Object value);
+	public void setValue(int rowId, int columnIdx, Object value);
 	public void setValues(int rowId, Object[] values);
 	
 	/**

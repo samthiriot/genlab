@@ -2,6 +2,7 @@ package genlab.igraph.algos.measure;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -16,7 +17,7 @@ import genlab.igraph.natjna.IGraphGraph;
 
 import java.util.Map;
 
-public abstract class AbstractIGraphMeasureExec extends AbstractAlgoExecution {
+public abstract class AbstractIGraphMeasureExec extends AbstractAlgoExecutionOneshot {
 
 	public AbstractIGraphMeasureExec(
 			IExecution exec, 

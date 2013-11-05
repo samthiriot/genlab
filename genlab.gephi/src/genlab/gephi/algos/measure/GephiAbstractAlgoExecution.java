@@ -2,6 +2,7 @@ package genlab.gephi.algos.measure;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -17,7 +18,7 @@ import java.util.Map;
 
 import org.gephi.project.api.Workspace;
 
-public abstract class GephiAbstractAlgoExecution extends AbstractAlgoExecution {
+public abstract class GephiAbstractAlgoExecution extends AbstractAlgoExecutionOneshot {
 
 	protected boolean cancelled = false;
 	
