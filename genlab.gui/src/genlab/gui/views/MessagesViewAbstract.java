@@ -78,6 +78,7 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 	public MessagesViewAbstract() {
 	}
 
+	
 	/**
 	 * In charge of refreshing the view as soon as possible, 
 	 * but not too often
@@ -97,43 +98,15 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 		private long minPeriodMs = 100;
 		
 		private boolean longSleep = false;
+		
+		private Runnable runnable = null;
 
 		public ThreadMessageUpdate() {
 			setDaemon(true);
-			setPriority(NORM_PRIORITY);
+			setPriority(MIN_PRIORITY);
 			setName("glUpdateMessages");
-		}
-		
-		public void cancel() {
-			cancel = true;
-			interrupt();
-		}
-		
-		public void notifySomethingToDisplay() {
 			
-			if (updateInProgress)
-				return; // ignore if we are aleady updating
-			
-			contentToDisplay = true;
-			
-			if (longSleep)
-				interrupt();
-
-		}
-		
-		protected void refreshDisplay() {
-			
-			if (updateInProgress)
-				return;
-			
-			if (display == null || display.isDisposed()) {
-				this.cancel();
-				if (messages != null)
-					messages.removeListener(listener);
-			}
-
-			updateInProgress = true;
-			display.asyncExec(new Runnable() {
+			runnable = new Runnable() {
 				
 				@Override
 				public void run() {
@@ -155,7 +128,40 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 					updateInProgress = false;
 					
 				}
-			});
+			};
+		}
+		
+		public void cancel() {
+			cancel = true;
+			interrupt();
+		}
+		
+		public void notifySomethingToDisplay() {
+						
+			if (updateInProgress)
+				return; // ignore if we are aleady updating
+			
+			contentToDisplay = true;
+			
+			if (longSleep)
+				interrupt();
+			
+		}
+		
+		protected void refreshDisplay() {
+			
+			
+			if (updateInProgress)
+				return;
+			
+			if (display == null || display.isDisposed()) {
+				this.cancel();
+				if (messages != null)
+					messages.removeListener(listener);
+			}
+
+			updateInProgress = true;
+			display.asyncExec(runnable);
 			
 		}
 		
@@ -362,8 +368,9 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 		
 		comparator = new MyViewerComparator();
 		
-	    viewer.setComparator(comparator);
-
+	    //viewer.setComparator(comparator);
+		// TODO restore comparator !
+		
 		// ... columns
 		{
 			TableViewerColumn col = new TableViewerColumn(viewer, SWT.NONE);

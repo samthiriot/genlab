@@ -1,5 +1,7 @@
 package genlab.gui.views;
 
+import java.util.LinkedList;
+
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 
 import org.eclipse.swt.SWT;
@@ -18,8 +20,46 @@ public class ConsoleView extends AbstractViewOpenedByAlgo {
 
 	public static final String VIEW_ID = "genlab.gui.views.ConsoleView";
 
+	
+	private class ConsoleDisplayRunnable implements Runnable {
+	
+		public ConsoleDisplayRunnable() {
 
+		}
+		
+		@Override
+		public void run() {
+			
+			submitted = false; // allow another display !
+			
+			LinkedList<String> stringsToDisplayLocal = null;
+			
+			synchronized (locker) {
+				if (stringsToDisplay.isEmpty())
+					return;
+				stringsToDisplayLocal = (LinkedList<String>) stringsToDisplay.clone();
+				stringsToDisplay.clear();
+			}
+			
+			text.setRedraw(false);
+			for (String s: stringsToDisplayLocal) {
+				text.append(s);
+			}
+			text.setRedraw(true);
+			
+		}
+		
+	}
+	
+	private boolean submitted = false;
+	
+	private ConsoleDisplayRunnable runnable = new ConsoleDisplayRunnable();
+
+	private Object locker = new Object();
+	private LinkedList<String> stringsToDisplay = new LinkedList<String>();
+	
 	public ConsoleView() {
+		 
 	}
 
 	@Override
@@ -32,15 +72,7 @@ public class ConsoleView extends AbstractViewOpenedByAlgo {
 	public void setFocus() {
 		text.setFocus();
 	}
-	
 
-	public void initOutputSync() {
-		text.setRedraw(false);
-	}
-	
-	public void writeSync(String s) {
-		text.append(s);
-	}
 	
 	/**
 	 * Note this operation is in some way costly, 
@@ -48,18 +80,19 @@ public class ConsoleView extends AbstractViewOpenedByAlgo {
 	 * @param s
 	 */
 	public void write(final String s) {
-		text.getDisplay().asyncExec(new Runnable() {
-			
-			@Override
-			public void run() {
-				writeSync(s);
-			}
-		});
+		
+		// queue to the set of things to display
+		synchronized (locker) {
+			stringsToDisplay.add(s);
+		}
+		
+		// when there is something to display
+		if (!submitted) {	// ... if there is no refresh already queued and waiting in the SWT thread
+			submitted = true;
+			text.getDisplay().asyncExec(runnable);
+		}
 	}
 	
-	public void endOutputSync() {
-		text.setRedraw(true);
-	}
 
 	@Override
 	protected String getName(AbstractOpenViewAlgoExec exec) {

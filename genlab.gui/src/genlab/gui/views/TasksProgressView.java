@@ -1,14 +1,11 @@
 package genlab.gui.views;
 
-import genlab.core.commons.ProgramException;
 import genlab.core.exec.IContainerTask;
 import genlab.core.exec.ITask;
 import genlab.core.exec.ITaskManagerListener;
 import genlab.core.exec.TasksManager;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
-import genlab.core.model.exec.IComputationProgress;
-import genlab.core.model.exec.IComputationProgressSimpleListener;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
@@ -23,6 +20,8 @@ import java.util.Set;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ProgressBar;
@@ -32,13 +31,21 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.part.ViewPart;
 
 /**
- * TODO progress view
+ * Optimizing:
+ * <ul> 
+ * <li>no actual execution when no task is running</li> 
+ * <li>no update on tasks which are not running; </li>
+ * <li>do not display progress bar when the item is not visible;</li>
+ * </ul> 
+ * 
  * TODO optimisation: réduire la fréquence d'appel si on n'a plus rien en cours de progres
  * 
  * @author Samuel Thiriot
  *
  */
-public class TasksProgressView extends ViewPart implements ITaskManagerListener, IComputationProgressSimpleListener {
+public class TasksProgressView extends ViewPart implements ITaskManagerListener
+//, IComputationProgressSimpleListener 
+			{
 
 	private Display display = null;
 	private Tree treeWidget = null;
@@ -50,21 +57,38 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 	 */
 	private Map<ITask,TreeItem> task2item = new HashMap<ITask,TreeItem>(200);
 	
+	private Set<ITask> tasksDisplayedNotStopped = new HashSet<ITask>(100);
+
 	/**
 	 * Contains the tasks which require an update during the next update cycle.
-	 * Typically, it contains these tasks which have not yet an item associated.
+	 * Typically, it contains these tasks for tasks detected through event (like: a novel task was added).
 	 */
 	private Set<ITask> tasksToUpdate = new HashSet<ITask>(100);
+	
+	
 	
 	private Map<ITask, ProgressBar> task2progress = new HashMap<ITask, ProgressBar>(100);
 	private Map<ITask, TreeEditor> task2editor = new HashMap<ITask, TreeEditor>(100);
 
 	public final static long REFRESH_PERIOD = 200;
 	
+	/**
+	 * Refresh the progress view
+	 * 
+	 * @author Samuel Thiriot
+	 *
+	 */
 	private class ProgressThread extends Thread {
 
 		private final TasksProgressView view;
 		private boolean canceled = false;
+		
+		/**
+		 * True means an update was already submitted to the SWT thread. 
+		 * In this case, it is obviously useless to submit it again :-)
+		 */
+		private boolean updatePending = false;
+		
 		
 		public ProgressThread(TasksProgressView view) {
 			this.view = view;
@@ -72,7 +96,8 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 			// configure thread
 			setName("refresh tasks view");
 			setDaemon(true);
-			setPriority(NORM_PRIORITY);
+			//setPriority(NORM_PRIORITY);
+			setPriority(Thread.NORM_PRIORITY);
 			
 			GLLogger.traceTech("created.", getClass());
 		}
@@ -80,20 +105,21 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		@Override
 		public void run() {
 			
+			final Runnable updateRunnable = new Runnable() {
+				
+				@Override
+				public void run() {
+					view.updateWidgets();
+					updatePending = false;
+				}
+			};
+			
 			while (!canceled && (display == null || !display.isDisposed())) {
 				
-				//GLLogger.traceTech("refresh ?", getClass());
-				
-				if (view.hasSomethingToUpdate()) {
+				if (!updatePending && view.hasSomethingToUpdate()) {
 					//GLLogger.traceTech("refresh !.", getClass());
-					view.getDisplay().asyncExec(new Runnable() {
-						
-						@Override
-						public void run() {
-							view.updateWidgets();		
-						}
-					});
-					
+					updatePending = true;
+					view.getDisplay().asyncExec(updateRunnable);
 				}
 
 				try {
@@ -120,7 +146,6 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 
 	}
 	
-	
 	@Override
 	public void dispose() {
 		
@@ -137,8 +162,6 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 
 		super.dispose();
 	}
-
-
 
 	public Display getDisplay() {
 		return display;
@@ -233,6 +256,8 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 			item.setData(t);
 			
 			task2item.put(t, item);	
+			tasksDisplayedNotStopped.add(t);
+
 			
 			// configure the item
 			
@@ -294,6 +319,7 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		
 		if (item.isDisposed()) {
 			task2item.remove(t);
+			tasksDisplayedNotStopped.remove(t);
 			return;
 		}
 		
@@ -305,7 +331,12 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 			StringBuffer sb = new StringBuffer();
 			sb.append("finished (").append(UserMachineInteractionUtils.getHumanReadableTimeRepresentation(t.getProgress().getDurationMs())).append(")");
 			txt = sb.toString();
+			tasksDisplayedNotStopped.remove(t);
 		} break;
+		case FINISHED_CANCEL:
+		case FINISHED_FAILURE:
+			tasksDisplayedNotStopped.remove(t);
+			break;
 		case STARTED: { 
 			StringBuffer sb = new StringBuffer();
 			sb.append("running (").append(t.getProgress().getProgressDone()).append("/").append(t.getProgress().getProgressTotalToDo()).append(")");
@@ -319,7 +350,7 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		
 		// progress bar :-)
 		ProgressBar pb = task2progress.get(t);
-		if (state == ComputationState.STARTED) {
+		if (state == ComputationState.STARTED && isItemVisible(item)) {
 			if (pb == null) {
 				// create the progress bar !
 				TreeEditor editor = new TreeEditor(treeWidget);
@@ -350,7 +381,7 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 	
 	protected boolean hasSomethingToUpdate() {
 		
-		if (!task2item.isEmpty())
+		if (!tasksDisplayedNotStopped.isEmpty())
 			return true;
 		
 		synchronized (tasksToUpdate) {
@@ -358,13 +389,40 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 		}
 	}
 	
+	protected Rectangle treeBounds = new Rectangle(0, 0, 0, 0);
 	
+	protected void initItemsVisibility() {
+
+		// update tree bounds (maybe the widget was received ?)
+		final Point treeSize = treeWidget.getSize();
+		treeBounds.width = treeSize.x;
+		treeBounds.height = treeSize.y;
+		
+		
+	}
+	
+	protected boolean isItemVisible(TreeItem item) {
+		
+		// first of all, an item is only visible if its parent is expanded.
+		TreeItem parent = item.getParentItem();
+		while (parent != null) {
+			if (!parent.getExpanded()) 
+				return false;
+			parent = parent.getParentItem();
+		}
+		
+		// also, it depends on the widget's bounds
+		return treeBounds.intersects(item.getBounds());
+		
+	}
 	
 	/**
 	 * SHould be called from the SWT thread
 	 */
 	protected void updateWidgets() {
 				
+		long timeStart = System.currentTimeMillis();
+		
 		/*
 		// first copy the collection of tasks updates to avoid concurrent modifications
 		Collection<ITask> tasksUpdating = null;
@@ -386,16 +444,21 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 			return;
 		}
 		
+		
 		// first copy the collection of tasks updates to avoid concurrent modifications
 		Set<ITask> tasksUpdating = new HashSet<ITask>(task2item.size()*2);
+		
 		synchronized (task2item) {
-			tasksUpdating.addAll(task2item.keySet());	
+			tasksUpdating.addAll(tasksDisplayedNotStopped);		// don't update the tasks which are displayed, but no more running
 		}
 		synchronized (tasksToUpdate) {
 			tasksUpdating.addAll(tasksToUpdate);
+			tasksToUpdate.clear();
 		}
 		
 		// now update each task / widget
+		initItemsVisibility();
+		System.err.println("update tasks: "+tasksUpdating.size());
 		for (ITask t : tasksUpdating) {
 			try {
 				updateWidget(t);
@@ -405,12 +468,14 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 			}
 		}
 		
+		System.err.println("update tasks took: "+(System.currentTimeMillis() - timeStart)+" ms");
+		
 		
 	}
 
 	private void manageTaskChanged(ITask task) {
 
-		GLLogger.debugTech("a task was added: "+task, getClass());
+		//GLLogger.debugTech("a task was added: "+task, getClass());
 		synchronized (tasksToUpdate) {
 			tasksToUpdate.add(task);	
 			
@@ -421,7 +486,7 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 				}
 			}
 		}
-		thread.interrupt();
+		//thread.interrupt();
 		
 	}
 
@@ -429,7 +494,7 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 	public void notifyTaskAdded(ITask task) {
 		
 		manageTaskChanged(task);
-		task.getProgress().addListener(this);
+		//task.getProgress().addListener(this);
 		
 	}
 
@@ -437,17 +502,18 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 	public void notifyTaskRemoved(ITask task) {
 		GLLogger.debugTech("a task was removed: "+task, getClass());
 		
-		task.getProgress().removeListener(this);
-
+		//task.getProgress().removeListener(this);
+		
 		// TODO !!! task2item.remove(task);
 	}
 
 
-
+/*
 	@Override
 	public void computationStateChanged(IComputationProgress progress) {
 		notifyTaskAdded(progress.getAlgoExecution());
 	}
+	*/
 	
 	protected void clear(ITask task) {
 		
@@ -455,6 +521,8 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener,
 			
 			TreeItem item = task2item.remove(task);
 			item.dispose();
+			
+			tasksDisplayedNotStopped.remove(task);
 			
 			TreeEditor editor = task2editor.remove(task);
 			if (editor != null)

@@ -68,7 +68,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		this.messagesRun =  ListsOfMessages.getGenlabMessages();
 		
 		setName("glRunner");
-		setPriority(MAX_PRIORITY);
+		setPriority(NORM_PRIORITY);
 		setDaemon(true);
 		
 	}

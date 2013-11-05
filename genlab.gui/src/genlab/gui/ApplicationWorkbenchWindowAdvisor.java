@@ -1,5 +1,7 @@
 package genlab.gui;
 
+import genlab.quality.TestResponsivity;
+
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.application.ActionBarAdvisor;
@@ -33,6 +35,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         // in this case, it will work in the post event
 		VisualResources.initVisualResource(Display.getCurrent().getActiveShell());
 
+		
+		TestResponsivity.startTestResponsivity();
 		 
     }
     

@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -32,6 +34,30 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 */
 	private static final long serialVersionUID = 1L;
 
+
+	/**
+	 * After this limit, will attempt to clean the messages
+	 */
+	public static final int LIMIT_START_CLEANUP = 500;
+	public static final int CLEANUP_TARGET_SIZE = 50;
+	
+	public static final int QUEUE_SIZE = 65535;
+	
+
+	/**
+	 * If true, relays every message to a log4j logger.
+	 */
+	public static boolean RELAY_TO_LOG4J = false;
+	
+	protected MessageLevel filterIgnoreBelow = null; //MessageLevel.WARNING;
+
+	
+	/**
+	 * Stores the messages as soon as received. Then they will be added to the sorted space;
+	 */
+	protected BlockingQueue<ITextMessage> receivedMessages = new LinkedBlockingQueue<ITextMessage>(QUEUE_SIZE);
+	
+	
 	/**
 	 * All the messages in natural order (by timestamp)
 	 */
@@ -39,22 +65,11 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 
 	private LinkedList<IListOfMessagesListener> listeners = new LinkedList<IListOfMessagesListener>();
 	
-	/**
-	 * If true, relays every message to a log4j logger.
-	 */
-	public static boolean RELAY_TO_LOG4J = true;
-	
-	protected MessageLevel filterIgnoreBelow = null; // MessageLevel.WARNING;
 	
 	private long countMessagesCanBeDeleted = 0;
 	
-	/**
-	 * After this limit, will attempt to clean the messages
-	 */
-	public static final int LIMIT_START_CLEANUP = 500;
-	public static final int CLEANUP_TARGET_SIZE = 50;
-	
-	
+	protected final ReceiveMessagesThread queueConsumerThread;
+
 	protected static final Map<MessageLevel,Priority> messageLevel2log4jPriority = new HashMap<MessageLevel, Priority>(){{
 		put(MessageLevel.TRACE, Priority.DEBUG);
 		put(MessageLevel.DEBUG, Priority.DEBUG);
@@ -71,6 +86,11 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			Logger.getRootLogger().setLevel(Level.DEBUG);
 			//Logger.getRootLogger().addAppender(new ConsoleAppender());
 		}
+	}
+	
+	public ListOfMessages() {
+		queueConsumerThread = new ReceiveMessagesThread();
+		queueConsumerThread.start();
 	}
 	
 	public boolean isEmpty() {
@@ -175,10 +195,74 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 		
 	}
 	
+	/**
+	 * This thread consumes the queue of messages.
+	 * 
+	 * @author Samuel Thiriot
+	 *
+	 */
+	protected class ReceiveMessagesThread extends Thread {
+		
+		public ReceiveMessagesThread() {
+			super();
+			
+			setName("glConsumeMessages");
+			setPriority(NORM_PRIORITY);
+			setDaemon(true);
+		}
+		
+		public void run() {
+			
+			// TODO stats on the time required for processing ?
+			
+			long total = 0;
+			long made = 0;
+			
+			while (true) {
+				try {
+					ITextMessage message = receivedMessages.take();
+					long start = System.currentTimeMillis();
+					addDelayed(message);
+					total += (System.currentTimeMillis()-start);
+					made++;
+					if (made > 2 && made % 500 == 1) {
+						System.err.println("adding and sending a message costs ~"+(total/made)+"ms (on "+made+" messages)");
+						total = 0;
+						made = 0;
+					}
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if (receivedMessages.remainingCapacity() < 1000)
+					System.err.println("****************************** REACHING CAPACITY :!!!!! =========================**");
+				
+			}
+		}
+	}
+	
 	public boolean add(ITextMessage e) {
-
+				
 		if (!e.getLevel().shouldDisplay(filterIgnoreBelow))
 			return false;
+		
+		
+		try {
+			// add the message to the list of messages to be processed.
+			receivedMessages.put(e); // may wait for the queue to be small enough
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
+		
+		return true;
+	}
+	
+	/**
+	 * Actual add of the message. Inserts the message in the right place, and calls listeners.
+	 * @param e
+	 */
+	private void addDelayed(ITextMessage e) {
 		
 		_add(e);
 		
@@ -189,8 +273,6 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 		for (IListOfMessagesListener l : new LinkedList<IListOfMessagesListener>(getListeners())) {
 			l.contentChanged(this);
 		}
-		
-		return true;
 		
 	}
 	
@@ -210,6 +292,19 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 */
 	public boolean addAll(Iterable<ITextMessage> others) {
 
+		for (ITextMessage m : others) {
+			
+			try {
+				receivedMessages.put(m);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		/* OLD implementation 
+		 * 
+		 
 		// add messages
 		synchronized (sortedMessages) {
 
@@ -232,6 +327,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			}
 		}
 		
+		*/
 		return true;
 		
 	}

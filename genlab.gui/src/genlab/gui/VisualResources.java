@@ -2,6 +2,7 @@ package genlab.gui;
 
 import genlab.core.commons.FileUtils;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.quality.TestResponsivity;
 
 import java.awt.Desktop;
 import java.awt.Graphics2D;
@@ -77,6 +78,8 @@ public class VisualResources {
 	    gc.dispose();
 	    shellTest.dispose();
 	    IMAGE_ICON_MAX_HEIGHT = charheight;
+	    
+	   
 	    
 	}
 
