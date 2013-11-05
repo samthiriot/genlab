@@ -12,45 +12,53 @@ import genlab.core.usermachineinteraction.ListsOfMessages;
 
 public class GenlabExecution {
 
-	public static IAlgoExecution runBackground(IGenlabWorkflowInstance workflow) {
+	public static void runBackground(final IGenlabWorkflowInstance workflow) {
 
-		GLLogger.debugTech("run called", GenlabExecution.class);
-		
-		GLLogger.debugTech("workflow: "+workflow, GenlabExecution.class);
-		if (workflow == null) {
-			GLLogger.warnTech("null...", GenlabExecution.class);
-			return null;
-		}
-		
-		// check workflow
-		GLLogger.infoUser("checking the workflow "+workflow+"...", GenlabExecution.class);
+		Runnable runnable = new Runnable() {
+			
+			@Override
+			public void run() {
+				GLLogger.debugTech("run called", GenlabExecution.class);
+				
+				GLLogger.debugTech("workflow: "+workflow, GenlabExecution.class);
+				if (workflow == null) {
+					GLLogger.warnTech("null...", GenlabExecution.class);
+					return;
+				}
+				
+				// check workflow
+				GLLogger.infoUser("checking the workflow "+workflow+"...", GenlabExecution.class);
 
-		WorkflowCheckResult checkInfo = workflow.checkForRun();
-		ListsOfMessages.getGenlabMessages().addAll(checkInfo.messages); // report errors somewhere they can be viewed !
-		
-		if (checkInfo.isReady()) {
-			GLLogger.infoUser("ready :-)", GenlabExecution.class);
-		} else {
-			GLLogger.errorUser("problem..;", GenlabExecution.class);
-			return null;
-		}
+				WorkflowCheckResult checkInfo = workflow.checkForRun();
+				ListsOfMessages.getGenlabMessages().addAll(checkInfo.messages); // report errors somewhere they can be viewed !
+				
+				if (checkInfo.isReady()) {
+					GLLogger.infoUser("ready :-)", GenlabExecution.class);
+				} else {
+					GLLogger.errorUser("problem..;", GenlabExecution.class);
+					return;
+				}
+			
+				Runner r = LocalComputationNode.getSingleton().getRunner();
+
+				Execution exec = new Execution(r);
+				exec.setExecutionForced(true);
+
+				ExecutionHooks.singleton.notifyParentTaskAdded(exec);	// TODO something clean...
+				IAlgoExecution execution = workflow.execute(exec);
+				TasksManager.singleton.notifyListenersOfTaskAdded(execution); // TODO something clean...
+
+				
+				GLLogger.infoUser("start run !", GenlabExecution.class);
+				r.addTask(execution);
+
+				GLLogger.infoUser("launched.", GenlabExecution.class);
+				
+			}
+		};
 	
-		Runner r = LocalComputationNode.getSingleton().getRunner();
-
-		Execution exec = new Execution(r);
-		exec.setExecutionForced(true);
-
-		ExecutionHooks.singleton.notifyParentTaskAdded(exec);	// TODO something clean...
-		IAlgoExecution execution = workflow.execute(exec);
-		TasksManager.singleton.notifyListenersOfTaskAdded(execution); // TODO something clean...
-
+		(new Thread(runnable)).start();
 		
-		GLLogger.infoUser("start run !", GenlabExecution.class);
-		r.addTask(execution);
-
-		GLLogger.infoUser("launched.", GenlabExecution.class);
-		
-		return execution;
 	}
 	
 	public static IComputationProgress runBlocking(IGenlabWorkflowInstance workflow, final boolean writeProgress) {

@@ -14,6 +14,7 @@ import java.util.Locale;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -117,9 +118,12 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 					}
 
 					try {
-						viewer.setInput("toto");
-						viewer.refresh();
-						
+
+						viewer.getControl().setRedraw(false);
+						//viewer.setInput("toto");
+						viewer.refresh(false);
+						viewer.getControl().setRedraw(true);
+												
 					} catch (RuntimeException e) {
 							// TODO manage disposed exception
 						e.printStackTrace();
@@ -133,7 +137,9 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 		
 		public void cancel() {
 			cancel = true;
-			interrupt();
+			
+			if (longSleep)
+				interrupt();
 		}
 		
 		public void notifySomethingToDisplay() {
@@ -161,8 +167,11 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 			}
 
 			updateInProgress = true;
-			display.asyncExec(runnable);
-			
+			long timestampStart = System.currentTimeMillis();  
+			System.err.println("update display: begin");
+			display.syncExec(runnable);
+			System.err.println("time to update display : "+(System.currentTimeMillis()-timestampStart));
+
 		}
 		
 		@Override
@@ -182,6 +191,7 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 					try {
 						Thread.sleep(minPeriodMs);
 					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 					
 				} else {
@@ -202,7 +212,38 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 	
 	private ThreadMessageUpdate updateThread = null;
 	
+
 	class MessagesContentProvider implements IStructuredContentProvider {
+
+		private final ListOfMessages list;
+		
+		public MessagesContentProvider(ListOfMessages list) {
+			this.list = list;
+		}
+		
+		@Override
+		public void dispose() {
+			
+		}
+
+		@Override
+		public void inputChanged(Viewer pviewer, Object oldInput, Object newInput) {
+			// nothing to do (read only !)
+		}
+
+		@Override
+		public Object[] getElements(Object inputElement) {
+			//System.err.println("get elements called; "+list.getSize()+" vs. "+viewer.getTable().getItemCount());
+
+			Object[] res = null;
+			res = list.asArray();
+			return res;
+		}
+
+		
+	}
+	/**
+	class MessagesContentProvider implements ILazyContentProvider {
 
 		private final ListOfMessages list;
 		
@@ -227,8 +268,18 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 			return list.asArray();
 		}
 
+		@Override
+		public void updateElement(int index) {
+			// TODO Auto-generated method stub
+			Object element = null;
+			
+			viewer.replace(element, index);
+			//TableViewer#replace(Object, int).
+		}
+
 		
 	}
+	**/
 	
 	/**
 	 * Basic label provider that manages colors
@@ -327,6 +378,7 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 	 * @return
 	 */
 	 private SelectionAdapter getSelectionAdapter(final TableColumn column, final int index) {
+		 
 		    SelectionAdapter selectionAdapter = new SelectionAdapter() {
 		      @Override
 		      public void widgetSelected(SelectionEvent e) {
@@ -358,8 +410,10 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 		
 		viewer = new TableViewer(
 				parent, 
-				SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER | SWT.READ_ONLY
+				//SWT.MULTI | 
+				SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION | SWT.BORDER | SWT.READ_ONLY | SWT.VIRTUAL
 				);
+		viewer.setUseHashlookup(true);
 
 		ColumnViewerToolTipSupport.enableFor(viewer, ToolTip.NO_RECREATE);
 
@@ -367,9 +421,7 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 		// configure viewer
 		
 		comparator = new MyViewerComparator();
-		
-	    //viewer.setComparator(comparator);
-		// TODO restore comparator !
+		viewer.setComparator(comparator);
 		
 		// ... columns
 		{
@@ -377,6 +429,7 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 			col.getColumn().setWidth(100);
 			col.getColumn().setText("Level");
 			col.setLabelProvider(new ColorColumnProvider() {
+				
 			  @Override
 			  public String getText(Object element) {
 			    ITextMessage message = (ITextMessage)element;
@@ -520,7 +573,7 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 			  
 			});
 			
-			col.getColumn().addSelectionListener(getSelectionAdapter(col.getColumn(), 4));
+			//col.getColumn().addSelectionListener(getSelectionAdapter(col.getColumn(), 4));
 			
 		}
 		
@@ -528,7 +581,8 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 		final Table table = viewer.getTable();
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true); 
-
+		
+		
 		updateThread = new ThreadMessageUpdate();
 		
 		listener = new IListOfMessagesListener() {
@@ -554,7 +608,7 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 		updateThread.start();
 		
 		listenMessages();
-		
+	
 		// add actions
 		getViewSite().getActionBars().getToolBarManager().add(new ClearMessagesAction());  
 

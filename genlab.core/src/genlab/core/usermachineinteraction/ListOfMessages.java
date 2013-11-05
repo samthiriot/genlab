@@ -49,7 +49,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 */
 	public static boolean RELAY_TO_LOG4J = false;
 	
-	protected MessageLevel filterIgnoreBelow = null; //MessageLevel.WARNING;
+	protected MessageLevel filterIgnoreBelow = MessageLevel.WARNING;
 
 	
 	/**
@@ -63,6 +63,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 */
 	private TreeSet<ITextMessage> sortedMessages = new TreeSet<ITextMessage>();
 
+	
 	private LinkedList<IListOfMessagesListener> listeners = new LinkedList<IListOfMessagesListener>();
 	
 	
@@ -203,12 +204,18 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 */
 	protected class ReceiveMessagesThread extends Thread {
 		
+		protected boolean cancel = false;
+		
 		public ReceiveMessagesThread() {
 			super();
 			
 			setName("glConsumeMessages");
 			setPriority(NORM_PRIORITY);
 			setDaemon(true);
+		}
+		
+		public void cancel() {
+			this.cancel = true;
 		}
 		
 		public void run() {
@@ -218,7 +225,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			long total = 0;
 			long made = 0;
 			
-			while (true) {
+			while (!cancel) {
 				try {
 					ITextMessage message = receivedMessages.take();
 					long start = System.currentTimeMillis();
@@ -836,5 +843,16 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 						)
 			);
 	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		
+		if (queueConsumerThread != null)
+			queueConsumerThread.cancel();
+		
+		super.finalize();
+	}
+	
+	
 }
 

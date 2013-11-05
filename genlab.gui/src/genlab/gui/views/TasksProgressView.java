@@ -119,7 +119,7 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener
 				if (!updatePending && view.hasSomethingToUpdate()) {
 					//GLLogger.traceTech("refresh !.", getClass());
 					updatePending = true;
-					view.getDisplay().asyncExec(updateRunnable);
+					view.getDisplay().syncExec(updateRunnable);
 				}
 
 				try {

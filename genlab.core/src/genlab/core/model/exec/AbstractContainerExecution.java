@@ -73,7 +73,7 @@ public abstract class AbstractContainerExecution
 			return; 
 					
 		// ensure all tasks are done !
-		synchronized (tasks) {
+		//synchronized (tasks) {
 			
 			ComputationState ourState = null;
 			boolean somethingNotFinished = false;
@@ -131,24 +131,21 @@ public abstract class AbstractContainerExecution
 				this.progress.setComputationState(ourState);
 				
 			}
-		}
+		//}
 			
-		
-		// suggest a garbage collecting now
-		Runtime.getRuntime().gc();
 				
 		// TODO transmit all the values to the reduce steps
 	}
 	
 	@Override
 	public final void addTask(ITask t) {
-		synchronized (tasks) {
+		//synchronized (tasks) {
 			if (!tasks.contains(t)) {
 				tasks.add(t);
 				t.getProgress().addListener(this);
 				exec.getRunner().addTask((IAlgoExecution) t);
 			}	
-		}
+		//}
 		
 	}
 
