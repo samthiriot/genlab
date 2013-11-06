@@ -68,5 +68,15 @@ public abstract class AbstractAlgoExecutionOneshot
 
 	}
 
+	@Override
+	public void clean() {
+		
+		// clean local data
+		inputsNotAvailable.clear();
+		inputsNotAvailable = null;
+		
+		// super clean
+		super.clean();
+	}
 
 }

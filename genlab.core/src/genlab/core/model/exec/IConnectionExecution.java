@@ -19,5 +19,9 @@ public interface IConnectionExecution extends IComputationProgressSimpleListener
 	public IAlgoExecution getFrom();
 	public IAlgoExecution getTo();
 	
+	/**
+	 * Ask the connection to clean itself (meaning: its internal value)
+	 */
+	public void clean();
 	
 }

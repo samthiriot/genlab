@@ -1,5 +1,6 @@
 package genlab.core.model.exec;
 
+import genlab.core.exec.ITask;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
 /**
@@ -82,6 +83,11 @@ public class WatchdogTimer extends Thread implements IComputationProgressSimpleL
 			// nothing to do.
 		}
 		
+	}
+
+	@Override
+	public void taskCleaning(ITask task) {
+		cancel();
 	}
 	
 }

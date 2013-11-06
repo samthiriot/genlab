@@ -266,5 +266,15 @@ public class WorkflowExecution
 
 
 
+	@Override
+	public void clean() {
+	
+		// clean lodal data
+		instance2execution.clear();
+		instance2execution = null;
+		
+		// super clean
+		super.clean();
+	}
 
 }

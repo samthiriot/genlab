@@ -2,9 +2,9 @@ package genlab.core.model.exec;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
+import genlab.core.exec.ITask;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
-import genlab.core.model.instance.IInputOutputInstance;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -142,6 +142,16 @@ public abstract class AbstractAlgoReduceExecution
 		processEndOfExecution(progress.getAlgoExecution());
 		
 	}
+	
+
+	@Override
+	public void taskCleaning(ITask task) {
+
+		// one incoming task is currently being cleared.
+		// we don't really care.
+		
+	}
+
 	
 
 

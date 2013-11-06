@@ -2,6 +2,7 @@ package genlab.core.model.meta.basics.algos;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
+import genlab.core.exec.ITask;
 import genlab.core.model.exec.AbstractAlgoReduceExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
@@ -166,6 +167,8 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution {
 		
 		
 	}
+
+
 
 	
 

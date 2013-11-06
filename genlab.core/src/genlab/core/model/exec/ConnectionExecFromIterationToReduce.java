@@ -9,9 +9,9 @@ import genlab.core.model.instance.IConnection;
  * In practice, the connection is in charge of storing and making the result accessible for the 
  * next algo.
  * 
- * This standard connection works to link two algos at the same level of aggregation: 
- * once algo A linked to B finished, its value is readen by the connection, then the algo B is notified 
- * of the availability of the data.
+ * This connection relates an iteration and a reduce algorithm.
+ * Once the computation is finished in the "from" part, the "reduce" destination algo
+ * receives the corresponding data.
  * 
  * @author Samuel Thiriot
  *
@@ -25,9 +25,6 @@ public class ConnectionExecFromIterationToReduce extends AbstractConnectionExec<
 		// TODO check ?
 		
 	}
-	
-
-	
 	
 	/* (non-Javadoc)
 	 * @see genlab.core.model.exec.IConnectionExecution#computationStateChanged(genlab.core.model.exec.IComputationProgress)

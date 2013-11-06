@@ -24,7 +24,6 @@ public interface ITask {
 	public void kill();
 	
 		
-	
 	/**
 	 * Returns a human readable name (one short line)
 	 * @return
@@ -59,6 +58,15 @@ public interface ITask {
 
 	
 	public void setParent(IContainerTask parent);
+	
+	public void addLifecycleListener(ITaskLifecycleListener list);
+	
+	/**
+	 * Ask this task to clean itself: forget internal values, etc.
+	 * Note that the task may not be used after this
+	 */
+	public void clean();
+	
 	
 }
 

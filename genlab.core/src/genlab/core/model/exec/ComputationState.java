@@ -28,6 +28,7 @@ public enum ComputationState {
 	
 	FINISHED_FAILURE;
 	
+	
 	/**
 	 * Returns true if this state indicates the computation stopped.
 	 * @return

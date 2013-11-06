@@ -2,6 +2,7 @@ package genlab.gui.views;
 
 import genlab.core.exec.IContainerTask;
 import genlab.core.exec.ITask;
+import genlab.core.exec.ITaskLifecycleListener;
 import genlab.core.exec.ITaskManagerListener;
 import genlab.core.exec.TasksManager;
 import genlab.core.model.exec.ComputationState;
@@ -28,6 +29,7 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.internal.ide.dialogs.CleanDialog;
 import org.eclipse.ui.part.ViewPart;
 
 /**
@@ -43,9 +45,12 @@ import org.eclipse.ui.part.ViewPart;
  * @author Samuel Thiriot
  *
  */
-public class TasksProgressView extends ViewPart implements ITaskManagerListener
-//, IComputationProgressSimpleListener 
-			{
+public class TasksProgressView 
+					extends ViewPart 
+					implements ITaskManagerListener, ITaskLifecycleListener
+					{
+
+	public final static long REFRESH_PERIOD = 100;
 
 	private Display display = null;
 	private Tree treeWidget = null;
@@ -65,12 +70,21 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener
 	 */
 	private Set<ITask> tasksToUpdate = new HashSet<ITask>(100);
 	
-	
+	/**
+	 * Contains the task to remove
+	 */
+	private Set<ITask> tasksToRemove = new HashSet<ITask>(100);
+
 	
 	private Map<ITask, ProgressBar> task2progress = new HashMap<ITask, ProgressBar>(100);
 	private Map<ITask, TreeEditor> task2editor = new HashMap<ITask, TreeEditor>(100);
 
-	public final static long REFRESH_PERIOD = 200;
+	/**
+	 * A temporary variable used only inside {@link #updateWidgets()}, but put here to avoid
+	 * the frequent creation of a set.
+	 */
+	private Set<ITask> tasksUpdating = new HashSet<ITask>(100);
+	
 	
 	/**
 	 * Refresh the progress view
@@ -257,7 +271,6 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener
 			
 			task2item.put(t, item);	
 			tasksDisplayedNotStopped.add(t);
-
 			
 			// configure the item
 			
@@ -288,9 +301,12 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener
 				
 			}
 			
+			t.addLifecycleListener(this);
+			
 			// ... its expanded state
 			item.setExpanded(t instanceof IContainerTask);
 
+			
 		} 
 		
 		return item;
@@ -325,6 +341,11 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener
 		
 		// update its state ? 
 		final ComputationState state = t.getProgress().getComputationState();
+		if (state == null) {
+			System.err.println("******************************** NULL state ???");
+			return; // this should never happen. In practice, sometimes a task was removed but this is not yet obvious.
+		}
+		
 		String txt = null;
 		switch (state) {
 		case FINISHED_OK: {
@@ -342,6 +363,12 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener
 			sb.append("running (").append(t.getProgress().getProgressDone()).append("/").append(t.getProgress().getProgressTotalToDo()).append(")");
 			txt = sb.toString();
 		} break;
+		case READY: {
+			txt = "ready";
+		} break;
+		case WAITING_DEPENDENCY: {
+			txt = "pending";
+		} break;
 		default:
 			txt  = state.toString();
 			break;
@@ -350,21 +377,26 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener
 		
 		// progress bar :-)
 		ProgressBar pb = task2progress.get(t);
-		if (state == ComputationState.STARTED && isItemVisible(item)) {
-			if (pb == null) {
-				// create the progress bar !
-				TreeEditor editor = new TreeEditor(treeWidget);
-				pb = new ProgressBar(treeWidget, SWT.SMOOTH);
-				editor.grabHorizontal = true;
-				editor.setEditor(pb, item, 1);
-				task2progress.put(t, pb);
-				task2editor.put(t, editor);
-			}
-			pb.setState(SWT.NORMAL);
-			try {
-				pb.setSelection((int)Math.floor(t.getProgress().getProgressPercent()));
-			} catch (NullPointerException e) {
-				// ignore it
+		if (state == ComputationState.STARTED) {
+			if (isItemVisible(item)) {
+				if (pb == null) {
+					// create the progress bar !
+					TreeEditor editor = new TreeEditor(treeWidget);
+					pb = new ProgressBar(treeWidget, SWT.SMOOTH);
+					editor.grabHorizontal = true;
+					editor.setEditor(pb, item, 1);
+					task2progress.put(t, pb);
+					task2editor.put(t, editor);
+					pb.setState(SWT.NORMAL);
+				}
+				pb.setVisible(true);
+				try {
+					pb.setSelection((int)Math.floor(t.getProgress().getProgressPercent()));
+				} catch (NullPointerException e) {
+					// ignore it
+				}
+			} else if (pb != null) {
+				pb.setVisible(false);
 			}
 		} else if (pb != null) {
 			// should remove this progress bar !
@@ -385,12 +417,22 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener
 			return true;
 		
 		synchronized (tasksToUpdate) {
-			return !tasksToUpdate.isEmpty();
+			if (!tasksToUpdate.isEmpty())
+				return true;
+		}
+		
+		synchronized (tasksToRemove) {
+			return !tasksToRemove.isEmpty();
 		}
 	}
 	
 	protected Rectangle treeBounds = new Rectangle(0, 0, 0, 0);
 	
+	/**
+	 * Inits the internal state to compute widgets visibility.
+	 * Mainly stores the bounds of the tree, assuming it will not change during
+	 * our iteration.
+	 */
 	protected void initItemsVisibility() {
 
 		// update tree bounds (maybe the widget was received ?)
@@ -421,33 +463,19 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener
 	 */
 	protected void updateWidgets() {
 				
-		long timeStart = System.currentTimeMillis();
-		
-		/*
-		// first copy the collection of tasks updates to avoid concurrent modifications
-		Collection<ITask> tasksUpdating = null;
-		synchronized (tasksToUpdate) {
-			if (tasksToUpdate.isEmpty())
-				return; // quick exit (as quick as possible, at least)
-			tasksUpdating = new LinkedList<ITask>(tasksToUpdate);
-			tasksToUpdate.clear();
-		}
-		
-		// now update each task / widget
-		for (ITask t : tasksUpdating) {
-			updateWidget(t);
-		}
-		*/
+		//long timeStart = System.currentTimeMillis();
 		
 		if (treeWidget == null || treeWidget.isDisposed()) {
 			thread.cancel();
 			return;
 		}
 		
+		treeWidget.setRedraw(false);
+		
+		// first remove the tasks to remove
+		processRemoveTasks();
 		
 		// first copy the collection of tasks updates to avoid concurrent modifications
-		Set<ITask> tasksUpdating = new HashSet<ITask>(task2item.size()*2);
-		
 		synchronized (task2item) {
 			tasksUpdating.addAll(tasksDisplayedNotStopped);		// don't update the tasks which are displayed, but no more running
 		}
@@ -456,9 +484,11 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener
 			tasksToUpdate.clear();
 		}
 		
+				
 		// now update each task / widget
 		initItemsVisibility();
-		System.err.println("update tasks: "+tasksUpdating.size());
+		
+		//System.err.println("update tasks: "+tasksUpdating.size());
 		for (ITask t : tasksUpdating) {
 			try {
 				updateWidget(t);
@@ -467,8 +497,13 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener
 				GLLogger.warnTech("catched an error while updating a progress: "+e.getMessage(), getClass(), e);
 			}
 		}
+
+		// clear the list
+		tasksUpdating.clear();
 		
-		System.err.println("update tasks took: "+(System.currentTimeMillis() - timeStart)+" ms");
+		treeWidget.setRedraw(true);
+		treeWidget.redraw();
+		//System.err.println("update tasks took: "+(System.currentTimeMillis() - timeStart)+" ms");
 		
 		
 	}
@@ -500,6 +535,7 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener
 
 	@Override
 	public void notifyTaskRemoved(ITask task) {
+		
 		GLLogger.debugTech("a task was removed: "+task, getClass());
 		
 		//task.getProgress().removeListener(this);
@@ -520,7 +556,8 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener
 		synchronized (task2item) {
 			
 			TreeItem item = task2item.remove(task);
-			item.dispose();
+			if (item != null)
+				item.dispose();
 			
 			tasksDisplayedNotStopped.remove(task);
 			
@@ -584,9 +621,41 @@ public class TasksProgressView extends ViewPart implements ITaskManagerListener
 		}
 		
 		// now remove all those listen
-		for (ITask taskToRemove : toRemove) {
-			clear(taskToRemove);
+		synchronized (tasksToRemove) {
+			tasksToRemove.addAll(toRemove);
 		}
+		
+	}
+	
+	/**
+	 * Called from the SWT thread to clear the items of removed tasks
+	 */
+	protected void processRemoveTasks() {
+
+		synchronized (tasksToRemove) {
+			
+			
+			for (ITask task: tasksToRemove) {
+		
+				clear(task);
+				tasksDisplayedNotStopped.remove(task);
+				tasksToUpdate.remove(task);
+				
+			}
+			
+			tasksToRemove.clear();
+						
+		}
+		
+	}
+	
+	@Override
+	public void taskCleaning(ITask task) {
+
+		synchronized (tasksToRemove) {
+			tasksToRemove.add(task);
+		}
+		
 		
 	}
 

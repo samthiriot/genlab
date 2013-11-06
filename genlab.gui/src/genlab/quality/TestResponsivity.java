@@ -13,6 +13,12 @@ public class TestResponsivity extends Thread {
 
 	public static final boolean DISPLAY_ALERTS_STDERR = true;
 	
+	/**
+	 * Delay, in ms, where the display is assumed to be unresponsive
+	 * No alert will be shown for these X first ms.
+	 */
+	public static final long STARTUP_GRACE_PERIOD = 1000;
+
 	public static final long PERIOD_TEST = 2000; // ms
 	
 	public static final int THRESHOLD_ALERT_PEAK = 200; // ms
@@ -63,6 +69,14 @@ public class TestResponsivity extends Thread {
 	
 	@Override
 	public void run() {
+		
+		try {
+			Thread.sleep(STARTUP_GRACE_PERIOD);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		while (!cancel) {
 			
 			if (!submitted)

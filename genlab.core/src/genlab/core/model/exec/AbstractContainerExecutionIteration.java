@@ -1,7 +1,9 @@
 package genlab.core.model.exec;
 
 import genlab.core.commons.ProgramException;
+import genlab.core.exec.ICleanableTask;
 import genlab.core.exec.IExecution;
+import genlab.core.exec.ITask;
 import genlab.core.model.instance.AlgoContainerInstance;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
@@ -24,7 +26,9 @@ import java.util.Map;
  * @author Samuel Thiriot
  *
  */
-public class AbstractContainerExecutionIteration extends AbstractContainerExecution {
+public class AbstractContainerExecutionIteration 
+					extends AbstractContainerExecution 
+					implements ICleanableTask {
 
 	protected final Map<IConnection,Object> inputConnection2value;
 	
@@ -213,5 +217,17 @@ public class AbstractContainerExecutionIteration extends AbstractContainerExecut
 	public String getName() {
 		return algoInst.getName()+nameSuffix;
 	}
+
+
+	@Override
+	public void clean() {
+	
+		// clean local data
+		input2connection.clear();
+		
+		// super clean
+		super.clean();
+	}
+
 	
 }

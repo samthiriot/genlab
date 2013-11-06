@@ -2,6 +2,7 @@ package genlab.core.model.exec;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
+import genlab.core.exec.ITask;
 import genlab.core.model.instance.IConnection;
 
 /**
@@ -19,7 +20,13 @@ import genlab.core.model.instance.IConnection;
 public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, TypeTo extends IAlgoExecution> implements IConnectionExecution {
 
 	public final IConnection c;
-	public final TypeFrom from;
+	
+	/**
+	 * Nota: is not final, so if "from" is cleaned, we may remove our reference 
+	 * and make its garbage collection possible; we still conserve the value.
+	 */
+	public TypeFrom from; 
+	
 	public final TypeTo to;
 	
 	protected final IExecution exec;
@@ -76,5 +83,31 @@ public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, Ty
 		return to;
 	}
 
+	@Override
+	public void taskCleaning(ITask task) {
+
+		// well, the parent execution was cleaned.
+		// still, its value may be accessed through this connection.
+
+		// useless, the progress will remove its listeners itself
+		// from.getProgress().removeListener(this);
+		
+		// clean local data
+		// don't clean the value, because maybe the children did not retrieved if now.
+		// value = null;
+		
+		from = null; // remove the pointer to the "from" executable, so it may be garbage collected.
+		
+	}
+	
+	@Override
+	public void clean() {
+		// clean myself
+		
+		if (from != null)
+			from.getProgress().removeListener(this);
+		
+		value = null;
+	}
 
 }

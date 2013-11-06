@@ -30,4 +30,6 @@ public interface IComputationResult extends IStaticMessagesEmitter {
 	
 	public Map<IInputOutputInstance,Object> getResults();
 	
+	public void clean();
+	
 }

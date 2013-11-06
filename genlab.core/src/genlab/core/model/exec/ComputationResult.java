@@ -83,6 +83,16 @@ public class ComputationResult implements IComputationResult {
 		return listOfMessages;
 	}
 
+	@Override
+	public void clean() {
+		
+		// clear local data
+		if (results != null) {
+			results.clear();
+			results = null;
+		}
+	}
+
 
 	
 }

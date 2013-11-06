@@ -14,7 +14,6 @@ import java.util.Locale;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ILazyContentProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -55,7 +54,8 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 	private MyViewerComparator comparator = null;
 	
 	/**
-	 * The table viewer
+	 * The table viewer; we use a virtual one (meaning, it does only display what is visible), 
+	 * but not a lazy loader, because loading data is not coslty for us.
 	 */
 	protected TableViewer viewer = null;
 
@@ -167,10 +167,10 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 			}
 
 			updateInProgress = true;
-			long timestampStart = System.currentTimeMillis();  
-			System.err.println("update display: begin");
+			//long timestampStart = System.currentTimeMillis();  
+			//System.err.println("update display: begin");
 			display.syncExec(runnable);
-			System.err.println("time to update display : "+(System.currentTimeMillis()-timestampStart));
+			//System.err.println("time to update display : "+(System.currentTimeMillis()-timestampStart));
 
 		}
 		
@@ -191,7 +191,6 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 					try {
 						Thread.sleep(minPeriodMs);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
 					}
 					
 				} else {
@@ -242,44 +241,6 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 
 		
 	}
-	/**
-	class MessagesContentProvider implements ILazyContentProvider {
-
-		private final ListOfMessages list;
-		
-		public MessagesContentProvider(ListOfMessages list) {
-			this.list = list;
-		}
-		
-		@Override
-		public void dispose() {
-			
-		}
-
-		@Override
-		public void inputChanged(Viewer pviewer, Object oldInput, Object newInput) {
-			// nothing to do (read only !)
-		}
-
-		@Override
-		public Object[] getElements(Object inputElement) {
-			//System.err.println("get elements called; "+list.getSize()+" vs. "+viewer.getTable().getItemCount());
-
-			return list.asArray();
-		}
-
-		@Override
-		public void updateElement(int index) {
-			// TODO Auto-generated method stub
-			Object element = null;
-			
-			viewer.replace(element, index);
-			//TableViewer#replace(Object, int).
-		}
-
-		
-	}
-	**/
 	
 	/**
 	 * Basic label provider that manages colors

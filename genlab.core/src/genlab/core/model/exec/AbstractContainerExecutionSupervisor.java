@@ -208,6 +208,14 @@ public abstract class AbstractContainerExecutionSupervisor
 	}
 	
 	
+
+	@Override
+	public void clean() {
 	
+		// no local data to clean (o_O)
+			
+		// super clean
+		super.clean();
+	}	
 
 }

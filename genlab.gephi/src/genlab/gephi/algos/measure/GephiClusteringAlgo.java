@@ -14,6 +14,7 @@ import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gephi.utils.GephiConvertors;
 import genlab.gephi.utils.GephiGraph;
+import genlab.gephi.utils.ProgressTicketGephiToGenlab;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -86,8 +87,8 @@ public class GephiClusteringAlgo extends GephiAbstractAlgo {
 				
 				// TODO warning if mixed ???
 				
-				// TODO progress
-				
+				// plug a progress ticket
+				algo.setProgressTicket(new ProgressTicketGephiToGenlab(progress));
 			
 				algo.execute(
 						gephiGraph.graphModel,

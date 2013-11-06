@@ -5,12 +5,12 @@ import genlab.core.commons.UniqueTimestamp;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 
-import java.util.Collection;
 import java.util.LinkedList;
 
 /**
  * TODO state
  * TODO timestamps
+ * TODO relay small changes in progress ???
  * 
  * @author Samuel Thiriot
  *
@@ -30,7 +30,12 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 	
 	private String currentTaskName = "";
 	
-	protected Collection<IComputationProgressSimpleListener> listeners = new LinkedList<IComputationProgressSimpleListener>();
+	protected LinkedList<IComputationProgressSimpleListener> listeners = new LinkedList<IComputationProgressSimpleListener>();
+	protected LinkedList<IComputationProgressDetailedListener> listenersDetails = null;
+	protected Object listenersDetailsLock = new Object();
+
+	
+	protected final static int MIN_DIFFERENCE_TO_DISPATCH_DETAILED_CHANGE = 5;
 	
 	public ComputationProgressWithSteps() {
 		this.state = ComputationState.CREATED;
@@ -102,6 +107,8 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 		if (total != null && total <= 0)
 			throw new ProgramException("total should be higher than 0");
 		
+		final long difference = (total == null || made == null?(total != made?1:0):total-this.made);
+
 		this.total = total;
 		
 		if (total == null)
@@ -109,13 +116,22 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 		
 		else if (made == null)
 			made = 0l;
+		
+		if (difference > MIN_DIFFERENCE_TO_DISPATCH_DETAILED_CHANGE)
+			dispatchComputationStateChangedDetail();
 	}
 
 	@Override
 	public void setProgressMade(Long total) {
 		if (total < 0)
 			throw new ProgramException("total should be higher than 0");
+		
+		final long difference = (total == null || made == null?(total != made?1:0):total-this.made);
+		
 		this.made = total;
+		
+		if (difference > MIN_DIFFERENCE_TO_DISPATCH_DETAILED_CHANGE)
+			dispatchComputationStateChangedDetail();
 	}
 
 	@Override
@@ -196,7 +212,7 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 		LinkedList<IComputationProgressSimpleListener> listenersCopy = null; 
 		
 		synchronized (listeners) {
-			listenersCopy = new LinkedList<IComputationProgressSimpleListener>(listeners);
+			listenersCopy = (LinkedList<IComputationProgressSimpleListener>) listeners.clone();
 		}
 		// produce a clone, so a change during dispatching would not raise a problem
 		//ComputationProgressWithSteps clone = (ComputationProgressWithSteps) this.clone();
@@ -206,6 +222,53 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 			} catch (RuntimeException e) {
 				GLLogger.warnTech(
 						"catched an exception while notifying listener "+l+" of computation state change ("+this+")", 
+						getClass(), 
+						e
+						);
+			}
+		}	
+		
+	}
+	
+	protected void dispatchComputationStateChangedDetail() {
+		LinkedList<IComputationProgressDetailedListener> listenersCopy = null; 
+		
+		if (listenersDetails == null)
+			return;
+		
+		synchronized (listenersDetailsLock) {
+
+			listenersCopy = (LinkedList<IComputationProgressDetailedListener>) listenersDetails.clone();
+		}
+		for (IComputationProgressDetailedListener l:  listenersCopy) {
+			try {
+				l.computationProgressChanged(this);
+			} catch (RuntimeException e) {
+				GLLogger.warnTech(
+						"catched an exception while notifying listener "+l+" of computation progress change ("+this+")", 
+						getClass(), 
+						e
+						);
+			}
+		}	
+		
+	}
+	
+	protected void dispatchCleaning() {
+		
+		LinkedList<IComputationProgressSimpleListener> listenersCopy = null; 
+		
+		synchronized (listeners) {
+			listenersCopy = (LinkedList<IComputationProgressSimpleListener>) listeners.clone();
+		}
+		// produce a clone, so a change during dispatching would not raise a problem
+		//ComputationProgressWithSteps clone = (ComputationProgressWithSteps) this.clone();
+		for (IComputationProgressSimpleListener l:  listenersCopy) {
+			try {
+				l.taskCleaning(algoExec);
+			} catch (RuntimeException e) {
+				GLLogger.warnTech(
+						"catched an exception while notifying listener "+l+" of task cleaning ("+this+")", 
 						getClass(), 
 						e
 						);
@@ -248,6 +311,56 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 		}
 		return clone;
 	}
+
+
+	@Override
+	public void clean() {
+		
+		// warn listeners
+		dispatchCleaning();
+		
+		// clear local data
+		listeners.clear();
+		listeners = null;
+		if (listenersDetails != null) {
+			listenersDetails.clear();
+			listenersDetails = null;
+		}
+		algo = null;
+		algoExec = null;
+		currentTaskName = null;
+		made = null;
+		state = null;
+		
+	}
+
+
+	@Override
+	public void addDetailedListener(IComputationProgressDetailedListener listener) {
+		
+		synchronized (listenersDetailsLock) {
+
+			if (listenersDetails == null)
+				listenersDetails = new LinkedList<IComputationProgressDetailedListener>();
+			else if (listenersDetails.contains(listener))
+				return;
+			
+			listenersDetails.add(listener);	
+		}
+	}
+
+
+	@Override
+	public void removeDetailedListener(IComputationProgressDetailedListener listener) {
+		
+		synchronized (listenersDetailsLock) {
+
+			if (listenersDetails != null)
+				listenersDetails.remove(listener);	
+		}
+	}
+	
+	
 
 
 }

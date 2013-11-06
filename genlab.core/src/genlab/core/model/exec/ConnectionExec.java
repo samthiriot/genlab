@@ -1,6 +1,7 @@
 package genlab.core.model.exec;
 
 import genlab.core.commons.ProgramException;
+import genlab.core.exec.ITask;
 import genlab.core.model.instance.IConnection;
 
 /**
@@ -87,7 +88,7 @@ public class ConnectionExec extends AbstractConnectionExec<IAlgoExecution, IAlgo
 		// warn children
 		to.notifyInputAvailable(c.getTo());
 	}
-	
-	
+
+
 
 }

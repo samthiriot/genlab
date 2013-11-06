@@ -11,6 +11,7 @@ import genlab.core.usermachineinteraction.ListsOfMessages;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -18,15 +19,23 @@ import java.util.Set;
 /**
  * Takes many tasks, and executes them.
  * 
+ * Some features:
+ * <ul>
+ * <li>when a task is finished, the runner may propose to clean it (meaning, to free the corresponding resources)</li>
+ * </ul>
+ * 
  * TODO use the map of threads to monitor and kill
  * TODO timeouts
+ * 
+ * TODO the number of threads should be only one specific type of shared resources. Other 
+ * could be the network, a disk, etc.
  * 
  * @author Samuel Thiriot
  *
  */
 public class Runner extends Thread implements IComputationProgressSimpleListener {
 	
-	final static int MAX_THREADS = 5; // TODO
+	final static int MAX_THREADS = 8; // TODO
 	
 	final static int START_TASKS_SIZE = 500;
 	
@@ -35,6 +44,9 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	 * Acts as the locker for: all, roots, done, ready, running, notReady
 	 */
 	final Set<IAlgoExecution> all = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
+	
+	final Set<ICleanableTask> cleanable = new HashSet<ICleanableTask>(START_TASKS_SIZE);
+
 
 	final Set<IAlgoExecution> roots = new HashSet<IAlgoExecution>();;
 
@@ -296,6 +308,8 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				t.setPriority(MIN_PRIORITY);
 				exec2thread.put(e, t);
 			}
+			if (e.getThreadsUsed() < 0)
+				throw new ProgramException("a task cannot create novel threads, sorry.");
 			usedThreads += e.getThreadsUsed();
 				
 		}
@@ -378,6 +392,8 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 					//messages.debugTech("trying to do things.", getClass());
 				while (attemptToDoSomething()) {}
 				//messages.debugTech("nothing to do yet.", getClass());
+				
+				mayCleanTasks(1000);
 		
 				// when nothing more can be done, we may propose novel tasks :-) 
 				//System.err.println("threads used: "+usedThreads);
@@ -395,6 +411,46 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		} finally {
 			doingSomething = false;
 		}
+	}
+	
+	private void mayCleanTasks(long mintimeMs) {
+		
+		// should we clean ? 
+		if (cleanable.size() < 10)
+			return;
+
+		messagesRun.debugTech("we are doing a bit of housekeeping there :-) ("+cleanable.size()+" tasks ready for cleaning)", getClass());
+		
+		synchronized (all) {
+			
+			long minimalTimestamp = System.currentTimeMillis() - mintimeMs; // don't clean tasks which are not done since mintime
+					
+			Iterator<ICleanableTask> itSub = cleanable.iterator();
+			while (itSub.hasNext()) {
+				ICleanableTask sub = itSub.next();
+				
+				// sometimes we attempt to clean the tasks a bit too quickly
+				// just don't.
+				if (sub.getProgress().getTimestampEnd() > minimalTimestamp)
+					continue;
+					
+				try {
+					messagesRun.traceTech("cleaning task: "+sub, getClass());
+
+					// now clean it !
+					
+					sub.clean();
+					
+					itSub.remove();
+				} catch (RuntimeException e) {
+					messagesRun.warnTech("oops,  catched an error while attempting to clean a task: "+sub, getClass(), e);
+				}
+				
+			}
+			
+		}
+		
+		
 	}
 	
 	public void run() {
@@ -416,6 +472,8 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				// really, there is nothing to do.
 				if (displayMessage) {
 					messagesRun.infoUser("all tasks done. ", getClass());
+					mayCleanTasks(0);
+
 					// we may display something there is relevant
 					displayMessage = false;
 				}		
@@ -426,10 +484,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				
 				attemptToDoThings();
 				
-
 			}
-			
-
 			
 			try {
 				messagesRun.traceTech("nothing to do, sleeping.", getClass());
@@ -498,6 +553,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 					exec2thread.remove(e);
 					usedThreads -= e.getThreadsUsed();
 				}
+				possibilityOfTaskCleanup(e);
 				wakeUp = true;
 				break;
 				
@@ -543,4 +599,36 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		}
 		wakeUp();
 	}
+
+	@Override
+	public void taskCleaning(ITask task) {
+		
+		// a task is going to be removed
+		// I should no more care about this task !
+		synchronized (all) {
+			if (running.contains(task))
+				throw new ProgramException("should not clean a task which is still in running state !");
+			
+			all.remove(task);
+			done.remove(task);
+			running.remove(task);
+			ready.remove(task);
+			exec2thread.remove(task);
+			roots.remove(task);
+		}
+		
+	}
+	
+	/**
+	 * Propose to the runner a task that may be cleaned
+	 */
+	public void possibilityOfTaskCleanup(ITask task) {
+		
+		// only clean the tasks marked as "you may clean me"
+		if (!(task instanceof ICleanableTask))
+			return;
+		
+		cleanable.add((ICleanableTask)task);
+	}
+	
 }

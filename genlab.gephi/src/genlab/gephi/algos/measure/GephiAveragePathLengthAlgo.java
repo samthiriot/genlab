@@ -15,6 +15,7 @@ import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gephi.utils.GephiConvertors;
 import genlab.gephi.utils.GephiGraph;
+import genlab.gephi.utils.ProgressTicketGephiToGenlab;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,7 @@ import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Node;
 import org.gephi.statistics.plugin.ClusteringCoefficient;
 import org.gephi.statistics.plugin.GraphDistance;
+import org.gephi.utils.progress.ProgressTicket;
 import org.openide.util.Lookup;
 
 /**
@@ -79,7 +81,7 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 			
 			@Override
 			protected Map<IInputOutput<?>, Object> analyzeGraph(
-					IComputationProgress progress, 
+					final IComputationProgress progress, 
 					GephiGraph gephiGraph,
 					IGenlabGraph genlabGraph) {
 				
@@ -100,8 +102,8 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 				
 				// TODO warning if mixed ???
 				
-				// TODO progress
-				
+				// plug a progress ticket to Gephi, so we will be aware of progress
+				algo.setProgressTicket(new ProgressTicketGephiToGenlab(progress));
 			
 				algo.execute(
 						gephiGraph.graphModel,

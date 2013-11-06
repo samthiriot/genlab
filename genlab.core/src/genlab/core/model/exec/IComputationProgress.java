@@ -97,6 +97,10 @@ public interface IComputationProgress {
 	public void addListener(IComputationProgressSimpleListener listener);
 	public void removeListener(IComputationProgressSimpleListener listener);
 	
+	public void addDetailedListener(IComputationProgressDetailedListener listener);
+	public void removeDetailedListener(IComputationProgressDetailedListener listener);
+	
+	
 	/**
 	 * Defines a current activity
 	 * @param name
@@ -106,4 +110,5 @@ public interface IComputationProgress {
 
 	public String getCurrentTaskName();
 	
+	public void clean();
 }

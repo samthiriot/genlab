@@ -2,6 +2,7 @@ package genlab.core.model.exec;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
+import genlab.core.exec.ITask;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.meta.LoopForAlgo;
 
@@ -55,7 +56,6 @@ public class LoopAlgoExecutionSupervisor extends
 		return " "+iterationsDone;
 	}
 
-	
 
 
 

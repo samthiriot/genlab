@@ -6,6 +6,4 @@ public interface ITaskManagerListener {
 	
 	public void notifyTaskRemoved(ITask task);
 	
-	
-	
 }
