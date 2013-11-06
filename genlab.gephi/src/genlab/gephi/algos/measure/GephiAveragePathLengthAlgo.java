@@ -92,6 +92,7 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 				GraphDistance algo = null;
 				for (int i=0; i<3; i++) {
 					try {
+						// workaround for a default in gephi
 						algo = new GraphDistance();
 						break;
 					} catch (NullPointerException e) {

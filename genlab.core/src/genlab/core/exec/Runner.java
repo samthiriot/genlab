@@ -35,7 +35,7 @@ import java.util.Set;
  */
 public class Runner extends Thread implements IComputationProgressSimpleListener {
 	
-	final static int MAX_THREADS = 8; // TODO
+	final static int MAX_THREADS = 2; // TODO
 	
 	final static int START_TASKS_SIZE = 500;
 	

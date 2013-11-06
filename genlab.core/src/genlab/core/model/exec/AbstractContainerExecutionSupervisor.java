@@ -2,6 +2,7 @@ package genlab.core.model.exec;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
+import genlab.core.exec.ITask;
 import genlab.core.exec.ITasksDynamicProducer;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
@@ -10,6 +11,7 @@ import genlab.core.model.instance.IReduceAlgoInstance;
 import genlab.core.model.meta.IReduceAlgo;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -47,6 +49,10 @@ public abstract class AbstractContainerExecutionSupervisor
 	protected abstract boolean shouldContinueRun();
 	
 	protected abstract void endOfRun();
+	
+	protected int evaluateRemainingSteps() {
+		return 0;
+	}
 	
 	public void createNewTasks() {
 		
@@ -218,4 +224,84 @@ public abstract class AbstractContainerExecutionSupervisor
 		super.clean();
 	}	
 
+		
+	@Override
+	protected void updateProgressFromChildren() {
+		
+		// this version is very similar to the one from parents. 
+		// the main difference is that we assume that a task with "unknown" progress will last as long as the longest 
+		// of the supervisor. So the progress bar is more relevant.
+		
+		ComputationState ourState = null;
+		
+		long totalToDo = subTasksRemovedDone;
+		long totalDone = subTasksRemovedDone;
+		boolean somethingNotFinished = false;
+		
+		long maxDuration = 0;
+		int countUnknown = evaluateRemainingSteps();
+		
+		for (ITask sub: (LinkedList<ITask>)tasks.clone()) {
+			
+			final ComputationState subState = sub.getProgress().getComputationState(); 
+			
+			long subToDo = sub.getProgress().getProgressTotalToDo();
+			
+			if (subToDo == 0l) {
+				countUnknown++;
+			} else {
+				// well, looks like it knows a count
+				totalToDo += sub.getProgress().getProgressTotalToDo();
+				totalToDo ++;
+				
+				if (subToDo > maxDuration)
+					maxDuration = subToDo;
+			}
+			
+			if (!subState.isFinished()) {
+				somethingNotFinished = true;
+				totalDone += sub.getProgress().getProgressDone();
+				continue;
+			}  else {
+				totalDone ++;
+			}
+			
+			switch (subState) {
+			case FINISHED_FAILURE:
+				somethingFailed = true;
+				break;
+			case FINISHED_CANCEL:
+				somethingCanceled = true;
+				break;
+			case FINISHED_OK:
+				// don't care 
+				break;
+			default:
+				throw new ProgramException("unknown computation status with property 'finished': "+subState);
+			}
+			
+		}
+		
+		
+		totalToDo += countUnknown*(maxDuration+1);
+		
+		if (somethingNotFinished) {
+			this.progress.setProgressTotal(totalToDo);
+			this.progress.setProgressMade(totalDone);
+		} else {
+			// if we reached this step, then all our children have finished.
+			// as a container, we end ourself
+			if (somethingFailed)
+				ourState = ComputationState.FINISHED_FAILURE;
+			else if (somethingCanceled)
+				ourState = ComputationState.FINISHED_CANCEL;
+			else 
+				ourState = ComputationState.FINISHED_OK;
+			
+			messages.traceTech("all subs terminated; should transmit results", getClass());
+			hookContainerExecutionFinished(ourState);
+			this.progress.setComputationState(ourState);
+			
+		}
+	}
 }

@@ -97,7 +97,7 @@ public abstract class AbstractContainerExecution
 			
 	}
 	
-	private void updateProgressFromChildren() {
+	protected void updateProgressFromChildren() {
 		
 		ComputationState ourState = null;
 		

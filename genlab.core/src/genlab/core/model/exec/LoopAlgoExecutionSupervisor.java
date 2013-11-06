@@ -45,6 +45,11 @@ public class LoopAlgoExecutionSupervisor extends
 			return (iterationsDone < iterationsTotal);
 		}
 	}
+	
+	@Override
+	protected int evaluateRemainingSteps() {
+		return iterationsTotal-iterationsDone;
+	}
 
 	@Override
 	protected void endOfRun() {

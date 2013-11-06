@@ -35,6 +35,7 @@ public class MeanShortestPathAlgo extends RandomNetworkAnalyzerAlgo {
 			protected void analyze(RandomNetwork cyNetwork, boolean directed) {
 				
 				MeanShortestPathMetric metric = new MeanShortestPathMetric();
+				
 				double meanPath = metric.analyze(cyNetwork, directed);
 				
 				((ComputationResult)getResult()).setResult(
