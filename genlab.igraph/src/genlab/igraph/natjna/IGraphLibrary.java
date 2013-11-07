@@ -795,16 +795,16 @@ public class IGraphLibrary {
 		//GLLogger.debugTech("calling igraph to initialize vectors...", getClass());
 
 		InternalVectorStruct res = new InternalVectorStruct();
-		IGraphRawLibrary.igraph_vector_init(res, 100);
+		IGraphRawLibrary.igraph_vector_init(res, 0);
 		
-		Pointer vids = IGraphRawLibrary.igraph_vss_none();//igraph_vss_all();
+		InternalVertexSelector vids = IGraphRawLibrary.igraph_vss_all();
 		//	new InternalVertexSelector();
 		//IGraphRawLibrary.igraph_vector_init(res, 0);
 		if (vids == null)
 			throw new ProgramException("problem during the vss init");
 		
 		InternalVectorStruct weights = new InternalVectorStruct();
-		int resA = IGraphRawLibrary.igraph_vector_init(weights, 100);
+		int resA = IGraphRawLibrary.igraph_vector_init(weights, 0);
 		checkIGraphResult(resA);
 
 		try {
@@ -815,7 +815,7 @@ public class IGraphLibrary {
 					res, 
 					vids, 
 					directed, 
-					weights, 
+					null, //weights, 
 					true
 					);
 					
@@ -844,6 +844,62 @@ public class IGraphLibrary {
 			
 			// should we clear this one ?
 			// IGraphRawLibrary.igraph_vs_destroy(vids);
+			IGraphRawLibrary.igraph_vector_destroy(weights);
+
+			
+		}
+		
+	}
+	
+
+	protected void computeBetweenessEstimate(IGraphGraph g, boolean directed, double cutoff) {
+
+
+		final long startTime = System.currentTimeMillis();
+		
+		//GLLogger.debugTech("calling igraph to initialize vectors...", getClass());
+
+		InternalVectorStruct res = new InternalVectorStruct();
+		IGraphRawLibrary.igraph_vector_init(res, 0);
+	
+		InternalVectorStruct weights = new InternalVectorStruct();
+		int resA = IGraphRawLibrary.igraph_vector_init(weights, 100);
+		checkIGraphResult(resA);
+
+		try {
+			//GLLogger.debugTech("calling igraph to compute the clusters...", getClass());
+	
+			final int res2 = IGraphRawLibrary.igraph_edge_betweenness_estimate(
+					g.getPointer(), 
+					res, 
+					directed,
+					cutoff,
+					null //weights,
+					);
+					
+			
+			final long duration = System.currentTimeMillis() - startTime;
+			//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+			
+			checkIGraphResult(res2);
+			
+			// process and store results
+			
+						
+			// memberships
+			{
+				final int resSize = IGraphRawLibrary.igraph_vector_size(res);
+				final double[] resRes = res.asDoubleArray(resSize);
+				System.err.println("betweeness: "+Arrays.toString(resRes));
+				// TODO !!!
+			}
+			
+			
+		} finally {
+			
+			IGraphRawLibrary.igraph_vector_destroy(res);
+			
+			
 			IGraphRawLibrary.igraph_vector_destroy(weights);
 
 			

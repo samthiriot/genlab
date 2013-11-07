@@ -84,6 +84,23 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
     		ensureAllocated();
 
     	}
+    	
+    	public DataUnion(Pointer p) {
+        	
+    		super(p);
+    		
+    		read();
+
+    	}
+    	
+    	@Override
+    	public void read() {
+    		super.read();        
+
+    		vecptr.read();
+    		adj.read();
+    		seq.read();
+    	}
         
     }
 
@@ -102,10 +119,19 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
 	}
 	
 	public InternalVertexSelector(Pointer p) {
+		
 		super(p);
+		
 		read();
 	}
-
+	
+	@Override
+	public void read() {
+		super.read();        
+	       
+		data.read();
+	}
+	
 	@Override
 	protected List getFieldOrder() {
 		return Arrays.asList(new String[] { "type", "data"});	

@@ -27,7 +27,7 @@ public class TestIGraphCallback {
 		public int igraph_progress_handler_t(String message, double percent,
 				Pointer data) {
 			count++;
-			System.err.println("received "+percent);
+			System.err.println(percent);
 			this.percent = percent;
 			return 0;
 		}
@@ -38,18 +38,20 @@ public class TestIGraphCallback {
 	public void testCallbackCalled() {
 
 		
-		//TestProgressCallback t = new TestProgressCallback();
+		TestProgressCallback t = new TestProgressCallback();
 		
-		//Pointer p = IGraphRawLibrary.igraph_set_progress_handler(t);
+		Pointer p = IGraphRawLibrary.igraph_set_progress_handler(t);
 		
 		IGraphLibrary lib = new IGraphLibrary();
 		IGraphGraph g = null;
 		try {
 		
-			g = lib.generateWattsStrogatz(200, 1, 0.2, 2, false, false);
+			g = lib.generateWattsStrogatz(1000, 1, 0.2, 4, false, false);
 			//lib.computeAveragePathLength(g);
 			lib.computeBetweeness(g, false);
-			//assertTrue("callback was not called", t.count>0);
+			//lib.computeBetweenessEstimate(g, false, 0.1);
+
+			assertTrue("callback was not called", t.count>0);
 			
 		} finally {
 		

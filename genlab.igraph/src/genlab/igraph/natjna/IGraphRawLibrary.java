@@ -645,7 +645,7 @@ int igraph_k_regular_game(igraph_t *graph,
 	/*
 	 * igraph_vs_t igraph_vss_all(void);
 	 */
-	public static native Pointer igraph_vss_all();
+	public static native InternalVertexSelector igraph_vss_all();
 
 	/*
 	 * igraph_vs_t igraph_vss_none(void);
@@ -666,12 +666,24 @@ int igraph_k_regular_game(igraph_t *graph,
 	public static native int igraph_betweenness(
 			Pointer graph, 
 			InternalVectorStruct res,  
-			Pointer vids, 
+			InternalVertexSelector vids, 
             boolean directed,
             InternalVectorStruct weights, 
             boolean nobigint
             );
 	
+	/*
+	 * int igraph_edge_betweenness_estimate(const igraph_t *graph, igraph_vector_t *result,
+				     igraph_bool_t directed, igraph_real_t cutoff,
+				     const igraph_vector_t *weights);
+	 */
+	public static native int igraph_edge_betweenness_estimate(
+			Pointer graph, 
+			InternalVectorStruct result,
+		    boolean directed, 
+		    double cutoff,
+		    InternalVectorStruct weights
+		    );
 	
 	/*
 	 * int igraph_transitivity_undirected(const igraph_t *graph,
