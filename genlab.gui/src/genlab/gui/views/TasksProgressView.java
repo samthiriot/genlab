@@ -343,6 +343,8 @@ public class TasksProgressView
 		final ComputationState state = t.getProgress().getComputationState();
 		if (state == null) {
 			System.err.println("******************************** NULL state ???");
+			tasksDisplayedNotStopped.remove(t);
+
 			return; // this should never happen. In practice, sometimes a task was removed but this is not yet obvious.
 		}
 		

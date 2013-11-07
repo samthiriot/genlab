@@ -12,7 +12,7 @@ public abstract class ExecutionTask implements IExecutionTask {
 	/**
 	 * lazy construction
 	 */
-	private Set<ITask> prerequires = null;
+	private HashSet<ITask> prerequires = null;
 	
 	private IContainerTask parent = null;
 	
@@ -23,12 +23,13 @@ public abstract class ExecutionTask implements IExecutionTask {
 
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public Collection<ITask> getPrerequires() {
 		if (prerequires == null)
 			return Collections.EMPTY_LIST;
 		else
-			return prerequires;
+			return (Collection<ITask>) prerequires.clone();
 	}
 
 	@Override
@@ -90,9 +91,11 @@ public abstract class ExecutionTask implements IExecutionTask {
 			}
 		}
 		
-		// clean local data
 		if (prerequires != null)
 			prerequires.clear();
+			
+		
+		// clean local data
 		if (lifecycleListeners != null)
 			lifecycleListeners.clear();
 		parent = null;

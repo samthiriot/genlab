@@ -10,7 +10,9 @@ import java.io.InputStream;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
+import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
 import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
@@ -31,6 +33,8 @@ typedef int    igraph_bool_t;
  * http://blog.vogella.com/2010/07/27/osgi/
  * http://holistictendencies.wordpress.com/2011/03/28/bundle-nativecode-using-platform-specific-dlls-from-osgi/
  * http://wiki.apidesign.org/wiki/OSGi
+ * 
+ * TODO progress handler ! :-)
  * 
  * @author Samuel Thiriot
  *
@@ -632,6 +636,43 @@ int igraph_k_regular_game(igraph_t *graph,
 			InternalVectorStruct csize, IntByReference no,
 		    int mode);
 	
+	
+	/*
+	 * int igraph_vs_none(igraph_vs_t *vs);
+	 */
+	public static native int igraph_vs_none(Pointer vs);
+	
+	/*
+	 * igraph_vs_t igraph_vss_all(void);
+	 */
+	public static native Pointer igraph_vss_all();
+
+	/*
+	 * igraph_vs_t igraph_vss_none(void);
+	 */
+	public static native Pointer igraph_vss_none();
+
+	
+	/*
+	 * void igraph_vs_destroy(igraph_vs_t *vs);
+	 */
+	public static native void igraph_vs_destroy(Pointer vs);
+	
+	/*
+	 * int igraph_betweenness(const igraph_t *graph, igraph_vector_t *res, 
+                       const igraph_vs_t vids, igraph_bool_t directed,
+		       const igraph_vector_t *weights, igraph_bool_t nobigint);
+	 */
+	public static native int igraph_betweenness(
+			Pointer graph, 
+			InternalVectorStruct res,  
+			Pointer vids, 
+            boolean directed,
+            InternalVectorStruct weights, 
+            boolean nobigint
+            );
+	
+	
 	/*
 	 * int igraph_transitivity_undirected(const igraph_t *graph,
 				   igraph_real_t *res,
@@ -712,6 +753,73 @@ int igraph_k_regular_game(igraph_t *graph,
 	public static native  int igraph_transitivity_avglocal_undirected(Pointer graph,
 			DoubleByReference res,
 		    int mode);
+	
+	// randomness
+	
+	/*
+	 * igraph_rng_t *igraph_rng_default(void);
+	 */
+	/**
+	 * Returns a pointer to the default igraph random number generator.
+	 * Nota: always set seed BEFORE actual use.
+	 * @return
+	 */
+	public static native Pointer igraph_rng_default();
+	
+	/*
+	 * const char *igraph_rng_name(igraph_rng_t *rng);
+	 */
+	/**
+	 * Returns the name of a random number generator
+	 * @param rng
+	 * @return
+	 */
+	public static native String igraph_rng_name(Pointer rng);
+	
+	
+	/*
+	 * int igraph_rng_seed(igraph_rng_t *rng, unsigned long int seed);
+	 */
+	/**
+	 * Sets the seed of the random number generator passed as parameter
+	 * @param rng
+	 * @param seed
+	 * @return
+	 */
+	public static native int igraph_rng_seed(Pointer rng, NativeLong seed);
+
+	/*
+	 * long int igraph_rng_get_integer(igraph_rng_t *rng,
+				long int l, long int h);
+	 */
+	/**
+	 * Gets an integer from the random number generator passed as parameter. Note that both l and h are inclusive.
+	 * Also note that h has to be >= 1
+	 * @param rng
+	 * @param l
+	 * @param h
+	 * @return
+	 */
+	public static native NativeLong igraph_rng_get_integer(Pointer rng, NativeLong l, NativeLong h);
+	
+	/*
+	 * igraph_real_t igraph_rng_get_unif(igraph_rng_t *rng, 
+				  igraph_real_t l, igraph_real_t h);
+	 */
+	/**
+	 * returns a double in a uniform rand
+	 * @param rng
+	 * @param l
+	 * @param h
+	 * @return
+	 */
+	public static native double igraph_rng_get_unif(Pointer rng, double l, double h);
+	
+
+	/*
+	 * igraph_progress_handler_t * igraph_set_progress_handler(igraph_progress_handler_t new_handler);
+	 */
+	public static native Pointer igraph_set_progress_handler(IIGraphProgressCallback new_handler);
 	
 
 }

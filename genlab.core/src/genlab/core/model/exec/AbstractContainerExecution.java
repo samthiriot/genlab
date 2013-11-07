@@ -238,9 +238,10 @@ public abstract class AbstractContainerExecution
 
 	
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public final Collection<ITask> getTasks() {
-		return tasks;
+		return (LinkedList<ITask>)tasks.clone();
 	}
 	
 	@Override

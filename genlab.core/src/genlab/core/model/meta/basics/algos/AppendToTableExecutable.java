@@ -127,12 +127,13 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution {
 			 throw new ProgramException("unknown executable: it should have been defined previously");
 		
 		// check wether the row id is filled or not
+		/* don't, as the connections are ran in a quiet asynnchronous way
 		Object[] values = outputTable.getRow(rowId);
 		for (Object value : values) {
 			if (value == null)
 				messages.warnUser("one exec finished, but somes values are still undefined", getClass());
 		}
-		
+		*/
 		
 	}
 

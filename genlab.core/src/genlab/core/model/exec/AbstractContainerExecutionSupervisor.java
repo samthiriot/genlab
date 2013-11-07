@@ -236,7 +236,7 @@ public abstract class AbstractContainerExecutionSupervisor
 		
 		long totalToDo = subTasksRemovedDone;
 		long totalDone = subTasksRemovedDone;
-		boolean somethingNotFinished = false;
+		boolean somethingNotFinished = shouldContinueRun();
 		
 		long maxDuration = 0;
 		int countUnknown = evaluateRemainingSteps();
@@ -267,6 +267,7 @@ public abstract class AbstractContainerExecutionSupervisor
 			}
 			
 			switch (subState) {
+			
 			case FINISHED_FAILURE:
 				somethingFailed = true;
 				break;
@@ -278,6 +279,7 @@ public abstract class AbstractContainerExecutionSupervisor
 				break;
 			default:
 				throw new ProgramException("unknown computation status with property 'finished': "+subState);
+				
 			}
 			
 		}

@@ -7,10 +7,12 @@ import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
+import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
@@ -62,9 +64,14 @@ public class IGraphLibrary {
 		if (versionString == null)
 			retrieveVersion();
 		
-		GLLogger.debugTech("loaded igraph library "+versionString, getClass());
+		// define a seed for the random generator
+		//Pointer p = IGraphRawLibrary.igraph_rng_default();
+		//IGraphRawLibrary.igraph_rng_seed(p, new NativeLong((long)Math.round(Math.random()*65000)));
+		
+		GLLogger.traceTech("loaded the native igraph library version: "+versionString, getClass());
 	}
 
+	
 
 	/**
 	 * Retrieves the version and stores it into attributes. 
@@ -779,6 +786,71 @@ public class IGraphLibrary {
 		
 	}
 	
+
+	protected void computeBetweeness(IGraphGraph g, boolean directed) {
+
+
+		final long startTime = System.currentTimeMillis();
+		
+		//GLLogger.debugTech("calling igraph to initialize vectors...", getClass());
+
+		InternalVectorStruct res = new InternalVectorStruct();
+		IGraphRawLibrary.igraph_vector_init(res, 100);
+		
+		Pointer vids = IGraphRawLibrary.igraph_vss_none();//igraph_vss_all();
+		//	new InternalVertexSelector();
+		//IGraphRawLibrary.igraph_vector_init(res, 0);
+		if (vids == null)
+			throw new ProgramException("problem during the vss init");
+		
+		InternalVectorStruct weights = new InternalVectorStruct();
+		int resA = IGraphRawLibrary.igraph_vector_init(weights, 100);
+		checkIGraphResult(resA);
+
+		try {
+			//GLLogger.debugTech("calling igraph to compute the clusters...", getClass());
+	
+			final int res2 = IGraphRawLibrary.igraph_betweenness(
+					g.getPointer(), 
+					res, 
+					vids, 
+					directed, 
+					weights, 
+					true
+					);
+					
+			
+			final long duration = System.currentTimeMillis() - startTime;
+			//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+			
+			checkIGraphResult(res2);
+			
+			// process and store results
+			
+						
+			// memberships
+			{
+				final int resSize = IGraphRawLibrary.igraph_vector_size(res);
+				final double[] resRes = res.asDoubleArray(resSize);
+				System.err.println("betweeness: "+Arrays.toString(resRes));
+				// TODO !!!
+			}
+			
+			
+		} finally {
+			
+			IGraphRawLibrary.igraph_vector_destroy(res);
+			
+			
+			// should we clear this one ?
+			// IGraphRawLibrary.igraph_vs_destroy(vids);
+			IGraphRawLibrary.igraph_vector_destroy(weights);
+
+			
+		}
+		
+	}
+	
 	public int computeComponentsCount(IGraphGraph g) {
 		
 		if (paramUseCache && g.hasCachedProperty(GRAPH_KEY_COMPONENTS_COUNT)) {
@@ -939,5 +1011,5 @@ public class IGraphLibrary {
 		
 	}
 	*/
-	
+
 }

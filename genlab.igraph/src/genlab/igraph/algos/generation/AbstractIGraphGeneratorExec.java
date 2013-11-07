@@ -61,6 +61,8 @@ public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecutionO
 					
 			try {
 				
+				result.getMessages().infoUser("using the igraph native library version "+lib.getVersionString(), getClass());
+				
 				// ask the lib to transmit its information as the result of OUR computations
 				lib.setListOfMessages(result.getMessages());
 				
