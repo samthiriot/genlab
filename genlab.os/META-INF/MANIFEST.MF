@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Os
+Bundle-SymbolicName: genlab.os;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: genlab.os.Activator
+Bundle-Vendor: Samuel Thiriot
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ genlab.core;bundle-version="0.0.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

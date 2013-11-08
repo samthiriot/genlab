@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.doc">
+      <library
+            description="provides features related to the Operating System"
+            id="genlab.os.library"
+            name="OS">
+         <original_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </original_author_id>
+      </library>
+      <docalgo
+            algo_id="genlab.os.algos.openFile"
+            library_id="genlab.os.library"
+            time_complexity="O(1)">
+      </docalgo>
+      <docalgo
+            algo_id="genlab.os.algos.openFileDefinedCommand"
+            description="Open a file with a defined command"
+            library_id="genlab.os.library">
+      </docalgo>
+   </extension>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.os.algos.OpenFileAlgo"
+            id="genlab.os.algos.openFile">
+      </algo>
+      <algo
+            class="genlab.os.algos.OpenFileWithDefinedCommandAlgo"
+            id="genlab.os.algos.openFileDefinedCommand">
+      </algo>
+   </extension>
+
+</plugin>
