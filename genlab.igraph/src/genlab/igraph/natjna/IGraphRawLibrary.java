@@ -717,6 +717,18 @@ int igraph_k_regular_game(igraph_t *graph,
 		    );
 	
 	/*
+	 * int igraph_edge_betweenness(const igraph_t *graph, igraph_vector_t *result,
+                            igraph_bool_t directed, 
+			    const igraph_vector_t *weights);
+	 */
+	public static native int igraph_edge_betweenness(
+			Pointer graph, 
+			InternalVectorStruct result,
+            boolean directed,
+            InternalVectorStruct weights
+            );
+	
+	/*
 	 * int igraph_transitivity_undirected(const igraph_t *graph,
 				   igraph_real_t *res,
 				   igraph_transitivity_mode_t mode);

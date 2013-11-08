@@ -28,7 +28,7 @@ import java.util.Map;
  * @author Samuel Thiriot
  *
  */
-public class IGraphNodeBetweenessAlgo extends AbstractIGraphMeasure {
+public class IGraphEdgeBetweenessAlgo extends AbstractIGraphMeasure {
 
 
 	public static final StringParameter PARAM_ATTRIBUTE_NAME = new StringParameter(
@@ -48,10 +48,10 @@ public class IGraphNodeBetweenessAlgo extends AbstractIGraphMeasure {
 	
 // TODO category centrality measures
 	
-	public IGraphNodeBetweenessAlgo() {
+	public IGraphEdgeBetweenessAlgo() {
 		super(
-				"node betweeness (igraph)", 
-				"measure node betweeness centrality using the igraph implementation"
+				"edge betweeness (igraph)", 
+				"measure edge betweeness centrality using the igraph implementation"
 				);
 
 		outputs.add(OUTPUT_GRAPH);
@@ -90,7 +90,7 @@ public class IGraphNodeBetweenessAlgo extends AbstractIGraphMeasure {
 					// is connected
 					if (isUsed(OUTPUT_GRAPH)) {
 						
-						double[] nodeBetweennes = lib.computeBetweenessEstimate(igraphGraph, false, cutoff);
+						double[] nodeBetweennes = lib.computeEdgeBetweenessEstimate(igraphGraph, false, cutoff);
 						
 						IGenlabGraph output = genlabGraph.clone("cloned");
 				/*

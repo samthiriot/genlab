@@ -821,8 +821,7 @@ public class IGraphLibrary {
 	 * @param g
 	 * @param directed
 	 */
-	public double[] computeBetweeness(IGraphGraph g, boolean directed, double cutoff) {
-
+	public double[] computeNodeBetweeness(IGraphGraph g, boolean directed, double cutoff) {
 
 		final long startTime = System.currentTimeMillis();
 		
@@ -836,18 +835,8 @@ public class IGraphLibrary {
 		Pointer vids = IGraphRawLibrary.igraph_vss_none();
 		int resA = IGraphRawLibrary.igraph_vss_all(vids);
 		checkIGraphResult(resA);
-		//Pointer vids = IGraphRawLibrary.igraph_vss_none();
-		
-		// TODO manage weights? 
-		/*InternalVectorStruct weights = new InternalVectorStruct();
-		resA = IGraphRawLibrary.igraph_vector_init(weights, verticesCount);
-		checkIGraphResult(resA);
-		double[] weightsV = new double[verticesCount];
-		Arrays.fill(weightsV, 1.0);
-		weights.fillWithArray(weightsV, verticesCount);
-*/
+	
 		try {
-			//GLLogger.debugTech("calling igraph to compute the clusters...", getClass());
 	
 			final int res2 = IGraphRawLibrary.igraph_betweenness_estimate(
 					g.getPointer(), 
@@ -866,6 +855,106 @@ public class IGraphLibrary {
 			checkIGraphResult(res2);
 			
 			// process and store results
+			final int resSize = IGraphRawLibrary.igraph_vector_size(res);
+			final double[] resRes = res.asDoubleArray(resSize);
+			//System.err.println("betweeness: "+Arrays.toString(resRes));
+			// TODO store inside cache
+			return resRes;
+		
+		} finally {
+			
+			IGraphRawLibrary.igraph_vector_destroy(res);
+			
+		}
+		
+	}
+	
+	/**
+	 * Unstable !
+	 * @param g
+	 * @param directed
+	 */
+	public double[] computeNodeBetweenessEstimate(IGraphGraph g, boolean directed, double cutoff) {
+
+		final long startTime = System.currentTimeMillis();
+		
+		final int verticesCount = IGraphRawLibrary.igraph_vcount(g.getPointer());
+		
+		//GLLogger.debugTech("calling igraph to initialize vectors...", getClass());
+
+		InternalVectorStruct res = new InternalVectorStruct();
+		IGraphRawLibrary.igraph_vector_init(res, verticesCount);
+		
+		Pointer vids = IGraphRawLibrary.igraph_vss_none();
+		int resA = IGraphRawLibrary.igraph_vss_all(vids);
+		checkIGraphResult(resA);
+	
+		try {
+	
+			final int res2 = IGraphRawLibrary.igraph_betweenness_estimate(
+					g.getPointer(), 
+					res, 
+					vids, 
+					directed, 
+					cutoff,
+					(InternalVectorStruct)null, // weights
+					true
+					);
+					
+			
+			final long duration = System.currentTimeMillis() - startTime;
+			//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+			
+			checkIGraphResult(res2);
+			
+			// process and store results
+			final int resSize = IGraphRawLibrary.igraph_vector_size(res);
+			final double[] resRes = res.asDoubleArray(resSize);
+			//System.err.println("betweeness: "+Arrays.toString(resRes));
+			// TODO store inside cache
+			return resRes;
+		
+		} finally {
+			
+			IGraphRawLibrary.igraph_vector_destroy(res);
+			
+		}
+		
+	}
+	
+	public double[] computeEdgeBetweeness(IGraphGraph g, boolean directed) {
+
+
+		final long startTime = System.currentTimeMillis();
+		
+		//GLLogger.debugTech("calling igraph to initialize vectors...", getClass());
+
+		final int edgesCount = IGraphRawLibrary.igraph_ecount(g.getPointer());
+		
+		InternalVectorStruct res = new InternalVectorStruct();
+		IGraphRawLibrary.igraph_vector_init(res, edgesCount);
+	
+		InternalVectorStruct weights = new InternalVectorStruct();
+		int resA = IGraphRawLibrary.igraph_vector_init(weights, edgesCount);
+		checkIGraphResult(resA);
+
+		try {
+			//GLLogger.debugTech("calling igraph to compute the clusters...", getClass());
+	
+			final int res2 = IGraphRawLibrary.igraph_edge_betweenness(
+					g.getPointer(), 
+					res, 
+					directed, 
+					null
+					);
+					
+			
+			final long duration = System.currentTimeMillis() - startTime;
+			//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+			
+			checkIGraphResult(res2);
+			
+			// process and store results
 			
 						
 			// memberships
@@ -873,11 +962,11 @@ public class IGraphLibrary {
 				final int resSize = IGraphRawLibrary.igraph_vector_size(res);
 				final double[] resRes = res.asDoubleArray(resSize);
 				//System.err.println("betweeness: "+Arrays.toString(resRes));
-				// TODO !!!
+				// TODO !!
+				// TODO cache!
+				
 				return resRes;
-
 			}
-			
 			
 			
 		} finally {
@@ -885,17 +974,14 @@ public class IGraphLibrary {
 			IGraphRawLibrary.igraph_vector_destroy(res);
 			
 			
-			// should we clear this one ?
-			// IGraphRawLibrary.igraph_vs_destroy(vids);
-			//IGraphRawLibrary.igraph_vector_destroy(weights);
+			IGraphRawLibrary.igraph_vector_destroy(weights);
 
 			
 		}
 		
 	}
-	
 
-	public double[] computeBetweenessEstimate(IGraphGraph g, boolean directed, double cutoff) {
+	public double[] computeEdgeBetweenessEstimate(IGraphGraph g, boolean directed, double cutoff) {
 
 
 		final long startTime = System.currentTimeMillis();

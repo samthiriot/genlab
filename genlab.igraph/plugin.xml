@@ -56,7 +56,7 @@
             id="genlab.igraph.algos.compare.VF2Isomorphic">
       </algo>
       <algo
-            class="genlab.igraph.algos.measure.IGraphNodeBetweenessAlgo"
+            class="genlab.igraph.algos.measure.IGraphEdgeBetweenessAlgo"
             id="genlab.igraph.algos.measure.IGraphBetweeness">
       </algo>
    </extension>

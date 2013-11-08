@@ -75,10 +75,11 @@ public class AbstractGraphstreamGraphWriterExecution extends
 			// ended !
 			result.setResult(AbstractGraphStreamGraphWriter.OUTPUT_FILE, tmpFile);
 	
+			setResult(result);
+	
 			progress.setProgressMade(1);
 			progress.setComputationState(ComputationState.FINISHED_OK);
 	
-			setResult(result);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

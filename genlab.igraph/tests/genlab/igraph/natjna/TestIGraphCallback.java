@@ -66,7 +66,7 @@ public class TestIGraphCallback {
 		
 			lib.computeAveragePathLength(g);
 			System.err.println("generated");
-			lib.computeBetweenessEstimate(g, false, 2.0);
+			lib.computeEdgeBetweenessEstimate(g, false, 2.0);
 			
 			assertTrue("callback was not called", t.count>0);
 			

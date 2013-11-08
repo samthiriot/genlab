@@ -52,4 +52,5 @@ Bundle-NativeCode: ext/native/linux/x86/libigraph.so ;
  processor=x86 ;
  processor=x86-64 ;
  processor=PowerPC
+Export-Package: genlab.igraph
  
