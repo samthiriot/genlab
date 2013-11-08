@@ -24,18 +24,23 @@ public class Utils {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
+		
+		Thread.yield();
+		
+		System.err.println("back !");
 	}
 	
 	public static void openFileWithEditor(String command, File f) {
 		
 		
 		try {
-			Runtime.getRuntime().exec(command+" "+f.getAbsolutePath());
+			Process p = Runtime.getRuntime().exec(command+" "+f.getAbsolutePath());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
+		System.err.println("back");
 		
 	}
 	

@@ -91,6 +91,7 @@ public class OpenFileAlgo extends BasicAlgo {
 						
 						Utils.openFileWithDefaultEditor(f);
 					} catch (RuntimeException e) {
+						e.printStackTrace();
 						hadAProblem = true;
 						messages.errorUser("error while attempting to open the file "+f, getClass(), e);
 					}
