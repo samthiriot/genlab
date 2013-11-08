@@ -853,7 +853,7 @@ public class IGraphLibrary {
 	}
 	
 
-	protected void computeBetweenessEstimate(IGraphGraph g, boolean directed, double cutoff) {
+	public double[] computeBetweenessEstimate(IGraphGraph g, boolean directed, double cutoff) {
 
 
 		final long startTime = System.currentTimeMillis();
@@ -892,7 +892,10 @@ public class IGraphLibrary {
 				final int resSize = IGraphRawLibrary.igraph_vector_size(res);
 				final double[] resRes = res.asDoubleArray(resSize);
 				System.err.println("betweeness: "+Arrays.toString(resRes));
-				// TODO !!!
+				// TODO !!
+				// TODO cache!
+				
+				return resRes;
 			}
 			
 			
