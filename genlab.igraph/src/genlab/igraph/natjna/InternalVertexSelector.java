@@ -1,5 +1,7 @@
 package genlab.igraph.natjna;
 
+import genlab.core.commons.ProgramException;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,11 +25,31 @@ typedef struct igraph_vs_t {
     } seq;                              /* sequence of vertices from:to *
   } data;
 } igraph_vs_t;
+
+
+#define IGRAPH_VS_ALL       0
+#define IGRAPH_VS_ADJ       1
+#define IGRAPH_VS_NONE      2
+#define IGRAPH_VS_1         3
+#define IGRAPH_VS_VECTORPTR 4
+#define IGRAPH_VS_VECTOR    5
+#define IGRAPH_VS_SEQ       6
+#define IGRAPH_VS_NONADJ    7
  * 
  * 
  */
 public class InternalVertexSelector extends Structure {
 
+
+	public final static int IGRAPH_VS_ALL = 0;
+	public final static int IGRAPH_VS_ADJ = 1;
+	public final static int IGRAPH_VS_NONE = 2;
+	public final static int IGRAPH_VS_1 = 3;
+	public final static int IGRAPH_VS_VECTORPTR = 4;
+	public final static int IGRAPH_VS_VECTOR = 5;
+	public final static int IGRAPH_VS_SEQ = 6;
+	public final static int IGRAPH_VS_NONADJ = 7;
+	
     public static class ByReference extends InternalVertexSelector implements Structure.ByReference { }
 
     public static class DataUnion extends Union {
@@ -77,10 +99,6 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
         
     	public DataUnion() {
     	
-    		vecptr = new InternalVectorStruct();
-    		adj = new AdjStructure();
-    		seq = new SeqStructure();
-    		
     		ensureAllocated();
 
     	}
@@ -89,17 +107,14 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
         	
     		super(p);
     		
-    		read();
-
     	}
     	
     	@Override
     	public void read() {
+    		
     		super.read();        
 
-    		vecptr.read();
-    		adj.read();
-    		seq.read();
+
     	}
         
     }
@@ -107,7 +122,6 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
     
 	public int type;
 	public DataUnion data;
-	
 	
 	public InternalVertexSelector() {
 		
@@ -127,8 +141,41 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
 	
 	@Override
 	public void read() {
+		
 		super.read();        
-	       
+	    
+	    switch (type) {
+    		
+		case IGRAPH_VS_ALL:
+		case IGRAPH_VS_NONE:
+    		// read nothing
+			data.setType((String)null);
+			break;
+		
+		case IGRAPH_VS_NONADJ:
+    	case IGRAPH_VS_ADJ:
+    		data.setType("adj");
+			break;
+		
+		case IGRAPH_VS_1:
+			// read vid
+			data.setType("vid");
+			break;
+			
+		case IGRAPH_VS_VECTORPTR:
+		case IGRAPH_VS_VECTOR:
+			data.setType("vecptr");
+			break;
+			
+		case IGRAPH_VS_SEQ:
+			data.setType("seq");
+			break;
+			
+		default:
+			throw new ProgramException("unknown union type: "+type);
+			
+		}
+	    
 		data.read();
 	}
 	

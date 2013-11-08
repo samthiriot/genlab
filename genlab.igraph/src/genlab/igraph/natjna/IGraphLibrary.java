@@ -786,7 +786,11 @@ public class IGraphLibrary {
 		
 	}
 	
-
+	/**
+	 * Unstable !
+	 * @param g
+	 * @param directed
+	 */
 	protected void computeBetweeness(IGraphGraph g, boolean directed) {
 
 
@@ -797,15 +801,12 @@ public class IGraphLibrary {
 		InternalVectorStruct res = new InternalVectorStruct();
 		IGraphRawLibrary.igraph_vector_init(res, 0);
 		
-		InternalVertexSelector vids = IGraphRawLibrary.igraph_vss_all();
-		//	new InternalVertexSelector();
-		//IGraphRawLibrary.igraph_vector_init(res, 0);
-		if (vids == null)
-			throw new ProgramException("problem during the vss init");
+		Pointer vids = IGraphRawLibrary.igraph_vss_all();
+		//Pointer vids = IGraphRawLibrary.igraph_vss_none();
 		
-		InternalVectorStruct weights = new InternalVectorStruct();
-		int resA = IGraphRawLibrary.igraph_vector_init(weights, 0);
-		checkIGraphResult(resA);
+		//InternalVectorStruct weights = new InternalVectorStruct();
+		//int resA = IGraphRawLibrary.igraph_vector_init(weights, 0);
+		//checkIGraphResult(resA);
 
 		try {
 			//GLLogger.debugTech("calling igraph to compute the clusters...", getClass());
@@ -815,7 +816,7 @@ public class IGraphLibrary {
 					res, 
 					vids, 
 					directed, 
-					null, //weights, 
+					null, 
 					true
 					);
 					
@@ -844,7 +845,7 @@ public class IGraphLibrary {
 			
 			// should we clear this one ?
 			// IGraphRawLibrary.igraph_vs_destroy(vids);
-			IGraphRawLibrary.igraph_vector_destroy(weights);
+			//IGraphRawLibrary.igraph_vector_destroy(weights);
 
 			
 		}

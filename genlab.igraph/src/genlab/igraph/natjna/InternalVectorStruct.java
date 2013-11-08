@@ -83,5 +83,7 @@ public class InternalVectorStruct extends Structure {
 		Pointer.nativeValue(end, pointerLastFuture);
 		
 	}
+	
+	
 
 }

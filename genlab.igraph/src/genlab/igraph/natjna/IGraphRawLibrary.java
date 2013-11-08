@@ -12,7 +12,6 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
 import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
@@ -645,7 +644,7 @@ int igraph_k_regular_game(igraph_t *graph,
 	/*
 	 * igraph_vs_t igraph_vss_all(void);
 	 */
-	public static native InternalVertexSelector igraph_vss_all();
+	public static native Pointer igraph_vss_all();
 
 	/*
 	 * igraph_vs_t igraph_vss_none(void);
@@ -666,7 +665,7 @@ int igraph_k_regular_game(igraph_t *graph,
 	public static native int igraph_betweenness(
 			Pointer graph, 
 			InternalVectorStruct res,  
-			InternalVertexSelector vids, 
+			Pointer vids, 
             boolean directed,
             InternalVectorStruct weights, 
             boolean nobigint
