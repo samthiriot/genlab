@@ -157,6 +157,9 @@ public class InternalGraphStruct extends Structure implements Iterable<IGraphEdg
 	 * @return
 	 */
 	public Iterator<IGraphEdge> iterator() {
+		// first reread data
+		read();
+		// now we are up-to-date
 		return new EdgesIterator();
 	}
 

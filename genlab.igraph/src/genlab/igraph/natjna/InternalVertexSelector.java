@@ -38,6 +38,11 @@ typedef struct igraph_vs_t {
  * 
  * 
  */
+/**
+ * Nota: not used now
+ * @author Samuel Thiriot
+ *
+ */
 public class InternalVertexSelector extends Structure {
 
 
@@ -143,32 +148,34 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
 	public void read() {
 		
 		super.read();        
-	    
+
+		String typeStr = null;
+		
 	    switch (type) {
     		
 		case IGRAPH_VS_ALL:
 		case IGRAPH_VS_NONE:
     		// read nothing
-			data.setType((String)null);
+			//data.setType((String)null);
 			break;
 		
 		case IGRAPH_VS_NONADJ:
     	case IGRAPH_VS_ADJ:
-    		data.setType("adj");
+    		typeStr = "adj";
 			break;
 		
 		case IGRAPH_VS_1:
 			// read vid
-			data.setType("vid");
+			typeStr = "vid";
 			break;
 			
 		case IGRAPH_VS_VECTORPTR:
 		case IGRAPH_VS_VECTOR:
-			data.setType("vecptr");
+			typeStr = "vecptr";
 			break;
 			
 		case IGRAPH_VS_SEQ:
-			data.setType("seq");
+			typeStr = "seq";
 			break;
 			
 		default:
@@ -176,7 +183,10 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
 			
 		}
 	    
-		data.read();
+	    if (typeStr != null) {
+	    	data.setType(typeStr);
+			data.read();
+	    }
 	}
 	
 	@Override

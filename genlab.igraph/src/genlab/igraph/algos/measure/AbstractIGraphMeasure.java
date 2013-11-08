@@ -21,14 +21,29 @@ public abstract class AbstractIGraphMeasure extends BasicAlgo {
 	
 	public AbstractIGraphMeasure(
 			String name, 
-			String description,
-			String longDescription
+			String description
 			) {
 		super(
 				name, 
 				description, 
-				longDescription,
+				null,
 				ExistingAlgoCategories.ANALYSIS_GRAPH.getTotalId(),
+				"/icons/igraph.gif"
+				);
+		
+		inputs.add(INPUT_GRAPH);
+	}
+	
+	public AbstractIGraphMeasure(
+			String name, 
+			String description,
+			String categoryId
+			) {
+		super(
+				name, 
+				description, 
+				null,
+				categoryId,
 				"/icons/igraph.gif"
 				);
 		

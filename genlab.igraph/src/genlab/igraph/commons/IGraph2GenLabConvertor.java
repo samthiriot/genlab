@@ -1,5 +1,10 @@
 package genlab.igraph.commons;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.TreeMap;
+
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
@@ -11,6 +16,7 @@ import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
 import genlab.igraph.natjna.IGraphEdge;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphLibrary;
+import genlab.igraph.natjna.IIGraphProgressCallback;
 import genlab.igraph.natjna.InternalVectorStruct;
 
 public class IGraph2GenLabConvertor {
@@ -32,10 +38,14 @@ public class IGraph2GenLabConvertor {
 		
 		final long timestampStart = System.currentTimeMillis();
 		
+		if (graph.isMultiGraph() == null) {
+			messages.infoUser("the multiplicity of the converted graph is unknown; will assume it is multiplex, but this will lead to bad performance", IGraph2GenLabConvertor.class);
+		}		
+		
 		IGenlabGraph glGraph = GraphFactory.createGraph(
 				"igraphGen", 
 				graph.directed?GraphDirectionality.DIRECTED:GraphDirectionality.UNDIRECTED, 
-				false
+				(graph.isMultiGraph() != Boolean.FALSE)
 				);
 		
 		
@@ -75,7 +85,6 @@ public class IGraph2GenLabConvertor {
 		// add edges
 		for (IGraphEdge edge : graph) {
 		
-			//System.err.println(edge);
 			
 			glGraph.addEdge(
 					Integer.toString(edge.id), 
@@ -97,6 +106,13 @@ public class IGraph2GenLabConvertor {
 					IGraph2GenLabConvertor.class
 					);
 		}
+		
+		// basic checks
+		if (glGraph.getVerticesCount() != graph.lib.getVertexCount(graph))
+			throw new ProgramException("wrong vertex count after copy: the genlab graph has "+glGraph.getVerticesCount()+", while the copy has "+graph.lib.getVertexCount(graph));
+		if (glGraph.getEdgesCount() != graph.lib.getEdgeCount(graph))
+			throw new ProgramException("wrong edge count after copy: the genlab graph has "+glGraph.getEdgesCount()+", while the copy has "+graph.lib.getEdgeCount(graph));
+		
 		
 		return glGraph;
 		
@@ -123,6 +139,7 @@ public class IGraph2GenLabConvertor {
 				(int)genlabGraph.getVerticesCount(), 
 				genlabGraph.getDirectionality()==GraphDirectionality.DIRECTED
 				);
+		// TODO multigrapph ??
 		
 		// copy links
 		if (genlabGraph.getEdgesCount() > 0) {
@@ -138,27 +155,35 @@ public class IGraph2GenLabConvertor {
 					
 			double[] buffer = new double[sizeBuffer];
 			
-			try {
-			
-			
-			for (String edgeId : genlabGraph.getEdges()) {
+			try { 
 				
-				final Integer id1 = igraphGraph.getIGraphNodeIdForGenlabId(genlabGraph.getEdgeVertexFrom(edgeId)); 
-				final Integer id2 = igraphGraph.getIGraphNodeIdForGenlabId(genlabGraph.getEdgeVertexTo(edgeId));
-				buffer[filledInBuffer++] = id1.doubleValue();
-				buffer[filledInBuffer++] = id2.doubleValue();
-
-				if (sizeBuffer - filledInBuffer < 2) {
-					// no more place in this buffer...
+				for (String edgeId : genlabGraph.getEdges()) {
+					
+					final Integer id1 = igraphGraph.getOrCreateIGraphNodeIdForGenlabId(genlabGraph.getEdgeVertexFrom(edgeId)); 
+					final Integer id2 = igraphGraph.getOrCreateIGraphNodeIdForGenlabId(genlabGraph.getEdgeVertexTo(edgeId));
+			
+					buffer[filledInBuffer++] = id1.doubleValue();
+					buffer[filledInBuffer++] = id2.doubleValue();
+	
+					if (sizeBuffer - filledInBuffer < 2) {
+						// no more place in this buffer...
+						// fill the vector with this data
+						vectorEdges.fillWithArray(buffer, filledInBuffer);
+						// write this data
+						lib.addEdges(igraphGraph, vectorEdges);
+						// continue
+						filledInBuffer = 0;
+					}
+					//lib.addEdge(igraphGraph, id1, id2);
+				}
+				
+				// push remaining data
+				if (filledInBuffer > 0) {
 					// fill the vector with this data
-					vectorEdges.fillWithArray(buffer, sizeBuffer);
+					vectorEdges.fillWithArray(buffer, filledInBuffer);
 					// write this data
 					lib.addEdges(igraphGraph, vectorEdges);
-					// continue
-					filledInBuffer = 0;
 				}
-				//lib.addEdge(igraphGraph, id1, id2);
-			}
 			
 			} finally {
 				lib.clearVector(vectorEdges);
@@ -167,9 +192,9 @@ public class IGraph2GenLabConvertor {
 		
 		// basic checks
 		if (genlabGraph.getVerticesCount() != lib.getVertexCount(igraphGraph))
-			throw new ProgramException("wrong vertex count after copy");
+			throw new ProgramException("wrong vertex count after copy: the genlab graph has "+genlabGraph.getVerticesCount()+", while the copy has "+lib.getVertexCount(igraphGraph));
 		if (genlabGraph.getEdgesCount() != lib.getEdgeCount(igraphGraph))
-			throw new ProgramException("wrong edge count after copy");
+			throw new ProgramException("wrong edge count after copy: the genlab graph has "+genlabGraph.getEdgesCount()+", while the copy has "+lib.getEdgeCount(igraphGraph));
 		
 
 		{ // communicate
@@ -181,6 +206,153 @@ public class IGraph2GenLabConvertor {
 		}
 		// end !
 		return igraphGraph;
+		
+	}
+	
+	/**
+	 * For an output genlab graph, which is the original of the igraphGraph provided,
+	 * take the values provided as parameters, and use them as the attributes' values in the 
+	 * genlab graph.
+	 * @param genlabGraph
+	 * @param igraphGraph
+	 * @param attributeName
+	 * @param attributesValues
+	 */
+	public static void addAttributesToNodesGenlabGraphFromIgraph(
+			IGenlabGraph genlabGraph, 
+			IGraphGraph igraphGraph,
+			String attributeName,
+			double[] attributesValues
+			) {
+	
+		// check data size
+		if (genlabGraph.getVerticesCount() != attributesValues.length)
+			throw new ProgramException("wrong number of vertices");
+			
+		// declare the resulting parameter
+		genlabGraph.declareVertexAttribute(attributeName, Double.class);
+	
+		// transfert data
+		for (int i=0; i<attributesValues.length; i++) {
+			genlabGraph.setVertexAttribute(
+					igraphGraph.getGenlabIdForIGraphNode(i), 
+					attributeName, 
+					attributesValues[i]
+					);
+		}
+		
+		// done.
+		
+	}
+	
+	/**
+	 * For an output genlab graph, which is the original of the igraphGraph provided,
+	 * take the values provided as parameters, and use them as the attributes' values in the 
+	 * genlab graph.
+	 * @param genlabGraph
+	 * @param igraphGraph
+	 * @param attributeName
+	 * @param attributesValues
+	 */
+	public static void addAttributesToEdgesGenlabGraphFromIgraph(
+			IGenlabGraph genlabGraph, 
+			IGraphGraph igraphGraph,
+			String attributeName,
+			double[] attributesValues
+			) {
+	
+		// check data size
+		if (genlabGraph.getEdgesCount() != attributesValues.length)
+			throw new ProgramException("wrong number of edges");
+			
+		// declare the resulting parameter
+		genlabGraph.declareEdgeAttribute(attributeName, Double.class);
+	
+		
+		// TODO is the ID of edges unique enough ???
+		
+		// transfert data
+		int i=0;
+		if (genlabGraph.isMultiGraph()) {
+			
+			// in the case of multi graphs, we may discover such a situtation:
+			// 0 -- 1
+			// 0 -- 2	// several times !
+			// 0 -- 2   // several times !
+			// 0 -- 3
+			
+			// So to solve this case, we build a black list of edges already processed
+			HashSet<String> alreadyProcessedEdges = new HashSet<String>();
+			
+			for (IGraphEdge edge: igraphGraph) {
+				
+				if (i >= attributesValues.length)
+					throw new ProgramException("wrong number of attributes, they are less numerous ("+i+") than edges in the graph");
+				
+				Collection<String> edgesId = genlabGraph.getEdgesBetween(
+						igraphGraph.getGenlabIdForIGraphNode(edge.node1id),
+						igraphGraph.getGenlabIdForIGraphNode(edge.node2id)
+						);
+				
+				if (edgesId == null || edgesId.isEmpty())
+					throw new ProgramException("unable to find an edge: "+edge.node1id+" "+edge.node2id);
+				
+				// don't reuse the edges already used
+				edgesId.removeAll(alreadyProcessedEdges);			
+				
+				if (edgesId.isEmpty())
+					throw new ProgramException("unable to find an edge: "+edge.node1id+" "+edge.node2id);
+				
+				// and use the first one
+				String edgeId = edgesId.iterator().next();
+				alreadyProcessedEdges.add(edgeId);
+				
+				genlabGraph.setEdgeAttribute(
+						edgeId, 
+						attributeName, 
+						attributesValues[i]
+						);
+								
+				i++;
+				
+			}
+			if (i != attributesValues.length)
+				throw new ProgramException("wrong number of attributes, they are more numerous ("+i+") than edges in the graph");
+			
+			
+		} else {
+		
+			
+			for (IGraphEdge edge: igraphGraph) {
+				
+				if (i >= attributesValues.length)
+					throw new ProgramException("wrong number of attributes, they are less numerous ("+i+") than edges in the graph");
+				
+				String edgeId = genlabGraph.getEdgeBetween(
+						igraphGraph.getGenlabIdForIGraphNode(edge.node1id),
+						igraphGraph.getGenlabIdForIGraphNode(edge.node2id)
+						);
+				
+				if (edgeId == null)
+					throw new ProgramException("unable to find an edge: "+edge.node1id+" "+edge.node2id);
+				
+				genlabGraph.setEdgeAttribute(
+						edgeId, 
+						attributeName, 
+						attributesValues[i]
+						);
+								
+				i++;
+				
+			}
+			if (i != attributesValues.length)
+				throw new ProgramException("wrong number of attributes, they are more numerous ("+i+") than edges in the graph");
+			
+			
+		}
+		
+
+		// done.
 		
 	}
 	

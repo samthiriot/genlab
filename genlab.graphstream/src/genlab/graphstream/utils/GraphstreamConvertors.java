@@ -1,5 +1,6 @@
 package genlab.graphstream.utils;
 
+import genlab.core.GenLab;
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.model.meta.basics.graphs.GraphDirectionality;
@@ -305,8 +306,6 @@ public class GraphstreamConvertors {
 		Map<String,Node> genlabNode2graphStreamNode = new HashMap<String, Node>((int) genlabGraph.getVerticesCount());
 		
 		// TODO graph attributes
-		// TODO copy declared vertices attributes
-		// TODO copy declared edges attributes
 		
 		// add nodes		
 		for (String vertexId : genlabGraph.getVertices()) {
@@ -319,9 +318,11 @@ public class GraphstreamConvertors {
 					);
 			
 			// copy attributes values of vertices
-			Map<String,Object> att2value = genlabGraph.getVertexAttributes(vertexId);
-			for (String id : att2value.keySet()) {
-				n.setAttribute(id, att2value.get(id));
+			for (Map.Entry<String,Object> kv : genlabGraph.getVertexAttributes(vertexId).entrySet()) {
+				n.setAttribute(
+						kv.getKey(), 
+						kv.getValue()
+						);
 			}		
 		}
 		
@@ -336,7 +337,11 @@ public class GraphstreamConvertors {
 						genlabGraph.isEdgeDirected(edgeId)				// till now, directionality of an edge depends on the whole gama graph
 						);
 				
-				// TODO copy attributes values
+				// copy attributes
+				for (Map.Entry<String,Object> kv: genlabGraph.getEdgeAttributes(edgeId).entrySet()) {
+					e.setAttribute(kv.getKey(), kv.getValue());
+				}
+
 			} catch (EdgeRejectedException e) {
 				messages.add(new TextMessage(
 						MessageLevel.WARNING, 
@@ -353,7 +358,6 @@ public class GraphstreamConvertors {
 						"an edge was rejected during the transformation, probably because it was a double one", 
 						e));
 			}
-			
 
 			
 		}

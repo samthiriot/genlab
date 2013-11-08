@@ -73,7 +73,7 @@ public class InternalVectorStruct extends Structure {
 	
 	public void fillWithArray(double[] values, int length) {
 		
-		long requiredSize = Native.getNativeSize(Double.class)*values.length;
+		long requiredSize = Native.getNativeSize(Double.class)*length;
 		long pointerLastFuture = Pointer.nativeValue(stor_begin)+requiredSize;
 		
 		if (pointerLastFuture > Pointer.nativeValue(stor_end))

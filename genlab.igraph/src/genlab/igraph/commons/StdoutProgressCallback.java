@@ -1,4 +1,6 @@
-package genlab.igraph.natjna;
+package genlab.igraph.commons;
+
+import genlab.igraph.natjna.IIGraphProgressCallback;
 
 import com.sun.jna.Pointer;
 

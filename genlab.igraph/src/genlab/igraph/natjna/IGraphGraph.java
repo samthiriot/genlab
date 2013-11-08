@@ -21,11 +21,18 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 	public boolean directed;
 	
 	/**
+	 * the "multiplex" value means: null==unknown, true=yes, false=no
+	 */
+	public Boolean multiplex = null;
+	
+	/**
 	 * maps a genlab node to a graph integer; 
 	 * used for translation between genlab and igraph
 	 * TODO change to a list with a binary search ?
 	 */
 	private Map<String,Integer> genlabNodeId2igraphId = null;
+	private Map<Integer,String> igraphNodeId2genlabNode = null;
+
 	
 	/**
 	 * Stores caches properties to avoid useless computations
@@ -42,6 +49,7 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 		this.directed = directed;
 		
 		genlabNodeId2igraphId = new HashMap<String, Integer>(500);
+		igraphNodeId2genlabNode = new HashMap<Integer, String>(500);
 	}
 	
 	/**
@@ -57,6 +65,8 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 		this.directed = directed;
 		
 		genlabNodeId2igraphId = new HashMap<String, Integer>(initSize);
+		igraphNodeId2genlabNode = new HashMap<Integer, String>(initSize);
+
 		
 	}
 	
@@ -67,16 +77,26 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 		// copy properties
 		this.directed = original.directed;
 		genlabNodeId2igraphId.putAll(original.genlabNodeId2igraphId);
+		igraphNodeId2genlabNode.putAll(original.igraphNodeId2genlabNode);
 		cachedProperties = new HashMap<String, Object>(original.genlabNodeId2igraphId);
 	}
 	
-	public final Integer getIGraphNodeIdForGenlabId(String genlabId) {
+	public final Integer getOrCreateIGraphNodeIdForGenlabId(String genlabId) {
 		 Integer res = genlabNodeId2igraphId.get(genlabId);
 		 if (res == null) {
 			 res = new Integer(genlabNodeId2igraphId.size());
 			 genlabNodeId2igraphId.put(genlabId, res);
+			 igraphNodeId2genlabNode.put(res, genlabId);
 		 }
 		 return res;
+	}
+	
+	public final Integer getIGraphNodeIdForGenlabId(String genlabId) {
+		 return genlabNodeId2igraphId.get(genlabId);
+	}
+	
+	public final String getGenlabIdForIGraphNode(Integer igraphNodeId) {
+		 return igraphNodeId2genlabNode.get(igraphNodeId);
 	}
 	
 	final public InternalGraphStruct getStruct() {
@@ -130,5 +150,12 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 		//	return lib.getEdgeIterator(this);
 	}
 	
+	public Boolean isMultiGraph() {
+		return multiplex;
+	}
+	
+	public void setMultiGraph(Boolean isMulti) {
+		this.multiplex = isMulti;
+	}
 
 }

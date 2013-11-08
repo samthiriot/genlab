@@ -12,6 +12,7 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
 import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
@@ -474,12 +475,21 @@ int igraph_citing_cited_type_game(igraph_t *graph, igraph_integer_t nodes,
 				igraph_real_t islands_pin, 
 				igraph_integer_t n_inter);
 	 */
-	public static native  int igraph_simple_interconnected_islands_game(
+	public static native int igraph_simple_interconnected_islands_game(
 			InternalGraphStruct graph, 
 			int islands_n, 
 			int islands_size,
 			double islands_pin, 
 			int n_inter
+			);
+
+	/*
+	 * int igraph_simplify(igraph_t *graph, igraph_bool_t multiple, igraph_bool_t loops);
+	 */
+	public static native int igraph_simplify(
+			InternalGraphStruct graph, 
+			boolean multiple, 
+			boolean loops
 			);
 
 	/*
@@ -647,6 +657,11 @@ int igraph_k_regular_game(igraph_t *graph,
 	public static native Pointer igraph_vss_all();
 
 	/*
+	 * int igraph_vs_all(igraph_vs_t *vs);
+	 */
+	public static native int igraph_vss_all(Pointer vs);
+
+	/*
 	 * igraph_vs_t igraph_vss_none(void);
 	 */
 	public static native Pointer igraph_vss_none();
@@ -657,7 +672,24 @@ int igraph_k_regular_game(igraph_t *graph,
 	 */
 	public static native void igraph_vs_destroy(Pointer vs);
 	
-	/*
+	/* TODO not stable :-(
+	 * int igraph_betweenness_estimate(const igraph_t *graph, igraph_vector_t *res, 
+				const igraph_vs_t vids, igraph_bool_t directed,
+				igraph_real_t cutoff, 
+				const igraph_vector_t *weights, 
+				igraph_bool_t nobigint);
+	 */
+	public static native int igraph_betweenness_estimate(
+			Pointer graph, 
+			InternalVectorStruct res, 
+			Pointer vids, 
+			boolean directed,
+			double cutoff, 
+			InternalVectorStruct weights, 
+			boolean nobigint
+			);
+	
+	/* TODO not stable
 	 * int igraph_betweenness(const igraph_t *graph, igraph_vector_t *res, 
                        const igraph_vs_t vids, igraph_bool_t directed,
 		       const igraph_vector_t *weights, igraph_bool_t nobigint);
@@ -665,7 +697,7 @@ int igraph_k_regular_game(igraph_t *graph,
 	public static native int igraph_betweenness(
 			Pointer graph, 
 			InternalVectorStruct res,  
-			Pointer vids, 
+			InternalVertexSelector vids, 
             boolean directed,
             InternalVectorStruct weights, 
             boolean nobigint

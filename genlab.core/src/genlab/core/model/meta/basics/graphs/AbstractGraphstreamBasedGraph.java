@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -264,6 +265,7 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 	@SuppressWarnings("rawtypes")
 	public void setEdgeAttribute(String vertexId, String attributeId,
 			Object value) {
+		
 		// ensure existence of the node
 		Edge gsEdge = gsGraph.getEdge(vertexId); 
 		if (gsEdge == null) {
@@ -409,6 +411,9 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 		if (n == null)
 			throw new WrongParametersException("unknown vertex "+vertexId);
 		
+		if (vertexAttributes2type.isEmpty())
+			return Collections.EMPTY_MAP;
+		
 		Map<String, Object> map = new HashMap<String, Object>(vertexAttributes2type.size());
 		
 		for (String attribute: vertexAttributes2type.keySet()) {
@@ -422,8 +427,26 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 
 	@Override
 	public Map<String, Object> getEdgeAttributes(String vertexId) {
-		// TODO edge attributtes !
-		return Collections.EMPTY_MAP;
+		
+		Edge gsEdge = gsGraph.getEdge(vertexId); 
+		if (gsEdge == null) {
+			throw new WrongParametersException("no edge "+vertexId+" declared");
+		}
+		
+		final int count = gsEdge.getAttributeCount();
+		if (count == 0)
+			return Collections.EMPTY_MAP;
+		
+		HashMap<String,Object> res = new HashMap<String, Object>(gsEdge.getAttributeCount());
+		Iterator<String> itKey = gsEdge.getAttributeKeyIterator();
+		while (itKey.hasNext()) {
+			String key = itKey.next();
+			res.put(
+					key, 
+					gsEdge.getAttribute(key)
+					);
+		}
+		return res;
 	}
 
 	@Override

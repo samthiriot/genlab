@@ -37,8 +37,7 @@ public class IGraphAveragePathLengthAlgo extends AbstractIGraphMeasure {
 	public IGraphAveragePathLengthAlgo() {
 		super(
 				"average path length (igraph)", 
-				"igraph implementation",
-				loadHtmlDescription("/genlab.igraph/html/average_path_length.html")
+				"igraph implementation"
 				);
 		outputs.add(OUTPUT_AVERAGE_PATH_LENGTH);
 		outputs.add(OUTPUT_DIAMETER);

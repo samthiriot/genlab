@@ -56,9 +56,8 @@ public interface IGenlabGraph {
 	public String addEdge(String vertexIdFrom, String vertexIdTo, boolean directed);
 
 	public void addEdge(String id, String vertexIdFrom, String vertexIdTo, boolean directed);
-	
-	public void setEdgeAttribute(String vertexId, String attributeId, Object value);
-	public void setEdgeAttributes(String vertexId, Map<String,Object> values);
+	public void setEdgeAttribute(String edgeId, String attributeId, Object value);
+	public void setEdgeAttributes(String edgeId, Map<String,Object> values);
 
 	public boolean removeEdge(String id);
 	public boolean removeEdge(int index);

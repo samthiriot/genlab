@@ -1,5 +1,7 @@
 package genlab.igraph.natjna;
 
+import genlab.igraph.commons.StdoutProgressCallback;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -62,10 +64,9 @@ public class TestIGraphCallback {
 		try {
 			g = lib.generateWattsStrogatz(1000, 1, 0.2, 4, false, false);
 		
-			//lib.computeAveragePathLength(g);
+			lib.computeAveragePathLength(g);
 			System.err.println("generated");
-			//lib.computeBetweeness(g, false);
-			lib.computeBetweenessEstimate(g, false, 0.05);
+			lib.computeBetweenessEstimate(g, false, 2.0);
 			
 			assertTrue("callback was not called", t.count>0);
 			

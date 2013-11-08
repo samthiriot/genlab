@@ -35,8 +35,7 @@ public class IGraphClusteringAlgo extends AbstractIGraphMeasure {
 	public IGraphClusteringAlgo() {
 		super(
 				"average clustering (igraph)", 
-				"computes the average clustering (or transitivity) of this graph. The transitivity measures the probability that two neighbors of a vertex are connected.",
-				null
+				"computes the average clustering (or transitivity) of this graph. The transitivity measures the probability that two neighbors of a vertex are connected."
 				);
 		outputs.add(OUTPUT_CLUSTERING_GLOBAL);
 		outputs.add(OUTPUT_CLUSTERING_AVERAGE);

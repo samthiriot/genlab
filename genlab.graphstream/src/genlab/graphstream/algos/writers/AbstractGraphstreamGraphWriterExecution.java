@@ -64,6 +64,8 @@ public class AbstractGraphstreamGraphWriterExecution extends
 						tmpFile.getAbsolutePath()
 						);
 				
+				System.err.println("written in: "+tmpFile);
+				
 	
 			} catch (IOException e) {
 				e.printStackTrace();

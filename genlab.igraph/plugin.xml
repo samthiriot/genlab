@@ -55,6 +55,10 @@
             class="genlab.igraph.algos.compare.VF2Isomorphic"
             id="genlab.igraph.algos.compare.VF2Isomorphic">
       </algo>
+      <algo
+            class="genlab.igraph.algos.measure.IGraphNodeBetweenessAlgo"
+            id="genlab.igraph.algos.measure.IGraphBetweeness">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -260,6 +264,16 @@
          <more_info
                content="igraph documentation"
                url="http://igraph.sourceforge.net/doc/html/ch16s03.html#igraph_count_isomorphisms_vf2">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.measure.IGraphBetweeness"
+            description="The betweenness centrality of a vertex is the number of geodesics going through it. If there are more than one geodesic between two vertices, the value of these geodesics are weighted by one over the number of geodesics."
+            library_id="genlab.igraph.doc.library.igraph"
+            time_complexity="O(|V||E|), |V| and |E| are the number of vertices and edges in the graph">
+         <more_info
+               content="igraph official documentation"
+               url="http://igraph.sourceforge.net/doc-0.6/html/ch13s05.html#igraph_betweenness">
          </more_info>
       </docalgo>
    </extension>

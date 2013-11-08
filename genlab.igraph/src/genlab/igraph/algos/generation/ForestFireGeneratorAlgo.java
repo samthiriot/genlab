@@ -7,6 +7,7 @@ import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
 import genlab.core.parameters.BooleanParameter;
 import genlab.core.usermachineinteraction.ListOfMessages;
+import genlab.igraph.commons.GenlabProgressCallback;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphLibrary;
 
@@ -45,6 +46,22 @@ public class ForestFireGeneratorAlgo extends AbstractIGraphGenerator {
 			);
 	
 	
+	public static final BooleanParameter PARAM_SIMPLIFY_MULTI = new BooleanParameter(
+			"param_simplify_multi", 
+			"simplify", 
+			"remove the double links created during the generation; if false, the network will be a multigraph", 
+			true
+			);
+	
+	public static final BooleanParameter PARAM_SIMPLIFY_LOOPS = new BooleanParameter(
+			"param_simplify_loops", 
+			"remove loops", 
+			"remove the loops created during the generation", 
+			false
+			);
+	
+	
+	
 	public ForestFireGeneratorAlgo() {
 		super(
 				"Forest Fire  (igraph)", 
@@ -57,6 +74,8 @@ public class ForestFireGeneratorAlgo extends AbstractIGraphGenerator {
 		inputs.add(INPUT_pambs);
 
 		registerParameter(PARAM_DIRECTED);
+		registerParameter(PARAM_SIMPLIFY_MULTI);
+		registerParameter(PARAM_SIMPLIFY_LOOPS);
 	}
 
 	@Override
@@ -73,15 +92,29 @@ public class ForestFireGeneratorAlgo extends AbstractIGraphGenerator {
 			@Override
 			protected IGraphGraph generateGraph(IGraphLibrary lib,
 					ListOfMessages messages) {
-
-				return lib.generateForestFire(
-						(Integer)getInputValueForInput(INPUT_N), 
-						(Double)getInputValueForInput(INPUT_fw_prob), 
-						(Double)getInputValueForInput(INPUT_bw_factor), 
-						(Integer)getInputValueForInput(INPUT_pambs), 
-						(Boolean)algoInst.getValueForParameter(PARAM_DIRECTED.getId())
-						);
 				
+				try {
+					lib.installProgressCallback(new GenlabProgressCallback(progress));
+					
+					IGraphGraph g = lib.generateForestFire(
+							(Integer)getInputValueForInput(INPUT_N), 
+							(Double)getInputValueForInput(INPUT_fw_prob), 
+							(Double)getInputValueForInput(INPUT_bw_factor), 
+							(Integer)getInputValueForInput(INPUT_pambs), 
+							(Boolean)algoInst.getValueForParameter(PARAM_DIRECTED.getId())
+							);
+					
+					boolean simplifyMultiple = (Boolean)algoInst.getValueForParameter(PARAM_SIMPLIFY_MULTI.getId());
+					boolean simplifyLoops = (Boolean)algoInst.getValueForParameter(PARAM_SIMPLIFY_LOOPS.getId());
+					if (simplifyMultiple || simplifyLoops) {
+						lib.simplifyGraph(g, simplifyMultiple, simplifyLoops);
+		
+					}
+					
+					return g;
+				} finally {
+					lib.uninstallProgressCallback();
+				}
 			}
 		};
 	}

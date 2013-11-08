@@ -8,9 +8,14 @@ import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.parameters.StringParameter;
 import genlab.core.usermachineinteraction.ListOfMessages;
+import genlab.igraph.commons.GenlabProgressCallback;
+import genlab.igraph.commons.IGraph2GenLabConvertor;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphLibrary;
+import genlab.igraph.natjna.IGraphRawLibrary;
+import genlab.igraph.natjna.IIGraphProgressCallback;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,11 +23,22 @@ import java.util.Map;
 /**
  * Groups everything related to components in the igraph library
  * 
+ * TODO warning this is a edge betweeness 
+ * 
  * @author Samuel Thiriot
  *
  */
 public class IGraphNodeBetweenessAlgo extends AbstractIGraphMeasure {
 
+
+	public static final StringParameter PARAM_ATTRIBUTE_NAME = new StringParameter(
+			"attribute_name", 
+			"attribute name", 
+			"the name of the attribute of vertices which will store the value", 
+			"igraph_node_betweeness"
+			); 
+	
+	
 	public static final InputOutput<IGenlabGraph> OUTPUT_GRAPH = new InputOutput<IGenlabGraph>(
 			SimpleGraphFlowType.SINGLETON, 
 			"out_graph", 
@@ -35,10 +51,13 @@ public class IGraphNodeBetweenessAlgo extends AbstractIGraphMeasure {
 	public IGraphNodeBetweenessAlgo() {
 		super(
 				"node betweeness (igraph)", 
-				"measure node betweeness centrality using the igraph implementation",
-				null // TODO change that
+				"measure node betweeness centrality using the igraph implementation"
 				);
+
 		outputs.add(OUTPUT_GRAPH);
+		
+		registerParameter(PARAM_ATTRIBUTE_NAME);
+
 	}
 
 	@Override
@@ -58,43 +77,50 @@ public class IGraphNodeBetweenessAlgo extends AbstractIGraphMeasure {
 				Map<IInputOutput<?>, Object> results = new HashMap<IInputOutput<?>, Object>();
 				
 				IGraphLibrary lib = new IGraphLibrary();
+
+				lib.installProgressCallback(new GenlabProgressCallback(progress));
+					
 				
-				// TODO actual parameter
-				final String parameterAttribute  = "nodeBetweenessIgraph";
-				final double cutoff = 0;
-				
-				// is connected
-				if (isUsed(OUTPUT_GRAPH)) {
+				try {
 					
-					double[] nodeBetweennes = lib.computeBetweenessEstimate(igraphGraph, false, cutoff);
+					// TODO actual parameter
+					final String parameterAttribute  = "nodeBetweenessIgraph";
+					final double cutoff = 2.0;
 					
-					IGenlabGraph output = genlabGraph.clone("cloned");
-					
-					// declare the resulting parameter
-					output.declareVertexAttribute(parameterAttribute, Double.class);
-					
-					// TODO same index for igraph and other graph ???
-					for (int i=0; i<nodeBetweennes.length; i++) {
+					// is connected
+					if (isUsed(OUTPUT_GRAPH)) {
 						
-						String vertexId = output.getVertex(i);
-						// TODO add a method to allow a graph to change all the values ?
-						output.setVertexAttribute(
-								vertexId, 
-								parameterAttribute, 
-								nodeBetweennes[i]
+						double[] nodeBetweennes = lib.computeBetweenessEstimate(igraphGraph, false, cutoff);
+						
+						IGenlabGraph output = genlabGraph.clone("cloned");
+				/*
+						IGraph2GenLabConvertor.addAttributesToNodesGenlabGraphFromIgraph(
+								genlabGraph,
+								igraphGraph,
+								parameterAttribute,
+								nodeBetweennes
+								);
+					*/	
+	
+						IGraph2GenLabConvertor.addAttributesToEdgesGenlabGraphFromIgraph(
+								output,
+								igraphGraph,
+								parameterAttribute,
+								nodeBetweennes
 								);
 						
+						
+						results.put(OUTPUT_GRAPH, output);
+						
+					} else {
+						messages.infoUser("the betwenness of the graph is not used, so it will not be computed", getClass());	
 					}
 					
-					results.put(OUTPUT_GRAPH, output);
+					return results;
 					
-				} else {
-					messages.debugTech("the average path length is not used, so it will not be computed", getClass());	
+				} finally {
+					lib.uninstallProgressCallback();
 				}
-				
-
-				
-				return results;
 			}
 
 			@Override

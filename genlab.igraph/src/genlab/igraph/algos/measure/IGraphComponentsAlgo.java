@@ -42,8 +42,7 @@ public class IGraphComponentsAlgo extends AbstractIGraphMeasure {
 	public IGraphComponentsAlgo() {
 		super(
 				"components (igraph)", 
-				"components processing igraph implementation",
-				loadHtmlDescription("/genlab.igraph/html/components.html")
+				"components processing igraph implementation"
 				);
 		outputs.add(OUTPUT_ISCONNECTED);
 		outputs.add(OUTPUT_SIZE_GIANT_CLUSTER);

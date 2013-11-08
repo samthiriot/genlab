@@ -14,6 +14,7 @@ import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
 import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
@@ -165,6 +166,8 @@ public class IGraphLibrary {
 		// basic checks
 		// TODO
 		
+		result.setMultiGraph(false); // looks like the algo never generates double links
+		
 		return result;
 		
 	}
@@ -193,6 +196,8 @@ public class IGraphLibrary {
 		
 		// basic checks
 		// TODO
+
+		result.setMultiGraph(false); // looks like the algo never generates double links
 		
 		return result;
 		
@@ -224,6 +229,8 @@ public class IGraphLibrary {
 		// basic checks
 		// TODO
 		
+		result.setMultiGraph(true); // looks like the algo never generates double links
+		
 		return result;
 		
 	}
@@ -247,6 +254,7 @@ public class IGraphLibrary {
 		checkIGraphResult(res);
 		
 		IGraphGraph result = new IGraphGraph(this, g, false);
+		
 		
 		// basic checks
 		// TODO
@@ -278,6 +286,8 @@ public class IGraphLibrary {
 		
 		IGraphGraph result = new IGraphGraph(this, g, directed);
 		
+		result.setMultiGraph(true); // looks like the algo never generates double links
+
 		return result;
 	}
 	
@@ -366,6 +376,26 @@ public class IGraphLibrary {
 		}
 	}
 	
+	public void simplifyGraph(
+			IGraphGraph g,
+			boolean removeMultiple, boolean removeLoops
+			) {
+	
+		
+		final long startTime = System.currentTimeMillis();
+		final int res = IGraphRawLibrary.igraph_simplify(g.getStruct(), removeMultiple, removeLoops);
+		
+		final long duration = System.currentTimeMillis() - startTime;
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		listOfMessages.debugTech("processing took "+duration+" ms", getClass());
+		// detect errors
+		checkIGraphResult(res);
+		
+		if (removeMultiple)
+			g.setMultiGraph(false); 
+
+		
+	}
 
 	public IGraphGraph copyGraph(IGraphGraph original) {
 
@@ -467,7 +497,7 @@ public class IGraphLibrary {
 		
 		g.graphChanged();
 		
-		
+		edges.write();
 		final int res = IGraphRawLibrary.igraph_add_edges(g.getPointer(), edges, null);
 		
 		checkIGraphResult(res);
@@ -791,32 +821,41 @@ public class IGraphLibrary {
 	 * @param g
 	 * @param directed
 	 */
-	protected void computeBetweeness(IGraphGraph g, boolean directed) {
+	public double[] computeBetweeness(IGraphGraph g, boolean directed, double cutoff) {
 
 
 		final long startTime = System.currentTimeMillis();
 		
+		final int verticesCount = IGraphRawLibrary.igraph_vcount(g.getPointer());
+		
 		//GLLogger.debugTech("calling igraph to initialize vectors...", getClass());
 
 		InternalVectorStruct res = new InternalVectorStruct();
-		IGraphRawLibrary.igraph_vector_init(res, 0);
+		IGraphRawLibrary.igraph_vector_init(res, verticesCount);
 		
-		Pointer vids = IGraphRawLibrary.igraph_vss_all();
+		Pointer vids = IGraphRawLibrary.igraph_vss_none();
+		int resA = IGraphRawLibrary.igraph_vss_all(vids);
+		checkIGraphResult(resA);
 		//Pointer vids = IGraphRawLibrary.igraph_vss_none();
 		
-		//InternalVectorStruct weights = new InternalVectorStruct();
-		//int resA = IGraphRawLibrary.igraph_vector_init(weights, 0);
-		//checkIGraphResult(resA);
-
+		// TODO manage weights? 
+		/*InternalVectorStruct weights = new InternalVectorStruct();
+		resA = IGraphRawLibrary.igraph_vector_init(weights, verticesCount);
+		checkIGraphResult(resA);
+		double[] weightsV = new double[verticesCount];
+		Arrays.fill(weightsV, 1.0);
+		weights.fillWithArray(weightsV, verticesCount);
+*/
 		try {
 			//GLLogger.debugTech("calling igraph to compute the clusters...", getClass());
 	
-			final int res2 = IGraphRawLibrary.igraph_betweenness(
+			final int res2 = IGraphRawLibrary.igraph_betweenness_estimate(
 					g.getPointer(), 
 					res, 
 					vids, 
 					directed, 
-					null, 
+					cutoff,
+					(InternalVectorStruct)null, // weights
 					true
 					);
 					
@@ -833,9 +872,12 @@ public class IGraphLibrary {
 			{
 				final int resSize = IGraphRawLibrary.igraph_vector_size(res);
 				final double[] resRes = res.asDoubleArray(resSize);
-				System.err.println("betweeness: "+Arrays.toString(resRes));
+				//System.err.println("betweeness: "+Arrays.toString(resRes));
 				// TODO !!!
+				return resRes;
+
 			}
+			
 			
 			
 		} finally {
@@ -860,11 +902,13 @@ public class IGraphLibrary {
 		
 		//GLLogger.debugTech("calling igraph to initialize vectors...", getClass());
 
+		final int edgesCount = IGraphRawLibrary.igraph_ecount(g.getPointer());
+		
 		InternalVectorStruct res = new InternalVectorStruct();
-		IGraphRawLibrary.igraph_vector_init(res, 0);
+		IGraphRawLibrary.igraph_vector_init(res, edgesCount);
 	
 		InternalVectorStruct weights = new InternalVectorStruct();
-		int resA = IGraphRawLibrary.igraph_vector_init(weights, 100);
+		int resA = IGraphRawLibrary.igraph_vector_init(weights, edgesCount);
 		checkIGraphResult(resA);
 
 		try {
@@ -891,7 +935,7 @@ public class IGraphLibrary {
 			{
 				final int resSize = IGraphRawLibrary.igraph_vector_size(res);
 				final double[] resRes = res.asDoubleArray(resSize);
-				System.err.println("betweeness: "+Arrays.toString(resRes));
+				//System.err.println("betweeness: "+Arrays.toString(resRes));
 				// TODO !!
 				// TODO cache!
 				
@@ -1072,4 +1116,13 @@ public class IGraphLibrary {
 	}
 	*/
 
+	public void installProgressCallback(IIGraphProgressCallback cb) {
+		IGraphRawLibrary.igraph_set_progress_handler(cb);
+		
+	}
+	
+	public void uninstallProgressCallback() {
+		IGraphRawLibrary.igraph_set_progress_handler(null);
+		
+	}
 }
