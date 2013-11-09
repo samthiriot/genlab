@@ -17,8 +17,6 @@ import org.junit.runners.Parameterized.Parameters;
 
 import com.sun.jna.Native;
 
-// TODO a test suite
-
 @RunWith(Parameterized.class)
 public class TestCentrality {
 

@@ -284,7 +284,6 @@ public abstract class AbstractContainerExecutionSupervisor
 			
 		}
 		
-		
 		totalToDo += countUnknown*(maxDuration+1);
 		
 		if (somethingNotFinished) {

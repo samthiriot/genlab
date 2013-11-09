@@ -5,12 +5,14 @@ import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
+import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
+import genlab.core.model.meta.basics.flowtypes.FileFlowType;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import genlab.core.model.meta.basics.flowtypes.TableFlowType;
 import genlab.core.parameters.FileParameter;
@@ -27,6 +29,14 @@ public class WriteTableCSV extends BasicAlgo {
 			"table", 
 			"the table to write in a file"
 			);
+	
+	public static final InputOutput<File> OUTPUT_FILE = new InputOutput<File>(
+			FileFlowType.SINGLETON, 
+			"out_file", 
+			"file", 
+			"the file in which the table is stored"
+	);
+	
 	
 	public static final FileParameter PARAMETER_FILE = new FileParameter(
 			"param_file", 
@@ -45,6 +55,7 @@ public class WriteTableCSV extends BasicAlgo {
 				);
 		
 		inputs.add(INPUT_TABLE);
+		outputs.add(OUTPUT_FILE);
 		registerParameter(PARAMETER_FILE);
 	}
 
@@ -102,12 +113,24 @@ public class WriteTableCSV extends BasicAlgo {
 					
 					ps.close();
 					
+					// export the file as a result
+					ComputationResult res = new ComputationResult(algoInst, progress, messages);
+					res.setResult(OUTPUT_FILE, file);
+					setResult(res);
+					
 					progress.setComputationState(ComputationState.FINISHED_OK);
 
 					
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
+				} catch (RuntimeException e) {
+					
 					e.printStackTrace();
+					messages.errorUser("an error occured during the writing of the table to a file: "+e.getMessage(), getClass(), e);
+					progress.setComputationState(ComputationState.FINISHED_FAILURE);
+
+				} catch (FileNotFoundException e) {
+					
+					e.printStackTrace();
+					messages.errorUser("an error occured during the writing of the table to a file: "+e.getMessage(), getClass(), e);
 					progress.setComputationState(ComputationState.FINISHED_FAILURE);
 
 				}
