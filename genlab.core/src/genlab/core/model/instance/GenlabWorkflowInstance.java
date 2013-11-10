@@ -619,5 +619,12 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		return Collections.EMPTY_LIST;
 	}
 
+	@Override
+	public IAlgoInstance cloneInContext(IAlgoContainerInstance container) {
+		
+		// TODO later
+		throw new NotImplementedException();
+	}
+
 	
 }

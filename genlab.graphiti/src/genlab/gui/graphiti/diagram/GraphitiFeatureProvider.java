@@ -17,6 +17,7 @@ import genlab.gui.graphiti.features.AlgoDirectEditingFeature;
 import genlab.gui.graphiti.features.AlgoUpdateFeature;
 import genlab.gui.graphiti.features.ConstDirectEditingFeature;
 import genlab.gui.graphiti.features.ConstUpdateFeature;
+import genlab.gui.graphiti.features.CopyFeature;
 import genlab.gui.graphiti.features.CreateDomainObjectConnectionConnectionFeature;
 import genlab.gui.graphiti.features.CreateIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.DeleteConnectionFeature;
@@ -24,6 +25,7 @@ import genlab.gui.graphiti.features.DeleteIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.LayoutConstFeature;
 import genlab.gui.graphiti.features.LayoutIAlgoFeature;
 import genlab.gui.graphiti.features.OpenParametersFeature;
+import genlab.gui.graphiti.features.PasteFeature;
 import genlab.gui.graphiti.features.RemoveIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.SeeInfoFeature;
 import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
@@ -37,19 +39,23 @@ import java.util.Map;
 
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IAddFeature;
+import org.eclipse.graphiti.features.ICopyFeature;
 import org.eclipse.graphiti.features.ICreateConnectionFeature;
 import org.eclipse.graphiti.features.ICreateFeature;
 import org.eclipse.graphiti.features.IDeleteFeature;
 import org.eclipse.graphiti.features.IDirectEditingFeature;
 import org.eclipse.graphiti.features.IFeature;
 import org.eclipse.graphiti.features.ILayoutFeature;
+import org.eclipse.graphiti.features.IPasteFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
+import org.eclipse.graphiti.features.context.ICopyContext;
 import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
 import org.eclipse.graphiti.features.context.IDirectEditingContext;
 import org.eclipse.graphiti.features.context.ILayoutContext;
+import org.eclipse.graphiti.features.context.IPasteContext;
 import org.eclipse.graphiti.features.context.IPictogramElementContext;
 import org.eclipse.graphiti.features.context.IRemoveContext;
 import org.eclipse.graphiti.features.context.IUpdateContext;
@@ -380,6 +386,15 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
         return super.getUpdateFeature(context);
     }
  
+    @Override
+    public ICopyFeature getCopyFeature(ICopyContext context) {
+        return new CopyFeature(this);
+    }
      
+    
+    @Override
+    public IPasteFeature getPasteFeature(IPasteContext context) {
+        return new PasteFeature(this);
+    }
 
 }

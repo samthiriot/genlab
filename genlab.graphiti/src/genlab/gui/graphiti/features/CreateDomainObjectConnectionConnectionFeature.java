@@ -15,7 +15,6 @@ import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateConnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
-import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 
 public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreateConnectionFeature
 		implements ICreateConnectionFeature {

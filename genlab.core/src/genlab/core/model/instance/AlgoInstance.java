@@ -275,6 +275,36 @@ public class AlgoInstance implements IAlgoInstance {
 		
 		return result;
 	}
+
+	@Override
+	public IAlgoInstance cloneInContext(IAlgoContainerInstance containerInput) {
+		
+		// retrieve target objects
+		IGenlabWorkflowInstance workflow = null;
+		IAlgoContainerInstance container = null;
+		if (containerInput instanceof IGenlabWorkflowInstance) {
+			workflow = (IGenlabWorkflowInstance)containerInput;
+		} else {
+			workflow = containerInput.getWorkflow();
+			container = workflow;
+		}
+		
+		
+		// create instance
+		IAlgoInstance copy = algo.createInstance(workflow);
+		copy.setContainer(container);
+		
+		// duplicate parameters
+		for (Map.Entry<String,Object> key2value : parameters.entrySet()) {
+			copy.setValueForParameter(key2value.getKey(), key2value.getValue());
+		}
+		
+
+		workflow.addAlgoInstance(copy);
+
+		
+		return copy;
+	}
 	
 	
 	

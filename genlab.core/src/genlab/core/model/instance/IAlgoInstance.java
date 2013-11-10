@@ -73,5 +73,6 @@ public interface IAlgoInstance extends IGenlabResource {
 	
 	public void setContainer(IAlgoContainerInstance container);
 	
+	public IAlgoInstance cloneInContext(IAlgoContainerInstance container);
 	
 }
