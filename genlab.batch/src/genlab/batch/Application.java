@@ -91,7 +91,7 @@ public class Application implements IApplication {
 		System.out.println();
 		
 		GenlabPersistence.getPersistence().autoloadAllWorkflows = false;
-		ListOfMessages.RELAY_TO_LOG4J = true;
+		ListOfMessages.DEFAULT_RELAY_TO_LOG4J = true;
 		Logger.getRoot().setLevel(Level.INFO);
 		
 		System.out.print("Genlab ");

@@ -1,5 +1,6 @@
 package genlab.core.usermachineinteraction;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
 
 import java.util.Collection;
@@ -10,6 +11,8 @@ import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import javax.management.RuntimeErrorException;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -38,39 +41,52 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	/**
 	 * After this limit, will attempt to clean the messages
 	 */
-	public static final int LIMIT_START_CLEANUP = 500;
-	public static final int CLEANUP_TARGET_SIZE = 50;
+	public static final int DEFAULT_LIMIT_START_CLEANUP = 5000;
+	public static final int DEFAULT_CLEANUP_TARGET_SIZE = 3000;
 	
-	public static final int QUEUE_SIZE = 65535;
-	
-
 	/**
 	 * If true, relays every message to a log4j logger.
 	 */
-	public static boolean RELAY_TO_LOG4J = true;
-	
-	protected MessageLevel filterIgnoreBelow = MessageLevel.WARNING;
+	public static boolean DEFAULT_RELAY_TO_LOG4J = true;
 
+	public int limitStartCleanup = DEFAULT_CLEANUP_TARGET_SIZE;
+	public int cleanupTarget = DEFAULT_CLEANUP_TARGET_SIZE;
 	
+	
+	/**
+	 * The maximum size for the "pending in queue" messages.
+	 */
+	public static final int QUEUE_SIZE = 2000;
+	
+
+	protected MessageLevel filterIgnoreBelow = null; //MessageLevel.WARNING;
+	
+	public MessageLevel getFilterIgnoreBelow() {
+		return filterIgnoreBelow;
+	}
+
+	public void setFilterIgnoreBelow(MessageLevel filterIgnoreBelow) {
+		this.filterIgnoreBelow = filterIgnoreBelow;
+	}
+
 	/**
 	 * Stores the messages as soon as received. Then they will be added to the sorted space;
 	 */
 	protected BlockingQueue<ITextMessage> receivedMessages = new LinkedBlockingQueue<ITextMessage>(QUEUE_SIZE);
-	
+
 	
 	/**
 	 * All the messages in natural order (by timestamp)
 	 */
 	private TreeSet<ITextMessage> sortedMessages = new TreeSet<ITextMessage>();
 
-	
 	private LinkedList<IListOfMessagesListener> listeners = new LinkedList<IListOfMessagesListener>();
-	
 	
 	private long countMessagesCanBeDeleted = 0;
 	
 	protected final ReceiveMessagesThread queueConsumerThread;
 
+	
 	protected static final Map<MessageLevel,Priority> messageLevel2log4jPriority = new HashMap<MessageLevel, Priority>(){{
 		put(MessageLevel.TRACE, Priority.DEBUG);
 		put(MessageLevel.DEBUG, Priority.DEBUG);
@@ -82,7 +98,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	
 	static {
 		// init of LOG4J
-		if (RELAY_TO_LOG4J) {
+		if (DEFAULT_RELAY_TO_LOG4J) {
 		    BasicConfigurator.configure();
 			Logger.getRootLogger().setLevel(Level.DEBUG);
 			//Logger.getRootLogger().addAppender(new ConsoleAppender());
@@ -90,6 +106,24 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public ListOfMessages() {
+		
+		this(null, DEFAULT_LIMIT_START_CLEANUP, DEFAULT_CLEANUP_TARGET_SIZE);
+	}
+	
+	public ListOfMessages(MessageLevel level, int cleanupSize) {
+		
+		this(level, cleanupSize, cleanupSize/2);
+	}
+	
+	public ListOfMessages(MessageLevel level, int cleanupSize, int cleanupTarget) {
+		
+		if (cleanupTarget >= cleanupSize)
+			throw new ProgramException("cleanup target size should be lower than cleanup size");
+		
+		this.filterIgnoreBelow = level;
+		this.limitStartCleanup = cleanupSize;
+		this.cleanupTarget = cleanupTarget;
+		
 		queueConsumerThread = new ReceiveMessagesThread();
 		queueConsumerThread.start();
 	}
@@ -112,7 +146,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			long timeBegin = System.currentTimeMillis();
 			Iterator<ITextMessage> it = sortedMessages.iterator();
 			ITextMessage current = null;
-			while (it.hasNext() && countMessagesCanBeDeleted > CLEANUP_TARGET_SIZE) {
+			while (it.hasNext() && countMessagesCanBeDeleted > cleanupTarget) {
 				
 				current = it.next();
 				if (current.getLevel().compareTo(MessageLevel.DEBUG) <= 0) {
@@ -162,10 +196,11 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			if (messageIdentical != null) {
 				// if the message was already stored just a short time before, just add it.
 				messageIdentical.addIncrementCount();
+	
 			} else {
 				sortedMessages.add(e);	
 				
-				if (RELAY_TO_LOG4J) {
+				if (DEFAULT_RELAY_TO_LOG4J) {
 					
 					final StringBuffer msg = new StringBuffer();
 					
@@ -186,7 +221,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 				if (e.getLevel().compareTo(MessageLevel.DEBUG) <= 0)
 					countMessagesCanBeDeleted++;
 				
-				if (countMessagesCanBeDeleted > LIMIT_START_CLEANUP)
+				if (countMessagesCanBeDeleted > limitStartCleanup)
 					clearOld();
 
 				
@@ -204,7 +239,22 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 */
 	protected class ReceiveMessagesThread extends Thread {
 		
+		/**
+		 * Once received in the queue, the thread will notify the end of the thread.
+		 */
+		protected final ITextMessage MESSAGE_PILL_NOTIFY_EMPTY = new TextMessage(null, null, this.getClass(), null);
+		
+		/**
+		 * If true, the thread will attempt to stop (when consuming a message)
+		 */
 		protected boolean cancel = false;
+		
+		/**
+		 * Is notified when the queue becomes empty.
+		 */
+		private Object notifierReceivedMessages = new Object();
+		
+		protected boolean notifyWhenEmpty = false;
 		
 		public ReceiveMessagesThread() {
 			super();
@@ -215,19 +265,77 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 		}
 		
 		public void cancel() {
-			this.cancel = true;
+			
+			// cancel in case the thread in consuming messages
+			this.cancel = true; 
+		
+			// and interrupt
+			interrupt();
+		}
+		
+		public void waitUntilEndOfQueue() {
+			
+			// submit a magic pill at the end of the queue.
+			// so even if many, many things are still trying to push data into the queue, we are 
+			// in some way accepting a large part of their data before.
+			try {
+				System.err.println("sending the magic pill");
+				receivedMessages.put(MESSAGE_PILL_NOTIFY_EMPTY);
+				System.err.println("sent the magic pill");
+			} catch (InterruptedException e1) {
+				throw new RuntimeException("unable to enqueue another message");
+			}
+			
+			// and wait for it to work
+			System.err.println("should wait 1");
+			synchronized (notifierReceivedMessages) {
+				System.err.println("should wait 2");
+				this.interrupt();
+				try {
+					System.err.println("should wait 3");
+					
+					notifierReceivedMessages.wait();
+					System.err.println("should wait 4");
+					
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			System.err.println("should wait 5");
+			
+			notifyWhenEmpty = false;
+		}
+		
+		protected void signalQueueEmpty() {
+			synchronized (notifierReceivedMessages) {
+				notifierReceivedMessages.notifyAll();
+			}
+			notifyWhenEmpty = false;
 		}
 		
 		public void run() {
-			
-			// TODO stats on the time required for processing ?
 			
 			long total = 0;
 			long made = 0;
 			
 			while (!cancel) {
+				
+				if (notifyWhenEmpty && receivedMessages.isEmpty()) {
+					signalQueueEmpty();
+				}
+				
 				try {
 					ITextMessage message = receivedMessages.take();
+					if (message == MESSAGE_PILL_NOTIFY_EMPTY) {
+						System.err.println("received MESSAGE_PILL_NOTIFY_EMPTY");
+						if (receivedMessages.isEmpty()) {
+							signalQueueEmpty();	
+						} else {
+							notifyWhenEmpty = true;
+						}
+						continue;
+					}
 					long start = System.currentTimeMillis();
 					addDelayed(message);
 					total += (System.currentTimeMillis()-start);
@@ -238,11 +346,12 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 						made = 0;
 					}
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					
 				}
-				if (receivedMessages.remainingCapacity() < 1000)
-					System.err.println("****************************** REACHING CAPACITY :!!!!! =========================**");
+				
+				// for debug
+				//if (receivedMessages.remainingCapacity() < 1000)
+				//	System.err.println("****************************** REACHING CAPACITY :!!!!! =========================**");
 				
 			}
 		}
@@ -283,12 +392,24 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 		
 	}
 	
+	/**
+	 * Waits until all the messages are processed and stored.
+	 * Remember that once a message was added, it takes time before being added.
+	 */
+	protected void waitUntilMessagesQueueConsumed() {
+		if (queueConsumerThread != null)
+			queueConsumerThread.waitUntilEndOfQueue();
+	}
 	
 	/**
 	 * Returns an iterator on the natural order (that is, sorted by timestamp)
 	 * @return
 	 */
 	public Iterator<ITextMessage> iterator() {
+		// TODO ! wait for the end of dispatch messages queues before analysis !!!
+		
+		waitUntilMessagesQueueConsumed();
+
 		return sortedMessages.iterator();
 	}
 
@@ -389,13 +510,13 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	}
 	
 	public int getSize() {
+	
 		synchronized (sortedMessages) {
 
 			return sortedMessages.size();
 		}
 	}
-	
-	
+		
 	
 	public void debugUser(String message, String fromShort, Class fromClass) {
 		if (!MessageLevel.DEBUG.shouldDisplay(filterIgnoreBelow))
@@ -846,9 +967,10 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 
 	@Override
 	protected void finalize() throws Throwable {
-		
-		if (queueConsumerThread != null)
+	
+		if (queueConsumerThread != null) {
 			queueConsumerThread.cancel();
+		}
 		
 		super.finalize();
 	}

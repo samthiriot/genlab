@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Optimized for a given number of columns 
+ * Optimized for a given number of columns .
+ * 
+ * TODO synchronicity !!!???
  * 
  * @author Samuel Thiriot
  *
@@ -174,6 +176,76 @@ public class GenlabTable implements IGenlabTable {
 	public Object[] getRow(int i) {
 		// TODO manage error
 		return content.get(i);
+	}
+
+	@Override
+	public void fillColumn(int colIndex, Object value) {
+		
+		for (Object[] values : content) {
+			values[colIndex] = value;
+		}
+		
+	}
+
+	@Override
+	public Object getValue(int rowId, String columnId) {
+		return content.get(rowId)[columnId2idx.get(columnId)];
+	}
+
+	@Override
+	public Object[] getValues(int rowId) {
+		return content.get(rowId);
+	}
+
+	@Override
+	public boolean isColumnEmpty(String columnId) {
+		
+		// TODO check parametrs
+		int colIdx = columnId2idx.get(columnId);
+		
+		for (Object[] values : content) {
+			if (values[colIdx] == null)
+				return true;
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean isColumnEmpty(int colIdx) {
+		
+		for (Object[] values : content) {
+			if (values[colIdx] == null)
+				return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public Collection<String> getEmptyColumnsIds() {
+
+		Collection<String> emptyColumnsIds = new LinkedList<String>();
+		
+		for (Map.Entry<String,Integer> id2idx : columnId2idx.entrySet()) {
+			if (isColumnEmpty(id2idx.getValue()))
+				emptyColumnsIds.add(id2idx.getKey());
+		}
+		
+		return emptyColumnsIds;
+	}
+
+	@Override
+	public Collection<Integer> getEmptyColumnsIndexes() {
+		
+		Collection<Integer> emptyColumnsIdxs = new LinkedList<Integer>();
+		
+		for (Integer idx : columnId2idx.values()) {
+			if (isColumnEmpty(idx))
+				emptyColumnsIdxs.add(idx);
+		}
+		
+		return emptyColumnsIdxs;
 	}
 
 	

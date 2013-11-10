@@ -27,6 +27,17 @@ public interface IGenlabTable {
 	public void setValue(int rowId, String columnId, Object value);
 	public void setValue(int rowId, int columnIdx, Object value);
 	public void setValues(int rowId, Object[] values);
+	public void fillColumn(int colIndex, Object value);
+
+	
+	public Object getValue(int rowId, String columnId);
+	public Object[] getValues(int rowId);
+	
+	public boolean isColumnEmpty(String columnId);
+	public boolean isColumnEmpty(int columnIdx);
+	
+	public Collection<String> getEmptyColumnsIds();
+	public Collection<Integer> getEmptyColumnsIndexes();
 	
 	/**
 	 * Adds a row with the following values

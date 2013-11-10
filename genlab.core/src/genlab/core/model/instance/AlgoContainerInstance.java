@@ -149,7 +149,8 @@ public class AlgoContainerInstance extends AlgoInstance implements IAlgoContaine
 		super.checkForRun(res);
 		
 		// ensure that each output of this algo is linked with a reduce algo
-		for (IAlgoInstance dependantAlgo : getAlgoInstancesDependingToOurChildren()) {
+		final Collection<IAlgoInstance> dep = getAlgoInstancesDependingToOurChildren();
+		for (IAlgoInstance dependantAlgo : dep) {
 			if (!(dependantAlgo.getAlgo() instanceof IReduceAlgo)) {
 				// TODO nice(r) message; for instance, add the list of algos which may be used there.
 				res.messages.errorUser(

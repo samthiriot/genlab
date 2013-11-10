@@ -34,14 +34,7 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 		try {
 			IInputOutputInstance from = (IInputOutputInstance)getBusinessObjectForPictogramElement(context.getSourceAnchor());
 			
-			if (from == null)
-				return false;
-			
-			// do not create multiple connection if this is not possible
-			if (!from.getMeta().acceptsMultipleInputs() && from.getConnections().size()>0)
-				return false;
-			
-			return true;
+			return (from != null);
 			
 		} catch (NullPointerException e) {
 			return false;

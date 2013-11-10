@@ -2,6 +2,7 @@ package genlab.core.model.exec;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IConnection;
+import genlab.core.model.meta.IConstantAlgo;
 
 /**
  * TODO Take all of these contraints; use them during workflow checking; 
@@ -64,6 +65,19 @@ public class ExecutableConnectionsFactory {
 		} 
 		
 		
+		if ( fromExec.getAlgoInstance().getAlgo() instanceof IConstantAlgo) {
+			
+			// constants are special: they will always provide the same result, 
+			// no matter what parent, children, container, loop is involved.
+			
+			return new ConnectionExec(
+					c, 
+					fromExec, 
+					(IAlgoExecutionOneshot)toExec,
+					false	// don't check when we do fancy things
+					);
+		
+		} 
 		
 
 		// unknown case

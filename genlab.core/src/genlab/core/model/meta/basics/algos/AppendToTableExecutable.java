@@ -7,7 +7,9 @@ import genlab.core.model.exec.AbstractAlgoReduceExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
+import genlab.core.model.exec.ConnectionExec;
 import genlab.core.model.exec.IAlgoExecution;
+import genlab.core.model.exec.IAlgoExecutionOneshot;
 import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
@@ -16,6 +18,8 @@ import genlab.core.model.instance.IReduceAlgoInstance;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,14 +28,16 @@ import java.util.Map;
  * During execution, it will store the result of each parrallel exec as a row. 
  * When this one runs, it will just export the table as its result.
  * 
+ * TODO case of imbricated loops ? 
+ * 
  * @author Samuel Thiriot
  *
  */
-public class AppendToTableExecutable extends AbstractAlgoReduceExecution {
+public class AppendToTableExecutable extends AbstractAlgoReduceExecution implements IAlgoExecutionOneshot {
 
 	protected IGenlabTable outputTable = null;
 
-	protected Map<IConnection, Integer> connection2colId;
+	protected Map<IConnection, Integer> connection2colIdx;
 	protected Map<IAlgoExecution, Integer> execId2rowId;
 	
 	public AppendToTableExecutable(IExecution exec,
@@ -46,12 +52,12 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution {
 		{
 			
 			IInputOutputInstance inputInstance = algoInst.getInputInstanceForInput(AppendToTableAlgo.INPUT_ANYTHING);
-			connection2colId = new HashMap<IConnection, Integer>(inputInstance.getConnections().size());
+			connection2colIdx = new HashMap<IConnection, Integer>(inputInstance.getConnections().size());
 			for (IConnection c: inputInstance.getConnections()) {
 				
 				int columnIdx = outputTable.declareColumn(c.getFrom().getName());
 				
-				connection2colId.put(c, columnIdx);
+				connection2colIdx.put(c, columnIdx);
 				
 			}
 		}
@@ -87,6 +93,7 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution {
 		setResult(result);
 		
 		// TODO we could add a hook there for post processing (why not ?)
+		completeValues();
 		
 		// notify end
 		progress.setComputationState(ComputationState.FINISHED_OK);
@@ -136,6 +143,53 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution {
 		*/
 		
 	}
+	
+	/**
+	 * As long as connections come from Container algos, then we will have received the values
+	 * with an execution context.
+	 * But, we may also receive some values from non "to be reduced" algos. In this case, 
+	 * we just retrieve their values in the stardart way.
+	 * 
+	 */
+	protected void completeValues() {
+		
+		//outputTable.setValue(rowId, columnIdx, value);
+		
+		messages.debugTech("attempting to fill the columns which were not pushed by containers...", getClass());
+		
+		// defined which columns are always empty
+		Collection<Integer> emptyColumns = outputTable.getEmptyColumnsIndexes();
+		
+		if (emptyColumns.isEmpty()) {
+			messages.debugTech("all columns are already availabe.", getClass());
+			return;
+		}
+		messages.debugTech("attempting to fill columns: "+emptyColumns.toString(), getClass());
+		
+		// retrieve data for all these columns
+		for (Map.Entry<IConnection,Integer> connex2idx : connection2colIdx.entrySet()) {
+			
+			if (!emptyColumns.contains(connex2idx.getValue()))
+				// only focus of empty columns
+				continue;
+			
+			// this column is empty; let's attempt to retrieve the value for it !
+			IConnection inputConnection = connex2idx.getKey();
+			IConnectionExecution cEx = getExecutableConnectionForConnection(inputConnection);
+			if (cEx == null)
+				throw new ProgramException("no connection exec for this input connection: "+inputConnection);
+			Object value = cEx.getValue();
+			if (value == null)
+				throw new ProgramException("no value provided for the input connection: "+inputConnection);
+			
+			outputTable.fillColumn(connex2idx.getValue(), value);
+			
+		}
+		
+		// end of all
+		
+		
+	}
 
 	@Override
 	protected void prepareToProcessNovelInputsFor(IAlgoExecution executionRun) {
@@ -159,13 +213,27 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution {
 		if (rowId == null)
 			 throw new ProgramException("unknown executable: it should have been defined previously");
 		
-		final Integer columnId = connection2colId.get(connectionExec.getConnection());
+		final Integer columnId = connection2colIdx.get(connectionExec.getConnection());
 		if (columnId == null)
 			 throw new ProgramException("unknown column "+connectionExec.getConnection().getFrom().getName()+": it should have been defined previously");
 		
 		// check wether the row id is filled or not
 		outputTable.setValue(rowId, columnId, value);
 		
+		
+	}
+
+
+
+	@Override
+	public void notifyInputAvailable(IInputOutputInstance to) {
+		
+		// we have to suppose this comes from a constant; else we would 
+		// not be able to attach it to a given context
+
+		
+		// do nothing !
+		// this value will be used at the very end of the process.
 		
 	}
 
