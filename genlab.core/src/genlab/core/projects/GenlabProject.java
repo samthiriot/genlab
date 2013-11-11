@@ -9,8 +9,10 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * TODO later: save
@@ -23,7 +25,7 @@ public class GenlabProject implements IGenlabProject {
 	private transient String baseDirectory;
 	private Map<String,Object> key2object = new HashMap<String,Object>();
 	
-	private final Collection<String> workflowPathes = new LinkedList<String>();
+	private final Set<String> workflowPathes = new HashSet<String>();
 	private transient Map<String,IGenlabWorkflowInstance> id2workflow = null;
 	private transient Map<String,IGenlabWorkflowInstance> path2workflow = null;
 
@@ -173,6 +175,10 @@ public class GenlabProject implements IGenlabProject {
 			return null;
 		
 		return path2workflow.get(relativePath);
+	}
+
+	public void removeWorkflow(String relativeFilename) {
+		workflowPathes.remove(relativeFilename);
 	}
 
 

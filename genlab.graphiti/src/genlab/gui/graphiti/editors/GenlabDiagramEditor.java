@@ -102,7 +102,6 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 		
 		workflow.addListener(WorkflowListener.lastInstance);
 		
-		
 	}
 	
 	/**

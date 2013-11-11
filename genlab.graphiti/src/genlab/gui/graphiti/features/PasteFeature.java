@@ -9,11 +9,15 @@ import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.instance.InputInstance;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.Clipboard;
+import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
+import genlab.gui.graphiti.genlab2graphiti.WorkflowListener.UIInfos;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+
+import javax.management.RuntimeErrorException;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IPasteFeature;
@@ -60,27 +64,86 @@ public class PasteFeature extends AbstractFeature implements IPasteFeature {
         
 	}
 	
-	// TODO something else than diagram for container
-	protected Collection<IAlgoInstance> prepareForPaste(Diagram diagram, IAlgoContainerInstance container, Object[] os) {
+
+	public void paste(IPasteContext context) {
 		
-		IGenlabWorkflowInstance workflowCopy = null;
-		if (container instanceof IGenlabWorkflowInstance)
-			workflowCopy = (IGenlabWorkflowInstance)container;
+		System.err.println("should paste");
+		
+		  // we already verified, that we paste directly in the diagram
+        PictogramElement[] pes = context.getPictogramElements();
+        Diagram diagram = (Diagram) pes[0]; 
+        
+        // retrieve the container objects
+        IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance)getBusinessObjectForPictogramElement(diagram);
+        
+        // get the EClasses from the clipboard without copying them
+        // (only copy the pictogram element, not the business object)
+        // then create new pictogram elements using the add feature
+        Object[] objects = Clipboard.singleton.getObjects();
+        for (Object object : objects) {
+        	System.err.println("should paste: "+object);
+        	
+    		/*
+        	AddContext ac = new AddContext();
+            ac.setLocation(0, 0); // for simplicity paste at (0, 0)
+            ac.setTargetContainer(diagram);
+            addGraphicalRepresentation(ac, object);
+            */
+        }
+        
+        // prepare objects for pasting (already adds objects into the container)
+
+		IGenlabWorkflowInstance workflowCopy = workflow;
+		// TODO if (container instanceof IGenlabWorkflowInstance)
+		//	workflowCopy = (IGenlabWorkflowInstance)container;
 		
 		
 		LinkedList<IAlgoInstance> copiedAlgos = new LinkedList<IAlgoInstance>();
 		LinkedList<IConnection> copiedConnections = new LinkedList<IConnection>();
 
+		// prepare by finding the novel coordinates for paste
+		int minX = 5000;
+		int minY = 5000;
+		for (Object o: objects) {
+			UIInfos uiInfos = WorkflowListener.lastInstance.getLastUIParameters(o);
+			if (uiInfos == null)
+				throw new RuntimeException("no UI infos found for "+o);
+			minX = Math.min(minX, uiInfos.x);
+			minY = Math.min(minX, uiInfos.y);
+		}
+		GLLogger.traceTech("found as a minimal coordinates x="+minX+" and y="+minY, getClass());
+		GLLogger.traceTech("also, the context provides as coordinates x="+context.getX()+" and y="+context.getY(), getClass());
+		
 		// start by duplicating the algo instances
-		Map<IAlgoInstance,IAlgoInstance> original2copy = new HashMap<IAlgoInstance, IAlgoInstance>(os.length);
-		for (Object o: os) {
+		Map<IAlgoInstance,IAlgoInstance> original2copy = new HashMap<IAlgoInstance, IAlgoInstance>(objects.length);
+		final int deltaX = context.getX() - minX;
+		final int deltaY = context.getY() - minY;
+		
+		for (Object o: objects) {
 		
 			GLLogger.debugTech("preparing object instance "+o, getClass());
 			
 			IAlgoInstance ai = (IAlgoInstance)o;
 			
-			IAlgoInstance resultInstance = ai.cloneInContext(container);
+			IAlgoInstance resultInstance = ai.cloneInContext(workflowCopy);
+
+			// transmit the UI that the info for the previous for the original object 
+			// are now to be used for the copy
+			{
+				final UIInfos uiInfos = WorkflowListener.lastInstance.getLastUIParameters(o);
+	            WorkflowListener.lastInstance.transmitLastUIParameters(
+	    				resultInstance,
+	    				new WorkflowListener.UIInfos() {{ 
+	    					x = Math.max(0, uiInfos.x + deltaX);
+	    					y = Math.max(0, uiInfos.y + deltaY);
+	    					width = uiInfos.width;
+	    					height = uiInfos.height;
+	    				}}
+	    				);
+			}
 			
+            workflowCopy.addAlgoInstance(resultInstance);
+            
 			original2copy.put(ai, resultInstance);
 			
 			copiedAlgos.add(resultInstance);
@@ -126,76 +189,6 @@ public class PasteFeature extends AbstractFeature implements IPasteFeature {
 
 			
 		}
-		
-		// create graphical representations
-		
-		/*
-		// .. algos
-		Map<IAlgoInstance,PictogramElement> algoInstance2pe = new HashMap<IAlgoInstance, PictogramElement>(os.length);
-		for (IAlgoInstance createdInstance : copiedAlgos) {
-			
-			AddContext ac = new AddContext();
-	        ac.setLocation(0, 0); // for simplicity paste at (0, 0)
-	        ac.setTargetContainer(diagram);
-	        
-	        PictogramElement pe = addGraphicalRepresentation(ac, createdInstance);
-	        algoInstance2pe.put(createdInstance, pe);
-	       
-		}
-    	*/
-		// .. connections
-		/*
-		for (IConnection c : copiedConnections) {
-			
-			Anchor anchorFrom = (Anchor)getFeatureProvider().getPictogramElementForBusinessObject(c.getFrom());
-			Anchor anchorTo = (Anchor)getFeatureProvider().getPictogramElementForBusinessObject(c.getTo());
-			
-			if (anchorFrom == null || anchorTo == null)
-				throw new ProgramException("unable to find anchors to create the connection "+c);
-			
-			AddConnectionContext ac = new AddConnectionContext(anchorFrom, anchorTo);
-			
-	        ac.setLocation(0, 0); // for simplicity paste at (0, 0)
-	        ac.setTargetContainer(diagram);
-	        
-	        //getFeatureProvider();
-	        //addGraphicalRepresentation(ac, c);
-	        
-	        
-		}
-        	*/	
-		return copiedAlgos;
-	}
-
-	public void paste(IPasteContext context) {
-		
-		System.err.println("should paste");
-		
-		  // we already verified, that we paste directly in the diagram
-        PictogramElement[] pes = context.getPictogramElements();
-        Diagram diagram = (Diagram) pes[0]; 
-        
-        // retrieve the container objects
-        IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance)getBusinessObjectForPictogramElement(diagram);
-        
-        // get the EClasses from the clipboard without copying them
-        // (only copy the pictogram element, not the business object)
-        // then create new pictogram elements using the add feature
-        Object[] objects = Clipboard.singleton.getObjects();
-        for (Object object : objects) {
-        	System.err.println("should paste: "+object);
-        	
-    		/*
-        	AddContext ac = new AddContext();
-            ac.setLocation(0, 0); // for simplicity paste at (0, 0)
-            ac.setTargetContainer(diagram);
-            addGraphicalRepresentation(ac, object);
-            */
-        }
-        
-        // prepare objects for pasting (already adds objects into the container)
-        prepareForPaste(diagram, workflow, objects);
-           
         
 	}
 	

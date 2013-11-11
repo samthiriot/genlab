@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -32,8 +33,8 @@ public class AlgoInstance implements IAlgoInstance {
 	protected transient IAlgo algo;
 	protected transient IGenlabWorkflowInstance workflow;
 	
-	private Map<IInputOutput<?>,IInputOutputInstance> inputs2inputInstances = new HashMap<IInputOutput<?>, IInputOutputInstance>();
-	private Map<IInputOutput<?>,IInputOutputInstance> outputs2outputInstances = new HashMap<IInputOutput<?>, IInputOutputInstance>();
+	private Map<IInputOutput<?>,IInputOutputInstance> inputs2inputInstances = new LinkedHashMap<IInputOutput<?>, IInputOutputInstance>();
+	private Map<IInputOutput<?>,IInputOutputInstance> outputs2outputInstances = new LinkedHashMap<IInputOutput<?>, IInputOutputInstance>();
 	
 	// very basic management of algo parameters;
 	// TODO improve algo parameters
@@ -298,9 +299,6 @@ public class AlgoInstance implements IAlgoInstance {
 		for (Map.Entry<String,Object> key2value : parameters.entrySet()) {
 			copy.setValueForParameter(key2value.getKey(), key2value.getValue());
 		}
-		
-
-		workflow.addAlgoInstance(copy);
 
 		
 		return copy;

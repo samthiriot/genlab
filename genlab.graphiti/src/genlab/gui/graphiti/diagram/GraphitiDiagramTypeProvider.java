@@ -53,6 +53,12 @@ public class GraphitiDiagramTypeProvider extends AbstractDiagramTypeProvider {
 		return new GenlabNotificationService(this);
 	}
 
+	@Override
+	public String getContextId() {
+		String res = super.getContextId();
+		return res;
+	}
+
 	
 	@Override
 	public void init(Diagram diagram, IDiagramEditor diagramEditor) {

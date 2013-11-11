@@ -18,7 +18,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+
+import javax.swing.text.html.HTMLDocument.RunElement;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
@@ -266,12 +269,28 @@ public class GenlabPersistence {
 		
 
 		// ... the sub workflows
-    	if (autoloadAllWorkflows)
+    	if (autoloadAllWorkflows) { 
+    		LinkedList<String> toRemove = null;
 			for (String relativeWorkflowFilename : project.getWorkflowPathes()) {
-				this.currentWorkflowRelativeName = relativeWorkflowFilename;
-				IGenlabWorkflowInstance workflow = readWorkflow(project, relativeWorkflowFilename);
-				project.addWorkflow(workflow);
+				try {
+					this.currentWorkflowRelativeName = relativeWorkflowFilename;
+					IGenlabWorkflowInstance workflow = readWorkflow(project, relativeWorkflowFilename);
+					project.addWorkflow(workflow);
+				} catch (RuntimeException e) {
+					GLLogger.errorUser("a workflow file was not found: "+relativeWorkflowFilename+"; we will remove the reference of to this file in the projet.", getClass());
+					if (toRemove == null) {
+						toRemove = new LinkedList<String>();
+					}
+					toRemove.add(relativeWorkflowFilename);
+				}
+				
 			} 
+			if (toRemove != null)
+				for (String relativeFilename: toRemove) {
+					project.removeWorkflow(relativeFilename);
+				}
+			
+    	}
 		this.currentWorkflowRelativeName = null;
 		
 		this.currentProject = null;

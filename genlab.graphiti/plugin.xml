@@ -2,6 +2,15 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            description="edits workflow diagrams"
+            id="genlab.graphiti.contexts.contextWorkflowEditor"
+            name="Genlab workflows editor"
+            parentId="org.eclipse.ui.contexts.window">
+      </context>
+   </extension>
+   <extension
          point="org.eclipse.graphiti.ui.imageProviders">
       <imageProvider
             class="genlab.gui.graphiti.GraphitiImageProvider"
@@ -20,9 +29,10 @@
    <extension
          point="org.eclipse.graphiti.ui.diagramTypeProviders">
       <diagramTypeProvider
-            name="Graphiti Diagram Type Provider"
             class="genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider"
-            id="genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider">
+            context="genlab.graphiti.contexts.contextWorkflowEditor"
+            id="genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider"
+            name="Graphiti Diagram Type Provider">
          <diagramType
                id="genlab.graphiti.diagtypes.workflow">
          </diagramType>
@@ -38,6 +48,7 @@
             name="TODO Category">
       </category>
       <view
+            allowMultiple="true"
             category="genlab.graphiti"
             class="genlab.gui.graphiti.views.WorkflowGraphityView"
             icon="icons/sample.gif"
@@ -76,6 +87,7 @@
          point="org.eclipse.ui.editors">
       <editor
             class="genlab.gui.graphiti.editors.GenlabDiagramEditor"
+            contributorClass="org.eclipse.graphiti.ui.editor.DiagramEditorActionBarContributor"
             default="true"
             extensions="wfdiag"
             id="genlab.gui.graphiti.editors.GenlabDiagramEditor"

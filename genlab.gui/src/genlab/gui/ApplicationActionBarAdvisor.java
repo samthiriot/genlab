@@ -41,6 +41,13 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     private IWorkbenchAction switchWorkspace;
     private IWorkbenchAction exitAction;
     
+    // edit menu
+    private IWorkbenchAction copyAction;
+    private IWorkbenchAction pasteAction;
+    private IWorkbenchAction deleteAction;
+    private IWorkbenchAction selectAllAction;
+
+    
     // window menu
     private IWorkbenchAction openPreferences;
     private IWorkbenchAction aboutAction;
@@ -83,7 +90,16 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         
         exitAction = ActionFactory.QUIT.create(window);
         register(exitAction);
-          
+        
+        // edit menu
+        copyAction = ActionFactory.COPY.create(window);
+        register(copyAction);
+        pasteAction = ActionFactory.PASTE.create(window);
+        register(pasteAction);
+        deleteAction = ActionFactory.DELETE.create(window);
+        register(deleteAction);
+        selectAllAction = ActionFactory.SELECT_ALL.create(window);
+        register(selectAllAction);
         
         // window menu
         
@@ -107,30 +123,28 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     
     protected void fillMenuBar(IMenuManager menuBar) {
         MenuManager fileMenu = new MenuManager("&File", IWorkbenchActionConstants.M_FILE);
+        MenuManager editMenu = new MenuManager("&Edit", IWorkbenchActionConstants.M_EDIT);
         MenuManager helpMenu = new MenuManager("&Help", IWorkbenchActionConstants.M_HELP);
         MenuManager windowMenu = new MenuManager("&Window", IWorkbenchActionConstants.M_WINDOW);
         
         
         menuBar.add(fileMenu);
         // Add a group marker indicating where action set menus will appear.
+        menuBar.add(editMenu);
         menuBar.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
         menuBar.add(windowMenu);
         menuBar.add(helpMenu);
         
         // File
         fileMenu.add(openNewWizard);
-
-        
         fileMenu.add(new Separator());
-
         fileMenu.add(exportAction);
         fileMenu.add(new Separator());
-        
         fileMenu.add(saveAction);
         fileMenu.add(saveAllAction);
-        
-        fileMenu.add(new Separator());
+        fileMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         fileMenu.add(switchWorkspace);
+        windowMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         fileMenu.add(new Separator());
         fileMenu.add(exitAction);
 
@@ -138,14 +152,25 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         fileMenu.add(new Separator());
         fileMenu.add(runAction);
        
+        // Edit
+        editMenu.add(copyAction);
+        editMenu.add(pasteAction);
+        editMenu.add(deleteAction);
+        editMenu.add(new Separator());
+        editMenu.add(selectAllAction);
+        editMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+
         
         // Windows
         windowMenu.add(viewListItem);
         windowMenu.add(viewShortListItem);
         windowMenu.add(openPreferences);
+        windowMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         
         // Help
         helpMenu.add(aboutAction);
+        helpMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        
     }
     
     protected void fillCoolBar(ICoolBarManager coolBar) {

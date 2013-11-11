@@ -279,30 +279,21 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			// so even if many, many things are still trying to push data into the queue, we are 
 			// in some way accepting a large part of their data before.
 			try {
-				System.err.println("sending the magic pill");
 				receivedMessages.put(MESSAGE_PILL_NOTIFY_EMPTY);
-				System.err.println("sent the magic pill");
 			} catch (InterruptedException e1) {
 				throw new RuntimeException("unable to enqueue another message");
 			}
 			
 			// and wait for it to work
-			System.err.println("should wait 1");
 			synchronized (notifierReceivedMessages) {
-				System.err.println("should wait 2");
 				this.interrupt();
 				try {
-					System.err.println("should wait 3");
-					
 					notifierReceivedMessages.wait();
-					System.err.println("should wait 4");
-					
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
-			System.err.println("should wait 5");
 			
 			notifyWhenEmpty = false;
 		}
@@ -328,7 +319,6 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 				try {
 					ITextMessage message = receivedMessages.take();
 					if (message == MESSAGE_PILL_NOTIFY_EMPTY) {
-						System.err.println("received MESSAGE_PILL_NOTIFY_EMPTY");
 						if (receivedMessages.isEmpty()) {
 							signalQueueEmpty();	
 						} else {

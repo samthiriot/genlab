@@ -3,6 +3,7 @@ package genlab.gui.graphiti.features;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.gui.graphiti.Clipboard;
+import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.graphiti.features.ICopyFeature;
@@ -53,9 +54,20 @@ public class CopyFeature extends AbstractFeature implements ICopyFeature {
         PictogramElement[] pes = context.getPictogramElements();
         Object[] bos = new Object[pes.length];
         for (int i = 0; i < pes.length; i++) {
-        	PictogramElement pe = pes[i];
-            bos[i] = getBusinessObjectForPictogramElement(pe);
+        	final PictogramElement pe = pes[i];
+        	Object bo = getBusinessObjectForPictogramElement(pe);
+            bos[i] = bo;
             System.err.println("copying: "+bos[i]);
+            
+            WorkflowListener.lastInstance.transmitLastUIParameters(
+    				bo,
+    				new WorkflowListener.UIInfos() {{ 
+    					x = pe.getGraphicsAlgorithm().getX();
+    					y = pe.getGraphicsAlgorithm().getY();
+    					width = pe.getGraphicsAlgorithm().getWidth();
+    					height = pe.getGraphicsAlgorithm().getHeight();
+    				}}
+    		);
             
         }
         

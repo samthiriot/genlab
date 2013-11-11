@@ -48,6 +48,10 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 	
 	private Map<Object, UIInfos> objectCreated2infos = new HashMap<Object, WorkflowListener.UIInfos>();
 	
+	public UIInfos getLastUIParameters(Object o) {
+		return objectCreated2infos.get(o);
+	}
+	
 	/**
 	 * Enables the transmission of the last informations from UI
 	 * like position, size. So when something is created into the
