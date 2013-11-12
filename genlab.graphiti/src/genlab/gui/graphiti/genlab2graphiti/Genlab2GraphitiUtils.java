@@ -32,6 +32,13 @@ public class Genlab2GraphitiUtils {
 	public static final String KEY_WORKFLOW_TO_GRAPHITI_FILE = "graphiti_file";
 	public static final String EXTENSION_FILE_MAPPING = ".mapping";
 
+	/**
+	 * A command which will link a pictogram element to the business object.
+	 * Will be ran in the right transaction.
+	 * 
+	 * @author Samuel Thiriot
+	 *
+	 */
 	private static class LinkCommand implements Command {
 
 		private final GraphitiFeatureProvider dfp;
@@ -51,7 +58,7 @@ public class Genlab2GraphitiUtils {
 
 		@Override
 		public void execute() {
-			//GLLogger.debugTech("linking in "+dfp+" "+pictogramElement+" with "+res, getClass());
+			GLLogger.debugTech("linking in "+dfp+" "+pictogramElement+" with "+res, getClass());
 			dfp.link(pictogramElement, res);
 		}
 
@@ -111,6 +118,7 @@ public class Genlab2GraphitiUtils {
 	    
 		final ResourceSet resourceSet = pictogramElement.eResource().getResourceSet();
 		
+	
         TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(resourceSet);
         if (editingDomain == null) {
         	// Not yet existing, create one
@@ -164,6 +172,7 @@ public class Genlab2GraphitiUtils {
 		// also associate the diagram file with the workflow
 		//MappingObjects.register(workflow.getAbsolutePath(), workflow);
 		//MappingObjects.register(workflow.getAbsolutePath()+"."+GraphitiDiagramTypeProvider.GRAPH_EXTENSION, workflow);
+		
 		
 		// Dispose the editing domain to eliminate memory leak
 		editingDomain.dispose();

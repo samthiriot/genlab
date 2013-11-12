@@ -51,6 +51,9 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	
 	private Map<String,Object> key2object = new HashMap<String, Object>();
 	
+	private transient Map<String,Object> transientKey2object = new HashMap<String, Object>();
+
+	
 	protected static final Map<String,GenlabWorkflowInstance> id2instance = new HashMap<String, GenlabWorkflowInstance>(); 
 	
 	private LinkedList<IWorkflowContentListener> listeners = new LinkedList<IWorkflowContentListener>();
@@ -624,6 +627,17 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		
 		// TODO later
 		throw new NotImplementedException();
+	}
+
+	@Override
+	public Object getTransientObjectForKey(String key) {
+	
+		return transientKey2object.get(key);
+	}
+
+	@Override
+	public Object addTransientObjectForKey(String key, Object object) {
+		return transientKey2object.put(key,object);
 	}
 
 	

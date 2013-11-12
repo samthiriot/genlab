@@ -98,7 +98,10 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 
 		Genlab2GraphitiUtils.linkInTransaction(dfp, getDiagramTypeProvider().getDiagram(), workflow);
 		
+		// TODO remove ???
 		GenLabIndependenceSolver.singleton.registerWorkflow(workflow);
+		
+		((GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider()).associateWorkflowWithThisProvider(workflow);
 		
 		workflow.addListener(WorkflowListener.lastInstance);
 		

@@ -223,7 +223,7 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 	@Override
 	public void notifyConnectionAdded(IConnection c) {
 		
-		final GraphitiFeatureProvider dfp = (GraphitiFeatureProvider) GraphitiDiagramTypeProvider.lastInstanceCreated.getFeatureProvider();
+		final GraphitiFeatureProvider dfp = GraphitiFeatureProvider.getFeatureProviderForWorkflow(c.getWorkflow());
 
 		PictogramElement e = dfp.getPictogramElementForBusinessObject(c);
 		if (e == null) {
@@ -250,7 +250,7 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 	@Override
 	public void notifyConnectionRemoved(IConnection c) {
 
-		final GraphitiFeatureProvider dfp = (GraphitiFeatureProvider) GraphitiDiagramTypeProvider.lastInstanceCreated.getFeatureProvider();
+		final GraphitiFeatureProvider dfp = GraphitiFeatureProvider.getFeatureProviderForWorkflow(c.getWorkflow());
 
 		PictogramElement e = dfp.getPictogramElementForBusinessObject(c);
 		if (e != null) {
@@ -268,12 +268,19 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 
 	@Override
 	public void notifyAlgoAdded(IAlgoInstance instance) {
+	
+		// retrieve the right feature provider (there is one per diagram)
+		// it is stored into the workflow
 		
-		final GraphitiFeatureProvider dfp = (GraphitiFeatureProvider) GraphitiDiagramTypeProvider.lastInstanceCreated.getFeatureProvider();
-
+		final GraphitiFeatureProvider dfp = GraphitiFeatureProvider.getFeatureProviderForWorkflow(instance.getWorkflow());
+		if (dfp == null) {
+			GLLogger.errorTech("unable to retrieve in the workflow "+instance.getWorkflow()+" the feature provider; unable to maintain synchronicity between genlab an graphiti", getClass());
+			return;
+		}
+		
 		Diagram diagram = (Diagram) dfp.getPictogramElementForBusinessObject(instance.getWorkflow());
 		if (diagram == null) {
-			GLLogger.errorTech("unable to retrieve the diagram; unable to maintain synchronicity between genlab an graphiti", getClass());
+			GLLogger.errorTech("unable to retrieve in "+dfp+" the diagram for instance "+instance.getWorkflow()+" ; unable to maintain synchronicity between genlab an graphiti", getClass());
 			return;
 		}
 		
@@ -309,7 +316,7 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 	@Override
 	public void notifyAlgoRemoved(IAlgoInstance ai) {
 		
-		final GraphitiFeatureProvider dfp = (GraphitiFeatureProvider) GraphitiDiagramTypeProvider.lastInstanceCreated.getFeatureProvider();
+		final GraphitiFeatureProvider dfp = GraphitiFeatureProvider.getFeatureProviderForWorkflow(ai.getWorkflow());
 
 		PictogramElement e = dfp.getPictogramElementForBusinessObject(ai);
 		if (e != null) {
@@ -330,7 +337,7 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 		
 		// notably called when an algo instance is renamed
 		
-		final GraphitiFeatureProvider dfp = (GraphitiFeatureProvider) GraphitiDiagramTypeProvider.lastInstanceCreated.getFeatureProvider();
+		final GraphitiFeatureProvider dfp = GraphitiFeatureProvider.getFeatureProviderForWorkflow(ai.getWorkflow());
 
 		PictogramElement e = dfp.getPictogramElementForBusinessObject(ai);
 		if (e != null) {

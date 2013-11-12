@@ -59,6 +59,7 @@ public class CopyFeature extends AbstractFeature implements ICopyFeature {
             bos[i] = bo;
             System.err.println("copying: "+bos[i]);
             
+            // transmit the UI the infos that may be of use for paste
             WorkflowListener.lastInstance.transmitLastUIParameters(
     				bo,
     				new WorkflowListener.UIInfos() {{ 

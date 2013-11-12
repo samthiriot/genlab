@@ -1,16 +1,22 @@
 package genlab.gui.graphiti.diagram;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.genlab2graphiti.GenlabNotificationService;
 import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
 import genlab.gui.graphiti.palette.WorkflowToolBehaviorProvider;
 
+import java.io.ObjectInputStream.GetField;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.graphiti.dt.AbstractDiagramTypeProvider;
+import org.eclipse.graphiti.internal.services.GraphitiInternal;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.notification.INotificationService;
+import org.eclipse.graphiti.platform.IDiagramBehavior;
 import org.eclipse.graphiti.platform.IDiagramEditor;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
 
@@ -27,7 +33,6 @@ public class GraphitiDiagramTypeProvider extends AbstractDiagramTypeProvider {
 
 	private IToolBehaviorProvider[] toolBehaviorProviders;
 
-	public static GraphitiDiagramTypeProvider lastInstanceCreated = null;
 
 	public GraphitiDiagramTypeProvider() {
 		super();
@@ -39,8 +44,7 @@ public class GraphitiDiagramTypeProvider extends AbstractDiagramTypeProvider {
 		// create our behavior providers to return them later
 		toolBehaviorProviders = new IToolBehaviorProvider[] { new WorkflowToolBehaviorProvider(this) };
 		
-		lastInstanceCreated = this;
-		
+	
 	}
 	
 	@Override
@@ -58,7 +62,21 @@ public class GraphitiDiagramTypeProvider extends AbstractDiagramTypeProvider {
 		String res = super.getContextId();
 		return res;
 	}
-
+	
+	/**
+	 * Enable the retrieval of a feature provider from the genlab workflow.
+	 * @param workflow
+	 * @param diagram
+	 */
+	private void registerDiagram(IGenlabWorkflowInstance workflow, Diagram diagram) {
+		
+		if (workflow == null)
+			throw new ProgramException("oops.");
+		
+		((GraphitiFeatureProvider)getFeatureProvider()).associateWorkflowWithThisProvider(workflow);
+		
+	}
+	
 	
 	@Override
 	public void init(Diagram diagram, IDiagramEditor diagramEditor) {
@@ -68,58 +86,32 @@ public class GraphitiDiagramTypeProvider extends AbstractDiagramTypeProvider {
 		GLLogger.debugTech("at an init step of a diagram for a diagram editor", getClass());
 		
 		IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance) getFeatureProvider().getBusinessObjectForPictogramElement(diagram);
-		
+
+		if (workflow != null)
+			registerDiagram(workflow, diagram);
+
 		if (workflow==null) {
 			GLLogger.warnTech("too bad, not ready yet", getClass());
 			return;
 
 		}
-		
 		GLLogger.debugTech("now listening for this workflow", getClass());
 		workflow.addListener(WorkflowListener.lastInstance);
 			
-		/*
-		if(diagramEditor instanceof GenlabDiagramEditor) {
-			
-			GLLogger.debugTech("init of the diagram, attempting to reuse the independance solver from genlab workflow", getClass());
-			
-			GenlabDiagramEditor nonEmfDiagramEditor = (GenlabDiagramEditor) diagramEditor;
-			
-			DiagramEditorInput editorInput = (DiagramEditorInput) nonEmfDiagramEditor.getEditorInput();
-			
-			GraphitiFeatureProvider dfp = (GraphitiFeatureProvider)getFeatureProvider();
-			
-			// retrieve our workflow
-			// ... attempt to load it from the mapping
-			IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance)MappingObjects.getGenlabResourceFor(diagram);
-			if (workflow == null) {
-				workflow = GenlabPersistence.getPersistence().getWorkflowForFilename(nonEmfDiagramEditor.getFilename());
-			}
-			if (workflow == null) {
-				workflow =  (IGenlabWorkflowInstance) getFeatureProvider().getBusinessObjectForPictogramElement(diagram); 
-			}
-			//IGenlabWorkflow workflow = (IGenlabWorkflow)dfp.getBusinessObjectForPictogramElement(diagram);
-			if (workflow == null) {
-				GLLogger.warnTech("unable to load the independance data from the workflow: workflow not found", getClass());
-			} else {
-				
-				// retrieve our mapping file
-				GLLogger.debugTech("initializing xstream for persistence...", getClass());
-				
-				GenLabIndependenceSolver independanceSolver = (GenLabIndependenceSolver)PersistenceUtils.getPersistenceUtils().loadAsXml(
-						workflow.getAbsolutePath()+Genlab2GraphitiUtils.EXTENSION_FILE_MAPPING
-						);
-				
-				if (independanceSolver != null) {
-					independanceSolver._resolveIdsFromWorkflow(workflow);
-					dfp._setIndependanceSolver(independanceSolver);	
-				} else {
-					GLLogger.warnTech("unable to read the independance solver from file", getClass());
-				}
-				
-			}
-			
-		}
-		*/
 	}
+	
+	public void init(Diagram diagram, IDiagramBehavior diagramBehavior) {
+		super.init(diagram, diagramBehavior);
+		
+		GLLogger.debugTech("at an init step of a diagram for a diagram editor", getClass());
+
+		IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance) getFeatureProvider().getBusinessObjectForPictogramElement(diagram);
+
+		if (workflow != null)
+			registerDiagram(workflow, diagram);
+		
+	}
+	
+
+	
 }

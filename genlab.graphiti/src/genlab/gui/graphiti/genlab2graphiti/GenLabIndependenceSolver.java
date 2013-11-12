@@ -87,6 +87,11 @@ public class GenLabIndependenceSolver implements IIndependenceSolver {
 			o = id2workflow.get(key);
 		}
 		
+		if (o != null) {
+			return o;
+		}
+		
+		
 		// attempt to find a possible workflow parent
 		IGenlabWorkflowInstance workflow = null;
 		for (String possibleKey : id2workflow.keySet()) {

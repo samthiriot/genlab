@@ -1,6 +1,7 @@
 package genlab.core.model.instance;
 
 import genlab.core.commons.IWithAssociatedData;
+import genlab.core.commons.IWithAssociatedTransientData;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.projects.IGenlabProject;
 
@@ -17,7 +18,7 @@ import java.util.Collection;
  * @author Samuel Thiriot
  *
  */
-public interface IGenlabWorkflowInstance extends IAlgoContainerInstance, IWithAssociatedData {
+public interface IGenlabWorkflowInstance extends IAlgoContainerInstance, IWithAssociatedData, IWithAssociatedTransientData {
 
 	public String getName();
 	

@@ -63,7 +63,6 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.internal.ExternalPictogramLink;
 import org.eclipse.graphiti.mm.Property;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.pattern.DefaultFeatureProviderWithPatterns;
 import org.eclipse.graphiti.services.Graphiti;
@@ -75,6 +74,11 @@ import org.eclipse.graphiti.services.Graphiti;
  *
  */
 public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns {
+
+	/**
+	 * Key used to associate a genlab workflow with its graphiti feature provider
+	 */
+	protected final static String KEY_FEATURE_PROVIDER_FOR_WORKFLOW = "genlab.graphiti.featureprovider";
 
 	private GenLabIndependenceSolver independenceSolver;
 	
@@ -322,27 +326,37 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		}
 	}
 	
+	
 	@Override
 	public PictogramElement getPictogramElementForBusinessObject(Object businessObject) {
 		
+		// for a given business object, we are asked the corresponding pictogram
+		// the parent, default class does its work well for standard cases, that is when we are looking for the element
+		// in this case, the default behaviour is to explore the diagram to find the relevant picto
+		
+		// but for picto elements, we first have to find the relevant 
+		
+		/*
 		if (businessObject instanceof IGenlabWorkflowInstance) {
 			// specific case which is really not well managed by parent graphiti classes
 			
-			String keyForBusinessObject = getIndependenceSolver().getKeyForBusinessObject(businessObject);
-
-			Diagram diagram = getDiagramTypeProvider().getDiagram();
-			if (diagram != null) {
-				Property property = Graphiti.getPeService().getProperty(
-						getDiagramTypeProvider().getDiagram(), 
-						ExternalPictogramLink.KEY_INDEPENDENT_PROPERTY
-						);
-				if (property != null && Arrays.asList(getValues(property.getValue())).contains(keyForBusinessObject)) {
-					return diagram;
-				}	
-			}
+			IGenlabWorkflowInstance workflowInstance = (IGenlabWorkflowInstance)businessObject;
+			Object readen = workflowInstance.getTransientObjectForKey(KEY_PICTOELEMENT_WORKFLOW);
+			
+			if (readen == null)
+				 throw new ProgramException("this workflow was not yet associated with a pictogram element");
+			
+			return (PictogramElement)readen;
 						
 		} 
+		*/
 		
+		// if this is a diagram, the parent will not be able to find it (yep, this is dumb)
+		String keyForBusinessObject = getIndependanceSolver().getKeyForBusinessObject(businessObject);
+		Property property = Graphiti.getPeService().getProperty(getDiagramTypeProvider().getDiagram(), ExternalPictogramLink.KEY_INDEPENDENT_PROPERTY);
+		if (property != null && Arrays.asList(getValues(property.getValue())).contains(keyForBusinessObject)) {
+			return getDiagramTypeProvider().getDiagram();
+		}		
 		
 		return super.getPictogramElementForBusinessObject(businessObject);
 		
@@ -396,5 +410,21 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
     public IPasteFeature getPasteFeature(IPasteContext context) {
         return new PasteFeature(this);
     }
+    
+	public void associateWorkflowWithThisProvider(IGenlabWorkflowInstance workflow) {
+		
+		workflow.addTransientObjectForKey(
+				GraphitiFeatureProvider.KEY_FEATURE_PROVIDER_FOR_WORKFLOW, 
+				this
+				);
+
+		
+		GLLogger.traceTech("registered feature provider "+this+" for workflow "+workflow, getClass());
+
+	}
+	
+	public static GraphitiFeatureProvider getFeatureProviderForWorkflow(IGenlabWorkflowInstance workflow) {
+		return (GraphitiFeatureProvider) workflow.getTransientObjectForKey(KEY_FEATURE_PROVIDER_FOR_WORKFLOW);
+	}
 
 }
