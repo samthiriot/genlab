@@ -291,10 +291,12 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 				GLLogger.debugTech("the instance "+instance+" has no graphiti counterpart; let's create it", getClass());
 				
 				AddContext ctxt = new AddContext();
+				
 				ctxt.setTargetContainer(diagram);
-				ctxt.setNewObject(instance);
 				
 				UIInfos uiInfos = objectCreated2infos.get(instance);
+				ctxt.setNewObject(instance);
+				
 				if (uiInfos != null) {
 					ctxt.setHeight(uiInfos.height);
 					ctxt.setWidth(uiInfos.width);

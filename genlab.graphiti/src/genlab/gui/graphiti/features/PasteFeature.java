@@ -29,6 +29,7 @@ import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.impl.AbstractFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
+import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
@@ -97,8 +98,10 @@ public class PasteFeature extends AbstractFeature implements IPasteFeature {
 		  // we already verified, that we paste directly in the diagram
         final PictogramElement[] pes = context.getPictogramElements();
         
-        //Diagram diagram = (Diagram) pes[0]; 
-
+        if (!(pes[0] instanceof ContainerShape))
+        	throw new ProgramException("container shape expected.");
+                
+        final ContainerShape targetContainerShape = (ContainerShape)pes[0];
         
         // retrieve the container objects
         
@@ -145,8 +148,8 @@ public class PasteFeature extends AbstractFeature implements IPasteFeature {
 		
 		// start by duplicating the algo instances
 		Map<IAlgoInstance,IAlgoInstance> original2copy = new HashMap<IAlgoInstance, IAlgoInstance>(objects.length);
-		final int deltaX = context.getX() - minX;
-		final int deltaY = context.getY() - minY;
+		final int deltaX = context.getX() - targetContainerShape.getGraphicsAlgorithm().getX() - minX;
+		final int deltaY = context.getY() - targetContainerShape.getGraphicsAlgorithm().getY() - minY;
 		
 		for (Object o: objects) {
 		
@@ -167,7 +170,7 @@ public class PasteFeature extends AbstractFeature implements IPasteFeature {
 	    					y = Math.max(0, uiInfos.y + deltaY);
 	    					width = uiInfos.width;
 	    					height = uiInfos.height;
-	    					containerShape = pes[0];
+	    					containerShape = (ContainerShape) targetContainerShape;
 	    				}}
 	    				);
 			}
@@ -175,6 +178,7 @@ public class PasteFeature extends AbstractFeature implements IPasteFeature {
 			resultInstance.setContainer(boTargetContainer);
 			
 			boTargetContainer.addChildren(resultInstance);
+			boTargetWorkflow.addAlgoInstance(resultInstance);
 			            
 			original2copy.put(ai, resultInstance);
 			

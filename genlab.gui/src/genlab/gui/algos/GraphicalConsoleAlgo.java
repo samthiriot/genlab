@@ -13,7 +13,9 @@ import genlab.gui.Activator;
 import org.osgi.framework.Bundle;
 
 /**
- * Displays any input as text displayed in a console displayed as a view
+ * Displays any input as text displayed in a console displayed as a view.
+ * 
+ * TODO reduce !
  * 
  * @author Samuel Thiriot
  *

@@ -1,7 +1,10 @@
 package genlab.gui.algos;
 
 import genlab.core.exec.IExecution;
+import genlab.core.model.exec.AbstractContainerExecutionSupervisor;
 import genlab.core.model.exec.ComputationState;
+import genlab.core.model.exec.IAlgoExecution;
+import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
@@ -69,7 +72,6 @@ public class GraphicalConsoleExec extends AbstractOpenViewAlgoExec {
 	public long getTimeout() {
 		return 1000*5;
 	}
-
 
 	
 
