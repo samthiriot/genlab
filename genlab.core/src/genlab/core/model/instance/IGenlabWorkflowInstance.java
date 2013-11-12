@@ -88,6 +88,6 @@ public interface IGenlabWorkflowInstance extends IAlgoContainerInstance, IWithAs
 	
 	public void addListener(IWorkflowContentListener l);
 	public void removeListener(IWorkflowContentListener l);
-	
+
 	
 }

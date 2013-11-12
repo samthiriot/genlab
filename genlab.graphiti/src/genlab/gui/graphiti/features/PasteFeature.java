@@ -12,6 +12,7 @@ import genlab.gui.graphiti.Clipboard;
 import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
 import genlab.gui.graphiti.genlab2graphiti.WorkflowListener.UIInfos;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,6 +20,7 @@ import java.util.Map;
 
 import javax.management.RuntimeErrorException;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.IPasteFeature;
 import org.eclipse.graphiti.features.context.IContext;
@@ -42,9 +44,21 @@ public class PasteFeature extends AbstractFeature implements IPasteFeature {
 		// only support pasting directly in the diagram (nothing else selected)
 		// TODO ???
         PictogramElement[] pes = context.getPictogramElements();
-        if (pes.length != 1 || !(pes[0] instanceof Diagram)) {
-            return false;
-        }
+        System.err.println(Arrays.toString(pes));
+        
+        // we can only paste on 1 element
+        if (pes.length != 1)
+        	return false;
+        
+        final PictogramElement peTarget = pes[0];
+        final Object boTarget = getBusinessObjectForPictogramElement(peTarget);
+        
+        // can only paste into containers (can be a workflow, a loop, etc...)
+        if (!(boTarget instanceof IAlgoContainerInstance))
+        	return false;
+        
+        final IAlgoContainerInstance boTargetContainer = (IAlgoContainerInstance)boTarget;
+        //final IAlgoContainerInstance boTargetWorkflow = boTargetContainer.getWorkflow();
         
         // can paste, if all objects on the clipboard are genlab classes
         Object[] fromClipboard = Clipboard.singleton.getObjects();
@@ -52,12 +66,23 @@ public class PasteFeature extends AbstractFeature implements IPasteFeature {
             return false;
         }
         for (Object bo : fromClipboard) {
-        	  if (
-              		!(bo instanceof IAlgoInstance)
-              		&&
-              		!(bo instanceof IConnection)
-              		)
+        	
+        	// can only paste algo instances or connections
+        	if (!(bo instanceof IAlgoInstance))
               	return false;
+        	
+        	// can only paste if the container agrees with this kind of containment
+        	IAlgoInstance boToPaste = (IAlgoInstance)bo;
+        	
+        	if (
+        			!boTargetContainer.canContain(boToPaste) 
+        			|| 
+        			!boToPaste.canBeContainedInto(boTargetContainer)
+        			) {
+        		
+        		return false;
+        	}
+        	
         }
         
         return true;
@@ -70,12 +95,17 @@ public class PasteFeature extends AbstractFeature implements IPasteFeature {
 		System.err.println("should paste");
 		
 		  // we already verified, that we paste directly in the diagram
-        PictogramElement[] pes = context.getPictogramElements();
-        Diagram diagram = (Diagram) pes[0]; 
+        final PictogramElement[] pes = context.getPictogramElements();
+        
+        //Diagram diagram = (Diagram) pes[0]; 
+
         
         // retrieve the container objects
-        IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance)getBusinessObjectForPictogramElement(diagram);
         
+        final IAlgoContainerInstance boTargetContainer = (IAlgoContainerInstance)getBusinessObjectForPictogramElement(pes[0]);
+        final IGenlabWorkflowInstance boTargetWorkflow = boTargetContainer.getWorkflow();
+        
+                
         // get the EClasses from the clipboard without copying them
         // (only copy the pictogram element, not the business object)
         // then create new pictogram elements using the add feature
@@ -93,7 +123,6 @@ public class PasteFeature extends AbstractFeature implements IPasteFeature {
         
         // prepare objects for pasting (already adds objects into the container)
 
-		IGenlabWorkflowInstance workflowCopy = workflow;
 		// TODO if (container instanceof IGenlabWorkflowInstance)
 		//	workflowCopy = (IGenlabWorkflowInstance)container;
 		
@@ -125,7 +154,7 @@ public class PasteFeature extends AbstractFeature implements IPasteFeature {
 			
 			IAlgoInstance ai = (IAlgoInstance)o;
 			
-			IAlgoInstance resultInstance = ai.cloneInContext(workflowCopy);
+			IAlgoInstance resultInstance = ai.cloneInContext(boTargetWorkflow);
 
 			// transmit the UI that the info for the previous for the original object 
 			// are now to be used for the copy
@@ -138,12 +167,15 @@ public class PasteFeature extends AbstractFeature implements IPasteFeature {
 	    					y = Math.max(0, uiInfos.y + deltaY);
 	    					width = uiInfos.width;
 	    					height = uiInfos.height;
+	    					containerShape = pes[0];
 	    				}}
 	    				);
 			}
 			
-            workflowCopy.addAlgoInstance(resultInstance);
-            
+			resultInstance.setContainer(boTargetContainer);
+			
+			boTargetContainer.addChildren(resultInstance);
+			            
 			original2copy.put(ai, resultInstance);
 			
 			copiedAlgos.add(resultInstance);
@@ -181,7 +213,7 @@ public class PasteFeature extends AbstractFeature implements IPasteFeature {
 				if (inputInstanceCopy == null)
 					throw new ProgramException("unable to find the copy for input "+cInOrig.getTo().getMeta());
 				
-				IConnection cCopy = workflowCopy.connect(outputInstanceCopy, inputInstanceCopy);
+				IConnection cCopy = boTargetWorkflow.connect(outputInstanceCopy, inputInstanceCopy);
 			
 				copiedConnections.add(cCopy);
 

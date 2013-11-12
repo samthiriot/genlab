@@ -303,8 +303,12 @@ public class AlgoInstance implements IAlgoInstance {
 		
 		return copy;
 	}
-	
-	
+
+	@Override
+	public boolean canBeContainedInto(IAlgoContainerInstance container) {
+		// true by default
+		return true;
+	}
 	
 
 }

@@ -109,6 +109,11 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 		return null;
 	}
 
+	@Override
+	public boolean canBeContainedInto(IAlgoInstance algoInstance) {
+		return false;
+	}
+
 	
 	
 

@@ -9,7 +9,7 @@ import genlab.core.model.instance.IGenlabWorkflowInstance;
  * 
  * @author Samuel Thiriot
  */
-public abstract class AlgoContainer extends BasicAlgo {
+public abstract class AlgoContainer extends BasicAlgo implements IAlgoContainer {
 
 	public AlgoContainer(String name, String description,
 			String longHtmlDescription, String categoryId, String imagePath) {
@@ -32,6 +32,12 @@ public abstract class AlgoContainer extends BasicAlgo {
 		return new AlgoContainerInstance(this, workflow);
 	}
 	
+	@Override
+	public boolean canContain(IAlgo algo) {
+		// by default, returns true. Override if relevant.
+		return true;
+	}
+
 
 
 }

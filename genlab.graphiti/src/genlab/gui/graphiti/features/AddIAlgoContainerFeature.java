@@ -72,9 +72,9 @@ public class AddIAlgoContainerFeature extends AbstractAddFeature {
 			return false;
 		
 		
-		IAlgoContainerInstance ai = (IAlgoContainerInstance)context.getNewObject();
+		IAlgoContainerInstance aiAdded = (IAlgoContainerInstance)context.getNewObject();
 		
-		if (! (ai.getAlgo() instanceof AlgoContainer) )
+		if (! (aiAdded.getAlgo() instanceof AlgoContainer) )
 			return false;
 		
 			
@@ -83,21 +83,28 @@ public class AddIAlgoContainerFeature extends AbstractAddFeature {
 			return false;
 				
 
-		IGenlabWorkflowInstance workflow = (IGenlabWorkflowInstance) getBusinessObjectForPictogramElement(
+		IGenlabWorkflowInstance workflowTarget = (IGenlabWorkflowInstance) getBusinessObjectForPictogramElement(
 				context.getTargetContainer()
 				);
-		if (workflow == null) {
+		if (workflowTarget == null) {
 			GLLogger.warnTech("unable to find the workflow for this diagram, problems ahead", getClass());
 			return false;
 		}
 			
+
+		if (!workflowTarget.canContain(aiAdded))
+			return false;
+		if (!aiAdded.canBeContainedInto(workflowTarget))
+			return false;
+			
+		
 		// don't add the same instance twice, that is...
 		return	(
 					// the algo instance is not already in the workflow 
-					(!workflow.containsAlgoInstance(ai))
+					(!workflowTarget.containsAlgoInstance(aiAdded))
 					||
 					// or it still has no graphical representation
-					(getFeatureProvider().getPictogramElementForBusinessObject(ai) == null)
+					(getFeatureProvider().getPictogramElementForBusinessObject(aiAdded) == null)
 				);
 		
 	}

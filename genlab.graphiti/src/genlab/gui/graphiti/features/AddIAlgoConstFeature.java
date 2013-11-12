@@ -87,17 +87,24 @@ public class AddIAlgoConstFeature extends AbstractAddFeature {
 			return false;
 		
 		IGenlabWorkflowInstance workflow = null;
+		IAlgoContainerInstance container = null;
 		
 		if (boForContainer instanceof IGenlabWorkflowInstance) {
 			workflow = (IGenlabWorkflowInstance)boForContainer;
-			
+			container = workflow;
 		} else if (boForContainer instanceof IAlgoContainerInstance) {
-			IAlgoContainerInstance container = (IAlgoContainerInstance)boForContainer;
+			container = (IAlgoContainerInstance)boForContainer;
 			workflow = container.getWorkflow();
 		} else {
 			// wrong container !
 			return false;
 		}
+		
+		if (!container.canContain(algoInstanceToAdd))
+			return false;
+		if (!algoInstanceToAdd.canBeContainedInto(container))
+			return false;
+			
 		
 		return true;
 		

@@ -1,6 +1,8 @@
 package genlab.core.model.instance;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.model.meta.IAlgo;
+import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.IReduceAlgo;
 
 import java.util.Collection;
@@ -18,8 +20,10 @@ public class AlgoContainerInstance extends AlgoInstance implements IAlgoContaine
 
 	private transient Collection<IAlgoInstance> children = new LinkedList<IAlgoInstance>();
 	
-	public AlgoContainerInstance(IAlgo algo, IGenlabWorkflowInstance workflow) {
+	public AlgoContainerInstance(IAlgoContainer algo, IGenlabWorkflowInstance workflow) {
 		super(algo, workflow);
+		
+		
 	}
 
 	public AlgoContainerInstance(IAlgo algo, IGenlabWorkflowInstance workflow, String id) {
@@ -165,6 +169,12 @@ public class AlgoContainerInstance extends AlgoInstance implements IAlgoContaine
 		
 		
 				
+	}
+
+	@Override
+	public boolean canContain(IAlgoInstance bo) {
+		// by default, delegates to the meta level
+		return ((IAlgoContainer)algo).canContain(bo.getAlgo());
 	}
 
 	

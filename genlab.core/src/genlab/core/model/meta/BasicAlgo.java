@@ -198,5 +198,14 @@ public abstract class BasicAlgo implements IAlgo {
 		return absoluteImagePath;
 		*/
 	}
+	
+
+	@Override
+	public boolean canBeContainedInto(IAlgoInstance algoInstance) {
+		// by default, returns true
+		return true;
+	}
+
+
 
 }

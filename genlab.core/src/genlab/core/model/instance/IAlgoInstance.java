@@ -75,4 +75,6 @@ public interface IAlgoInstance extends IGenlabResource {
 	
 	public IAlgoInstance cloneInContext(IAlgoContainerInstance container);
 	
+	public boolean canBeContainedInto(IAlgoContainerInstance container);
+	
 }

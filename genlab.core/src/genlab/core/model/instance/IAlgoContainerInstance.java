@@ -26,4 +26,12 @@ public interface IAlgoContainerInstance extends IAlgoInstance {
 	
 	public Collection<IConnection> getConnectionsGoingToOutside();
 
+	/**
+	 * 
+	 * @param bo
+	 * @return
+	 */
+	public boolean canContain(IAlgoInstance bo);
+	
+	
 }

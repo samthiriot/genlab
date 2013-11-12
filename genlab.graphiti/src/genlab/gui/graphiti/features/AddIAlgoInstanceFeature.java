@@ -61,21 +61,29 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 				) 
 			return false;
 		
+		IAlgoInstance boAdded = (IAlgoInstance)context.getNewObject();
 			
 		// don't create the graphics again
 		if (getFeatureProvider().getPictogramElementForBusinessObject(context.getNewObject()) != null)
 			return false;
 		
 		// and to what it is added
-		Object bo = getBusinessObjectForPictogramElement(context.getTargetContainer());
-		if (bo == null) 
+		Object boTarget = getBusinessObjectForPictogramElement(context.getTargetContainer());
+		if (boTarget == null) 
 			return false;
 		
+		// can only add an instance into a container
+		if (!(boTarget instanceof IAlgoContainerInstance))
+			return false;
+		
+		IAlgoContainerInstance boTargetContainer = (IAlgoContainerInstance)boTarget;
+		
 		return (
-				(bo instanceof IGenlabWorkflowInstance)
-				||
-				(bo instanceof IAlgoContainerInstance)
+				boTargetContainer.canContain(boAdded)
+				&&
+				boAdded.canBeContainedInto(boTargetContainer)
 				);
+				
 		
 	}
 
@@ -87,7 +95,7 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 		// retrieve parameters
 		AlgoInstance addedAlgo = (AlgoInstance) context.getNewObject();
 		
-		ContainerShape contextTargetContainer = context.getTargetContainer();;
+		ContainerShape contextTargetContainer = context.getTargetContainer();
 		
 		Object boForContainer = getBusinessObjectForPictogramElement(contextTargetContainer);
 		GenlabWorkflowInstance workflow = null;

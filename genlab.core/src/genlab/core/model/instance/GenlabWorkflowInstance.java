@@ -406,8 +406,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 
 	@Override
 	public IGenlabWorkflowInstance getWorkflow() {
-		// TODO Auto-generated method stub
-		return null;
+		return this;
 	}
 
 	@Override
@@ -638,6 +637,17 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	@Override
 	public Object addTransientObjectForKey(String key, Object object) {
 		return transientKey2object.put(key,object);
+	}
+
+	@Override
+	public boolean canContain(IAlgoInstance bo) {
+		return true; // a worklow accepts everything
+	}
+
+	@Override
+	public boolean canBeContainedInto(IAlgoContainerInstance container) {
+		// till now, a workflow can not be contained into something else
+		return false;
 	}
 
 	

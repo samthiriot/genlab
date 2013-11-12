@@ -91,4 +91,7 @@ public interface IAlgo extends IGenlabResource {
 	 * @return
 	 */
 	public Bundle getBundle();
+	
+	public boolean canBeContainedInto(IAlgoInstance algoInstance);
+	
 }
