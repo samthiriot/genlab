@@ -1,12 +1,16 @@
 package genlab.algog.algos.instance;
 
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
-import genlab.algog.algos.meta.GenesAlgo;
+import genlab.algog.algos.meta.GenomeAlgo;
 import genlab.algog.algos.meta.ReceiveFitnessAlgo;
 import genlab.core.model.instance.AlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.instance.WorkflowCheckResult;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.IAlgo;
@@ -33,12 +37,12 @@ public class GeneticExplorationAlgoContainerInstance extends
 		// we have no connection ^^
 		
 		// ensure we contain the relevant children
-		LinkedList<IAlgoInstance> genesAlgo = new LinkedList<IAlgoInstance>();
+		LinkedList<IAlgoInstance> genomeAlgos = new LinkedList<IAlgoInstance>();
 		int countFitness = 0;
 		IAlgoInstance fitnessAlgo = null;
 		for (IAlgoInstance aiChild: getChildren()) {
-			if (aiChild.getAlgo() instanceof GenesAlgo) {
-				genesAlgo.add(aiChild);
+			if (aiChild.getAlgo() instanceof GenomeAlgo) {
+				genomeAlgos.add(aiChild);
 			} else if (aiChild.getAlgo() instanceof ReceiveFitnessAlgo) {
 				countFitness++;
 				fitnessAlgo = aiChild;
@@ -48,11 +52,53 @@ public class GeneticExplorationAlgoContainerInstance extends
 		if (countFitness != 1) {
 			res.messages.errorUser("a "+algo.getName()+" has to contain exactly one \""+ReceiveFitnessAlgo.NAME+"\" to receive the fitness of the population; you will find it in the category \""+ExistingAlgoCategories.EXPLORATION_GENETIC_ALGOS.getName()+"\"", getClass());
 		}
-		if (genesAlgo.size() < 1) {
-			res.messages.errorUser("a "+algo.getName()+" has to contain one or more \""+GenesAlgo.NAME+"\" algo to create the population; you will find it in the category \""+ExistingAlgoCategories.EXPLORATION_GENETIC_ALGOS.getName()+"\"", getClass());			
+		if (genomeAlgos.size() < 1) {
+			res.messages.errorUser("a "+algo.getName()+" has to contain one or more \""+GenomeAlgo.NAME+"\" algo to create the population; you will find it in the category \""+ExistingAlgoCategories.EXPLORATION_GENETIC_ALGOS.getName()+"\"", getClass());			
 		}
 		
-		// check it is connected
+		
+		// TODO ensure each set of algos connected to a genome are not interconnected together.
+		
+
+		
+	}
+	
+
+	/**
+	 * From the "from" algo, add each children until reaching the fitness evaluation
+	 * @param from
+	 * @param children
+	 */
+	public void collectAlgosToEvaluatePopulation(IAlgoInstance from, Set<IAlgoInstance> children) {
+		
+		Set<IAlgoInstance> toExplore = new HashSet<IAlgoInstance>();
+		
+		Set<IAlgoInstance> explored = new HashSet<IAlgoInstance>();
+		
+		toExplore.add(from);
+		
+		while (!toExplore.isEmpty()) {
+			
+			IAlgoInstance current = toExplore.iterator().next();
+			explored.add(current);
+			
+			for (IInputOutputInstance outInstance : current.getOutputInstances()) {
+				for (IConnection outC: outInstance.getConnections()) {
+					IAlgoInstance to = outC.getTo().getAlgoInstance();
+					
+					if (!explored.contains(to))
+						toExplore.add(to);
+					
+					if (to.getAlgo() instanceof ReceiveFitnessAlgo) {
+						// do nothing
+					} else {
+						children.add(to);
+					}
+				}
+			}
+			
+			toExplore.remove(current);
+		}
 		
 	}
 	

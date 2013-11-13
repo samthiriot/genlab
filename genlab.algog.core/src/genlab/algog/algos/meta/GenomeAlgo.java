@@ -4,6 +4,8 @@ import org.osgi.framework.Bundle;
 
 import genlab.algog.core.Activator;
 import genlab.algog.types.GeneFlowType;
+import genlab.algog.types.Genome;
+import genlab.algog.types.GenomeFlowType;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
@@ -19,24 +21,24 @@ import genlab.core.model.meta.basics.flowtypes.AnythingFlowType;
  * 
  *
  */
-public class GenesAlgo extends AbstractGeneticAlgo {
+public class GenomeAlgo extends AbstractGeneticAlgo {
 
-	public static final InputOutput<Object> OUTPUT_ANYTHING = new InputOutput<Object>(
-			GeneFlowType.SINGLETON, 
-			"out_genes", 
-			"genes",
+	public static final InputOutput<Genome> OUTPUT_GENOME = new InputOutput<Genome>(
+			GenomeFlowType.SINGLETON, 
+			"out_genome", 
+			"genome",
 			"anything connected here will be a gene of this specy"
 			);
 	
-	public static final String NAME = "genes";
+	public static final String NAME = "genome";
 	
-	public GenesAlgo() {
+	public GenomeAlgo() {
 		super(
 				NAME, 
-				"genes for a specy"
+				"genome for a specy"
 				);
 		
-		outputs.add(OUTPUT_ANYTHING);
+		outputs.add(OUTPUT_GENOME);
 	}
 
 	@Override

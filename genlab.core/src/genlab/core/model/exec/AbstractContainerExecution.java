@@ -60,7 +60,9 @@ public abstract class AbstractContainerExecution
 	protected boolean somethingCanceled = false;
 	
 	
-	public AbstractContainerExecution(IExecution exec, IAlgoContainerInstance algoInst,
+	public AbstractContainerExecution(
+			IExecution exec, 
+			IAlgoContainerInstance algoInst,
 			IComputationProgress progress) {
 		super(exec, algoInst, progress);
 

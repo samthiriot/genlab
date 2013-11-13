@@ -1,9 +1,10 @@
 package genlab.algog.algos.instance;
 
-import genlab.algog.algos.meta.GenesAlgo;
+import genlab.algog.algos.meta.GenomeAlgo;
 import genlab.algog.algos.meta.MeanSquaredErrorAlgo;
 import genlab.algog.algos.meta.ReceiveFitnessAlgo;
 import genlab.core.commons.ProgramException;
+import genlab.core.commons.WrongParametersException;
 import genlab.core.model.instance.AlgoContainerInstance;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
@@ -32,19 +33,23 @@ public class MeanSquaredErrorAlgoInstance
 							// listens for the updates of the workflow, in order to update the parameters accordingly
 							implements IWorkflowContentListener {
 
-	private Map<IConnection,Parameter<?>> connection2parameters = new HashMap<IConnection, Parameter<?>>();
+	private transient Map<IConnection,String> connection2parametersId = new HashMap<IConnection, String>();
+	private transient Map<String,Parameter<?>> parameterId2parameter = new HashMap<String, Parameter<?>>();
 
 	public MeanSquaredErrorAlgoInstance(IAlgo algo,
 			IGenlabWorkflowInstance workflow, String id) {
 		super(algo, workflow, id);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public MeanSquaredErrorAlgoInstance(
 			MeanSquaredErrorAlgo algo,
 			IGenlabWorkflowInstance workflow) {
 		super(algo, workflow);
-		// TODO Auto-generated constructor stub
+		
+		
+		if (workflow != null)
+			this.workflow.addListener(this);
 	}
 
 
@@ -58,6 +63,7 @@ public class MeanSquaredErrorAlgoInstance
 			previous.removeListener(this);
 		
 		this.workflow.addListener(this);
+		updateParametersForConnections();
 		
 	}
 
@@ -65,12 +71,10 @@ public class MeanSquaredErrorAlgoInstance
 		
 		IInputOutputInstance inInstance = getInputInstanceForInput(MeanSquaredErrorAlgo.INTPUT_VALUES);
 		
-
-		
 		Set<IConnection> connectionsToCreate = new HashSet<IConnection>(inInstance.getConnections());
-		connectionsToCreate.removeAll(connection2parameters.keySet());
+		connectionsToCreate.removeAll(connection2parametersId.keySet());
 		
-		Set<IConnection> connectionsToRemove = new HashSet<IConnection>(connection2parameters.keySet());
+		Set<IConnection> connectionsToRemove = new HashSet<IConnection>(connection2parametersId.keySet());
 		connectionsToRemove.removeAll(inInstance.getConnections());
 		
 		// create connections
@@ -96,22 +100,24 @@ public class MeanSquaredErrorAlgoInstance
 						"value received by algo "+c.getFrom().getName(), 
 						0.0
 						);
+				
 			} else 
 				throw new ProgramException("cannot manage a connection from something which is not a numerical value (integer or double)");
 			
-			connection2parameters.put(c, param);
 			
+			connection2parametersId.put(c, param.getId());
+			parameterId2parameter.put(param.getId(), param);
 			
 		}
 		
 		// remove connections
 		for (IConnection c : connectionsToRemove) {
 			
-			Parameter<?> paramToRemove = connection2parameters.get(c);
+			String paramToRemoveId = connection2parametersId.get(c);
 			
-			clearValueForParameter(paramToRemove.getId());
-			connection2parameters.remove(paramToRemove);
-			
+			clearValueForParameter(paramToRemoveId);
+			connection2parametersId.remove(paramToRemoveId);
+			parameterId2parameter.remove(paramToRemoveId);
 		}
 
 		// TODO notify someone
@@ -153,29 +159,34 @@ public class MeanSquaredErrorAlgoInstance
 	public Collection<Parameter<?>> getParameters() {
 		// by default, returns the algo's parameters
 		// but here, the instance creates its own parameters
-		return connection2parameters.values();
+		return parameterId2parameter.values();
 	}
 	
 	
 	@Override
 	public boolean hasParameter(String id) {
-		for (Parameter<?> p: connection2parameters.values()) {
-			if (p.getId().equals(id))
-				return true;
-		}
-		return false;
+		return parameterId2parameter.containsKey(id);
 	}
 	
 	@Override
 	public Parameter<?> getParameter(String id) {
-		for (Parameter<?> p: connection2parameters.values()) {
-			if (p.getId().equals(id))
-				return p;
-		}
-		return null;
+		return parameterId2parameter.get(id);
 	}
 
 
-	
+	@Override
+	public void setValueForParameter(String name, Object value) {
+		
+		//if (!hasParameter(name))
+		//	throw new WrongParametersException("wrong parameter "+name);
+		final Object previousValue = parametersKey2value.get(name); 
+		
+		if ((previousValue == null) || (!previousValue.equals(value))) {
+			parametersKey2value.put(name, value);
+			if (workflow != null)
+				workflow._notifyAlgoChanged(this);
+		}
+		
+	}
 	
 }

@@ -6,7 +6,7 @@ import genlab.core.commons.WrongParametersException;
 public class DoubleParameter extends NumberParameter<Double> {
 
 	public int getPrecision() {
-		return 3;
+		return 4;
 	}
 	
 	public DoubleParameter(String id, String name, String desc, Double defaultValue) {

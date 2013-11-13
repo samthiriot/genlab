@@ -5,7 +5,8 @@ Bundle-SymbolicName: genlab.algog.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: genlab.algog.core.Activator
 Require-Bundle: org.eclipse.core.runtime,
- genlab.core;bundle-version="0.0.1"
+ genlab.core;bundle-version="0.0.1",
+ genlab.random.colt;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Samuel Thiriot

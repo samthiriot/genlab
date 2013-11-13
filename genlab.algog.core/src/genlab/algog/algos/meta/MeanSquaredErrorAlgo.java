@@ -26,7 +26,7 @@ public class MeanSquaredErrorAlgo extends AbstractGeneticAlgo {
 			DoubleFlowType.SINGLETON, 
 			"out_mse", 
 			"mse",
-			"mean squared erro"
+			"mean squared error"
 			);
 	
 	

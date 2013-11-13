@@ -1,18 +1,18 @@
 package genlab.algog.algos.meta;
 
-import org.osgi.framework.Bundle;
-
+import genlab.algog.algos.exec.GeneticExplorationAlgoExec;
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
 import genlab.algog.core.Activator;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
-import genlab.core.model.instance.AlgoContainerInstance;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.AlgoContainer;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.IAlgo;
+
+import org.osgi.framework.Bundle;
 
 public class GeneticExplorationAlgo extends AlgoContainer {
 
@@ -30,8 +30,11 @@ public class GeneticExplorationAlgo extends AlgoContainer {
 	@Override
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return new GeneticExplorationAlgoExec(
+				execution, 
+				(GeneticExplorationAlgoContainerInstance)algoInstance
+				);
 	}
 
 	@Override

@@ -37,6 +37,7 @@ Export-Package: EDU.oswego.cs.dl.util.concurrent,
  corejava,
  genlab.random.colt,
  genlab.random.colt.algos,
+ genlab.random.colt.algos.graph,
  hep.aida,
  hep.aida.bin,
  hep.aida.ref

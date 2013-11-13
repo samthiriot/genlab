@@ -2,7 +2,6 @@ package genlab.core.model.exec;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
-import genlab.core.exec.ITask;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.meta.LoopForAlgo;
 
@@ -48,7 +47,9 @@ public class LoopAlgoExecutionSupervisor extends
 	
 	@Override
 	protected int evaluateRemainingSteps() {
-		return iterationsTotal-iterationsDone;
+		synchronized (lockIterations) {
+			return iterationsTotal-iterationsDone;
+		}
 	}
 
 	@Override
@@ -58,7 +59,7 @@ public class LoopAlgoExecutionSupervisor extends
 
 	@Override
 	protected String getSuffixForCurrentIteration() {
-		return " "+iterationsDone;
+		return " "+iterationsDone+"/"+iterationsTotal;
 	}
 
 

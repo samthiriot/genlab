@@ -198,6 +198,4 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 	
 	
 	
-	
-	
 }

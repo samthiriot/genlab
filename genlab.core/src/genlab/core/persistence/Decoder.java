@@ -62,10 +62,15 @@ public class Decoder {
 	
 				for (IEventBasedXmlParser parser: parsers) {
 					if (parser.acceptsSubnode(reader.getNodeName(), reader)) {
-						results.put(
-								reader.getNodeName(),
-								parser.processSubnode(reader.getNodeName(), reader, ctxt)
-								);
+						try {
+							Object subNodeValue = parser.processSubnode(reader.getNodeName(), reader, ctxt);
+							results.put(
+									reader.getNodeName(),
+									subNodeValue
+									);
+						} catch (RuntimeException e) {
+							e.printStackTrace();
+						}
 						reader.moveUp();
 						continue subnodes;
 					}

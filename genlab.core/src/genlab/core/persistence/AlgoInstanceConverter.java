@@ -5,23 +5,29 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
+import genlab.core.parameters.Parameter;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
+import com.thoughtworks.xstream.converters.collections.MapConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
+import com.thoughtworks.xstream.mapper.Mapper;
 
 public class AlgoInstanceConverter extends Decoder implements Converter {
 
+
+
 	public AlgoInstanceConverter() {
 	}
-	
+
 
 	@Override
 	public boolean canConvert(Class c) {
@@ -66,7 +72,19 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 		
 		if (algo.hasParameters()) {
 			writer.startNode("parameters");
-			ctxt.convertAnother(algo.getParametersAndValues());
+	        for (Map.Entry<String, Object> entry : algo._getParametersAndValues().entrySet()) {
+	        	writer.startNode("entry");
+	        	writer.startNode("key");
+	        	writer.setValue(entry.getKey().toString());
+	        	writer.endNode();
+	            writer.startNode("value");
+	            writer.addAttribute("class", entry.getValue().getClass().getCanonicalName());
+	            writer.setValue(entry.getValue().toString());
+	            writer.endNode();
+	            writer.endNode();
+	        }
+
+			//ctxt.convertAnother(algo._getParametersAndValues());
 			writer.endNode();
 		}
 		
@@ -95,14 +113,71 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 						@Override
 						public Object processSubnode(String name, HierarchicalStreamReader reader,
 								UnmarshallingContext ctxt) {
-							
-							reader.moveDown();
-							if (!reader.getNodeName().equals("m"))
-								throw new WrongParametersException("malformed xml: 'm' expected");
 
-							Map<String,Object> map = (Map<String, Object>) ctxt.convertAnother(reader, HashMap.class);
+				        							
+							if (reader.getNodeName()!="parameters")
+				            	throw new WrongParametersException("tag <parameters> expected");
+	
+					        Map<String, Object> map = new HashMap<String, Object>();
 
-							reader.moveUp();
+					        while (reader.hasMoreChildren())
+					        {
+					            reader.moveDown(); // entry
+
+					            try {
+						            
+						        	if (reader.getNodeName()!="entry")
+						            	throw new WrongParametersException("parameters should contain as set of <entry> tags");
+	
+						        	String key = null;
+						        	String value = null;
+						            Object parsedValue = null;
+
+						        	String className = null;
+						        	
+						        	while (reader.hasMoreChildren())
+							        {
+							        
+							            reader.moveDown(); // key or value
+							            
+							            if (reader.getNodeName() == "key") {
+							            	if (key != null)
+							            		throw new WrongParametersException("only one <key> tag is expected per <entry>");
+							            	key = reader.getValue();					            			
+							            } else if (reader.getNodeName() == "value") {
+							            	if (value != null)
+							            		throw new WrongParametersException("only one <value> tag is expected per <entry>");
+								            className = reader.getAttribute("class");
+								            if (className == null)
+								        		throw new WrongParametersException("A \"class\" attribute is expected for the <value> tags.");
+								        	try {
+												Class<?> decodingClass = ctxt.getClass().getClassLoader().loadClass(className);
+												parsedValue = ctxt.convertAnother(reader, decodingClass);
+											} catch (ClassNotFoundException e) {
+												throw new WrongParametersException("unable to load the class \""+className+"\" while reading parameter\""+key+"\"");
+											}
+								        	
+							            } else 
+							            	throw new WrongParametersException("only one <value> or <key> tags are expected into <entry>");
+		
+							            reader.moveUp();
+							        }
+						            
+						        	if (key == null || parsedValue == null)
+						        		throw new WrongParametersException("<value> and <key> tags are expected into <entry>");
+						        	
+						        	
+						        	
+						            map.put(key, parsedValue);
+						            
+					            } catch (RuntimeException e) {
+					            	GLLogger.warnTech("error while attempting to load a parameter for an entity; a value has been lost; please check the parameters.", getClass());
+					            }
+					            reader.moveUp();
+
+					        }
+					        
+
 							return map;
 						}
 					});
@@ -128,7 +203,12 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 			
 			Map<String,Object> m = (Map<String, Object>)data.get("parameters");;
 			for (String s : m.keySet()) {
-				i.setValueForParameter(s, m.get(s));
+				try {
+					Object value = m.get(s);
+					i.setValueForParameter(s, value);
+				} catch (RuntimeException e) {
+					GLLogger.warnUser("error while loading parameter \""+s+"\" for algo \""+i.getName()+"\" in workflow "+i.getWorkflow().getName()+"; the value for this parameter has been lost", getClass());
+				}
 			}
 		}
 		

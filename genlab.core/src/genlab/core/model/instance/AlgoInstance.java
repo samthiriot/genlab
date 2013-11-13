@@ -173,6 +173,10 @@ public class AlgoInstance implements IAlgoInstance {
 		return Collections.unmodifiableMap(parametersKey2value);
 	}
 	
+	public Map<String,Object> _getParametersAndValues() {
+		return parametersKey2value;
+	}
+	
 
 	public boolean hasParameters() {
 		return !parametersKey2value.isEmpty();

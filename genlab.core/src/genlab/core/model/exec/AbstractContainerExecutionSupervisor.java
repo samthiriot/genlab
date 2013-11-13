@@ -104,7 +104,6 @@ public abstract class AbstractContainerExecutionSupervisor
 		exec.getRunner().registerTasksDynamicProducer(this);
 		
 		
-		
 		// TODO tell each mapreduce that computation is finished
 		
 		// here the result is empty (nothing exported by the loop itself)
@@ -198,7 +197,6 @@ public abstract class AbstractContainerExecutionSupervisor
 		// set values
 		messages.traceTech("defining the values to let the executable start...", getClass());
 		{
-			
 			for (IConnection c: algoInst.getConnectionsComingFromOutside()) {
 				
 				for (IConnectionExecution cEx : resExecIteration.getOrCreateConnectionsForInput(c.getTo())) {

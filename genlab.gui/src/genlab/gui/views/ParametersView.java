@@ -177,6 +177,9 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				if (p.getStep() != null)
 					sp.setMinimum((int)Math.round(p.getStep()*Math.pow(10, p.getPrecision())));
 
+				sp.setMinimum((int)(-50*Math.pow(10, p.getPrecision())));
+				sp.setMaximum((int)(50*Math.pow(10, p.getPrecision())));
+				
 				sp.setSelection((int)Math.round(((Double)value)*Math.pow(10, p.getPrecision())));
 				
 				createdWidget = sp;

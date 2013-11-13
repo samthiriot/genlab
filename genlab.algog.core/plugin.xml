@@ -4,7 +4,7 @@
    <extension
          point="genlab.core.algo">
       <algo
-            class="genlab.algog.algos.meta.GenesAlgo"
+            class="genlab.algog.algos.meta.GenomeAlgo"
             id="genlab.algog.core.algos.gene">
       </algo>
       <algo
@@ -18,6 +18,10 @@
       <algo
             class="genlab.algog.algos.meta.MeanSquaredErrorAlgo"
             id="genlab.algog.core.algos.meansquarederror">
+      </algo>
+      <algo
+            class="genlab.algog.algos.meta.IntegerGeneAlgo"
+            id="genlab.algog.core.algos.integergene">
       </algo>
    </extension>
 
