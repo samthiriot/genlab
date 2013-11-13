@@ -11,6 +11,7 @@ import genlab.core.model.exec.WorkflowExecution;
 import genlab.core.model.meta.GenlabWorkflow;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
+import genlab.core.parameters.Parameter;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -644,6 +645,21 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	public boolean canBeContainedInto(IAlgoContainerInstance container) {
 		// till now, a workflow can not be contained into something else
 		return false;
+	}
+
+	@Override
+	public Collection<Parameter<?>> getParameters() {
+		return Collections.EMPTY_LIST;
+	}
+
+	@Override
+	public boolean hasParameter(String id) {
+		return false;
+	}
+
+	@Override
+	public Parameter<?> getParameter(String id) {
+		return null;
 	}
 
 	

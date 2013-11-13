@@ -5,6 +5,7 @@ import genlab.algog.algos.meta.MeanSquaredErrorAlgo;
 import genlab.algog.algos.meta.ReceiveFitnessAlgo;
 import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.AlgoContainerInstance;
+import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
@@ -27,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class MeanSquaredErrorAlgoInstance 
-							extends AlgoContainerInstance 
+							extends AlgoInstance 
 							// listens for the updates of the workflow, in order to update the parameters accordingly
 							implements IWorkflowContentListener {
 

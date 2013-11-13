@@ -12,7 +12,7 @@ import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
 import genlab.core.parameters.Parameter;
 
-public class MeanSquaredErrorAlgo extends AbstractGeneticAlgo implements IAlgoContainer {
+public class MeanSquaredErrorAlgo extends AbstractGeneticAlgo {
 
 	public static final InputOutput<Double> INTPUT_VALUES = new InputOutput<Double>(
 			DoubleFlowType.SINGLETON, 
@@ -61,11 +61,6 @@ public class MeanSquaredErrorAlgo extends AbstractGeneticAlgo implements IAlgoCo
 		return new MeanSquaredErrorAlgoInstance(this, workflow, id);
 	}
 
-	@Override
-	public boolean canContain(IAlgo algo) {
-		return true; // TODO maybe not accept loops ?
-	}
 	
-
 
 }
