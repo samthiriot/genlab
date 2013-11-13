@@ -1,6 +1,7 @@
 package genlab.gui.graphiti;
 
 import genlab.core.commons.FileUtils;
+import genlab.core.commons.NotImplementedException;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -109,18 +110,22 @@ public class GraphitiImageProvider extends AbstractImageProvider {
         		*/
         		
         		// open this image !
-        		URL url = algo.getBundle().getEntry(
-						algoImg
-						);
-        		if (url == null) {
-        			GLLogger.warnTech("the bundle was unable to provide an URL for image: "+algoImg+"; this image will not be added", getClass());
-        			continue;
-        		}        			
-        		addImageFilePath(
-        				getImageIdForAlgo(algo), 
-        				url.toString()
-        				);
-        		
+        		try {
+	        		URL url = algo.getBundle().getEntry(
+							algoImg
+							);
+	        		if (url == null) {
+	        			GLLogger.warnTech("the bundle was unable to provide an URL for image: "+algoImg+"; this image will not be added", getClass());
+	        			continue;
+	        		}        			
+	        		addImageFilePath(
+	        				getImageIdForAlgo(algo), 
+	        				url.toString()
+	        				);
+        		} catch (NotImplementedException e) {
+        			GLLogger.warnTech("the bundle was unable to provide an URL for image: "+algoImg+"; this image will not be added", getClass(), e);
+	        		
+        		}
         		/*
         		// 
         		File filedest = new File(directory, FileUtils.extractFilename(FileUtils.extractFilename(algoImg)));

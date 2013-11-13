@@ -4,6 +4,7 @@ import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.IAlgo;
+import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.GraphitiImageProvider;
 import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
@@ -35,13 +36,17 @@ public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
 		if (context.getTargetContainer() == null)
 			return false;
 		
-		Object bo = getBusinessObjectForPictogramElement(context.getTargetContainer());
+		Object boTarget = getBusinessObjectForPictogramElement(context.getTargetContainer());
 		
-		return (
-				(bo instanceof IGenlabWorkflowInstance)
-				||
-				(bo instanceof IAlgoContainerInstance)
-				);
+		// only accept creation into containers
+		if (!(boTarget instanceof IAlgoContainerInstance))
+			return false;
+		
+		IAlgoContainerInstance boTargetContainer = (IAlgoContainerInstance)boTarget;
+		IAlgoContainer boTargetContainerMeta = (IAlgoContainer)boTargetContainer.getAlgo();
+				
+		return (boTargetContainerMeta.canContain(algo) && algo.canBeContainedInto(boTargetContainer));
+		
 	}
 
 	@Override
@@ -100,7 +105,9 @@ public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
 			algoInstance.setContainer(container);
 		}
 		workflow.addAlgoInstance(algoInstance);
-		
+		if (container != null) {
+			container.addChildren(algoInstance);
+		}
 		// the graphical representation will be created by reaction to workflow listener
 		//addGraphicalRepresentation(context, algoInstance);
 

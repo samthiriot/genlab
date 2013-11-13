@@ -9,7 +9,7 @@ package genlab.core.model.meta;
  * @author Samuel Thiriot
  *
  */
-public interface IGenlabWorkflow extends IAlgo {
+public interface IGenlabWorkflow extends IAlgoContainer {
 
 	
 }

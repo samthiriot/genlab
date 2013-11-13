@@ -8,6 +8,7 @@ import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.WorkflowExecution;
+import genlab.core.model.meta.GenlabWorkflow;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.persistence.GenlabPersistence;
@@ -353,12 +354,8 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		if (from == null || to == null)
 			throw new WrongParametersException("cannot connect to null");
 		
-		if (!from.acceptsConnectionTo(to))
-			throw new WrongParametersException("connection to this node is not accepted");
-		
-		if (!to.acceptsConnectionFrom(from))
-			throw new WrongParametersException("connection from this node is not accepted");
-		
+		if (!(from.acceptsConnectionTo(to) || to.acceptsConnectionFrom(from)))
+			throw new WrongParametersException("connection to or from this node is not accepted");
 		
 		if (!id2algoInstance.containsKey(from.getAlgoInstance().getId()) && !id2algoInstance.containsKey(to.getAlgoInstance().getId()))
 			throw new WrongParametersException("this instance of the algorithm does not belongs the workflow");
@@ -394,8 +391,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 
 	@Override
 	public IAlgo getAlgo() {
-		// TODO Auto-generated method stub
-		return null;
+		return GenlabWorkflow.singleton;
 	}
 
 

@@ -14,18 +14,24 @@ import java.util.Set;
 
 import org.osgi.framework.Bundle;
 
+/**
+ * TODO later, we should declare it using the extension
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class GenlabWorkflow implements IGenlabWorkflow {
 
 	public static final String ALGO_CATEGORY = "containers";
 	
+	public static GenlabWorkflow singleton = new GenlabWorkflow();
+	
 	public GenlabWorkflow() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "genlab workflow";
 	}
 
 	@Override
@@ -112,6 +118,11 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 	@Override
 	public boolean canBeContainedInto(IAlgoInstance algoInstance) {
 		return false;
+	}
+
+	@Override
+	public boolean canContain(IAlgo algo) {
+		return true;
 	}
 
 	

@@ -129,7 +129,7 @@ public class AddIAlgoContainerFeature extends AbstractAddFeature {
 			workflow = (GenlabWorkflowInstance) containerInstance.getWorkflow();
 		}
 		
-		addedAlgo._setWorkflow(workflow);
+		addedAlgo._setWorkflowInstance(workflow);
 		
 		// create container 
 		IPeCreateService peCreateService = Graphiti.getPeCreateService();

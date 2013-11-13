@@ -108,34 +108,17 @@ public class PasteFeature extends AbstractFeature implements IPasteFeature {
         final IAlgoContainerInstance boTargetContainer = (IAlgoContainerInstance)getBusinessObjectForPictogramElement(pes[0]);
         final IGenlabWorkflowInstance boTargetWorkflow = boTargetContainer.getWorkflow();
         
-                
-        // get the EClasses from the clipboard without copying them
-        // (only copy the pictogram element, not the business object)
-        // then create new pictogram elements using the add feature
+        // retrieve the objects copied
         Object[] objects = Clipboard.singleton.getObjects();
-        for (Object object : objects) {
-        	System.err.println("should paste: "+object);
-        	
-    		/*
-        	AddContext ac = new AddContext();
-            ac.setLocation(0, 0); // for simplicity paste at (0, 0)
-            ac.setTargetContainer(diagram);
-            addGraphicalRepresentation(ac, object);
-            */
-        }
         
         // prepare objects for pasting (already adds objects into the container)
 
-		// TODO if (container instanceof IGenlabWorkflowInstance)
-		//	workflowCopy = (IGenlabWorkflowInstance)container;
-		
-		
 		LinkedList<IAlgoInstance> copiedAlgos = new LinkedList<IAlgoInstance>();
 		LinkedList<IConnection> copiedConnections = new LinkedList<IConnection>();
 
 		// prepare by finding the novel coordinates for paste
-		int minX = 5000;
-		int minY = 5000;
+		int minX = 10000;
+		int minY = 10000;
 		for (Object o: objects) {
 			UIInfos uiInfos = WorkflowListener.lastInstance.getLastUIParameters(o);
 			if (uiInfos == null)

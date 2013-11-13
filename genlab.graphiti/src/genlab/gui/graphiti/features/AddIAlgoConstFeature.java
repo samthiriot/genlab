@@ -138,7 +138,7 @@ public class AddIAlgoConstFeature extends AbstractAddFeature {
 			throw new WrongParametersException("wrong container, neither diagram/workflow nor container");
 			
 		
-		addedAlgo._setWorkflow(workflow);
+		addedAlgo._setWorkflowInstance(workflow);
 		
 		
 		// create container 

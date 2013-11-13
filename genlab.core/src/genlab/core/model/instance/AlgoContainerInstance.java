@@ -1,6 +1,5 @@
 package genlab.core.model.instance;
 
-import genlab.core.commons.ProgramException;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.IReduceAlgo;

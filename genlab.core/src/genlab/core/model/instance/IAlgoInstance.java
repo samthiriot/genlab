@@ -5,6 +5,7 @@ import genlab.core.model.IGenlabResource;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
+import genlab.core.parameters.Parameter;
 
 import java.util.Collection;
 
@@ -76,5 +77,14 @@ public interface IAlgoInstance extends IGenlabResource {
 	public IAlgoInstance cloneInContext(IAlgoContainerInstance container);
 	
 	public boolean canBeContainedInto(IAlgoContainerInstance container);
+
+	/**
+	 * Returns the parameters for this algo instance. Most of the time (but not always), 
+	 * it will be the list from the meta algo
+	 * @return
+	 */
+	public Collection<Parameter<?>> getParameters();
 	
+	public boolean hasParameter(String id);
+	public Parameter<?> getParameter(String id);
 }

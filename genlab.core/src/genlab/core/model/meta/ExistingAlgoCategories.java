@@ -123,6 +123,13 @@ public class ExistingAlgoCategories {
 			"exploration"
 			);
 	
+	public static final AlgoCategory EXPLORATION_GENETIC_ALGOS = new AlgoCategory(
+			EXPLORATION, 
+			"genetic algorithms", 
+			"genetic algorithms", 
+			"genetic_algorithms"
+			);
+	
 	public static final AlgoCategory CASTING = new AlgoCategory(
 			null, 
 			"conversions", 
@@ -188,6 +195,7 @@ public class ExistingAlgoCategories {
 		declareCategory(STATIC);
 		declareCategory(STATIC_GRAPHS);
 		declareCategory(EXPLORATION);
+		declareCategory(EXPLORATION_GENETIC_ALGOS);
 		declareCategory(CASTING);
 		declareCategory(DISPLAY);
 		declareCategory(LOOPS);

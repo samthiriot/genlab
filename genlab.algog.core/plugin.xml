@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.algog.algos.meta.GenesAlgo"
+            id="genlab.algog.core.algos.gene">
+      </algo>
+      <algo
+            class="genlab.algog.algos.meta.GeneticExplorationAlgo"
+            id="genlab.algog.core.algos.geneticexplor">
+      </algo>
+      <algo
+            class="genlab.algog.algos.meta.ReceiveFitnessAlgo"
+            id="genlab.algog.core.algos.receivefitness">
+      </algo>
+      <algo
+            class="genlab.algog.algos.meta.MeanSquaredErrorAlgo"
+            id="genlab.algog.core.algos.meansquarederror">
+      </algo>
+   </extension>
+
+</plugin>

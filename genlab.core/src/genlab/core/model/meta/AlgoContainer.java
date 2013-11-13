@@ -28,7 +28,7 @@ public abstract class AlgoContainer extends BasicAlgo implements IAlgoContainer 
 
 
 	@Override
-	public final IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
+	public IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
 		return new AlgoContainerInstance(this, workflow);
 	}
 	

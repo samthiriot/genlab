@@ -67,7 +67,8 @@ public class OpenParametersFeature extends AbstractCustomFeature {
 			return false;
 		}
 		
-		return !algo.getParameters().isEmpty();
+		
+		return !algoInstance.getParameters().isEmpty();
 		
 	}
 

@@ -126,7 +126,7 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 		
 		form.getBody().setLayout(layout);
 
-		for (Parameter<?> param : algo.getAlgo().getParameters()) {
+		for (Parameter<?> param : algo.getParameters()) {
 			
 			Object value = algo.getValueForParameter(param.getId());
 			

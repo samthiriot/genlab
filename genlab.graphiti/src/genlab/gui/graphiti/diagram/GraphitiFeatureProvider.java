@@ -172,6 +172,7 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 			return addConnection;
 		}
 		
+		
 		GLLogger.warnTech("cannot provide a feature for a wrong object: "+context.getNewObject(), getClass());
 		
 		return super.getAddFeature(context);
@@ -221,6 +222,10 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		
 		if (bo  instanceof IAlgoInstance) {
 			return removeAlgo; // no remove for our object; everything displayed is real, everything real is displayed.
+		}
+		
+		if (bo instanceof IConnection) {
+			return null;
 		}
 		
 		GLLogger.warnTech("cannot provide a feature for a wrong object: "+bo, getClass());

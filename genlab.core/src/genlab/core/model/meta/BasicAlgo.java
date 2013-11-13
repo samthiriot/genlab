@@ -76,7 +76,7 @@ public abstract class BasicAlgo implements IAlgo {
 	 */
 	@Override
 	public Bundle getBundle() {
-		throw new NotImplementedException();
+		throw new NotImplementedException("algorithms which provide images should override this method");
 	}
 	
 	

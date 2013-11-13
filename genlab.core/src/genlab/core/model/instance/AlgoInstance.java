@@ -38,7 +38,7 @@ public class AlgoInstance implements IAlgoInstance {
 	
 	// very basic management of algo parameters;
 	// TODO improve algo parameters
-	private Map<String,Object> parameters = new HashMap<String, Object>();
+	protected Map<String,Object> parametersKey2value = new HashMap<String, Object>();
 	
 	private IAlgoContainerInstance container = null;
 	
@@ -124,9 +124,6 @@ public class AlgoInstance implements IAlgoInstance {
 			container.removeChildren(this);
 	}
 	
-	public void _setWorkflow(IGenlabWorkflowInstance workflow) {
-		this.workflow = workflow;
-	}
 	
 	public void _setAlgo(IAlgo algo) {
 		this.algo = algo;
@@ -158,11 +155,11 @@ public class AlgoInstance implements IAlgoInstance {
 	
 	public Object getValueForParameter(String name) {
 		
-		Object res = parameters.get(name);
+		Object res = parametersKey2value.get(name);
 		
 		if (res == null) {
 			// find default value
-			res = algo.getParameter(name).getDefaultValue();
+			res = getParameter(name).getDefaultValue();
 		}
 		
 		return res;
@@ -173,28 +170,35 @@ public class AlgoInstance implements IAlgoInstance {
 	}
 	
 	public Map<String,Object> getParametersAndValues() {
-		return Collections.unmodifiableMap(parameters);
+		return Collections.unmodifiableMap(parametersKey2value);
 	}
 	
 
 	public boolean hasParameters() {
-		return !parameters.isEmpty();
+		return !parametersKey2value.isEmpty();
 	}
 
 	public void setValueForParameter(String name, Object value) {
 		
-		if (!algo.hasParameter(name))
+		if (!hasParameter(name))
 			throw new WrongParametersException("wrong parameter "+name);
-		final Object previousValue = parameters.get(name); 
+		final Object previousValue = parametersKey2value.get(name); 
 		
 		if ((previousValue == null) || (!previousValue.equals(value))) {
-			parameters.put(name, value);
+			parametersKey2value.put(name, value);
 			if (workflow != null)
 				workflow._notifyAlgoChanged(this);
 		}
 		
 	}
 
+	public void clearValueForParameter(String name) {
+		
+		if (!hasParameter(name))
+			throw new WrongParametersException("wrong parameter "+name);
+		
+		parametersKey2value.remove(name);
+	}
 
 	@Override
 	public void checkForRun(WorkflowCheckResult res) {
@@ -296,7 +300,7 @@ public class AlgoInstance implements IAlgoInstance {
 		copy.setContainer(container);
 		
 		// duplicate parameters
-		for (Map.Entry<String,Object> key2value : parameters.entrySet()) {
+		for (Map.Entry<String,Object> key2value : parametersKey2value.entrySet()) {
 			copy.setValueForParameter(key2value.getKey(), key2value.getValue());
 		}
 
@@ -309,6 +313,21 @@ public class AlgoInstance implements IAlgoInstance {
 		// true by default
 		return true;
 	}
+
+	@Override
+	public Collection<Parameter<?>> getParameters() {
+		// by default, returns the algo's parameters
+		return algo.getParameters();
+	}
+
+	@Override
+	public boolean hasParameter(String id) {
+		return algo.hasParameter(id);
+	}
 	
+	@Override
+	public Parameter<?> getParameter(String id) {
+		return algo.getParameter(id);
+	}
 
 }

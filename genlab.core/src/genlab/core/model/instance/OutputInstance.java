@@ -26,7 +26,7 @@ public class OutputInstance extends InputOutputInstance {
 	public boolean acceptsConnectionTo(IInputOutputInstance to) {
 		// always accept to be connected elsewhere (will demultiplicate the info if required)
 		// of course, should be of the same type :-)
-		return to.getMeta().getType().compliantWith(meta.getType());
+		return meta.getType().compliantWith(to.getMeta().getType());
 	}
 	
 }
