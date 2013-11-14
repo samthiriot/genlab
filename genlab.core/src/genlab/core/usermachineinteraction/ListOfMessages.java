@@ -59,7 +59,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	public static final int QUEUE_SIZE = 2000;
 	
 
-	protected MessageLevel filterIgnoreBelow = null; //MessageLevel.WARNING;
+	protected MessageLevel filterIgnoreBelow = MessageLevel.WARNING;
 	
 	public MessageLevel getFilterIgnoreBelow() {
 		return filterIgnoreBelow;

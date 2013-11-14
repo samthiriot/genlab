@@ -334,4 +334,19 @@ public class AlgoInstance implements IAlgoInstance {
 		return algo.getParameter(id);
 	}
 
+	@Override
+	public boolean isContainedInto(IAlgoContainerInstance otherInstance) {
+		
+		// well, "other" is a container; it may be our parent
+		// let's dig into our genealogy
+		IAlgoContainerInstance currentParentInstance = container;
+		while (currentParentInstance != null) {
+			if (otherInstance.equals(currentParentInstance))
+				return true;
+			currentParentInstance = currentParentInstance.getContainer();
+		}
+		
+		return false;
+	}
+
 }

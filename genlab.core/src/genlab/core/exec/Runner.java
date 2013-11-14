@@ -5,6 +5,10 @@ import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.exec.IComputationProgressSimpleListener;
+import genlab.core.model.exec.IComputationResult;
+import genlab.core.model.exec.IConnectionExecution;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
@@ -35,7 +39,7 @@ import java.util.Set;
  */
 public class Runner extends Thread implements IComputationProgressSimpleListener {
 	
-	final static int MAX_THREADS = 4; // TODO
+	final static int MAX_THREADS = 8; // TODO
 	
 	final static int START_TASKS_SIZE = 500;
 	
@@ -74,6 +78,8 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	private ListOfMessages messagesRun = null;
 	
 	private final Object lockerMainLoop = new Object();
+	
+	
 	
 	public Runner() {
 		
@@ -241,29 +247,49 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			
 			messagesRun.debugTech("proposing to tasks producers to submit novel tasks...", getClass());
 			
-			ITasksDynamicProducer producer = tasksProducers.iterator().next();
-			
-			messagesRun.debugTech("proposing to task producer "+producer+" to submit novel tasks...", getClass());
+			Iterator<ITasksDynamicProducer> itProducers = tasksProducers.iterator();
+			while (itProducers.hasNext()) {
 				
-			
-			IAlgoExecution t = null;
-			
-			try {
-				t = producer.provideMoreTasks();
-			} catch (RuntimeException e) {
-				messagesRun.errorTech("error while proposing a producer to submit jobs:"+e.getMessage(), getClass(), e);
-				// TODO invalidate something !
-				// TODO change tasks producer so it provides the info about its container task
+				ITasksDynamicProducer producer = itProducers.next();
+
+				if (!producer.willMoreTasks()) {
+					// this producer has no more work; let's leave him alone
+					itProducers.remove();
+					messagesRun.debugTech("task producer "+producer+" has no more tasks", getClass());
+					continue;
+				}
+				
+				if (producer.cannotSendTasksNow()) {
+					// this producer will send tasks later, but not now
+					// just don't focus on it
+					continue;
+				}
+
+				messagesRun.debugTech("proposing to task producer "+producer+" to submit novel tasks...", getClass());
+					
+				IAlgoExecution t = null;
+				
+				try {
+					t = producer.provideMoreTasks();
+				} catch (RuntimeException e) {
+					messagesRun.errorTech("error while proposing a producer to submit jobs:"+e.getMessage(), getClass(), e);
+					// TODO invalidate something !
+					// TODO change tasks producer so it provides the info about its container task
+				}
+				
+				if (t == null) {
+					tasksProducers.remove(producer);
+					messagesRun.debugTech("task producer "+producer+" has no more tasks", getClass());
+					return false;
+				} else {
+					addTask(t);
+					return true;
+				}
+				
 			}
 			
-			if (t == null) {
-				tasksProducers.remove(producer);
-				messagesRun.debugTech("task producer "+producer+" has no more tasks", getClass());
-				return false;
-			} else {
-				addTask(t);
-				return true;
-			}
+			return false;
+			
 			
 		}
 	}

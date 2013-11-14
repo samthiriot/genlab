@@ -59,6 +59,19 @@ public abstract class AbstractContainerExecutionSupervisor
 	}
 	
 	@Override
+	public boolean willMoreTasks() {
+		return shouldContinueRun();
+	}
+
+	@Override
+	public boolean cannotSendTasksNow() {
+		// by default, we announce we are always able to send novel tasks
+		// override to change this behaviour
+		return false;
+	}
+
+	
+	@Override
 	public IAlgoExecution provideMoreTasks() {
 		
 		if (canceled) {
@@ -78,6 +91,7 @@ public abstract class AbstractContainerExecutionSupervisor
 			addTask(subExec);
 			subExec.getProgress().addListener(this);
 					
+			// TODO catch exceptions and remove it ?
 			return subExec;
 			
 		} else {
@@ -297,6 +311,7 @@ public abstract class AbstractContainerExecutionSupervisor
 			else 
 				ourState = ComputationState.FINISHED_OK;
 			
+			endOfRun();
 			messages.traceTech("all subs terminated; should transmit results", getClass());
 			hookContainerExecutionFinished(ourState);
 			this.progress.setComputationState(ourState);

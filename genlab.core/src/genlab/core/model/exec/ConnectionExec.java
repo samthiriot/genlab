@@ -62,7 +62,7 @@ public class ConnectionExec extends AbstractConnectionExec<IAlgoExecution, IAlgo
 		try {
 			value = from.getResult().getResults().get(c.getFrom());
 		} catch (NullPointerException e) {
-			throw new ProgramException("an executable announced a finished with success, but does not publish results.");
+			throw new ProgramException("an executable ("+from.getName()+") announced a finished with success, but does not publish results on this connection.");
 		}
 		
 		// ensure we got one

@@ -8,7 +8,7 @@ import cern.jet.random.Uniform;
 
 public class AGenome {
 
-	AGene<?>[] genes = null;
+	private AGene<?>[] genes = null;
 	
 	public final String name;
 	

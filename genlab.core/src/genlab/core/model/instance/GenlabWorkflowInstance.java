@@ -662,5 +662,10 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		return null;
 	}
 
+	@Override
+	public boolean isContainedInto(IAlgoContainerInstance otherInstance) {
+		return false;
+	}
+
 	
 }

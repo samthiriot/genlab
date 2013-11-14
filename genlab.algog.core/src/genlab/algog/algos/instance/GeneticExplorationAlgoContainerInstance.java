@@ -11,6 +11,7 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IInputOutputInstance;
+import genlab.core.model.instance.InputOutputInstance;
 import genlab.core.model.instance.WorkflowCheckResult;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.IAlgo;
@@ -65,17 +66,20 @@ public class GeneticExplorationAlgoContainerInstance extends
 	
 
 	/**
-	 * From the "from" algo, add each children until reaching the fitness evaluation
+	 * From the "from" algo, add each children until reaching the fitness evaluation; the output it can be 
+	 * retrieved from is returned.
 	 * @param from
 	 * @param children
 	 */
-	public void collectAlgosToEvaluatePopulation(IAlgoInstance from, Set<IAlgoInstance> children) {
+	public IInputOutputInstance collectAlgosToEvaluatePopulation(IAlgoInstance from, Set<IAlgoInstance> children) {
 		
 		Set<IAlgoInstance> toExplore = new HashSet<IAlgoInstance>();
 		
 		Set<IAlgoInstance> explored = new HashSet<IAlgoInstance>();
 		
 		toExplore.add(from);
+		
+		IInputOutputInstance res = null;
 		
 		while (!toExplore.isEmpty()) {
 			
@@ -91,6 +95,8 @@ public class GeneticExplorationAlgoContainerInstance extends
 					
 					if (to.getAlgo() instanceof ReceiveFitnessAlgo) {
 						// do nothing
+						res = outC.getFrom();
+						
 					} else {
 						children.add(to);
 					}
@@ -100,6 +106,7 @@ public class GeneticExplorationAlgoContainerInstance extends
 			toExplore.remove(current);
 		}
 		
+		return res;
 	}
 	
 

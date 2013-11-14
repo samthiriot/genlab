@@ -6,19 +6,18 @@ import genlab.core.exec.IExecution;
 import genlab.core.exec.ITask;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * A task container. Provides basic features 
- * 
- * 
- * TODO prepare to clean tasks (we should clean iterations as there are done in order to save resources)
+ * A task container. Provides basic features like: <ul>
+ * <li>a list of tasks to store subtasks, and the corresponding getter</li>
+ * <li>methods to kill, cancel, clean</li>
+ * <li>the monitoring of children's progress to update our own progress</li>
+ * </ul>
  * 
  * @author Samuel Thiriot
  *
@@ -59,6 +58,7 @@ public abstract class AbstractContainerExecution
 	protected boolean somethingFailed = false;
 	protected boolean somethingCanceled = false;
 	
+	protected boolean autoFinishWhenChildrenFinished = true;
 	
 	public AbstractContainerExecution(
 			IExecution exec, 
@@ -78,7 +78,7 @@ public abstract class AbstractContainerExecution
 	}
 
 	@Override
-	public final void computationStateChanged(IComputationProgress progress) {
+	public void computationStateChanged(IComputationProgress progress) {
 		
 		final ComputationState receivedState = progress.getComputationState();
 		
@@ -142,9 +142,11 @@ public abstract class AbstractContainerExecution
 	
 		
 		if (somethingNotFinished) {
+			
 			this.progress.setProgressTotal(totalToDo);
 			this.progress.setProgressMade(totalDone);
-		} else {
+			
+		} else if (autoFinishWhenChildrenFinished) {
 			// if we reached this step, then all our children have finished.
 			// as a container, we end ourself
 			if (somethingFailed)

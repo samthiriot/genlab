@@ -63,11 +63,26 @@ public class MeanSquaredErrorAlgoInstance
 			previous.removeListener(this);
 		
 		this.workflow.addListener(this);
-		updateParametersForConnections();
 		
+		try {
+			_updateParametersForConnections();
+		} catch (NullPointerException e) {
+			// happens when called from init. don't care.
+		}
+	}
+	
+	public Map<IConnection,Object> connection2parameterValue() {
+		HashMap<IConnection,Object> res = new HashMap<IConnection, Object>(connection2parametersId.size());
+		for (IConnection c: connection2parametersId.keySet()) {
+			String paramId = connection2parametersId.get(c);
+			Parameter<?> param = parameterId2parameter.get(paramId);
+			Object value = getValueForParameter(param);
+			res.put(c, value);
+		}
+		return res;
 	}
 
-	protected void updateParametersForConnections() {
+	public void _updateParametersForConnections() {
 		
 		IInputOutputInstance inInstance = getInputInstanceForInput(MeanSquaredErrorAlgo.INTPUT_VALUES);
 		
@@ -126,14 +141,14 @@ public class MeanSquaredErrorAlgoInstance
 	@Override
 	public void notifyConnectionAdded(IConnection c) {
 		if (c.getTo().getAlgoInstance() == this) {
-			updateParametersForConnections();
+			_updateParametersForConnections();
 		}
 	}
 
 	@Override
 	public void notifyConnectionRemoved(IConnection c) {
 		if (c.getTo().getAlgoInstance() == this) {
-			updateParametersForConnections();
+			_updateParametersForConnections();
 		}
 	}
 

@@ -87,4 +87,7 @@ public interface IAlgoInstance extends IGenlabResource {
 	
 	public boolean hasParameter(String id);
 	public Parameter<?> getParameter(String id);
+	
+	public boolean isContainedInto(IAlgoContainerInstance otherInstance);
+	
 }

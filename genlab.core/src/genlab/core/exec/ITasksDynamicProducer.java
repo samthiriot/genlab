@@ -24,4 +24,18 @@ public interface ITasksDynamicProducer {
 	 */
 	public IAlgoExecution provideMoreTasks();
 	
+	/**
+	 * Once this producer returns no, it will not be called any more.
+	 * @return
+	 */
+	public boolean willMoreTasks();
+	
+	/**
+	 * If this is true, then producer will not be asked a task right now, 
+	 * but it will be proposed to act later.
+	 * @return
+	 */
+	public boolean cannotSendTasksNow();
+
+	
 }

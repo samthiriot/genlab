@@ -277,4 +277,11 @@ public class WorkflowExecution
 		super.clean();
 	}
 
+
+
+	@Override
+	public boolean containedInto(IAlgoExecution other) {
+		return false;
+	}
+
 }

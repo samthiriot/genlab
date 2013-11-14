@@ -1,5 +1,6 @@
 package genlab.algog.algos.meta;
 
+import genlab.algog.algos.exec.MeanSquarredErrorAlgoExec;
 import genlab.algog.algos.instance.MeanSquaredErrorAlgoInstance;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
@@ -44,14 +45,18 @@ public class MeanSquaredErrorAlgo extends AbstractGeneticAlgo {
 	@Override
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {
-		// TODO Auto-generated method stub
-		return null;
+
+		return new MeanSquarredErrorAlgoExec(execution, (MeanSquaredErrorAlgoInstance) algoInstance);
 	}
 
 	@Override
 	public IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
 
-		return new MeanSquaredErrorAlgoInstance(this, workflow);
+		MeanSquaredErrorAlgoInstance ai = new MeanSquaredErrorAlgoInstance(this, workflow);
+		
+		ai._updateParametersForConnections();
+
+		return ai;
 	}
 
 	@Override

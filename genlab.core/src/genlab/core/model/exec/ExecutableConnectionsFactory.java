@@ -24,7 +24,8 @@ public class ExecutableConnectionsFactory {
 		// the links comes from an iteration container
 		// so as soon as the container is STARTED, 
 		// the connection has to send data to its children
-		if (fromExec instanceof AbstractContainerExecutionIteration) {
+		if (toExec.containedInto(fromExec)) {
+		//if (fromExec instanceof AbstractContainerExecutionIteration) {
 			
 			if (!(toExec instanceof IAlgoExecutionOneshot))
 				throw new ProgramException("algorithms contained into iteration containers should only be one shot ones");

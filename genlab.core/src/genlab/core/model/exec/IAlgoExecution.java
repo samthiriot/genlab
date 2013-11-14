@@ -73,5 +73,6 @@ public interface IAlgoExecution extends IExecutionTask, IDumpAsExecutionNetwork 
 	 */
 	public Collection<IConnectionExecution> getConnectionsForInput(IInputOutputInstance input);
 
+	public boolean containedInto(IAlgoExecution other);
 	
 }

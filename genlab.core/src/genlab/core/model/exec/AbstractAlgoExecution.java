@@ -3,9 +3,11 @@ package genlab.core.model.exec;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.ExecutionTask;
 import genlab.core.exec.IExecution;
+import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
+import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
@@ -300,4 +302,19 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		// and forget them
 		input2connection.clear();
 	}
+	
+	@Override
+	public boolean containedInto(IAlgoExecution other) {
+		
+
+		// if the other is not a container, it can not contain us
+		if (!(other.getAlgoInstance() instanceof IAlgoContainerInstance))
+			return false;
+
+		return algoInst.isContainedInto((IAlgoContainerInstance)other.getAlgoInstance());
+				
+	
+	}
+
+
 }
