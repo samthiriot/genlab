@@ -1,7 +1,7 @@
 package genlab.core.exec;
 
+import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
-import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
@@ -25,19 +25,22 @@ public class WorkingRunnerThread extends Thread {
 	public void run() {
 
 		while (true) {
-			
+		
 			IAlgoExecution exec = null;
 			try {
 				exec = readyToCompute.take();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				messages.errorTech("catched an exception from the execution: "+e.getMessage(), getClass(), e);
+				exec.getProgress().setComputationState(ComputationState.FINISHED_FAILURE);
+				try {
+					exec.getResult().getMessages().errorUser("computation died with an error: "+e.getMessage(), getClass(), e);
+				} catch (NullPointerException e2) {
+				}
 			}
 			// run the task
 			messages.debugTech(getName()+" running task: "+exec.getName(), getClass());
 			exec.run();
 			messages.debugTech(getName()+" ran task: "+exec.getName(), getClass());
-			
 			
 		}
 
