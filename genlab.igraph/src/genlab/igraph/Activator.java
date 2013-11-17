@@ -2,6 +2,7 @@ package genlab.igraph;
 
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.igraph.algos.generation.lcffamous.FamousLCFGraphs;
+import genlab.igraph.natjna.IGraphLibrary;
 import genlab.igraph.natjna.IGraphRawLibrary;
 
 import org.eclipse.core.runtime.Plugin;
@@ -41,6 +42,9 @@ public class Activator extends Plugin implements BundleActivator {
 			// TODO deactivate all the igraph algorithms
 			return;
 		} 
+		
+		IGraphLibrary lib = new IGraphLibrary();
+		GLLogger.infoUser("will use the igraph library "+lib.getVersionString(), getClass());
 
 				
 		// declare the LCF algos

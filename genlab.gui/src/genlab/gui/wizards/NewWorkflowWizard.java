@@ -47,25 +47,31 @@ public class NewWorkflowWizard extends Wizard implements IWorkbenchWizard {
 
 	@Override
 	public boolean performFinish() {
-		
-		GLLogger.debugTech("Attempting to create a workflow...", getClass());
-		
-		
-		IProject eclipseProject = Utils.findEclipseProjectInSelection(selection);
-		IGenlabProject glProject = GenLab2eclipseUtils.getGenlabProjectForEclipseProject(eclipseProject);
-		if (glProject == null)
-			GLLogger.warnTech("unable to find glproject, trouble ahead...", getClass());
-		
-		IGenlabWorkflowInstance workflow = GenlabFactory.createWorkflow(
-				glProject, 
-				page1.getWorkflowName(), 
-				page1.getWorkflowDesc(), 
-				Utils.getPathRelativeToProject(eclipseProject, page2.getRelativePath().toString())
-				);
-		
 
-		
-		return true;
+		try {
+			GLLogger.debugTech("Attempting to create a workflow...", getClass());
+	
+			
+			IProject eclipseProject = Utils.findEclipseProjectInSelection(selection);
+			IGenlabProject glProject = GenLab2eclipseUtils.getGenlabProjectForEclipseProject(eclipseProject);
+			if (glProject == null)
+				GLLogger.warnTech("unable to find glproject, trouble ahead...", getClass());
+			
+			IGenlabWorkflowInstance workflow = GenlabFactory.createWorkflow(
+					glProject, 
+					page1.getWorkflowName(), 
+					page1.getWorkflowDesc(), 
+					Utils.getPathRelativeToProject(eclipseProject, page2.getRelativePath().toString())
+					);
+			
+	
+			
+			return true;
+			
+		} catch (RuntimeException e) {
+			page2.setErrorMessage(e.getMessage());
+			return false;
+		}
 	}
 
 	@Override

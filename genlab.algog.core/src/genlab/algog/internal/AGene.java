@@ -9,24 +9,26 @@ import cern.jet.random.Uniform;
  *
  * @param <TypeName>
  */
-public abstract class AGene<TypeName extends Number> {
+public abstract class AGene<TypeName> {
 
 	public final String name;
+	public final double mutationProba;
 	
-	public final TypeName min;
-	public final TypeName max;
-	
-	public AGene(String name, TypeName min, TypeName max) {
+	public AGene(String name, double mutationProba) {
 		this.name = name;
-		this.min = min;
-		this.max = max;
+		this.mutationProba = mutationProba;
 	}
 	
 	public abstract TypeName generateRandomnly(Uniform uniform);
 	
 	@Override
-	public String toString() {
+	public final String toString() {
 		return name;
 	}
+	
+	public final double getMutationProbability() {
+		return mutationProba;
+	}
+	
 	
 }

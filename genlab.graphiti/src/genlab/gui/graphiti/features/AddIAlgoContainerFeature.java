@@ -7,6 +7,7 @@ import genlab.core.model.instance.GenlabWorkflowInstance;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.AlgoContainer;
 import genlab.core.model.meta.IConstantAlgo;
 import genlab.core.persistence.AlgoInstanceConverter;
@@ -187,8 +188,9 @@ public class AddIAlgoContainerFeature extends AbstractAddFeature {
 			
 		}
 		
-		/*
+
 		// add text
+		/*
 		Text text;
 		{
 			Shape shape = peCreateService.createShape(containerShape, false);
@@ -221,13 +223,145 @@ public class AddIAlgoContainerFeature extends AbstractAddFeature {
 		}
 		*/
 		
+
+		final int lineY = 20 + LayoutIAlgoFeature.ANCHOR_WIDTH/2;
+		
+		 
+
+		// add connection points
+		// .. for inputs
+		int yCount = 0;
+		int yAnchors = lineY - LayoutIAlgoFeature.ANCHOR_WIDTH;
+		int yText = lineY;
+		
+		for (IInputOutputInstance input: addedAlgo.getInputInstances()) {
+			
+			// add anchor...
+			{	
+				FixPointAnchor anchor = peCreateService.createFixPointAnchor(containerShape);
+				anchor.setActive(true);
+				anchor.setLocation(gaService.createPoint(0, yText+LayoutIAlgoFeature.ANCHOR_WIDTH/2));
+				Ellipse ellipse = gaService.createEllipse(anchor);
+				ellipse.setForeground(manageColor(IColorConstant.DARK_GRAY));
+				ellipse.setBackground(manageColor(IColorConstant.WHITE));
+				ellipse.setLineWidth(2);
+				ellipse.setWidth(LayoutIAlgoFeature.ANCHOR_WIDTH);
+				//anchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
+				link(anchor, input);
+				
+				gaService.setLocationAndSize(
+						ellipse, 
+						0, 0, 
+						LayoutIAlgoFeature.ANCHOR_WIDTH, LayoutIAlgoFeature.ANCHOR_WIDTH, 
+						false
+						);
+			}
+			// and text !
+			{
+				Shape shape = peCreateService.createShape(containerShape, false);
+				
+				Text text = gaService.createText(shape, input.getMeta().getName());
+				text.setForeground(manageColor(IColorConstant.BLACK));
+				text.setHorizontalAlignment(Orientation.ALIGNMENT_LEFT);
+				text.setVerticalAlignment(Orientation.ALIGNMENT_BOTTOM);
+				text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
+								
+				gaService.setLocationAndSize(
+						text, 
+						LayoutIAlgoFeature.ANCHOR_WIDTH*3/2, 
+						yText, 
+						width/2, 
+						LayoutIAlgoFeature.ANCHOR_WIDTH*2,
+						false
+						);
+				
+			}
+			
+			yAnchors = yCount*LayoutIAlgoFeature.ANCHOR_WIDTH + lineY;
+			yCount++;
+			yText = yCount*LayoutIAlgoFeature.ANCHOR_WIDTH * 2 + lineY;
+		}
+		
+		// .. for outputs
+		yCount = 0;
+		yAnchors = lineY - LayoutIAlgoFeature.ANCHOR_WIDTH;
+		yText = lineY;
+		for (IInputOutputInstance output: addedAlgo.getOutputInstances()) {
+
+			// add anchor...
+			{
+				FixPointAnchor anchor = peCreateService.createFixPointAnchor(containerShape);
+				// TODO to explore ? peCreateService.createBoxRelativeAnchor(containerShape);
+				anchor.setActive(true);
+				anchor.setLocation(
+						gaService.createPoint(
+								width-LayoutIAlgoFeature.ANCHOR_WIDTH*2, 
+								yText+LayoutIAlgoFeature.ANCHOR_WIDTH/2
+								)
+								);
+				Ellipse ellipse = gaService.createEllipse(anchor);
+				ellipse.setForeground(manageColor(IColorConstant.DARK_GRAY));
+				ellipse.setBackground(manageColor(IColorConstant.WHITE));
+				ellipse.setLineWidth(2);
+				ellipse.setWidth(LayoutIAlgoFeature.ANCHOR_WIDTH);
+				anchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
+				anchor.setGraphicsAlgorithm(ellipse);
+	//			anchor.setParent(containerShape);
+				link(anchor, output);
+	
+	
+				gaService.setLocationAndSize(
+						ellipse, 
+						0, 
+						0, 
+						LayoutIAlgoFeature.ANCHOR_WIDTH, 
+						LayoutIAlgoFeature.ANCHOR_WIDTH
+						);
+				/*
+				 * gaService.setLocationAndSize(
+						ellipse, 
+						width-LayoutIAlgoFeature.ANCHOR_WIDTH*2, 
+						yAnchors, 
+						LayoutIAlgoFeature.ANCHOR_WIDTH, 
+						LayoutIAlgoFeature.ANCHOR_WIDTH
+						);
+				 */
+			}
+			
+			// and text !
+			{
+				Shape shape = peCreateService.createShape(containerShape, false);
+				
+				Text text = gaService.createText(shape, output.getMeta().getName());
+				text.setForeground(manageColor(IColorConstant.BLACK));
+				text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
+				text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
+				text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
+
+				gaService.setLocationAndSize(
+						text, 
+						width/2, 
+						yText, 
+						width/2-LayoutIAlgoFeature.ANCHOR_WIDTH, 
+						LayoutIAlgoFeature.ANCHOR_WIDTH*2
+						);
+				
+			}
+		
+			yAnchors = yCount*LayoutIAlgoFeature.ANCHOR_WIDTH + lineY;
+			yCount++;
+			yText = yCount*LayoutIAlgoFeature.ANCHOR_WIDTH * 2 + lineY;
+		}
+		
+
+		
 		 gaService.setLocationAndSize(
-         		invisibleRectangle,
-         		context.getX(), 
-         		context.getY(), 
-         		width,
-         		height
-         		);
+	     		invisibleRectangle,
+	     		context.getX(), 
+	     		context.getY(), 
+	     		width,
+	     		height
+	     		);
 		 
 		containerShape.setActive(true);
 		 

@@ -15,8 +15,10 @@ import genlab.core.model.instance.IWorkflowContentListener;
 import genlab.core.model.instance.WorkflowCheckResult;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IFlowType;
+import genlab.core.model.meta.basics.flowtypes.BooleanFlowType;
 import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
+import genlab.core.parameters.BooleanParameter;
 import genlab.core.parameters.DoubleParameter;
 import genlab.core.parameters.IntParameter;
 import genlab.core.parameters.Parameter;
@@ -28,6 +30,13 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 
+ * This algo has a special feature : it updates its parameters according to its inputs
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class MeanSquaredErrorAlgoInstance 
 							extends AlgoInstance 
 							// listens for the updates of the workflow, in order to update the parameters accordingly
@@ -98,20 +107,21 @@ public class MeanSquaredErrorAlgoInstance
 			Parameter<?> param = null;
 			
 			IFlowType<?> typeFrom = c.getFrom().getMeta().getType();
-			
+			final String paramId = c.getFrom().getId();
+			final String paramName = c.getFrom().getMeta().getName();
 			if (typeFrom.getId().equals(IntegerFlowType.SINGLETON.getId())) {
 				// we receive an Integer value
 				param = new IntParameter(
-						getId(), 
-						c.getFrom().getMeta().getName(), 
+						paramId, 
+						paramName, 
 						"value received by algo "+c.getFrom().getName(), 
 						0
 						);
 			} else if (typeFrom.getId().equals(DoubleFlowType.SINGLETON.getId())) {
 				// we receive an Integer value
 				param = new DoubleParameter(
-						getId(), 
-						c.getFrom().getMeta().getName(), 
+						paramId, 
+						paramName, 
 						"value received by algo "+c.getFrom().getName(), 
 						0.0
 						);

@@ -79,6 +79,8 @@ public class WorkflowConverter extends Decoder implements Converter {
 		for (IAlgoInstance ai : workflow.getAlgoInstances()) {
 			if (ai.getContainer() == null)
 				continue;
+			if (ai.getContainer() == ai.getWorkflow())
+				continue;
 			writer.startNode("contained");
 			writer.addAttribute("put", ai.getId());
 			writer.addAttribute("into", ai.getContainer().getId());

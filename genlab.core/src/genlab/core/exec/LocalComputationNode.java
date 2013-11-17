@@ -10,7 +10,7 @@ public class LocalComputationNode {
 		return singleton; 
 	}
 	
-	public Runner getRunner() {
+	public IRunner getRunner() {
 		if (runner == null) {
 			runner = new Runner();
 			runner.start();

@@ -70,7 +70,9 @@ public class SIIGeneratorAlgo extends AbstractIGraphGenerator {
 						(Integer)getInputValueForInput(INPUT_islands_n), 
 						(Integer)getInputValueForInput(INPUT_islands_size), 
 						(Double)getInputValueForInput(INPUT_islands_pin), 
-						(Integer)getInputValueForInput(INPUT_n_inter)
+						(Integer)getInputValueForInput(INPUT_n_inter),
+						true,
+						true
 						);
 				
 				

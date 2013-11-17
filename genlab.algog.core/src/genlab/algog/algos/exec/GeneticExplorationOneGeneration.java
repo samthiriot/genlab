@@ -10,6 +10,7 @@ import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
 import genlab.algog.internal.AnIndividual;
 import genlab.core.commons.ProgramException;
+import genlab.core.exec.ICleanableTask;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractContainerExecutionSupervisor;
 import genlab.core.model.exec.ComputationState;
@@ -20,7 +21,7 @@ import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
 
 public class GeneticExplorationOneGeneration extends
-		AbstractContainerExecutionSupervisor {
+		AbstractContainerExecutionSupervisor implements ICleanableTask {
 
 	private GeneticExplorationAlgoContainerInstance geneAlgoInst;
 	
@@ -194,7 +195,7 @@ public class GeneticExplorationOneGeneration extends
 		AnIndividual indiv = indivRun.getIndividual();
 		int individualId = indivRun.getIndividualId();
 
-		messages.infoUser("computed fitness "+resultFitness+" for individual "+individualId+" of genome "+indiv.genome, getClass());
+		messages.debugUser("computed fitness "+resultFitness+" for individual "+individualId+" of genome "+indiv.genome, getClass());
 
 		// store results
 		synchronized (lockerResults) {

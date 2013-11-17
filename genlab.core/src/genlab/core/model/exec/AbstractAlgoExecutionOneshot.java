@@ -21,12 +21,21 @@ public abstract class AbstractAlgoExecutionOneshot
 		
 		// at the very beginning, all the inputs are waiting for data
 		inputsNotAvailable = new HashSet<IInputOutputInstance>(algoInst.getInputInstances());
-		progress.setComputationState(ComputationState.WAITING_DEPENDENCY);
-	}
+		
+		if (inputsNotAvailable.isEmpty())
+			progress.setComputationState(ComputationState.READY);
+		else	
+			progress.setComputationState(ComputationState.WAITING_DEPENDENCY);
+		
+		
+	} 
 
 
 	@Override
 	public void notifyInputAvailable(IInputOutputInstance to) {
+		
+		synchronized (inputsNotAvailable) {
+			
 		
 		// ignore all 
 		if (progress.getComputationState() != ComputationState.WAITING_DEPENDENCY)
@@ -57,6 +66,7 @@ public abstract class AbstractAlgoExecutionOneshot
 			progress.setComputationState(ComputationState.READY);
 		}
 			
+		}
 	}
 	
 	@Override
@@ -72,6 +82,7 @@ public abstract class AbstractAlgoExecutionOneshot
 	public void clean() {
 		
 		// clean local data
+		if (inputsNotAvailable != null)
 		inputsNotAvailable.clear();
 		inputsNotAvailable = null;
 		

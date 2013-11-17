@@ -57,9 +57,10 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 * The maximum size for the "pending in queue" messages.
 	 */
 	public static final int QUEUE_SIZE = 2000;
-	
 
-	protected MessageLevel filterIgnoreBelow = MessageLevel.WARNING;
+	public static final MessageLevel DEFAULT_LEVEL = MessageLevel.WARNING;;
+
+	protected MessageLevel filterIgnoreBelow = null;
 	
 	public MessageLevel getFilterIgnoreBelow() {
 		return filterIgnoreBelow;
@@ -107,7 +108,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	
 	public ListOfMessages() {
 		
-		this(null, DEFAULT_LIMIT_START_CLEANUP, DEFAULT_CLEANUP_TARGET_SIZE);
+		this(DEFAULT_LEVEL, DEFAULT_LIMIT_START_CLEANUP, DEFAULT_CLEANUP_TARGET_SIZE);
 	}
 	
 	public ListOfMessages(MessageLevel level, int cleanupSize) {

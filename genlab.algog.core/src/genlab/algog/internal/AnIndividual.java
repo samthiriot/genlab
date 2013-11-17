@@ -16,7 +16,7 @@ public class AnIndividual {
 	
 	@Override
 	public String toString() {
-		return genome+" "+Arrays.toString(genes);
+		return genome+" "+genome.readableValues(genes);
 	}
 	
 	

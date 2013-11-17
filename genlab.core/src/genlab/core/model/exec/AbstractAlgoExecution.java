@@ -276,9 +276,10 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 
 	@Override
 	public void clean() {
-			
+		
+		
 		// check feasibility
-		if (!progress.getComputationState().isFinished())
+		if (progress != null && progress.getComputationState() != null && !progress.getComputationState().isFinished())
 			throw new ProgramException("attempting to clean a task which is not finished.");
 		
 		// super clean
@@ -294,13 +295,16 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		messages = null;
 		
 		// ask the incoming connections to clean themselves
-		for (Collection<IConnectionExecution> cExIns: input2connection.values()) {
-			for (IConnectionExecution cExIn: cExIns) {
-				cExIn.clean();
+		if (input2connection!=null) {
+			for (Collection<IConnectionExecution> cExIns: input2connection.values()) {
+				for (IConnectionExecution cExIn: cExIns) {
+					cExIn.clean();
+				}
 			}
+			// and forget them
+			//input2connection.clear();
+			input2connection = null;
 		}
-		// and forget them
-		input2connection.clear();
 	}
 	
 	@Override

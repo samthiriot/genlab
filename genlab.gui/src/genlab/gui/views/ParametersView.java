@@ -142,13 +142,14 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 			if (param instanceof IntParameter) {
 				IntParameter p = (IntParameter)param;
 				Spinner sp = new Spinner(form.getBody(), SWT.NONE);
-				if (p.getMinValue() != null)
-					sp.setMinimum(p.getMinValue());
-				if (p.getMaxValue() != null)
-					sp.setMaximum(p.getMaxValue());
-				
-				// TODO remove
-				sp.setMaximum(50000);
+				Integer minValue = p.getMinValue();
+				if (minValue == null)
+					minValue = Integer.MIN_VALUE;
+				sp.setMinimum(minValue);
+				Integer maxValue = p.getMaxValue();
+				if (maxValue == null)
+					maxValue = Integer.MAX_VALUE;
+				sp.setMaximum(maxValue);
 
 				if (p.getStep() != null)
 					sp.setIncrement(p.getStep());
@@ -167,20 +168,22 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				DoubleParameter p = (DoubleParameter)param;
 				Spinner sp = new Spinner(form.getBody(), SWT.NONE);
 				
-				sp.setDigits(p.getPrecision());
+				sp.setDigits(p.getPrecision()-1);
 
 				// TODO check this behavior
-				if (p.getMinValue() != null)
-					sp.setMinimum((int)Math.floor(p.getMinValue()*Math.pow(10, p.getPrecision())));
-				if (p.getMaxValue() != null)
-					sp.setMinimum((int)Math.ceil(p.getMaxValue()*Math.pow(10, p.getPrecision())));
+				Double minValue = p.getMinValue();
+				if (minValue == null)
+					minValue = Double.MIN_VALUE;
+				sp.setMinimum((int)Math.floor(minValue * Math.pow(10, sp.getDigits())));
+				Double maxValue = p.getMaxValue();
+				if (maxValue == null)
+					maxValue = Double.MAX_VALUE;
+				sp.setMaximum((int)Math.ceil(maxValue*Math.pow(10, sp.getDigits())));
 				if (p.getStep() != null)
-					sp.setMinimum((int)Math.round(p.getStep()*Math.pow(10, p.getPrecision())));
-
-				sp.setMinimum((int)(-50*Math.pow(10, p.getPrecision())));
-				sp.setMaximum((int)(50*Math.pow(10, p.getPrecision())));
-				
-				sp.setSelection((int)Math.round(((Double)value)*Math.pow(10, p.getPrecision())));
+					sp.setIncrement((int)Math.round(p.getStep()*Math.pow(10, sp.getDigits())));
+				else
+					sp.setIncrement((int)Math.pow(10, sp.getDigits()-1));
+				sp.setSelection((int)Math.round(((Double)value)*Math.pow(10, sp.getDigits())));
 				
 				createdWidget = sp;
 				
@@ -297,8 +300,29 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 			Integer value = ((Spinner)e.widget).getSelection();
 			algo.setValueForParameter(param.getId(), value);
 		} else if (param instanceof DoubleParameter) {
-			Double value = ((double)((Spinner)e.widget).getSelection())/Math.pow(10, ((DoubleParameter)param).getPrecision());
-			algo.setValueForParameter(param.getId(), value);		
+			Spinner spin = (Spinner)e.widget;
+			// not working because of known bugs:
+			// Double value = spin.getSelection()/Math.pow(10, spin.getDigits());
+			Double value = null;
+			try {
+				value = Double.parseDouble(spin.getText());
+			} catch (NumberFormatException e2) {
+			}
+			if (value == null) {
+				try {
+					value = Double.parseDouble(spin.getText().replace('.', ','));
+				} catch (NumberFormatException e2) {
+				}	
+			}
+			if (value == null) {
+				try {
+					value = Double.parseDouble(spin.getText().replace(',', '.'));
+				} catch (NumberFormatException e2) {
+				}	
+			}
+			if (value == null)
+				return;
+			algo.setValueForParameter(param.getId(), value);
 		} else if (param instanceof BooleanParameter) {
 			Boolean value = ((Button)e.widget).getSelection();
 			algo.setValueForParameter(param.getId(), value);

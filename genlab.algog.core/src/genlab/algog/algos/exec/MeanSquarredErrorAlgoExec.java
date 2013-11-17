@@ -8,9 +8,9 @@ import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
-import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.instance.IConnection;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -31,13 +31,12 @@ public class MeanSquarredErrorAlgoExec extends AbstractAlgoExecutionOneshot {
 		return 0;
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public void run() {
 		
 		progress.setComputationState(ComputationState.STARTED);
 
-		
-		
 		try {
 
 			Map<IConnection,Object> connection2referenceValue = algoInst.connection2parameterValue();
@@ -50,21 +49,41 @@ public class MeanSquarredErrorAlgoExec extends AbstractAlgoExecutionOneshot {
 			int count = 0;
 			double total = 0.0;
 			
+			// normalization
+			/*
+			Map<IConnection,Double> connection2normalization = new HashMap<IConnection, Double>(connection2referenceValue.size());
 			for (IConnection cIn: connection2referenceValue.keySet()) {
 				
 				Number referenceValue = (Number)connection2referenceValue.get(cIn);
-				Number receivedValue = (Number)receivedValues.get(cIn);
 				
-				IConnectionExecution cEx = getExecutableConnectionForConnection(cIn);
-						
+				connection2normalization.put(cIn, 1/referenceValue)
 				total += Math.pow(referenceValue.doubleValue()-receivedValue.doubleValue(), 2);
 				
 				count ++;
 				
 			}
+			*/
 			
-			double computed = total / count;
-
+			// first identify the scale for each variable
+			for (IConnection cIn: connection2referenceValue.keySet()) {
+				
+				Number referenceValue = (Number)connection2referenceValue.get(cIn);
+				Number receivedValue = (Number)receivedValues.get(cIn);
+				
+				total += Math.pow(
+						(referenceValue.doubleValue()-receivedValue.doubleValue())/referenceValue.doubleValue(), 
+						2
+						);
+				
+				//System.err.println(cIn.getFrom().getName()+": "+receivedValue);
+				
+				count ++;
+				
+			}
+			
+			double computed = Math.sqrt(total / count);
+			//System.err.println("fitness: "+computed);
+			
 			ComputationResult res = new ComputationResult(algoInst, progress, messages);
 			res.setResult(MeanSquaredErrorAlgo.OUTPUT_MEANSQUAREDERROR, computed);
 			setResult(res);

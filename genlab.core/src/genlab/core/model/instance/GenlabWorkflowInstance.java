@@ -342,7 +342,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	@Override
 	public void addConnection(Connection c) {
 		connections.add(c);
-		
+		// TODO check the connection !?
 	}
 
 	@Override

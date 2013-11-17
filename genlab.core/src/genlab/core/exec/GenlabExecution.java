@@ -39,7 +39,7 @@ public class GenlabExecution {
 					return;
 				}
 			
-				Runner r = LocalComputationNode.getSingleton().getRunner();
+				IRunner r = LocalComputationNode.getSingleton().getRunner();
 
 				Execution exec = new Execution(r);
 				exec.setExecutionForced(true);

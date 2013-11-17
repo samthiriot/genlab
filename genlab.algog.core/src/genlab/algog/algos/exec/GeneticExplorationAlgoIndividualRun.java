@@ -1,9 +1,11 @@
 package genlab.algog.algos.exec;
 
+import genlab.algog.algos.meta.AbstractGeneAlgo;
 import genlab.algog.algos.meta.IntegerGeneAlgo;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
 import genlab.algog.internal.AnIndividual;
+import genlab.core.exec.ICleanableTask;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractContainerExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
@@ -29,7 +31,7 @@ import java.util.Map;
  * @author Samuel Thiriot
  *
  */
-public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecution {
+public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecution implements ICleanableTask {
 
 	private final Collection<IAlgoInstance> algoInstancesToRun;
 	private final int individualId;
@@ -120,7 +122,7 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 		for (IAlgoInstance sub: algoInstancesToRun) {
 			for (IConnection cIn: sub.getAllIncomingConnections()) {
 				
-				if (cIn.getFrom().getAlgoInstance().getAlgo() instanceof IntegerGeneAlgo<?>) {
+				if (cIn.getFrom().getAlgoInstance().getAlgo() instanceof AbstractGeneAlgo) {
 					
 					// genes act as input of several children algos
 					// they should refer to ME to retrieve these values !
@@ -196,7 +198,7 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 		for (IAlgoInstance sub: algoInstancesToRun) {
 			for (IConnection cIn: sub.getAllIncomingConnections()) {
 				
-				if (cIn.getFrom().getAlgoInstance().getAlgo() instanceof IntegerGeneAlgo<?>) {
+				if (cIn.getFrom().getAlgoInstance().getAlgo() instanceof AbstractGeneAlgo) {
 
 					IConnectionExecution cEx = getExecutableConnectionFor(cIn);
 					

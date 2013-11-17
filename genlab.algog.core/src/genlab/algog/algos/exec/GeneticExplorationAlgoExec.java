@@ -1,17 +1,21 @@
 package genlab.algog.algos.exec;
 
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
+import genlab.algog.algos.meta.AbstractGeneAlgo;
+import genlab.algog.algos.meta.BooleanGeneAlgo;
+import genlab.algog.algos.meta.DoubleGeneAlgo;
+import genlab.algog.algos.meta.GeneticExplorationAlgo;
 import genlab.algog.algos.meta.GenomeAlgo;
 import genlab.algog.algos.meta.IntegerGeneAlgo;
+import genlab.algog.internal.ABooleanGene;
+import genlab.algog.internal.ADoubleGene;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
 import genlab.algog.internal.AIntegerGene;
 import genlab.algog.internal.AnIndividual;
-import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractContainerExecution;
-import genlab.core.model.exec.AbstractContainerExecutionSupervisor;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -21,8 +25,8 @@ import genlab.core.model.exec.IComputationResult;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
-import genlab.core.model.instance.InputOutputInstance;
 import genlab.core.model.meta.IAlgo;
+import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -35,8 +39,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import javax.naming.spi.DirStateFactory.Result;
 
@@ -85,6 +87,9 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 	// associates each input connection to the corresponding value
 	protected Map <IConnection,Object> inputConnection2value = new HashMap<IConnection, Object>();
 	
+	protected final int paramStopMaxIterations;
+	protected final int paramPopulationSize;
+
 	
 	public GeneticExplorationAlgoExec(
 			IExecution exec, 
@@ -97,6 +102,10 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 		this.autoFinishWhenChildrenFinished = false;
 		
 
+		// read parameters
+		paramStopMaxIterations = (Integer) algoInst.getValueForParameter(GeneticExplorationAlgo.PARAM_STOP_MAXITERATIONS);
+
+		paramPopulationSize = (Integer) algoInst.getValueForParameter(GeneticExplorationAlgo.PARAM_SIZE_POPULATION);
 	}
 	
 	/**
@@ -136,12 +145,29 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 				AGene<?> gene = null;
 				
 				// create its counterpart with the same parameters
-				if (geneAlgo instanceof IntegerGeneAlgo<?>) {
+				if (geneAlgo instanceof IntegerGeneAlgo) {
 					
 					gene = new AIntegerGene( 
-							geneInstance.getName(), 
+							geneInstance.getName(),
+							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION.getId()), 
 							(Integer)geneInstance.getValueForParameter(IntegerGeneAlgo.PARAM_MINIMUM.getId()),
 							(Integer)geneInstance.getValueForParameter(IntegerGeneAlgo.PARAM_MAXIMUM.getId())
+							);
+					
+				} else if (geneAlgo instanceof DoubleGeneAlgo) {
+					
+					gene = new ADoubleGene( 
+							geneInstance.getName(), 
+							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION.getId()),
+							(Double)geneInstance.getValueForParameter(DoubleGeneAlgo.PARAM_MINIMUM.getId()),
+							(Double)geneInstance.getValueForParameter(DoubleGeneAlgo.PARAM_MAXIMUM.getId())
+							);
+					
+				} else if (geneAlgo instanceof BooleanGeneAlgo) {
+					
+					gene = new ABooleanGene(
+							geneInstance.getName(),
+							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION.getId())
 							);
 					
 				} else {
@@ -183,12 +209,12 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 	}
 
 
-	protected Object[][] generateInitialPopulation(AGenome genome) {
+	protected Object[][] generateInitialPopulation(AGenome genome, int popsize) {
 		
 		Object[][] population;
 		
 		messages.infoUser("generating the initial population for genome "+genome.name, getClass());
-		population = genome.generateInitialGeneration(uniform, TODO_POP_SIZE_PER_GENOME);
+		population = genome.generateInitialGeneration(uniform, popsize);
 		genome.printToStream(System.out, population);
 		
 		return population;
@@ -213,7 +239,7 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 			messages.debugUser("generation of the sub population based on genome: "+genome, getClass());
 
 			
-			Object[][] population = generateInitialPopulation(genome);
+			Object[][] population = generateInitialPopulation(genome, paramPopulationSize/gene2geneAlgoInstance.size());
 			
 			genome2population.put(genome, population);
 
@@ -287,7 +313,7 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 	
 	protected void manageResultsForCurrentGeneration(Map<AnIndividual,Double> result) {
 		
-		messages.infoUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
+		messages.debugUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
 
 		// store it 
 		generation2fitness.put(iterationsMade, result);
@@ -298,36 +324,58 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 		double total = 0.0;
 		final int count = result.size();
 		
+		AnIndividual best = null;
+		
 		for (Map.Entry<AnIndividual,Double> indiv2fitness : result.entrySet()) {
 			
 			double d = indiv2fitness.getValue();
 			
 			total += d;
-			min = Math.min(d, min);
+			if (d < min) {
+				min = d;
+				best = indiv2fitness.getKey();
+			}
 			max = Math.max(d, max);
 		
+			System.err.println("raw fitness for "+Arrays.toString(indiv2fitness.getKey().genes)+": "+d);
 		}
 		
 		// now reverse all the values so the genetic algo is attempting to maximize the fitness
 		for (Map.Entry<AnIndividual,Double> indiv2fitness : result.entrySet()) {
 		
-			indiv2fitness.setValue(max-indiv2fitness.getValue());
+			indiv2fitness.setValue(max-indiv2fitness.getValue()+1);
 			
-			double d = indiv2fitness.getValue();
 			
 		}
 		
+		// recompute stats
+		min = Double.MAX_VALUE;
+		max = Double.MIN_VALUE;
+		total = 0.0;
+		for (Map.Entry<AnIndividual,Double> indiv2fitness : result.entrySet()) {
+			
+			double d = indiv2fitness.getValue();
+			
+			total += d;
+			if (d < min) {
+				min = d;
+			}
+			if (d > max) {
+				max = d;
+				best = indiv2fitness.getKey();
+			}
+			
+		}
 		double average = total / count;
 		
-		messages.infoUser("for generation "+iterationsMade+": best fitness "+max+", worst "+min+", average "+average, getClass());
-		
+		messages.infoUser("for generation "+iterationsMade+": best fitness "+max+", worst "+min+", average "+average+"; best individual "+best, getClass());
 		//displayOnStream(System.out, gen, res)
 		
 	}
 	
 	protected final boolean shouldContinueExploration() {
 		// TODO finish criteria
-		return iterationsMade < 50;
+		return iterationsMade < paramStopMaxIterations;
 	}
 	
 	protected final void manageEndOfExploration() {
@@ -335,8 +383,10 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 		messages.infoUser("stopping after "+iterationsMade+" iterations", getClass());
 		
 		// update our computation state
+		ComputationState ourState = null;
+		ComputationResult res = new ComputationResult(algoInst, progress, messages);
+		
 		{
-			ComputationState ourState = null;
 			
 			if (somethingFailed)
 				ourState = ComputationState.FINISHED_FAILURE;
@@ -345,8 +395,46 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 			else 
 				ourState = ComputationState.FINISHED_OK;
 			
-			this.progress.setComputationState(ourState);
-		}		
+		}
+		
+		if (ourState == ComputationState.FINISHED_OK) {
+			final String titleIteration = "iteration";
+			final String titleGenome = "genome";
+			final String titleFitness = "fitness";
+			final String titleGenes = "genes";
+	
+	
+			GenlabTable tab = new GenlabTable();
+			tab.declareColumn(titleIteration);
+			tab.declareColumn(titleGenome);
+			tab.declareColumn(titleFitness);
+			tab.declareColumn(titleGenes);
+			
+			for (Integer iterationId : generation2fitness.keySet()) {
+				
+				// for each iteration
+				Map<AnIndividual,Double> indiv2fitness = generation2fitness.get(iterationId);
+				for (Map.Entry<AnIndividual,Double> ind2fit : indiv2fitness.entrySet()) {
+					
+					AnIndividual ind = ind2fit.getKey();
+					Double fitness = ind2fit.getValue();
+					
+					int rowId = tab.addRow();
+					tab.setValue(rowId, titleIteration, iterationId);
+					tab.setValue(rowId, titleGenome, ind.genome.name);
+					tab.setValue(rowId, titleFitness, fitness);
+					tab.setValue(rowId, titleGenes, ind.toString());
+				}
+				
+			}
+		
+			res.setResult(GeneticExplorationAlgo.OUTPUT_TABLE, tab);
+		}
+		setResult(res);
+		
+		this.progress.setComputationState(ourState);
+		
+
 	}
 	
 	protected Map<AGenome,Object[][]> prepareNextGeneration() {
@@ -361,6 +449,7 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 			sumOfFitness += i2f.getValue();
 		}
 		
+		System.err.println("sum fitness: "+sumOfFitness);
 		// TODO idée: dans notre cas, conserver les N meilleurs permettra d'éprouver leur efficacité malgré l'aspect random
 		
 		
@@ -380,7 +469,7 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 				final AnIndividual individual = i2f.getKey();
 				final Double fitness = i2f.getValue();
 				localSum += fitness;
-				if (localSum > r) {
+				if (localSum >= r) {
 					//selected.add(i2f.getKey());
 					
 					Set<AnIndividual> indiv = selectedGenome2Population.get(individual.genome);
@@ -390,7 +479,7 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 					}
 					if (indiv.add(individual)) {
 						toSelect --;
-						System.err.println("keeping: "+i2f.getKey());
+						System.err.println("keeping: "+i2f.getKey()+", with fitness "+fitness);
 					}
 					break wheel;
 				}
@@ -460,10 +549,31 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 				
 				
 			}
+
+			// MUTATION
+			final double probaMutation = 0.01;
+			for (int i=0; i<novelPopulation.length; i++) {
+				
+				
+				AGene<?>[] genes = genome.getGenes(); 
+				for (int j=0; j<genes.length; j++) {
+					 
+					if (uniform.nextDoubleFromTo(0.0, 1.0) <= genes[j].getMutationProbability()) {
+						Object[] individual = novelPopulation[i];
+						System.err.println("mutate individual "+i+" from "+Arrays.toString(individual));
+						individual[j] = genes[j].generateRandomnly(uniform);
+						System.err.println("mutate individual "+i+" TO "+Arrays.toString(individual));
+					}
+					
+				}
+				
+			}
 			
 			novelGenome2Population.put(genome, novelPopulation);
 			
 		}
+		
+		
 		
 		return novelGenome2Population;
 		
@@ -485,11 +595,14 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 		
 		final GeneticExplorationOneGeneration algoFinished = (GeneticExplorationOneGeneration)progress.getAlgoExecution();
 		
-		final Map<AnIndividual,Double> result = algoFinished.getComputedFitness();
+		final Map<AnIndividual,Double> result = new HashMap<AnIndividual, Double>(algoFinished.getComputedFitness());
 	
 		// manage results
 		manageResultsForCurrentGeneration(result);
 		displayOnStream(System.err, iterationsMade);
+		
+		Runtime.getRuntime().gc();
+		Thread.yield();
 		
 		// we are now going to the next iteration; 
 		if (!shouldContinueExploration()) {
@@ -541,10 +654,6 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 		iterationsMade = 0;
 
 		progress.setComputationState(ComputationState.STARTED);
-		
-		// the result will be useless
-		IComputationResult res = new ComputationResult(algoInst, progress, messages);
-		setResult(res);
 		
 
 		// init RNG

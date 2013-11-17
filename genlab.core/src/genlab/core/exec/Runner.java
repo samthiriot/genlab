@@ -9,6 +9,7 @@ import genlab.core.model.exec.IComputationResult;
 import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IInputOutputInstance;
+import genlab.core.usermachineinteraction.ITextMessage;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
@@ -19,13 +20,23 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Takes many tasks, and executes them.
  * 
+ * 
+ * 
  * Some features:
  * <ul>
- * <li>when a task is finished, the runner may propose to clean it (meaning, to free the corresponding resources)</li>
+ * <li>monitors the tasks queued but not ready, ready, running, done</li>
+ * <li>when a task is ready, makes it available to the worker threads</li>
+ * <li>ensure the worker thread pool is big enough to process the tasks</li>
+ * <li>attempts to clean finished tasks to save resources</li>
+ * <li>cancels and kills the threads once done</li>
  * </ul>
  * 
  * TODO use the map of threads to monitor and kill
@@ -37,9 +48,9 @@ import java.util.Set;
  * @author Samuel Thiriot
  *
  */
-public class Runner extends Thread implements IComputationProgressSimpleListener {
+public class Runner extends Thread implements IRunner {
 	
-	final static int MAX_THREADS = 8; // TODO
+	final static int MAX_THREADS = 5; // TODO
 	
 	final static int START_TASKS_SIZE = 500;
 	
@@ -59,16 +70,11 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	final Set<IAlgoExecution> running = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
 	final Set<IAlgoExecution> notReady = new HashSet<IAlgoExecution>(START_TASKS_SIZE);	
 	
+
 	final Set<ITasksDynamicProducer> tasksProducers = new HashSet<ITasksDynamicProducer>();
 	
-	final Map<IAlgoExecution, Thread> exec2thread = new HashMap<IAlgoExecution, Thread>(START_TASKS_SIZE);
 	
-	/**
-	 * The number of threads used currently. Based on the number of thread displayed by tasks, 
-	 * not an objective measure.
-	 */
-	private int usedThreads = 0;
-	
+
 		
 	/**
 	 * If true, all tasks should be canceled as soon as possible.
@@ -79,6 +85,26 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	
 	private final Object lockerMainLoop = new Object();
 	
+	/**
+	 * Contains worker threads which do not use the CPU (in fact, they are more control threads.
+	 * This thread pool will be resized on demand.
+	 */
+	private Set<WorkingRunnerThread> threadsPoolTaskNoThread = new HashSet<WorkingRunnerThread>(MAX_THREADS*20);
+	final BlockingQueue<IAlgoExecution> readyToComputeNoThread = new LinkedBlockingQueue<IAlgoExecution>();
+	private int usedThreadsWithoutThread = 0;
+
+	/**
+	 * Contains worker threads which do use the CPU. Contains only MAX_THREADS
+	 */
+	private Set<WorkingRunnerThread> threadsPoolTaskWithThreads = new HashSet<WorkingRunnerThread>(MAX_THREADS*20);
+	final BlockingQueue<IAlgoExecution> readyToComputeWithThreads = new LinkedBlockingQueue<IAlgoExecution>();
+
+	/**
+	 * The number of threads used currently. Based on the number of thread displayed by tasks, 
+	 * not an objective measure.
+	 */
+	private int usedThreads = 0;
+
 	
 	
 	public Runner() {
@@ -89,15 +115,70 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		setPriority(NORM_PRIORITY);
 		setDaemon(true);
 		
+
+		// init the thread pool
+		for (int i=0; i<MAX_THREADS; i++) {
+			WorkingRunnerThread t = new WorkingRunnerThread(
+					"gl_worker_"+i, 
+					readyToComputeWithThreads
+					);
+			t.start();
+			threadsPoolTaskWithThreads.add(t);
+		}
+		
+		// init the thread pool
+		for (int i=0; i<MAX_THREADS; i++) {
+			WorkingRunnerThread t = new WorkingRunnerThread(
+					"gl_workcontroller_"+i, 
+					readyToComputeNoThread
+					);
+			t.start();
+			threadsPoolTaskNoThread.add(t);
+		}
 	}
 	
+	
+	/* (non-Javadoc)
+	 * @see genlab.core.exec.IRunner#addTasks(java.util.Collection)
+	 */
+	@Override
 	public void addTasks(Collection<IAlgoExecution> allTasks) {
 		for (IAlgoExecution e: allTasks)
 			addTask(e);	
 		
 	}
 
+	/**
+	 * Only called when ready.
+	 * 
+	 * @param exec
+	 */
+	protected void submitTaskToWorkerThreads(IAlgoExecution exec) {
+		
+		if (exec.getThreadsUsed() == 0) {
+			synchronized (threadsPoolTaskNoThread) {
+				if (usedThreadsWithoutThread == threadsPoolTaskNoThread.size()) {
+					messagesRun.debugTech("not enough threads; increasing the size to "+(threadsPoolTaskNoThread.size()+1), getClass());
+					threadsPoolTaskNoThread.add(
+							new WorkingRunnerThread(
+									"gl_workcontroller_"+threadsPoolTaskNoThread.size(), 
+									readyToComputeNoThread
+									)
+							);
+				}
+				readyToComputeNoThread.add(exec);
+
+			}
+		} else {
+			readyToComputeWithThreads.add(exec);
+			
+		}
+	}
 	
+	/* (non-Javadoc)
+	 * @see genlab.core.exec.IRunner#addTask(genlab.core.model.exec.IAlgoExecution)
+	 */
+	@Override
 	public void addTask(IAlgoExecution exec) {
 		
 		synchronized (all) {
@@ -106,10 +187,15 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				return;
 			
 			all.add(exec);
+			
+			exec.getProgress().addListener(this);
+
 		
+			// add the task in the place it can be used
 			switch (exec.getProgress().getComputationState()) {
 			case READY:
 				ready.add(exec);
+				submitTaskToWorkerThreads(exec);
 				break;
 			case CREATED:
 			case WAITING_DEPENDENCY:
@@ -129,8 +215,6 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				throw new ProgramException("state of this task unknown: "+exec.getProgress().getComputationState());
 			}
 		}
-		
-		exec.getProgress().addListener(this);
 		
 		// wake up the thread an make him think about the idea of working.
 		wakeUp();
@@ -228,7 +312,7 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		synchronized (all) {
 			sb
 				.append(done.size()).append(" done, ")
-				.append(exec2thread.size()).append(" running, ")
+				.append(running.size()).append(" running, ")
 				.append(ready.size()).append(" ready, ")
 				.append(notReady.size()).append(" waiting.");
 			
@@ -294,150 +378,6 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		}
 	}
 	
-	protected boolean attemptToDoSomething() {
-		
-		//messages.traceTech("attempting to do something", getClass());
-		
-		//printState();
-		
-		// are there enough resources ?
-		if (usedThreads >= MAX_THREADS) {
-			//messages.debugTech("all threads used, wait...", getClass());
-			return false;	// threads limit reached, do nothing.
-		}
-		
-		// is there something ready ?
-		IAlgoExecution e = null;
-		Thread t = null;
-		synchronized (all) {
-			
-			if (ready.isEmpty()) {
-				
-				//messages.traceTech("nothing ready, wait...", getClass());
-				if (running.isEmpty()) {
-					// TODO wait, nothing is gonna happen there ?
-					
-				}
-				
-				
-				return false; // nothing ready for run, leave.
-			}
-			
-			e = ready.iterator().next();
-			ready.remove(e);
-			running.add(e);
-		
-			if (!e.isCostless()) {
-				t = new Thread(e);
-				t.setName("gl_task_"+System.currentTimeMillis());
-				t.setDaemon(false);
-				t.setPriority(MIN_PRIORITY);
-				exec2thread.put(e, t);
-			}
-			if (e.getThreadsUsed() < 0)
-				throw new ProgramException("a task cannot create novel threads, sorry.");
-			usedThreads += e.getThreadsUsed();
-				
-		}
-		
-		
-		final ListOfMessages messages = e.getExecution().getListOfMessages();
-		
-		messagesRun.debugUser("now using "+usedThreads+" threads over "+MAX_THREADS, getClass());
-		
-		// actually run something
-	
-		if (t==null) {
-			
-			messages.debugUser("running task "+e+" (no thread, it is costless)", getClass());
-			e.run();
-		} else {
-			messages.debugUser("starting a thread for task "+e+": "+t, getClass());
-			final IAlgoExecution e2 = e;
-			
-			// add an exception handler to the thread;
-			t.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-				
-				@Override
-				public void uncaughtException(Thread arg0, Throwable arg1) {
-					
-					arg1.printStackTrace();
-					messages.errorUser(
-							"thie algorithm \""+e2.getAlgoInstance().getName()+"\" ended with an error: "+arg1.getMessage(), 
-							getClass(), 
-							arg1
-							);
-					messages.warnTech(
-							"an algorithm "+e2.getAlgoInstance().getAlgo()+" raised an error that was not properly catched at its level: "+e2+", "+arg1.getClass(), 
-							getClass(),
-							arg1
-							);
-					
-					
-					e2.getProgress().setComputationState(ComputationState.FINISHED_FAILURE);
-
-				}
-			});
-			
-			// also add a watchdog
-			/* TODO restore the watchdog
-			(new WatchdogTimer(
-					e2.getTimeout(), 
-					e2.getProgress(), 
-					e2.getExecution().getListOfMessages())
-			).start();
-			*/
-			
-			t.start();
-		}
-		
-		printState();
-
-		
-		return true;
-		
-	}
-	
-	private boolean doingSomething = false;
-	
-	
-	public void attemptToDoThings() {
-		
-		if (doingSomething) { // avoids simultaneous execs
-			messagesRun.debugTech("already doing something !", getClass());
-			return;
-		}
-		
-		try {
-			
-			
-			doingSomething = true;
-			
-			while (true) {
-
-					//messages.debugTech("trying to do things.", getClass());
-				while (attemptToDoSomething()) {}
-				//messages.debugTech("nothing to do yet.", getClass());
-				
-				mayCleanTasks(1000);
-		
-				// when nothing more can be done, we may propose novel tasks :-) 
-				//System.err.println("threads used: "+usedThreads);
-				boolean proposeDynamicProcudersToWork;
-				synchronized (all) {
-					proposeDynamicProcudersToWork = ready.isEmpty() && usedThreads < MAX_THREADS;
-					// well, we could create new tasks !
-				}
-				if (proposeDynamicProcudersToWork && !proposeDynamicProducersToWork())
-						break;
-				
-			}
-			
-			
-		} finally {
-			doingSomething = false;
-		}
-	}
 	
 	private void mayCleanTasks(long mintimeMs) {
 		
@@ -467,10 +407,13 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 					
 					sub.clean();
 					
-					itSub.remove();
 				} catch (RuntimeException e) {
 					messagesRun.warnTech("oops,  catched an error while attempting to clean a task: "+sub, getClass(), e);
+					e.printStackTrace();
 				}
+				
+				itSub.remove();
+
 				
 			}
 			
@@ -479,6 +422,11 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		
 	}
 	
+	
+	/* (non-Javadoc)
+	 * @see genlab.core.exec.IRunner#run()
+	 */
+	@Override
 	public void run() {
 		
 		boolean displayMessage = false;
@@ -487,35 +435,17 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 	
 	
 		while (!cancel) {
-	
-			boolean nothingToDo;
-			synchronized (all) {
-				nothingToDo = running.isEmpty() && ready.isEmpty() && notReady.isEmpty(); 
-			}
 			
-			if (nothingToDo) {
-				
-				// really, there is nothing to do.
-				if (displayMessage) {
-					messagesRun.infoUser("all tasks done. ", getClass());
-					mayCleanTasks(0);
-
-					// we may display something there is relevant
-					displayMessage = false;
-				}		
-			
-			
-			} else {
-				displayMessage = true;
-				
-				attemptToDoThings();
-				
-			}
-			
+			long timeoutToWait;
+			if (notReady.isEmpty() && running.isEmpty() && tasksProducers.isEmpty())
+				timeoutToWait = 0; // nothing can happen. Let's just wait forever (until wake up)
+			else
+				timeoutToWait = 500;
+		
 			try {
 				messagesRun.traceTech("nothing to do, sleeping.", getClass());
 				synchronized (lockerMainLoop) {
-					lockerMainLoop.wait();	
+					lockerMainLoop.wait(timeoutToWait);	
 				}
 				messagesRun.traceTech("wake up !", getClass());
 			} catch (InterruptedException e) {
@@ -523,11 +453,29 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				e.printStackTrace();
 			}
 			
+			// search more work
+			synchronized (all) {
+			
+				// if some need more work
+				if (ready.isEmpty()) {
+					// ... ask the dynamic producers to submit some
+					proposeDynamicProducersToWork();
+				}
+				
+
+			}
+			
+			// clean old work
+			mayCleanTasks(2000);
+			
 			
 		}
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see genlab.core.exec.IRunner#cancelTasks()
+	 */
 	public void cancelTasks() {
 		cancel = true;
 		
@@ -538,15 +486,20 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				case READY:
 				case STARTED:
 				case WAITING_DEPENDENCY:
-					e.getProgress().setComputationState(ComputationState.FINISHED_CANCEL);	
+					//e.getProgress().setComputationState(ComputationState.FINISHED_CANCEL);	
+					e.cancel();
 				}
 				
 			}
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see genlab.core.exec.IRunner#computationStateChanged(genlab.core.model.exec.IComputationProgress)
+	 */
 	@Override
 	public void computationStateChanged(IComputationProgress progress) {
+		
 		
 		//messages.traceTech("computation state changed: "+progress.getAlgoExecution()+": "+progress.getComputationState(), getClass());
 		
@@ -568,16 +521,20 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			
 			// a task was running, and ended
 			case FINISHED_FAILURE:
-				cancelTasks();
-				
+				// cancelTasks();
 			case FINISHED_OK:
 			case FINISHED_CANCEL:
 				messages.traceTech("task finished: "+e+" ("+progress.getDurationMs()+" ms)", getClass());
 				if (running.contains(e)) {
 					running.remove(e);
 					done.add(e);
-					exec2thread.remove(e);
-					usedThreads -= e.getThreadsUsed();
+					
+					if (e.getThreadsUsed() == 0) {
+						usedThreadsWithoutThread--;
+					} else {
+						usedThreads -= e.getThreadsUsed();
+					}
+		
 				}
 				possibilityOfTaskCleanup(e);
 				wakeUp = true;
@@ -588,12 +545,24 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 				messages.traceTech("task is now ready: "+e, getClass());
 				notReady.remove(e);
 				ready.add(e);
+				submitTaskToWorkerThreads(e);
 				wakeUp = true;
 				break;
-				
-			case WAITING_DEPENDENCY:
+			
 			case STARTED:
+				ready.remove(e);
+				notReady.remove(e);
+				if (running.add(e)) {
+					if (e.getThreadsUsed() == 0) {
+						usedThreadsWithoutThread++;
+					} else {
+						usedThreads += e.getThreadsUsed();
+					}
+				}
+				break;
+				
 			case CREATED:
+			case WAITING_DEPENDENCY:	
 				// ignore;
 				break;
 				
@@ -605,19 +574,33 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		
 		if (wakeUp)
 			wakeUp();
+		
+		printState();
 
 	}
 
+	/* (non-Javadoc)
+	 * @see genlab.core.exec.IRunner#cancel()
+	 */
+	@Override
 	public void cancel() {
 		cancelTasks();
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see genlab.core.exec.IRunner#kill()
+	 */
+	@Override
 	public void kill() {
 		// TODO
 		cancelTasks();
 	}
 	
+	/* (non-Javadoc)
+	 * @see genlab.core.exec.IRunner#registerTasksDynamicProducer(genlab.core.exec.ITasksDynamicProducer)
+	 */
+	@Override
 	public void registerTasksDynamicProducer(ITasksDynamicProducer producer) {
 		synchronized (tasksProducers) {
 			messagesRun.debugTech("registered a novel tasks producer: "+producer, getClass());
@@ -626,6 +609,9 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 		wakeUp();
 	}
 
+	/* (non-Javadoc)
+	 * @see genlab.core.exec.IRunner#taskCleaning(genlab.core.exec.ITask)
+	 */
 	@Override
 	public void taskCleaning(ITask task) {
 		
@@ -639,15 +625,15 @@ public class Runner extends Thread implements IComputationProgressSimpleListener
 			done.remove(task);
 			running.remove(task);
 			ready.remove(task);
-			exec2thread.remove(task);
 			roots.remove(task);
 		}
 		
 	}
 	
-	/**
-	 * Propose to the runner a task that may be cleaned
+	/* (non-Javadoc)
+	 * @see genlab.core.exec.IRunner#possibilityOfTaskCleanup(genlab.core.exec.ITask)
 	 */
+	@Override
 	public void possibilityOfTaskCleanup(ITask task) {
 		
 		// only clean the tasks marked as "you may clean me"

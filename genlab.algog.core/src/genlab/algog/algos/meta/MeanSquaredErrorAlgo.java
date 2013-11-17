@@ -7,11 +7,8 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.meta.IAlgo;
-import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
-import genlab.core.parameters.Parameter;
 
 public class MeanSquaredErrorAlgo extends AbstractGeneticAlgo {
 

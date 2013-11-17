@@ -11,6 +11,6 @@ package genlab.core.exec;
  */
 public interface IComputationNode {
 
-	public Runner getRunner();
+	public IRunner getRunner();
 	
 }

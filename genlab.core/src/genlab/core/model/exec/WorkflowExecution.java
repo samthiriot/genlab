@@ -56,7 +56,7 @@ public class WorkflowExecution
 		
 		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
 
-			if (sub.getContainer() != null && sub.getContainer() != this) {
+			if (sub.getContainer() != null && sub.getContainer() != workflowInstance) {
 				// ignored ! this is contained in something, and this something will be in charge of creating execs
 				
 			} else {
@@ -79,7 +79,7 @@ public class WorkflowExecution
 		// will actually listen for the container
 		for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
 
-			if (sub.getContainer() != null && sub.getContainer() != this) {
+			if (sub.getContainer() != null && sub.getContainer() != workflowInstance) {
 				// ignored ! this is contained in something, and this something 
 				instance2execution.put(
 						sub, 
@@ -110,7 +110,7 @@ public class WorkflowExecution
 			
 			IAlgoExecution subExec = instance2execution.get(sub);
 			
-			if (sub.getContainer() != null) {
+			if (sub.getContainer() != null && sub.getContainer() != workflowInstance) {
 				// container will manage that itself.
 				
 				/* TODO for container exec !
@@ -151,7 +151,7 @@ public class WorkflowExecution
 		for (IAlgoExecution exec : new HashSet<IAlgoExecution>(instance2execution.values())) {
 			
 			// do not create links for the algos contained elsewhere (this is the responsability of the container)
-			if (exec.getAlgoInstance().getContainer() != null)
+			if (exec.getAlgoInstance().getContainer() != null  && (exec.getAlgoInstance().getContainer() != workflowInstance))
 				continue;
 	
 			messages.traceTech("init links for "+exec, getClass());
@@ -164,7 +164,7 @@ public class WorkflowExecution
 			
 			IAlgoExecution subExec = instance2execution.get(sub);
 			
-			if (sub.getContainer() != null) {
+			if (sub.getContainer() != null && sub.getContainer() != workflowInstance) {
 				// container will manage that itself.
 				
 				/* TODO for container exec !

@@ -45,9 +45,9 @@ public interface IExecution {
 
 	public void displayTechnicalInformationsOnMessages();
 	
-	public Runner getRunner();
+	public IRunner getRunner();
 	
-	public void setRunner(Runner r);
+	public void setRunner(IRunner r);
 	
 	
 }

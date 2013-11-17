@@ -239,13 +239,16 @@ public class IGraphLibrary {
 			int islands_n, 
 			int islands_size,
 			double islands_pin, 
-			int n_inter) {
+			int n_inter,
+			boolean simplifyLoops,
+			boolean simplifyMultiplex
+			) {
 
 		final InternalGraphStruct g = createEmptyGraph();
 				
 		//GLLogger.debugTech("calling igraph", getClass());
 		final long startTime = System.currentTimeMillis();
-		final int res = IGraphRawLibrary.igraph_simple_interconnected_islands_game(g, islands_n, islands_size, islands_pin, n_inter);
+		int res = IGraphRawLibrary.igraph_simple_interconnected_islands_game(g, islands_n, islands_size, islands_pin, n_inter);
 		
 		final long duration = System.currentTimeMillis() - startTime;
 		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
@@ -253,9 +256,15 @@ public class IGraphLibrary {
 		// detect errors
 		checkIGraphResult(res);
 		
+		if (simplifyLoops || simplifyMultiplex) {
+			res = IGraphRawLibrary.igraph_simplify(g, simplifyMultiplex, simplifyLoops);
+			checkIGraphResult(res);
+		}
+		
 		IGraphGraph result = new IGraphGraph(this, g, false);
-		
-		
+		if (simplifyMultiplex)
+			result.multiplex = false;
+
 		// basic checks
 		// TODO
 		

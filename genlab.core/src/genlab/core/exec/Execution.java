@@ -19,9 +19,9 @@ public class Execution implements IExecution {
 	
 	private Map<String, Object> key2value = new HashMap<String, Object>(30);
 	
-	private Runner runner = null;
+	private IRunner runner = null;
 	
-	public Execution(Runner runner) {
+	public Execution(IRunner runner) {
 		
 		// init stamp 
 		stamp = new UniqueTimestamp();
@@ -112,12 +112,12 @@ public class Execution implements IExecution {
 
 	}
 
-	public Runner getRunner() {
+	public IRunner getRunner() {
 		return runner;
 	}
 
 	@Override
-	public void setRunner(Runner r) {
+	public void setRunner(IRunner r) {
 		this.runner = r;
 	}
 

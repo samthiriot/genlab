@@ -256,6 +256,9 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 	
 	protected void dispatchCleaning() {
 		
+		if (listeners == null)
+			return;
+		
 		LinkedList<IComputationProgressSimpleListener> listenersCopy = null; 
 		
 		synchronized (listeners) {
@@ -315,6 +318,9 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 
 	@Override
 	public void clean() {
+		
+		if (listeners == null)
+			return;
 		
 		// warn listeners
 		dispatchCleaning();

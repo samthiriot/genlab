@@ -23,6 +23,14 @@
             class="genlab.algog.algos.meta.IntegerGeneAlgo"
             id="genlab.algog.core.algos.integergene">
       </algo>
+      <algo
+            class="genlab.algog.algos.meta.DoubleGeneAlgo"
+            id="genlab.algog.core.algos.doublegene">
+      </algo>
+      <algo
+            class="genlab.algog.algos.meta.BooleanGeneAlgo"
+            id="genlab.algog.core.algos.boolalgo">
+      </algo>
    </extension>
 
 </plugin>
