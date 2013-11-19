@@ -13,4 +13,15 @@ public class ADoubleGene extends ANumericGene<Double> {
 		return uniform.nextDoubleFromTo(min, max);
 	}
 
+	@Override
+	public Double crossoverArithmetic(Double one, Double other, double weight) {
+		
+		return one.doubleValue()*weight+other.doubleValue()*(1-weight);
+	}
+
+	@Override
+	public Double crossoverArithmetic(Object one, Object other, double weight) {
+		return crossoverArithmetic((Double)one, (Double)other, weight);
+	}
+
 }

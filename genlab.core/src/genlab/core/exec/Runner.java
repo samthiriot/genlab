@@ -50,7 +50,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Runner extends Thread implements IRunner {
 	
-	final static int MAX_THREADS = 5; // TODO
+	final static int MAX_THREADS = 12; // TODO
 	
 	final static int START_TASKS_SIZE = 500;
 	
