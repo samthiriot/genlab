@@ -13,4 +13,23 @@ public class AIntegerGene extends ANumericGene<Integer> {
 		return uniform.nextIntFromTo(min, max);
 	}
 
+	@Override
+	public Integer crossoverArithmetic(Integer one, Integer other, double weight) {
+
+		Integer result = (int)Math.floor(weight*one) + (int)Math.ceil((1-weight)*other);
+		
+		if (result > max)
+			return max;
+		else if (result < min)
+			return min;
+		else
+			return result;
+	}
+
+	@Override
+	public Integer crossoverArithmetic(Object one, Object other, double weight) {
+		return crossoverArithmetic((Integer)one, (Integer)other, weight);
+	}
+
+	
 }

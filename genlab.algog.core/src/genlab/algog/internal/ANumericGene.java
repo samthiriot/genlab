@@ -20,8 +20,18 @@ public abstract class ANumericGene<TypeName extends Number> extends AGene<TypeNa
 		this.max = max;
 	}
 	
+	/**
+	 * given a random weight between 0 and 1 passed as parameter, does a crossover
+	 * between this gene and another one.
+	 * @param uniform
+	 * @param weight
+	 * @return
+	 */
 	public abstract TypeName generateRandomnly(Uniform uniform);
 	
+	public abstract TypeName crossoverArithmetic(TypeName one, TypeName other, double weight);
+	
+	public abstract TypeName crossoverArithmetic(Object one, Object other, double weight);
 
 	
 }

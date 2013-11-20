@@ -12,6 +12,7 @@ import genlab.algog.internal.ADoubleGene;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
 import genlab.algog.internal.AIntegerGene;
+import genlab.algog.internal.ANumericGene;
 import genlab.algog.internal.AnIndividual;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
@@ -437,6 +438,67 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 
 	}
 	
+	protected Object[][] crossoverOnePoint(final AGenome genome, Object[] indiv1, Object[] indiv2) {
+		
+		Object[][] res = new Object[2][];
+		 
+		final int minSlice = 1;
+		final int maxSlice = genome.getGenes().length-1;
+		
+		int genIdx = uniform.nextIntFromTo(minSlice, maxSlice);
+
+		// indiv 1
+		Object[] novelIndiv = new Object[indiv1.length];
+		for (int i=0; i<genIdx; i++) {
+			novelIndiv[i]=indiv1[i];
+		}
+		for (int i=genIdx; i<indiv1.length; i++) {
+			novelIndiv[i]=indiv2[i];
+		}
+		res[0] = novelIndiv;
+		
+		// indiv 2
+		novelIndiv = new Object[indiv1.length];
+		for (int i=0; i<genIdx; i++) {
+			novelIndiv[i]=indiv2[i];
+		}
+		for (int i=genIdx; i<indiv1.length; i++) {
+			novelIndiv[i]=indiv1[i];
+		}
+		res[1] = novelIndiv;
+
+		 
+		return res;
+	}
+	
+	
+	protected Object[][] crossoverArithmetic(final AGenome genome, Object[] indiv1, Object[] indiv2) {
+		
+		
+		Object[][] res = new Object[2][];
+
+		
+		
+		Object[] novelIndiv1 = new Object[indiv1.length];
+		Object[] novelIndiv2 = new Object[indiv1.length];
+		
+		for (int i=0; i<indiv1.length; i++) {
+		
+			final double randomWeightFactor = uniform.nextDoubleFromTo(0, 1.0);
+			ANumericGene<?> currentGene = (ANumericGene<?>)genome.getGenes()[i];
+			
+			novelIndiv1[i] = currentGene.crossoverArithmetic(indiv1[i], indiv2[i], randomWeightFactor);
+			novelIndiv2[i] = currentGene.crossoverArithmetic(indiv2[i], indiv1[i], randomWeightFactor);
+
+		}
+		
+		res[0] = novelIndiv1;
+		res[1] = novelIndiv2;
+						
+		return res;
+		
+	}
+	
 	protected Map<AGenome,Object[][]> prepareNextGeneration() {
 		
 		
@@ -492,7 +554,11 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 		
 		// CROSS
 		// TODO manage multi specy !
+		
 		Map<AGenome,Object[][]> novelGenome2Population = new HashMap<AGenome, Object[][]>();
+
+		// stats on the count of mutation (to be returned to the user)
+		Map<AGene<?>,Integer> statsGene2countMutations = new HashMap<AGene<?>, Integer>();
 
 		for (AGenome genome: selectedGenome2Population.keySet()) {
 			
@@ -503,8 +569,6 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 			Object[][] novelPopulation = new Object[indiv2fitness.size()][];
 			int novelPopulationSize = 0;
 			
-			final int minSlice = 1;
-			final int maxSlice = genome.getGenes().length-1;
 			
 			while (novelPopulationSize < indiv2fitness.size()) {
 			
@@ -517,55 +581,53 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 				} while (index2 == index1);
 				// randomly select the place where doing the cut
 			
-				int genIdx = uniform.nextIntFromTo(minSlice, maxSlice);
 				
 				
 				Object[] indiv1 = selectedPopIndex.get(index1).genes;
 				Object[] indiv2 = selectedPopIndex.get(index2).genes;
-				Object[] novelIndiv = new Object[indiv1.length];
-				for (int i=0; i<genIdx; i++) {
-					novelIndiv[i]=indiv1[i];
-				}
-				for (int i=genIdx; i<indiv1.length; i++) {
-					novelIndiv[i]=indiv2[i];
-				}
+
+				//Object[][] novelIndividuals = crossoverOnePoint(genome, indiv1, indiv2);
+				Object[][] novelIndividuals = crossoverArithmetic(genome, indiv1, indiv2);
 				
-				System.err.println("crossover: "+Arrays.toString(indiv1)+" and "+Arrays.toString(indiv2)+" => "+Arrays.toString(novelIndiv));
-				novelPopulation[novelPopulationSize++] = novelIndiv;
+				
+				System.err.println("crossover: "+Arrays.toString(indiv1)+" and "+Arrays.toString(indiv2)+" => "+Arrays.toString(novelIndividuals[0]));
+				novelPopulation[novelPopulationSize++] = novelIndividuals[0];
 				
 				if (novelPopulationSize >= novelPopulation.length) 
 					break;
 				
-				novelIndiv = new Object[indiv1.length];
-				for (int i=0; i<genIdx; i++) {
-					novelIndiv[i]=indiv2[i];
-				}
-				for (int i=genIdx; i<indiv1.length; i++) {
-					novelIndiv[i]=indiv1[i];
-				}
-
-				System.err.println("crossover: "+Arrays.toString(indiv1)+" and "+Arrays.toString(indiv2)+" => "+Arrays.toString(novelIndiv));
-				novelPopulation[novelPopulationSize++] = novelIndiv;
+				System.err.println("crossover: "+Arrays.toString(indiv1)+" and "+Arrays.toString(indiv2)+" => "+Arrays.toString(novelIndividuals[1]));
+				novelPopulation[novelPopulationSize++] = novelIndividuals[1];
 				
 				
 			}
 
 			// MUTATION
+
 			final double probaMutation = 0.01;
 			for (int i=0; i<novelPopulation.length; i++) {
 				
 				
-				AGene<?>[] genes = genome.getGenes(); 
+				AGene<?>[] genes = genome.getGenes();
 				for (int j=0; j<genes.length; j++) {
 					 
 					if (uniform.nextDoubleFromTo(0.0, 1.0) <= genes[j].getMutationProbability()) {
+						
 						Object[] individual = novelPopulation[i];
-						System.err.println("mutate individual "+i+" from "+Arrays.toString(individual));
+						String debugIndivBefore = Arrays.toString(individual);
 						individual[j] = genes[j].generateRandomnly(uniform);
-						System.err.println("mutate individual "+i+" TO "+Arrays.toString(individual));
+						System.err.println("mutate individual "+i+": "+debugIndivBefore +" => "+Arrays.toString(individual));
+						
+						// stats on mutation
+						Integer count = statsGene2countMutations.get(genes[j]);
+						if (count == null) {
+							count = 0;
+						} 
+						statsGene2countMutations.put(genes[j], count+1);
 					}
 					
 				}
+				
 				
 			}
 			
@@ -573,7 +635,18 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 			
 		}
 		
-		
+		{
+			StringBuffer sb = new StringBuffer();
+			sb.append("during the generation of the population ").append(iterationsMade);
+			sb.append(" there were these mutations per gene: ");
+			for (Map.Entry<AGene<?>,Integer> gene2count : statsGene2countMutations.entrySet()) {
+				sb.append(gene2count.getKey().name);
+				sb.append(":");
+				sb.append(gene2count.getValue());
+				sb.append("; ");
+			}
+			messages.infoUser(sb.toString(), getClass());
+		}
 		
 		return novelGenome2Population;
 		
