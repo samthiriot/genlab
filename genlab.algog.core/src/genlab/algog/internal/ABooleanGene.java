@@ -13,4 +13,10 @@ public class ABooleanGene extends AGene<Boolean> {
 		return uniform.nextBoolean();
 	}
 
+	@Override
+	public Boolean mutate(Uniform uniform, Object previousValue) {
+		// invert the value
+		return !((Boolean)previousValue);
+	}
+
 }

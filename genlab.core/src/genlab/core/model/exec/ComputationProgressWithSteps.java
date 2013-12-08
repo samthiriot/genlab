@@ -27,7 +27,7 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 	private ComputationState state = null;
 	// locks the state. Used to avoid the state to be changed while we are dispatching the event on state change.
 	private final Object stateLock = new Object();
-	
+	private Exception exception = null;
 	private String currentTaskName = "";
 	
 	protected LinkedList<IComputationProgressSimpleListener> listeners = new LinkedList<IComputationProgressSimpleListener>();
@@ -364,6 +364,18 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 			if (listenersDetails != null)
 				listenersDetails.remove(listener);	
 		}
+	}
+
+
+	@Override
+	public void setException(Exception exception) {
+		this.exception = exception;
+	}
+
+
+	@Override
+	public Exception getException() {
+		return exception;
 	}
 	
 	

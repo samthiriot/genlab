@@ -3,6 +3,7 @@ package genlab.algog.algos.exec;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
@@ -29,7 +30,7 @@ public class GeneticExplorationOneGeneration extends
 	
 	private final Map<AGenome,Object[][]> generationToEvaluate;
 	private Map<AGenome, Collection<IAlgoInstance>> genome2algoInstance;
-	private final Map<AGenome, IInputOutputInstance> genome2fitnessOutput;
+	private final Map<AGenome, List<IAlgoInstance>> genome2fitnessOutput;
 	private final Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance;
 	
 	private int totalIterationsToDo = 0;
@@ -46,7 +47,7 @@ public class GeneticExplorationOneGeneration extends
 	private AnIndividual currentIndiv = null;
 
 	private final Object lockerResults = new Object();
-	private Map<AnIndividual,Double> computedFitness = new HashMap<AnIndividual, Double>();
+	private Map<AnIndividual,Double[]> computedFitness = new HashMap<AnIndividual, Double[]>();
 	
 	private final Map <IConnection,Object> inputConnection2value;
 	
@@ -62,7 +63,7 @@ public class GeneticExplorationOneGeneration extends
 			GeneticExplorationAlgoContainerInstance algoInst,
 			Map<AGenome,Object[][]> generationToEvaluate,
 			Map<AGenome, Collection<IAlgoInstance>> genome2algoInstance,
-			Map<AGenome, IInputOutputInstance> genome2fitnessOutput,
+			Map<AGenome, List<IAlgoInstance>> map,
 			Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance,
 			Map <IConnection,Object> inputConnection2value,
 			String name
@@ -74,10 +75,12 @@ public class GeneticExplorationOneGeneration extends
 		this.name = name;
 		
 		this.generationToEvaluate = generationToEvaluate;
-		this.genome2fitnessOutput = genome2fitnessOutput;
+		this.genome2fitnessOutput = map;
 		this.genome2algoInstance = genome2algoInstance;
 		this.gene2geneAlgoInstance = gene2geneAlgoInstance;
 		this.inputConnection2value = inputConnection2value;
+		
+		this.autoUpdateProgressFromChildren = false;
 	}
 
 	@Override
@@ -115,6 +118,8 @@ public class GeneticExplorationOneGeneration extends
 
 	}
 	
+
+	
 	@Override
 	protected IAlgoExecution createNextExecutionForOneIteration() {
 		
@@ -128,7 +133,7 @@ public class GeneticExplorationOneGeneration extends
 			// create exec
 			messages.traceTech("creating the executable for the exploration of individual: "+currentIndexIndividual+" of genome "+currentGenome, getClass());
 			Collection<IAlgoInstance> algoInstancesToRun = genome2algoInstance.get(currentGenome);
-			IInputOutputInstance fitnessOutput = genome2fitnessOutput.get(currentGenome);
+			List<IAlgoInstance> fitnessOutput = genome2fitnessOutput.get(currentGenome);
 
 			currentIndiv = new AnIndividual(currentGenome, currentIndividual);
 			
@@ -191,7 +196,7 @@ public class GeneticExplorationOneGeneration extends
 	
 	protected void computeResultsForIndividual(GeneticExplorationAlgoIndividualRun indivRun) {
 
-		Double resultFitness = indivRun.getResultFitness();
+		Double[] resultFitness = indivRun.getResultFitness();
 		AnIndividual indiv = indivRun.getIndividual();
 		int individualId = indivRun.getIndividualId();
 
@@ -227,13 +232,14 @@ public class GeneticExplorationOneGeneration extends
 		// update our progress according to children
 		switch (progress.getComputationState()) {
 		case FINISHED_FAILURE:
-			cancel(); // kill other tasks
-			progress.setComputationState(ComputationState.FINISHED_FAILURE);
-			return; // don't use this result
+			// don't care (failures accepted)
+			//this.progress.setComputationState(ComputationState.FINISHED_FAILURE);
+			//cancel(); // kill other tasks
+			break; // don't use this result
 			
 		case FINISHED_CANCEL:
+			this.progress.setComputationState(ComputationState.FINISHED_CANCEL);
 			cancel(); // kill other tasks
-			progress.setComputationState(ComputationState.FINISHED_CANCEL);
 			return; // don't use this result
 			
 		case FINISHED_OK:
@@ -269,8 +275,12 @@ public class GeneticExplorationOneGeneration extends
 	 * Returns the computed fitness for each individual of the generation.
 	 * @return
 	 */
-	public Map<AnIndividual,Double> getComputedFitness() {
-		return computedFitness;
+	public Map<AnIndividual,Double[]> getComputedFitness() {
+		// store results
+		synchronized (lockerResults) {
+				
+			return computedFitness;
+		}
 	}
 	
 	@Override

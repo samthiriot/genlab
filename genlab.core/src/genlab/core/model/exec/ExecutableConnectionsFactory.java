@@ -19,7 +19,12 @@ public class ExecutableConnectionsFactory {
 			IAlgoExecution toExec, 
 			IConnection c
 			) {
-		
+
+		if (fromExec == null)
+			throw new ProgramException("from exec cannot be null");
+
+		if (toExec == null)
+			throw new ProgramException("to exec cannot be null");
 
 		// the links comes from an iteration container
 		// so as soon as the container is STARTED, 

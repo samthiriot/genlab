@@ -5,6 +5,7 @@ import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.meta.AlgoCategory;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
@@ -43,7 +44,7 @@ public abstract class GraphStreamGeneratorAlgo extends GraphStreamAlgo {
 		this(
 				name, 
 				description, 
-				ExistingAlgoCategories.GENERATORS_GRAPHS.getTotalId()
+				ExistingAlgoCategories.GENERATORS_GRAPHS
 				);
 		
 		
@@ -52,12 +53,12 @@ public abstract class GraphStreamGeneratorAlgo extends GraphStreamAlgo {
 	public GraphStreamGeneratorAlgo(
 			String name, 
 			String description,
-			String categoryId
+			AlgoCategory category
 			) {
 		super(
 				name, 
 				description, 
-				categoryId
+				category
 				);
 		
 		registerParameter(PARAM_DIRECTED);

@@ -7,6 +7,7 @@ import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
+import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.IConstantAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.features.AddConnectionFeature;
@@ -23,6 +24,7 @@ import genlab.gui.graphiti.features.CreateIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.DeleteConnectionFeature;
 import genlab.gui.graphiti.features.DeleteIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.LayoutConstFeature;
+import genlab.gui.graphiti.features.LayoutIAlgoContainerFeature;
 import genlab.gui.graphiti.features.LayoutIAlgoFeature;
 import genlab.gui.graphiti.features.OpenParametersFeature;
 import genlab.gui.graphiti.features.PasteFeature;
@@ -95,8 +97,9 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 	protected DeleteIAlgoInstanceFeature deleteAlgo = new DeleteIAlgoInstanceFeature(this);
 	protected DeleteConnectionFeature deleteConnection = new DeleteConnectionFeature(this);
 
-	protected LayoutIAlgoFeature layoutAlgo = new LayoutIAlgoFeature(this);
 	protected LayoutConstFeature layoutConst = new LayoutConstFeature(this);
+	protected LayoutIAlgoContainerFeature layoutAlgoContainer = new LayoutIAlgoContainerFeature(this);
+	protected LayoutIAlgoFeature layoutAlgo = new LayoutIAlgoFeature(this);
 	
 	protected ConstDirectEditingFeature directEditConst = new ConstDirectEditingFeature(this);
 	protected AlgoDirectEditingFeature directEditAlgo = new AlgoDirectEditingFeature(this);
@@ -285,13 +288,14 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 			IAlgoInstance ai = (IAlgoInstance)bo;
 			if (ai.getAlgo() instanceof IConstantAlgo) {
 				return layoutConst;
+			} else if (ai.getAlgo() instanceof IAlgoContainer) {
+				return layoutAlgoContainer;
 			} else {
 				return layoutAlgo;
 			}
 		}
 		
-		GLLogger.warnTech("cannot provide a feature for a wrong object: "+bo, getClass());
-		
+		GLLogger.warnTech("cannot provide a layout feature for object: "+bo, getClass());
 		
 		return super.getLayoutFeature(context);
 	}

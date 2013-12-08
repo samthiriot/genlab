@@ -71,8 +71,7 @@ public class IGraphComponentsAlgo extends AbstractIGraphMeasure {
 				} else {
 					messages.debugTech("the average path length is not used, so it will not be computed", getClass());	
 				}
-				
-
+								
 				// average path length
 				if (isUsed(OUTPUT_SIZE_GIANT_CLUSTER)) {
 					int giantClusterSize = igraphGraph.lib.computeGiantCluster(igraphGraph);

@@ -72,11 +72,18 @@ public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecutionO
 				IGenlabGraph genlabGraph = IGraph2GenLabConvertor.getGenlabGraphForIgraph(igraphGraph, exec);
 
 				result.setResult(AbstractIGraphGenerator.OUTPUT_GRAPH, genlabGraph);
+
 				
-				
+				progress.setProgressMade(1);
+				progress.setComputationState(ComputationState.FINISHED_OK);
+
 			} catch (RuntimeException e) {
+				
 				messages.errorTech("error during the igraph call: "+e.getMessage(), getClass(), e);
-				throw new ProgramException("error during the igraph call: "+e.getMessage(), e);
+				progress.setException(e);
+				progress.setComputationState(ComputationState.FINISHED_FAILURE);
+				//throw new ProgramException("error during the igraph call: "+e.getMessage(), e);
+				
 			} finally {
 				// clear memory
 				lib.clearGraphMemory(igraphGraph);
@@ -87,10 +94,6 @@ public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecutionO
 			
 		}
 		
-		
-		progress.setProgressMade(1);
-		progress.setComputationState(ComputationState.FINISHED_OK);
-
 	}
 	
 	@Override

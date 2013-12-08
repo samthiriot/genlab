@@ -1,11 +1,13 @@
 package genlab.core.model.meta.basics.flowtypes;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -98,10 +100,15 @@ public class GenlabTable implements IGenlabTable {
 	}
 
 	@Override
-	public Collection<String> getColumnsId() {
-		return columnsTitles;
+	public List<String> getColumnsId() {
+		return Collections.unmodifiableList(columnsTitles);
 	}
 
+	@Override
+	public String getColumnIdForIdx(int colIdx) {
+		return columnsTitles.get(colIdx);
+	}
+	
 	@Override
 	public int addRow() {
 
@@ -121,8 +128,14 @@ public class GenlabTable implements IGenlabTable {
 	public void setValue(int rowId, String columnId, Object value) {
 		
 		// TODO check index !
+		Object[] row = content.get(rowId);
+		if (row == null)
+			throw new ProgramException("row was not declared: "+rowId);
+		Integer colId = columnId2idx.get(columnId);
+		if (colId == null)
+			throw new ProgramException("column was not declared: "+columnId);
 		
-		content.get(rowId)[columnId2idx.get(columnId)] = value;
+		row[colId] = value;
 		
 	}
 
@@ -190,6 +203,11 @@ public class GenlabTable implements IGenlabTable {
 	@Override
 	public Object getValue(int rowId, String columnId) {
 		return content.get(rowId)[columnId2idx.get(columnId)];
+	}
+	
+	@Override
+	public Object getValue(int rowId, int columnIdx) {
+		return content.get(rowId)[columnIdx];
 	}
 
 	@Override

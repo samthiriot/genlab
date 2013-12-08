@@ -16,7 +16,7 @@ public abstract class RandomNetworkGeneratorAlgo extends CytoscapeAlgo {
 	public RandomNetworkGeneratorAlgo(String name, String description) {
 		super(
 				name, description, 
-				ExistingAlgoCategories.GENERATORS_GRAPHS.getTotalId()
+				ExistingAlgoCategories.GENERATORS_GRAPHS
 				);
 		outputs.add(OUTPUT_GRAPH);
 		

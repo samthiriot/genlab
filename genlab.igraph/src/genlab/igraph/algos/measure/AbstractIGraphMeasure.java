@@ -26,9 +26,9 @@ public abstract class AbstractIGraphMeasure extends BasicAlgo {
 		super(
 				name, 
 				description, 
-				null,
-				ExistingAlgoCategories.ANALYSIS_GRAPH.getTotalId(),
-				"/icons/igraph.gif"
+				ExistingAlgoCategories.ANALYSIS_GRAPH,
+				"/icons/igraph"+IMAGE_PATH_PLACEHOLDER_SIZE+".png",
+				"/icons/igraphBig.png"
 				);
 		
 		inputs.add(INPUT_GRAPH);

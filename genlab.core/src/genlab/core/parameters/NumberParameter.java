@@ -15,6 +15,27 @@ public abstract class NumberParameter<Type extends Number> extends Parameter<Typ
 		super(id, name, desc, defaultValue);
 	}
 	
+	public NumberParameter(String id, String name, String desc, Type defaultValue, Type minValue) {
+		super(id, name, desc, defaultValue);
+		
+		this.minValue = minValue;
+	}
+	
+	public NumberParameter(String id, String name, String desc, Type defaultValue, Type minValue, Type maxValue) {
+		super(id, name, desc, defaultValue);
+		
+		this.minValue = minValue;
+		this.maxValue = maxValue;
+	}
+	
+	public NumberParameter(String id, String name, String desc, Type defaultValue, Type minValue, Type maxValue, Type step) {
+		super(id, name, desc, defaultValue);
+		
+		this.minValue = minValue;
+		this.maxValue = maxValue;
+		this.step = step;
+	}
+	
 	public Map<String,Boolean> check(Type value) {
 		
 		Map<String,Boolean> res = null;

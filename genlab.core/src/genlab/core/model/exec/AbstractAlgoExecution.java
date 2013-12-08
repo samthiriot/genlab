@@ -113,18 +113,22 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	
 	protected IConnectionExecution createInputExecutableConnection(IInputOutputInstance input, IConnection c, Map<IAlgoInstance,IAlgoExecution> instance2exec) {
 		
-		final IAlgoExecution fromExec = instance2exec.get(c.getFrom().getAlgoInstance());
-		final IAlgoExecution toExec = instance2exec.get(c.getTo().getAlgoInstance());
-
-		IConnectionExecution cEx = ExecutableConnectionsFactory.createExecutableConnection(fromExec, toExec, c);
+		try {
+			final IAlgoExecution fromExec = instance2exec.get(c.getFrom().getAlgoInstance());
+			final IAlgoExecution toExec = instance2exec.get(c.getTo().getAlgoInstance());
+	
+			IConnectionExecution cEx = ExecutableConnectionsFactory.createExecutableConnection(fromExec, toExec, c);
+			
+			
+			getOrCreateConnectionsForInput(input).add(cEx);
+			
+			addPrerequire(fromExec);
+	
+			return cEx;
 		
-		
-		getOrCreateConnectionsForInput(input).add(cEx);
-		
-		addPrerequire(fromExec);
-
-		return cEx;
-		
+		} catch (RuntimeException e) {
+			throw new ProgramException("error while attempting to connect "+input+" with "+c, e);
+		}
 	}
 
 	@Override

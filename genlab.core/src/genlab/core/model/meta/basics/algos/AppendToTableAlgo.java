@@ -32,8 +32,8 @@ public class AppendToTableAlgo extends BasicAlgo implements IReduceAlgo {
 		super(
 				"append table", 
 				"appends any value provided in input to the table", 
+				ExistingAlgoCategories.CASTING, 
 				null, 
-				ExistingAlgoCategories.CASTING.getTotalId(), 
 				null
 				);
 		

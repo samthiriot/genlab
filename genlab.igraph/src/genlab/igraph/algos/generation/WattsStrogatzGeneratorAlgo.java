@@ -1,5 +1,6 @@
 package genlab.igraph.algos.generation;
 
+import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
@@ -89,6 +90,8 @@ public class WattsStrogatzGeneratorAlgo extends AbstractIGraphGenerator {
 				int nei = (Integer)getInputValueForInput(INPUT_NEI);
 				double p= (Double)getInputValueForInput(INPUT_P);
 
+				if (nei < 0)
+					throw new WrongParametersException("nei should be > 0");
 				
 				boolean allowLoops = (Boolean)algoInst.getValueForParameter(PARAM_ALLOW_LOOPS.getId());
 				boolean directed = (Boolean)algoInst.getValueForParameter(PARAM_DIRECTED.getId());

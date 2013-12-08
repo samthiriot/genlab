@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -32,6 +33,9 @@ public class AlgoInstance implements IAlgoInstance {
 
 	protected transient IAlgo algo;
 	protected transient IGenlabWorkflowInstance workflow;
+	
+	protected transient Collection<IParametersListener> parametersListener = null;
+
 	
 	private Map<IInputOutput<?>,IInputOutputInstance> inputs2inputInstances = new LinkedHashMap<IInputOutput<?>, IInputOutputInstance>();
 	private Map<IInputOutput<?>,IInputOutputInstance> outputs2outputInstances = new LinkedHashMap<IInputOutput<?>, IInputOutputInstance>();
@@ -165,6 +169,10 @@ public class AlgoInstance implements IAlgoInstance {
 		return res;
 	}
 	
+	public boolean isParameterAtDefaultValue(String name) {
+		return !parametersKey2value.containsKey(name);
+	}
+	
 	public Object getValueForParameter(Parameter<?> param) {
 		return getValueForParameter(param.getId());
 	}
@@ -192,6 +200,15 @@ public class AlgoInstance implements IAlgoInstance {
 			parametersKey2value.put(name, value);
 			if (workflow != null)
 				workflow._notifyAlgoChanged(this);
+			
+			if (parametersListener != null)
+				for (IParametersListener l : parametersListener) {
+					try {
+						l.parameterValueChanged(this, name, value);
+					} catch (RuntimeException e) {
+						e.printStackTrace();
+					}
+				}
 		}
 		
 	}
@@ -347,6 +364,29 @@ public class AlgoInstance implements IAlgoInstance {
 		}
 		
 		return false;
+	}
+
+	
+	@Override
+	public void addParametersListener(IParametersListener list) {
+		
+		if (parametersListener == null)
+			parametersListener = new LinkedList<IParametersListener>();
+		
+		if (!parametersListener.contains(list))
+			parametersListener.add(list);
+		
+		
+	}
+
+	@Override
+	public void removeParametersListener(IParametersListener list) {
+		
+		if (parametersListener == null)
+			return;
+		
+		parametersListener.remove(list);
+		
 	}
 
 }

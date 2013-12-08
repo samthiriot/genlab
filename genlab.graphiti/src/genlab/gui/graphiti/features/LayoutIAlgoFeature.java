@@ -31,11 +31,12 @@ import org.eclipse.graphiti.services.IGaService;
  */
 public class LayoutIAlgoFeature extends AbstractLayoutFeature {
 
-	public static final int INVISIBLE_RECT_MARGIN_HORIZ = 5;
+	public static final int INVISIBLE_RECT_MARGIN_TOP = 5;
 
 
-	public static final int ANCHOR_WIDTH = 10;
-	
+	public static final int ANCHOR_WIDTH = 12;
+	public static final int INVISIBLE_RECT_MARGIN_HORIZ = ANCHOR_WIDTH/2;
+
 	public static final int TITLE_TEXT_LEFT = INVISIBLE_RECT_MARGIN_HORIZ+ANCHOR_WIDTH+16;
 	
 	
@@ -193,8 +194,8 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
         // resize visible rectangle
         {
             GraphicsAlgorithm rectangle = containerGa.getGraphicsAlgorithmChildren().get(0);
-            if (rectangle.getHeight() != containerGa.getHeight()) {
-            	rectangle.setHeight(containerGa.getHeight());
+            if (rectangle.getHeight() != containerGa.getHeight()-INVISIBLE_RECT_MARGIN_TOP) {
+            	rectangle.setHeight(containerGa.getHeight()-INVISIBLE_RECT_MARGIN_TOP);
             	anythingChanged = true;
             }
             if (rectangle.getWidth() != containerWidth) {

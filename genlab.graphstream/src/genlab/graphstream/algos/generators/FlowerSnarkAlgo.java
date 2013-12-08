@@ -24,7 +24,7 @@ public class FlowerSnarkAlgo extends GraphStreamGeneratorAlgo {
 		super(
 				ALGO_NAME,
 				"In the mathematical field of graph theory, the flower snarks form an infinite family of snarks introduced by Rufus Isaacs in 1975. As snarks, the flower snarks are a connected, bridgeless cubic graphs with chromatic index equal to 4. The flower snarks are non-planar and non-hamiltonian.",
-				ExistingAlgoCategories.GENERATORS_GRAPHS.getTotalId()
+				ExistingAlgoCategories.GENERATORS_GRAPHS
 				);
 		inputs.add(PARAM_N);
 	}

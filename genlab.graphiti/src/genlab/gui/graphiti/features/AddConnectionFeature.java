@@ -48,15 +48,14 @@ public class AddConnectionFeature extends AbstractAddFeature implements
 		connection.setStart(addConContext.getSourceAnchor());
 		connection.setEnd(addConContext.getTargetAnchor());
 
-		
 		Polyline polyline = gaService.createPolyline(connection);
-		polyline.setForeground(manageColor(IColorConstant.BLACK));
-		polyline.setLineWidth(2);
-	
+		polyline.setStyle(StylesUtils.getStyleForConnection(getDiagram()));
+		
+		
 		// add arrow
 		ConnectionDecorator cd = peCreateService.createConnectionDecorator(connection, false, 1.0, true);
 		createArrow(cd);
-
+		
 		link(connection, genlabConnection);
 
 		return connection;
@@ -65,10 +64,13 @@ public class AddConnectionFeature extends AbstractAddFeature implements
 
 	private Polyline createArrow(GraphicsAlgorithmContainer gaContainer) {
 		
-		final Polyline polyline = Graphiti.getGaCreateService().createPlainPolyline(
+		final Polyline polyline = Graphiti.getGaCreateService().createPolygon(
 				gaContainer,
-				new int[] {-15, 10, 0, 0, -15, -10 }
+				new int[] {-13, 8, 0, 0, -13, -8 }
 				);
+		
+		polyline.setStyle(StylesUtils.getStyleForConnection(getDiagram()));
+		polyline.setFilled(true);
 		
 		return polyline;
 	}

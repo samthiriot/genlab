@@ -28,14 +28,7 @@ public interface IAlgo extends IGenlabResource {
 	public String getName();
 	
 	public String getDescription();
-	
-	/**
-	 * Returns a long HTML description.
-	 * @return
-	 */
-	public String getHTMLDescription();
-
-	
+		
 	public Set<IInputOutput> getInputs();
 	
 	public Set<IInputOutput> getOuputs();
@@ -83,7 +76,10 @@ public interface IAlgo extends IGenlabResource {
 	 * so any plugin can find the file.
 	 * @return
 	 */
-	public String getImagePath();
+	public String getImagePath16X16();
+	public String getImagePath32X32();
+	public String getImagePath64X64();
+	public String getImagePathBig();
 	
 	/**
 	 * Returns the OSGI bundle which provides this algo. Usefull

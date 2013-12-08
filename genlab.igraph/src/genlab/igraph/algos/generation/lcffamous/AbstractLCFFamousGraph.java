@@ -30,7 +30,7 @@ public class AbstractLCFFamousGraph extends AbstractIGraphGenerator {
 		super(
 				graphName + "(igraph)", 
 				"LCF graph noted "+lcf.toString()+"; "+description,
-				ExistingAlgoCategories.STATIC_GRAPHS_LCF.getTotalId()
+				ExistingAlgoCategories.STATIC_GRAPHS_LCF
 				);
 				
 		this.countVertices = countVertices;

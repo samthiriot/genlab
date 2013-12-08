@@ -54,6 +54,10 @@
             class="genlab.core.model.meta.basics.algos.ConcatenateGraphsAlgo"
             id="genlab.core.model.meta.basics.algos.ConcatenateGraphsAlgo">
       </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.ConvertBooleanToInteger"
+            id="genlab.core.model.meta.basics.algos.ConvertBooleanToInteger">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">

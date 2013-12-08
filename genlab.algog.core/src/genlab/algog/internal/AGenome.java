@@ -10,13 +10,16 @@ public class AGenome {
 
 	private AGene<?>[] genes = null;
 	
-	public final String name;
 	
-	public AGenome(String name) {
+	public final String name;
+	public final Double crossoverProbability;
+	
+	public AGenome(String name, Double crossoverProbability) {
 		this.name = name;
+		this.crossoverProbability = crossoverProbability;
 	}
 	
-	public void setGenes(Collection<AGene> genesCollec) {
+	public void setGenes(Collection<AGene<?>> genesCollec) {
 		
 		this.genes = genesCollec.toArray(new AGene<?>[genesCollec.size()]);
 	}

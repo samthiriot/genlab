@@ -11,13 +11,18 @@ import genlab.core.model.instance.IGenlabWorkflowInstance;
  */
 public abstract class AlgoContainer extends BasicAlgo implements IAlgoContainer {
 
-	public AlgoContainer(String name, String description,
-			String longHtmlDescription, String categoryId, String imagePath) {
-		super(name, description, longHtmlDescription, categoryId, imagePath);
+	public AlgoContainer(
+			String name, 
+			String description,
+			AlgoCategory category, 
+			String imagePath,
+			String imagePathBig
+			) {
+		super(name, description, category, imagePath, imagePathBig);
 	}
 
-	public AlgoContainer(String name, String description, String categoryId) {
-		super(name, description, categoryId);
+	public AlgoContainer(String name, String description, AlgoCategory category) {
+		super(name, description, category, null, null);
 	}
 
 

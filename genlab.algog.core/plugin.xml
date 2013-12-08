@@ -31,6 +31,14 @@
             class="genlab.algog.algos.meta.BooleanGeneAlgo"
             id="genlab.algog.core.algos.boolalgo">
       </algo>
+      <algo
+            class="genlab.algog.algos.meta.GoalAlgo"
+            id="genlab.algog.algos.meta.GoalAlgo">
+      </algo>
+      <algo
+            class="genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo"
+            id="genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo">
+      </algo>
    </extension>
 
 </plugin>

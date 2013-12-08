@@ -50,8 +50,7 @@ public class GephiClusteringAlgo extends GephiAbstractAlgo {
 	public GephiClusteringAlgo() {
 		super(
 				"clustering (gephi)", 
-				"computes the clustering coefficient",
-				null
+				"computes the clustering coefficient"
 				);
 		
 		outputs.add(OUTPUT_AVERAGE_CLUSTERING_COEF);

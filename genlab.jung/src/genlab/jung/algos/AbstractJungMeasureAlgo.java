@@ -17,8 +17,8 @@ public abstract class AbstractJungMeasureAlgo extends BasicAlgo {
 		super(
 				name, 
 				description, 
-				null, 
-				ExistingAlgoCategories.ANALYSIS_GRAPH.getTotalId(), 
+				ExistingAlgoCategories.ANALYSIS_GRAPH, 
+				null,
 				null
 				);
 		

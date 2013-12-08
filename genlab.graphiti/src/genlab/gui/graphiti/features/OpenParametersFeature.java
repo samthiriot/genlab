@@ -5,6 +5,7 @@ import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.GraphitiImageProvider;
 import genlab.gui.views.ParametersView;
+import genlab.gui.views.ViewHelpers;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ICustomContext;
@@ -80,32 +81,10 @@ public class OpenParametersFeature extends AbstractCustomFeature {
 		
 		final IAlgoInstance algoInstance = (IAlgoInstance)getBusinessObjectForPictogramElement(context.getInnerPictogramElement());
 		
-		try {
-			IViewPart view = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(
-					// id of the view (provided by the genlab.gui package)
-					"genlab.gui.views.ParametersView",
-					// if of the content (so several instances can be opened)
-					algoInstance.getId(),
-					IWorkbenchPage.VIEW_ACTIVATE
-					);
-			// transmit info to enable the view to load what is required
-			WorkbenchPart v = (WorkbenchPart)view;
-			v.setPartProperty(
-					ParametersView.PROPERTY_PROJECT_ID, 
-					algoInstance.getWorkflow().getProject().getId()
-					);
-			v.setPartProperty(
-					ParametersView.PROPERTY_WORKFLOW_ID, 
-					algoInstance.getWorkflow().getId()
-					);
-			v.setPartProperty(
-					ParametersView.PROPERTY_ALGOINSTANCE_ID, 
-					algoInstance.getId()
-					);
-			
-		} catch (PartInitException e) {
-			GLLogger.errorTech("error while attempting to open preferences: "+e.getLocalizedMessage(), getClass(), e);
-		}
+		if (algoInstance == null)
+			return;
+		
+		ViewHelpers.showParametersFor(algoInstance);
 
 	}
 

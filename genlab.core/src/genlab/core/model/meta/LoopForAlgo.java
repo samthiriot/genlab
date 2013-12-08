@@ -15,8 +15,8 @@ public class LoopForAlgo extends AlgoContainer {
 		super(
 				"for loop", 
 				"iterates N times", 
-				null, 
-				ExistingAlgoCategories.LOOPS.getTotalId(), 
+				ExistingAlgoCategories.LOOPS, 
+				null,
 				null
 				);
 		

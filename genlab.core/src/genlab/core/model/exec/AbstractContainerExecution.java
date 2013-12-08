@@ -59,6 +59,8 @@ public abstract class AbstractContainerExecution
 	protected boolean somethingCanceled = false;
 	
 	protected boolean autoFinishWhenChildrenFinished = true;
+	protected boolean autoUpdateProgressFromChildren = true;
+	
 	
 	public AbstractContainerExecution(
 			IExecution exec, 
@@ -80,26 +82,34 @@ public abstract class AbstractContainerExecution
 	@Override
 	public void computationStateChanged(IComputationProgress progress) {
 		
-		final ComputationState receivedState = progress.getComputationState();
-		
-		// ignore intermediate messages
-		if (!receivedState.isFinished())
-			return;
-		
-		// ignore progress which is not coming from my children
-		if (!tasks.contains(progress.getAlgoExecution()))
-			return; 
-		
-		// ensure all tasks are done !
-		//synchronized (tasks) {
+		try {
+			final ComputationState receivedState = progress.getComputationState();
 			
-		updateProgressFromChildren();
+			// ignore intermediate messages
+			if (!receivedState.isFinished())
+				return;
 			
-		//}
+			// ignore progress which is not coming from my children
+			if (!tasks.contains(progress.getAlgoExecution()))
+				return; 
+			
+			// ensure all tasks are done !
+			//synchronized (tasks) {
+				
+			updateProgressFromChildren();
+				
+			//}
+			
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+		}
 			
 	}
 	
 	protected void updateProgressFromChildren() {
+		
+		if (!autoUpdateProgressFromChildren)
+			return;
 		
 		ComputationState ourState = null;
 		
@@ -126,6 +136,7 @@ public abstract class AbstractContainerExecution
 			
 			switch (subState) {
 			case FINISHED_FAILURE:
+				cancel();
 				somethingFailed = true;
 				break;
 			case FINISHED_CANCEL:
@@ -141,7 +152,7 @@ public abstract class AbstractContainerExecution
 		}
 	
 		
-		if (somethingNotFinished) {
+		if (somethingNotFinished && !somethingFailed && !somethingCanceled) {
 			
 			this.progress.setProgressTotal(totalToDo);
 			this.progress.setProgressMade(totalDone);
@@ -162,6 +173,7 @@ public abstract class AbstractContainerExecution
 			
 		}
 	}
+	
 	
 
 	@Override
@@ -200,7 +212,8 @@ public abstract class AbstractContainerExecution
 			if (!tasks.contains(t)) {
 				tasks.add(t);
 				t.getProgress().addListener(this);
-				t.getProgress().addDetailedListener(this);
+				if (autoUpdateProgressFromChildren)
+					t.getProgress().addDetailedListener(this);
 				exec.getRunner().addTask((IAlgoExecution) t);
 			}	
 		//}

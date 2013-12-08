@@ -48,8 +48,8 @@ public class OpenFileWithDefinedCommandAlgo extends BasicAlgo {
 		super(
 				"open the file with a specific command (os)", 
 				"opens this file using the OS default command line", 
+				ExistingAlgoCategories.DISPLAY,  
 				null, 
-				ExistingAlgoCategories.DISPLAY.getTotalId(),  
 				null
 				);
 		

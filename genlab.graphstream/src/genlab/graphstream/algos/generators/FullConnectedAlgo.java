@@ -36,7 +36,7 @@ public class FullConnectedAlgo extends GraphStreamGeneratorAlgo {
 		super(
 				ALGO_NAME,
 				"This generator creates fully connected graphs of any size.",
-				ExistingAlgoCategories.GENERATORS_GRAPHS.getTotalId()
+				ExistingAlgoCategories.GENERATORS_GRAPHS
 				);
 		
 		inputs.add(PARAM_N);

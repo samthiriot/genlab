@@ -26,9 +26,9 @@ public class Neo4jGraphWriter extends BasicAlgo {
 		super(
 				"neo4j database", 
 				"adds or append a graph into a neo4j database",
-				null,
-				ExistingAlgoCategories.WRITER_GRAPH.getTotalId(),
-				"/icons/neo4j.gif"
+				ExistingAlgoCategories.WRITER_GRAPH,
+				"/icons/neo4j"+IMAGE_PATH_PLACEHOLDER_SIZE+".gif",
+				"/icons/neo4jBig.png"
 				);
 		
 		inputs.add(PARAM_GRAPH);

@@ -62,9 +62,10 @@ public class ConcatenateGraphsAlgo extends BasicAlgo {
 		super(
 				"concatenate graphs", 
 				"concatenate graphs", 
-				null, 
-				ExistingAlgoCategories.CASTING.getTotalId(), // TODO another one !
-				null);
+				ExistingAlgoCategories.CASTING, // TODO another one !
+				null,
+				null
+				);
 
 		inputs.add(INPUT_GRAPH);
 		outputs.add(OUTPUT_GRAPH);

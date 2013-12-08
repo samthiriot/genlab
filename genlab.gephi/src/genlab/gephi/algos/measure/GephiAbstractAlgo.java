@@ -18,13 +18,13 @@ public abstract class GephiAbstractAlgo extends BasicAlgo {
 			"the graph to analyze"
 	);
 	
-	public GephiAbstractAlgo(String name, String description, String longHtmlDescription) {
+	public GephiAbstractAlgo(String name, String description) {
 		super(
 				name, 
 				description, 
-				longHtmlDescription,
-				ExistingAlgoCategories.ANALYSIS_GRAPH.getTotalId(),
-				"/icons/gephi.gif" 
+				ExistingAlgoCategories.ANALYSIS_GRAPH,
+				"/icons/gephi"+IMAGE_PATH_PLACEHOLDER_SIZE+".png",
+				"/icons/gephiBig.png"
 				);
 		
 		inputs.add(INPUT_GRAPH);

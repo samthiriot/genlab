@@ -12,6 +12,7 @@ import genlab.core.parameters.StringBasedParameter;
 import genlab.core.projects.GenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
+import java.awt.Color;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,10 +24,13 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
@@ -109,10 +113,26 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 		}
 	}
 	
+	protected void clearWidgets() {
+		
+		for (Control c: form.getBody().getChildren()) {
+			c.dispose();
+		}
+		/*for (Widget w: widget2param.keySet()) {
+			w.dispose();
+		}*/
+		widget2param.clear();
+		
+		form.update();
+		
+	}
+	
 	protected void loadData() {
 		
 		if (toolkit == null) 
 			return;
+
+		clearWidgets();
 		
 		// title
 		form.setText("Parameters for algo "+algo.getName());
@@ -123,9 +143,10 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 
 		GridLayout layout = new GridLayout();
 		layout.numColumns = 2;
-		
-		form.getBody().setLayout(layout);
 
+		form.getBody().setLayout(layout);
+		// for layout testing : form.getBody().setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
+		
 		for (Parameter<?> param : algo.getParameters()) {
 			
 			Object value = algo.getValueForParameter(param.getId());
@@ -133,11 +154,13 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 			if (value == null)
 				value = param.getDefaultValue();
 			
-			Label label = new Label(form.getBody(), SWT.NULL);
-			label.setText(param.getName()+":");
-			label.setBackground(form.getBackground());
+			//Label label = new Label(form.getBody(), SWT.NULL);
+			Label label = toolkit.createLabel(form.getBody(), param.getName()+":");
+
+			//label.setText(param.getName()+":");
+			//label.setBackground(form.getBackground());
 			
-			Widget createdWidget = null;
+			Control createdWidget = null;
 			
 			if (param instanceof IntParameter) {
 				IntParameter p = (IntParameter)param;
@@ -159,8 +182,8 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				else
 					sp.setSelection((Integer)value);
 				
-				
 				createdWidget = sp;
+				toolkit.adapt(sp, true, true);
 				sp.addSelectionListener(this);
 				
 			} else if (param instanceof DoubleParameter) {
@@ -186,13 +209,17 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				sp.setSelection((int)Math.round(((Double)value)*Math.pow(10, sp.getDigits())));
 				
 				createdWidget = sp;
+				toolkit.adapt(sp, true, true);
 				
 				sp.addSelectionListener(this);
 			} else if (param instanceof StringBasedParameter<?>) {
 				StringBasedParameter p = (StringBasedParameter)param;
-				Text txt = new Text(form.getBody(), SWT.BORDER);
 				
-				txt.setText(value.toString());
+				Text txt = toolkit.createText(form.getBody(), value.toString());
+				
+				//Text txt = new Text(form.getBody(), SWT.BORDER);
+				
+				//txt.setText(value.toString());
 								
 				createdWidget = txt;
 				txt.addModifyListener(this);
@@ -200,8 +227,11 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 			} else if (param instanceof BooleanParameter) {
 				
 				BooleanParameter b = (BooleanParameter)param;
-				Button check = new Button(form.getBody(), SWT.CHECK);
-				check.setBackground(form.getBackground());
+				
+				Button check = toolkit.createButton(form.getBody(), "", SWT.CHECK);
+
+				//Button check = new Button(form.getBody(), SWT.CHECK);
+				//check.setBackground(form.getBackground());
 				
 				Boolean valueB = (Boolean)value;
 				
@@ -214,11 +244,15 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				
 				final FileParameter f = (FileParameter)param;
 				
-				Button button = new Button(form.getBody(), SWT.PUSH);
+				String txt = null;
 				if (value == null)
-					button.setText("push to select a file");
+					txt = "push to select a file";
 				else 
-					button.setText(((File)value).getAbsolutePath());
+					txt = ((File)value).getAbsolutePath();
+				
+				Button button = toolkit.createButton(form.getBody(), txt, SWT.PUSH);
+
+				//Button button = new Button(form.getBody(), SWT.PUSH);
 				
 				button.addSelectionListener(new SelectionListener() {
 					
@@ -242,22 +276,24 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				GLLogger.errorTech("unable to manage parameter type "+param.getClass().getCanonicalName()+"; the parameter "+param.getName()+" will not be displayed...", getClass());
 				
 			}
-			
+			// set the layout of the component
+			createdWidget.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 			widget2param.put(createdWidget, param);
 		}
 		
 		{
-			Label label = new Label(form.getBody(), SWT.NULL);
-			label.setText("(changes are saved automatically)");
+			Label label = toolkit.createLabel(form.getBody(), "(changes are saved automatically)");
+
+			//Label label = new Label(form.getBody(), SWT.NULL);
+			//label.setText("(changes are saved automatically)");
 			// TODO italic (or smaller ?)
-			label.setBackground(form.getBackground());
-			GridData d = new GridData(GridData.END | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL);
+			//label.setBackground(form.getBackground());
+			GridData d = new GridData(SWT.RIGHT, SWT.TOP, true, false);
 			d.horizontalSpan = layout.numColumns;
 			label.setLayoutData(d);
 		}
 		
 		form.layout(true);
-		
 		// end / state
 		
 		form.setRedraw(true);
@@ -269,7 +305,9 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 	@Override
 	public void createPartControl(Composite parent) {
 		toolkit = new FormToolkit(parent.getDisplay());
+		parent.setLayout(new FillLayout());
 		form = toolkit.createScrolledForm(parent);
+		
 	}
 
 	@Override
@@ -365,6 +403,21 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 	}
 
 
+	@Override
+	protected void finalize() throws Throwable {
+		
+		if (toolkit != null)
+			toolkit.dispose();
+		if (form != null) {
+			for (Control c: form.getBody().getChildren()) {
+				c.dispose();
+			}
+			form.dispose();
+		}
+		
+		super.finalize();
+	}
 
+	
 
 }

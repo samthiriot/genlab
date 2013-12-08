@@ -41,8 +41,8 @@ public class HeterogeneousMapMultiplexor extends BasicAlgo {
 		super(
 				"multiplexer", 
 				"pieces several values into one object, easier to manipulate",
+				ExistingAlgoCategories.CASTING,
 				null,
-				ExistingAlgoCategories.CASTING.getId(),
 				null
 				);
 		

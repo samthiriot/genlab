@@ -23,7 +23,6 @@ public abstract class BasicAlgo implements IAlgo {
 
 	protected final String name;
 	protected final String description;
-	protected final String longHtmlDescription;
 
 	protected final String id;
 	protected final String categoryId;
@@ -35,24 +34,35 @@ public abstract class BasicAlgo implements IAlgo {
 	
 	
 	protected String imageRelativePath = null;
+	protected String imageRelativeBig = null;
+
 	
+	public static final String IMAGE_PATH_PLACEHOLDER_SIZE = "[%SIZE%]";
+	
+	/**
+	 * Pass the image parameter with a placeholder for size: 
+	 * @param name
+	 * @param description
+	 * @param longHtmlDescription
+	 * @param categoryId
+	 * @param imagePath
+	 */
 	public BasicAlgo(
 			String name,
 			String description,
-			String longHtmlDescription,
-			String categoryId,
-			String imagePath
+			AlgoCategory category,
+			String imagePath,
+			String imagePathBig
 			) {
 		
 		this.id = constructId(name);
 		this.name = name;
 		this.description = description;
 
-		// TODO remove html description
-		this.longHtmlDescription = longHtmlDescription;
-		this.categoryId = categoryId;
+		this.categoryId = category.getTotalId();
 		
 		this.imageRelativePath = imagePath;
+		this.imageRelativeBig = imagePathBig;
 	}
 	
 	protected String constructId(String name) {
@@ -146,10 +156,6 @@ public abstract class BasicAlgo implements IAlgo {
 		this.parameters.put(p.getId(), p);
 	}
 
-	@Override
-	public String getHTMLDescription() {
-		return longHtmlDescription;
-	}
 	
 	public final static String markerFile = "___fromFile/";
 	
@@ -174,9 +180,9 @@ public abstract class BasicAlgo implements IAlgo {
 	}
 	
 	@Override
-	public String getImagePath() {
+	public String getImagePath16X16() {
 		
-		return imageRelativePath;
+		return (imageRelativePath == null? null : imageRelativePath.replace(IMAGE_PATH_PLACEHOLDER_SIZE, "16x16"));
 		/*
 		if (absoluteImagePath == null && imageRelativePath != null) {
 			File file = null;
@@ -199,6 +205,21 @@ public abstract class BasicAlgo implements IAlgo {
 		*/
 	}
 	
+
+	@Override
+	public String getImagePath32X32() {
+		return (imageRelativePath == null? null : imageRelativePath.replace(IMAGE_PATH_PLACEHOLDER_SIZE, "32x32"));	
+	}
+
+	@Override
+	public String getImagePath64X64() {
+		return (imageRelativePath == null? null : imageRelativePath.replace(IMAGE_PATH_PLACEHOLDER_SIZE, "64x64"));
+	}
+	
+	@Override
+	public String getImagePathBig() {
+		return imageRelativeBig;
+	}
 
 	@Override
 	public boolean canBeContainedInto(IAlgoInstance algoInstance) {

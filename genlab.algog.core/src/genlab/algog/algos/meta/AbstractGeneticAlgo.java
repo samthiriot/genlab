@@ -12,9 +12,9 @@ public abstract class AbstractGeneticAlgo extends BasicAlgo {
 		super(
 				name, 
 				description, 
-				null, 
-				ExistingAlgoCategories.EXPLORATION_GENETIC_ALGOS.getTotalId(), 
-				"/icons/dna.gif"
+				ExistingAlgoCategories.EXPLORATION_GENETIC_ALGOS, 
+				"/icons/dna"+IMAGE_PATH_PLACEHOLDER_SIZE+".png",
+				"/icons/dnaBig.png"
 				);
 	}
 	

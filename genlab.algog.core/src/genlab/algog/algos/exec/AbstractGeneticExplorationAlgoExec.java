@@ -14,15 +14,16 @@ import genlab.algog.internal.AGenome;
 import genlab.algog.internal.AIntegerGene;
 import genlab.algog.internal.ANumericGene;
 import genlab.algog.internal.AnIndividual;
+import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
+import genlab.core.exec.ITask;
 import genlab.core.model.exec.AbstractContainerExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
-import genlab.core.model.exec.IComputationResult;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
@@ -30,6 +31,7 @@ import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,15 +43,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.naming.spi.DirStateFactory.Result;
-
 import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 import cern.jet.random.engine.RandomEngine;
 
 /**
  * The executable counterpart of {@link GeneticExplorationAlgoContainerInstance}.
- * This is a container executable, which will contain successive exections.
+ * This is a container executable, which will contain successive executions.
  * Once started, it will generate a generation of the population, then 
  * start a subtask to evaluate this generation, then evaluate the fitness and generate
  * the next generation, then add another subtask to evaluate the next generation, 
@@ -59,56 +59,60 @@ import cern.jet.random.engine.RandomEngine;
  * @author Samuel Thiriot
  *
  */
-public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
+public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContainerExecution {
+
 
 	protected int TODO_POP_SIZE_PER_GENOME = 100; 
-	
-	protected int iterationsMade = 0;
-	
+		
 	// random number generation
 	protected RandomEngine coltRandom;
 	protected Uniform uniform;
 
-	
 	// associates each gene to the point were the information has to be sent
 	protected Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance = new HashMap<AGene<?>, IAlgoInstance>();
-	
 	
 	// associates each genome with the algorithms which enable to evaluate individuals
 	protected Map<AGenome, Collection<IAlgoInstance>> genome2algoInstance = new HashMap<AGenome, Collection<IAlgoInstance>>();
 	
 	// associates each genome with the output where the fitness is retrieved from 
-	protected Map<AGenome, IInputOutputInstance> genome2fitnessOutput = new HashMap<AGenome, IInputOutputInstance>();
+	protected Map<AGenome, List<IAlgoInstance>> genome2fitnessOutput = new HashMap<AGenome, List<IAlgoInstance>>();
 
 	// for each generation, and each individual, stores the corresponding fitness
-	protected LinkedHashMap<Integer,Map<AnIndividual,Double>> generation2fitness = new LinkedHashMap<Integer, Map<AnIndividual,Double>>(500);
+	protected LinkedHashMap<Integer,Map<AnIndividual,Double[]>> generation2fitness = new LinkedHashMap<Integer, Map<AnIndividual,Double[]>>(500);
 
 	protected final GeneticExplorationAlgoContainerInstance algoInst;
 	
 	// associates each input connection to the corresponding value
 	protected Map <IConnection,Object> inputConnection2value = new HashMap<IConnection, Object>();
 	
-	protected final int paramStopMaxIterations;
 	protected final int paramPopulationSize;
+	
+	protected final int paramStopMaxIterations;
+
+
+
+	protected int iterationsMade = 0;
 
 	
-	public GeneticExplorationAlgoExec(
-			IExecution exec, 
+	public AbstractGeneticExplorationAlgoExec(IExecution exec,
 			GeneticExplorationAlgoContainerInstance algoInst) {
-		
 		super(exec, algoInst, new ComputationProgressWithSteps());
 		
+
 		this.algoInst = algoInst;
 		
 		this.autoFinishWhenChildrenFinished = false;
-		
+		this.autoUpdateProgressFromChildren = false;
 
 		// read parameters
+		paramPopulationSize = (Integer) algoInst.getValueForParameter(GeneticExplorationAlgo.PARAM_SIZE_POPULATION);
+		
 		paramStopMaxIterations = (Integer) algoInst.getValueForParameter(GeneticExplorationAlgo.PARAM_STOP_MAXITERATIONS);
 
-		paramPopulationSize = (Integer) algoInst.getValueForParameter(GeneticExplorationAlgo.PARAM_SIZE_POPULATION);
+		
 	}
-	
+
+
 	/**
 	 * Called before any other computation.
 	 * Detects the actual work to do given the parameters.
@@ -117,6 +121,9 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 		
 		// build the list of the genomes
 		messages.debugTech("analysis of the content of the genetic algo...", getClass());
+		
+		Set<IAlgoInstance> allGoals = algoInst.collectGoals();
+		
 		for (IAlgoInstance childInstance: algoInst.getChildren()) {
 			
 			if (!(childInstance.getAlgo() instanceof GenomeAlgo))
@@ -125,16 +132,20 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 			// for each genome defined here...
 		
 			// create its counterpart here
-			AGenome genome = new AGenome(childInstance.getName());
+			final Double crossoverProbability = (Double)childInstance.getValueForParameter(GenomeAlgo.PARAM_PROBA_CROSSOVER);
+			AGenome genome = new AGenome(
+					childInstance.getName(), 
+					crossoverProbability
+					);
 			
 			// retrieve its parameters
 			
 			
-			Collection<AGene> genesForThisGenome = new LinkedList<AGene>();
+			Collection<AGene<?>> genesForThisGenome = new LinkedList<AGene<?>>();
 			
 			Set<IAlgoInstance> genomeEvaluationAlgos = new HashSet<IAlgoInstance>();
-			IInputOutputInstance outputFitness = null;
-			
+			Set<IAlgoInstance> genomeGoalAlgos = new HashSet<IAlgoInstance>();
+	
 			for (IConnection outC : childInstance.getOutputInstanceForOutput(GenomeAlgo.OUTPUT_GENOME).getConnections()) {
 				
 				// ... and for each connection out of there...
@@ -180,16 +191,20 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 				gene2geneAlgoInstance.put(gene, geneInstance);
 				
 				// explore children, and add them to the list of the algo isntances to execute for this genome.
-				outputFitness = ((GeneticExplorationAlgoContainerInstance)algoInst).collectAlgosToEvaluatePopulation(
+				((GeneticExplorationAlgoContainerInstance)algoInst).collectAlgosToEvaluatePopulation(
 						geneInstance, 
-						genomeEvaluationAlgos
+						genomeEvaluationAlgos,
+						genomeGoalAlgos
 						);
+				
+				if (genomeGoalAlgos.size() != allGoals.size())
+					throw new WrongParametersException("each genome should be connected to algos connected to all the goals.");
 				
 			}		
 			
 			// store the list of all the executable algos for this genome 
 			genome2algoInstance.put(genome, genomeEvaluationAlgos);
-			genome2fitnessOutput.put(genome, outputFitness);
+			genome2fitnessOutput.put(genome, new ArrayList<IAlgoInstance>(genomeGoalAlgos));
 			
 			genome.setGenes(genesForThisGenome);
 				
@@ -222,6 +237,8 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 	}
 	
 	
+	
+
 	/**
 	 * Step "construct population" of the genetic algo. Called before each 
 	 * @return
@@ -240,7 +257,7 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 			messages.debugUser("generation of the sub population based on genome: "+genome, getClass());
 
 			
-			Object[][] population = generateInitialPopulation(genome, paramPopulationSize/gene2geneAlgoInstance.size());
+			Object[][] population = generateInitialPopulation(genome, paramPopulationSize/genome2algoInstance.size());
 			
 			genome2population.put(genome, population);
 
@@ -252,6 +269,42 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 	}
 	
 
+
+	/**
+	 * Mutates a population described by the genome passed as parameter, update the population in place, 
+	 * and update the map of gene mutation counts.
+	 * @param genome
+	 * @param novelPopulation
+	 * @param statsGene2countMutations
+	 */
+	protected void mutatePopulation(AGenome genome, Object[][] novelPopulation, Map<AGene<?>,Integer> statsGene2countMutations) {
+		
+		for (int i=0; i<novelPopulation.length; i++) {
+			
+			
+			AGene<?>[] genes = genome.getGenes();
+			for (int j=0; j<genes.length; j++) {
+				 
+				if (uniform.nextDoubleFromTo(0.0, 1.0) <= genes[j].getMutationProbability()) {
+					
+					Object[] individual = novelPopulation[i];
+					String debugIndivBefore = Arrays.toString(individual);
+					individual[j] = genes[j].mutate(uniform, individual[j]);
+					System.err.println("mutate individual "+i+": "+debugIndivBefore +" => "+Arrays.toString(individual));
+					
+					// stats on mutation
+					Integer count = statsGene2countMutations.get(genes[j]);
+					if (count == null) {
+						count = 0;
+					} 
+					statsGene2countMutations.put(genes[j], count+1);
+				}
+				
+			}
+			
+			
+		}
+	}
 	
 	/**
 	 * Returns an execution for one iteration, that is for one generation.
@@ -264,7 +317,7 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 		
 				
 		messages.traceTech("creating the executable for the evaluation of this generation...", getClass());
-		
+				
 		GeneticExplorationOneGeneration execOneGeneration = new GeneticExplorationOneGeneration(
 				exec, 
 				algoInst,
@@ -298,7 +351,7 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 	protected void displayOnStream(PrintStream ps, int generationId) {
 		
 		
-		for (Map.Entry<AnIndividual,Double> indiv2fitness : generation2fitness.get(generationId).entrySet()) {
+		for (Map.Entry<AnIndividual,Double[]> indiv2fitness : generation2fitness.get(generationId).entrySet()) {
 			
 			ps.print(indiv2fitness.getValue());
 			ps.print("\t");
@@ -312,72 +365,100 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 		
 	}
 	
-	protected void manageResultsForCurrentGeneration(Map<AnIndividual,Double> result) {
+	/**
+	 * Opportunity for the algo to display stats on the current generation, or even export it.
+	 * @param result
+	 */
+	protected abstract void manageStatisticsForCurrentGeneration(Map<AnIndividual,Double[]> result);
+	
+	protected void manageResultsForCurrentGeneration(Map<AnIndividual,Double[]> result) {
 		
 		messages.debugUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
 
 		// store it 
 		generation2fitness.put(iterationsMade, result);
 		
-		// display info on it
-		double min = Double.MAX_VALUE;
-		double max = Double.MIN_VALUE;
-		double total = 0.0;
-		final int count = result.size();
-		
-		AnIndividual best = null;
-		
-		for (Map.Entry<AnIndividual,Double> indiv2fitness : result.entrySet()) {
-			
-			double d = indiv2fitness.getValue();
-			
-			total += d;
-			if (d < min) {
-				min = d;
-				best = indiv2fitness.getKey();
-			}
-			max = Math.max(d, max);
-		
-			System.err.println("raw fitness for "+Arrays.toString(indiv2fitness.getKey().genes)+": "+d);
-		}
-		
-		// now reverse all the values so the genetic algo is attempting to maximize the fitness
-		for (Map.Entry<AnIndividual,Double> indiv2fitness : result.entrySet()) {
-		
-			indiv2fitness.setValue(max-indiv2fitness.getValue()+1);
-			
-			
-		}
-		
-		// recompute stats
-		min = Double.MAX_VALUE;
-		max = Double.MIN_VALUE;
-		total = 0.0;
-		for (Map.Entry<AnIndividual,Double> indiv2fitness : result.entrySet()) {
-			
-			double d = indiv2fitness.getValue();
-			
-			total += d;
-			if (d < min) {
-				min = d;
-			}
-			if (d > max) {
-				max = d;
-				best = indiv2fitness.getKey();
-			}
-			
-		}
-		double average = total / count;
-		
-		messages.infoUser("for generation "+iterationsMade+": best fitness "+max+", worst "+min+", average "+average+"; best individual "+best, getClass());
-		//displayOnStream(System.out, gen, res)
+		this.progress.incProgressMade();
+
 		
 	}
 	
+	protected abstract boolean hasConverged();
+	
 	protected final boolean shouldContinueExploration() {
-		// TODO finish criteria
-		return iterationsMade < paramStopMaxIterations;
+		return (iterationsMade < paramStopMaxIterations) && !hasConverged();
 	}
+	
+
+	protected void updateProgressFromChildren() {
+		
+		if (!autoUpdateProgressFromChildren)
+			return;
+		
+		ComputationState ourState = null;
+		
+		long totalToDo = subTasksRemovedDone;
+		long totalDone = subTasksRemovedDone;
+		boolean somethingNotFinished = false;
+
+		for (ITask sub: tasks) {
+			
+			final ComputationState subState = sub.getProgress().getComputationState(); 
+			
+				
+			// well, looks like it knows a count
+			totalToDo += sub.getProgress().getProgressTotalToDo();
+			totalToDo ++;
+						
+			if (!subState.isFinished()) {
+				somethingNotFinished = true;
+				totalDone += sub.getProgress().getProgressDone();
+				continue;
+			}  else {
+				totalDone ++;
+			}
+			
+			switch (subState) {
+			case FINISHED_FAILURE:
+				cancel();
+				somethingFailed = true;
+				break;
+			case FINISHED_CANCEL:
+				somethingCanceled = true;
+				break;
+			case FINISHED_OK:
+				// don't care 
+				break;
+			default:
+				throw new ProgramException("unknown computation status with property 'finished': "+subState);
+			}
+			
+		}
+	
+		
+		if (somethingNotFinished && !somethingFailed && !somethingCanceled) {
+			
+			this.progress.setProgressTotal(totalToDo);
+			this.progress.setProgressMade(totalDone);
+			
+		} else if (autoFinishWhenChildrenFinished) {
+			// if we reached this step, then all our children have finished.
+			// as a container, we end ourself
+			//if (somethingFailed)
+			//	ourState = ComputationState.FINISHED_FAILURE;
+			//else 
+			if (somethingCanceled)
+				ourState = ComputationState.FINISHED_CANCEL;
+			else 
+				ourState = ComputationState.FINISHED_OK;
+			
+			messages.traceTech("all subs terminated; should transmit results", getClass());
+			hookContainerExecutionFinished(ourState);
+			this.progress.setComputationState(ourState);
+			
+		}
+	}
+	
 	
 	protected final void manageEndOfExploration() {
 		
@@ -401,36 +482,89 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 		if (ourState == ComputationState.FINISHED_OK) {
 			final String titleIteration = "iteration";
 			final String titleGenome = "genome";
-			final String titleFitness = "fitness";
-			final String titleGenes = "genes";
-	
 	
 			GenlabTable tab = new GenlabTable();
 			tab.declareColumn(titleIteration);
 			tab.declareColumn(titleGenome);
-			tab.declareColumn(titleFitness);
-			tab.declareColumn(titleGenes);
+			// declare columns for each fitness
+			Map<AGenome,String[]> genome2fitnessColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
+			for (AGenome currentGenome: genome2fitnessOutput.keySet()) {
+			
+				String[] names = new String[genome2fitnessOutput.get(currentGenome).size()];
+				int j=0;
+				for (IAlgoInstance goalAI: genome2fitnessOutput.get(currentGenome)) {
+				
+					names[j] = "fitness "+currentGenome.name+" / "+goalAI.getName();
+					tab.declareColumn(names[j]);
+					
+					j++;
+				}
+				
+				genome2fitnessColumns.put(currentGenome, names);
+				
+			}
+			// declare columns for each possible gene
+			Map<AGenome,String[]> genome2geneColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
+			for (AGenome currentGenome: genome2fitnessOutput.keySet()) {
+				
+				String[] names = new String[currentGenome.getGenes().length];
+				for (int j=0; j<names.length; j++) {
+				
+					names[j] = "genes "+currentGenome.name+" / "+currentGenome.getGenes()[j].name;
+					tab.declareColumn(names[j]);
+			
+				}
+				
+				genome2geneColumns.put(currentGenome, names);
+				
+			}
 			
 			for (Integer iterationId : generation2fitness.keySet()) {
 				
 				// for each iteration
-				Map<AnIndividual,Double> indiv2fitness = generation2fitness.get(iterationId);
-				for (Map.Entry<AnIndividual,Double> ind2fit : indiv2fitness.entrySet()) {
+				Map<AnIndividual,Double[]> indiv2fitness = generation2fitness.get(iterationId);
+				for (Map.Entry<AnIndividual,Double[]> ind2fit : indiv2fitness.entrySet()) {
 					
 					AnIndividual ind = ind2fit.getKey();
-					Double fitness = ind2fit.getValue();
-					
+					Double[] fitness = ind2fit.getValue();
+										
 					int rowId = tab.addRow();
 					tab.setValue(rowId, titleIteration, iterationId);
 					tab.setValue(rowId, titleGenome, ind.genome.name);
-					tab.setValue(rowId, titleFitness, fitness);
-					tab.setValue(rowId, titleGenes, ind.toString());
+					
+					// export fitness
+					String[] colnames = genome2fitnessColumns.get(ind.genome);
+					for (int i=0; i<colnames.length; i++) {
+						
+						tab.setValue(
+								rowId, 
+								colnames[i], 
+								fitness[i]
+								);
+
+					}
+					
+					// export genes
+					String[] genesNames = genome2geneColumns.get(ind.genome);
+					for (int i=0; i<genesNames.length; i++) {
+					
+						tab.setValue(
+								rowId, 
+								genesNames[i], 
+								ind.genes[i]
+								);
+					}
+					
+					
 				}
 				
 			}
 		
 			res.setResult(GeneticExplorationAlgo.OUTPUT_TABLE, tab);
 		}
+		
+		hookProcessResults(res, ourState);
+		
 		setResult(res);
 		
 		this.progress.setComputationState(ourState);
@@ -438,7 +572,17 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 
 	}
 	
-	protected Object[][] crossoverOnePoint(final AGenome genome, Object[] indiv1, Object[] indiv2) {
+	/**
+	 * Called to propose inherited classes to export their specific results.
+	 * @param res 
+	 * @param ourState
+	 */
+	protected void hookProcessResults(ComputationResult res, ComputationState ourState) {
+		
+	}
+
+
+	protected final Object[][] crossoverOnePoint(final AGenome genome, Object[] indiv1, Object[] indiv2) {
 		
 		Object[][] res = new Object[2][];
 		 
@@ -472,7 +616,7 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 	}
 	
 	
-	protected Object[][] crossoverArithmetic(final AGenome genome, Object[] indiv1, Object[] indiv2) {
+	protected final Object[][] crossoverArithmetic(final AGenome genome, Object[] indiv1, Object[] indiv2) {
 		
 		
 		Object[][] res = new Object[2][];
@@ -499,58 +643,79 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 		
 	}
 	
+
+	/**
+	 * Based on the list of selected individuals passed as parameter, generate the next population.
+	 * This default crossover does not takes into account the fitness. It just deals with the 
+	 * selected individuals, which were selected based on the fitness. 
+	 * using crossover.   
+	 * @param indivs
+	 * @return
+	 */
+	protected Object[][] generateNextGenerationWithCrossover(AGenome genome, Set<AnIndividual> indivs, int popSize) {
+		
+		Object[][] novelPopulation = new Object[popSize][];
+		int novelPopulationSize = 0;
+		
+		List<AnIndividual> selectedPopIndex = new LinkedList<AnIndividual>(indivs);
+
+		while (novelPopulationSize < popSize) {
+		
+			// randomly select individual 1
+			int index1 = uniform.nextIntFromTo(0, selectedPopIndex.size()-1);
+			// randomly select individual 2, different from 1
+			int index2;
+			do {
+				index2 = uniform.nextIntFromTo(0, selectedPopIndex.size()-1);
+			} while (index2 == index1);
+			// randomly select the place where doing the cut
+		
+			Object[] indiv1 = selectedPopIndex.get(index1).genes;
+			Object[] indiv2 = selectedPopIndex.get(index2).genes;
+
+			//Object[][] novelIndividuals = crossoverOnePoint(genome, indiv1, indiv2);
+			if (genome.crossoverProbability == 1.0 || uniform.nextDoubleFromTo(0.0, 1.0) <= genome.crossoverProbability) {
+				// TODO use a parameter for crossover method
+				Object[][] novelIndividuals = crossoverArithmetic(genome, indiv1, indiv2);
+				String msgBefore = "crossover: "+Arrays.toString(indiv1)+" and "+Arrays.toString(indiv2)+" => ";
+				indiv1 = novelIndividuals[0];
+				indiv2 = novelIndividuals[1];
+				System.err.println(msgBefore+Arrays.toString(indiv1));
+				System.err.println(msgBefore+Arrays.toString(indiv2));
+			}
+			
+			// add these individuals to the population (if the population is not already filled)
+			novelPopulation[novelPopulationSize++] = indiv1;
+			
+			if (novelPopulationSize >= novelPopulation.length) 
+				break;
+			
+			novelPopulation[novelPopulationSize++] = indiv2;
+			
+			
+		}
+
+		return novelPopulation;
+	}
+	
+	/**
+	 * Selects a part of the existing population based on fitness.
+	 * @return
+	 */
+	protected abstract Map<AGenome,Set<AnIndividual>> selectIndividuals(Map<AnIndividual,Double[]> indiv2fitness);
+	
+	/**
+	 * Generate the next generation using specific selection, crossover and mutation operators.
+	 * @return
+	 */
 	protected Map<AGenome,Object[][]> prepareNextGeneration() {
 		
-		
 		int previousGenerationId = iterationsMade;
-		
-		// copy in order
-		final Map<AnIndividual,Double> indiv2fitness =  generation2fitness.get(previousGenerationId);
-		double sumOfFitness = 0;
-		for (Map.Entry<AnIndividual,Double> i2f : indiv2fitness.entrySet()) {
-			sumOfFitness += i2f.getValue();
-		}
-		
-		System.err.println("sum fitness: "+sumOfFitness);
-		// TODO idée: dans notre cas, conserver les N meilleurs permettra d'éprouver leur efficacité malgré l'aspect random
-		
+		final Map<AnIndividual,Double[]> indiv2fitness =  generation2fitness.get(previousGenerationId);
 		
 		// SELECT 
 		
-		// keep the best 
-		// biased wheel
-		// http://en.wikipedia.org/wiki/Fitness_proportionate_selection
-		Map<AGenome,Set<AnIndividual>> selectedGenome2Population = new HashMap<AGenome, Set<AnIndividual>>();
-		int toSelect = indiv2fitness.size()/2;
-		while (toSelect > 0) {
-			
-			// run wheel !
-			double r = uniform.nextDoubleFromTo(0, sumOfFitness);
-			double localSum = 0;
-			wheel: for (Map.Entry<AnIndividual,Double> i2f : indiv2fitness.entrySet()) {
-				final AnIndividual individual = i2f.getKey();
-				final Double fitness = i2f.getValue();
-				localSum += fitness;
-				if (localSum >= r) {
-					//selected.add(i2f.getKey());
-					
-					Set<AnIndividual> indiv = selectedGenome2Population.get(individual.genome);
-					if (indiv == null) {
-						indiv = new HashSet<AnIndividual>(indiv2fitness.size());
-						selectedGenome2Population.put(individual.genome, indiv);
-					}
-					if (indiv.add(individual)) {
-						toSelect --;
-						System.err.println("keeping: "+i2f.getKey()+", with fitness "+fitness);
-					}
-					break wheel;
-				}
-			}
-			
-		}		
-
-		// TODO mutation ! 
-		// final double probabilityMutate;
+		Map<AGenome,Set<AnIndividual>> selectedGenome2Population = selectIndividuals(indiv2fitness);
 		
 		// CROSS
 		// TODO manage multi specy !
@@ -560,77 +725,22 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 		// stats on the count of mutation (to be returned to the user)
 		Map<AGene<?>,Integer> statsGene2countMutations = new HashMap<AGene<?>, Integer>();
 
+		
 		for (AGenome genome: selectedGenome2Population.keySet()) {
 			
 			Set<AnIndividual> indivs = selectedGenome2Population.get(genome);
 			
-			List<AnIndividual> selectedPopIndex = new LinkedList<AnIndividual>(indivs);
+			// generate the next generation
+			Object[][] novelPopulation = generateNextGenerationWithCrossover(
+					genome, 
+					indivs, 
+					paramPopulationSize
+					);
 			
-			Object[][] novelPopulation = new Object[indiv2fitness.size()][];
-			int novelPopulationSize = 0;
+			// mutate in this novel generation
+			mutatePopulation(genome, novelPopulation, statsGene2countMutations);
 			
-			
-			while (novelPopulationSize < indiv2fitness.size()) {
-			
-				// randomly select individual 1
-				int index1 = uniform.nextIntFromTo(0, selectedPopIndex.size()-1);
-				// randomly select individual 2, different from 1
-				int index2;
-				do {
-					index2 = uniform.nextIntFromTo(0, selectedPopIndex.size()-1);
-				} while (index2 == index1);
-				// randomly select the place where doing the cut
-			
-				
-				
-				Object[] indiv1 = selectedPopIndex.get(index1).genes;
-				Object[] indiv2 = selectedPopIndex.get(index2).genes;
-
-				//Object[][] novelIndividuals = crossoverOnePoint(genome, indiv1, indiv2);
-				Object[][] novelIndividuals = crossoverArithmetic(genome, indiv1, indiv2);
-				
-				
-				System.err.println("crossover: "+Arrays.toString(indiv1)+" and "+Arrays.toString(indiv2)+" => "+Arrays.toString(novelIndividuals[0]));
-				novelPopulation[novelPopulationSize++] = novelIndividuals[0];
-				
-				if (novelPopulationSize >= novelPopulation.length) 
-					break;
-				
-				System.err.println("crossover: "+Arrays.toString(indiv1)+" and "+Arrays.toString(indiv2)+" => "+Arrays.toString(novelIndividuals[1]));
-				novelPopulation[novelPopulationSize++] = novelIndividuals[1];
-				
-				
-			}
-
-			// MUTATION
-
-			final double probaMutation = 0.01;
-			for (int i=0; i<novelPopulation.length; i++) {
-				
-				
-				AGene<?>[] genes = genome.getGenes();
-				for (int j=0; j<genes.length; j++) {
-					 
-					if (uniform.nextDoubleFromTo(0.0, 1.0) <= genes[j].getMutationProbability()) {
-						
-						Object[] individual = novelPopulation[i];
-						String debugIndivBefore = Arrays.toString(individual);
-						individual[j] = genes[j].generateRandomnly(uniform);
-						System.err.println("mutate individual "+i+": "+debugIndivBefore +" => "+Arrays.toString(individual));
-						
-						// stats on mutation
-						Integer count = statsGene2countMutations.get(genes[j]);
-						if (count == null) {
-							count = 0;
-						} 
-						statsGene2countMutations.put(genes[j], count+1);
-					}
-					
-				}
-				
-				
-			}
-			
+			// store this novel generation
 			novelGenome2Population.put(genome, novelPopulation);
 			
 		}
@@ -655,43 +765,60 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 	@Override
 	public final void computationStateChanged(IComputationProgress progress) {
 		
+		if (opportunityCancel())
+			return;
+		
 		// let the parent manage its stuff
-		super.computationStateChanged(progress);
+		//super.computationStateChanged(progress);
 		
-		
-		if (!progress.getComputationState().isFinished())
-			return;
-		
-		if (!(progress.getAlgoExecution() instanceof GeneticExplorationOneGeneration))
-			return;
-		
-		
-		final GeneticExplorationOneGeneration algoFinished = (GeneticExplorationOneGeneration)progress.getAlgoExecution();
-		
-		final Map<AnIndividual,Double> result = new HashMap<AnIndividual, Double>(algoFinished.getComputedFitness());
-	
-		// manage results
-		manageResultsForCurrentGeneration(result);
-		displayOnStream(System.err, iterationsMade);
-		
-		Runtime.getRuntime().gc();
-		Thread.yield();
-		
-		// we are now going to the next iteration; 
-		if (!shouldContinueExploration()) {
-			manageEndOfExploration();
-			return;
+		synchronized (tasks) {
+
+			if (!progress.getComputationState().isFinished())
+				return;
+			
+			if (!(progress.getAlgoExecution() instanceof GeneticExplorationOneGeneration))
+				return;
+			
+			
+			final GeneticExplorationOneGeneration algoFinished = (GeneticExplorationOneGeneration)progress.getAlgoExecution();
+			
+			final Map<AnIndividual,Double[]> result = new HashMap<AnIndividual, Double[]>(algoFinished.getComputedFitness());
+
+			// manage results
+			manageResultsForCurrentGeneration(result);
+			manageStatisticsForCurrentGeneration(result);
+			
+			Runtime.getRuntime().gc();
+			Thread.yield();
+			
+			// we are now going to the next iteration; 
+			if (!shouldContinueExploration()) {
+				manageEndOfExploration();
+				return;
+			}
+			
+			if (opportunityCancel())
+				return;
+			
+			// prepare next iteration		
+			GeneticExplorationOneGeneration execFirstGen = createExecutableForGeneration(prepareNextGeneration());
+			
+			// start it !
+			addTask(execFirstGen);
+			
+			
+			iterationsMade++;
 		}
 		
-		// prepare next iteration		
-		GeneticExplorationOneGeneration execFirstGen = createExecutableForGeneration(prepareNextGeneration());
-		
-		// start it !
-		addTask(execFirstGen);
-		
-		
-		iterationsMade++;
 
+	}
+	
+	protected boolean opportunityCancel() {
+		if (canceled) {
+			progress.setComputationState(ComputationState.FINISHED_CANCEL);
+			return true;
+		}
+		return false;
 	}
 	
 	/*
@@ -727,7 +854,7 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 		iterationsMade = 0;
 
 		progress.setComputationState(ComputationState.STARTED);
-		
+		progress.setProgressTotal(paramStopMaxIterations);
 
 		// init RNG
 		initRandomNumberGenerator();
@@ -790,5 +917,6 @@ public class GeneticExplorationAlgoExec extends AbstractContainerExecution {
 		}
 		
 	}
+
 	
 }

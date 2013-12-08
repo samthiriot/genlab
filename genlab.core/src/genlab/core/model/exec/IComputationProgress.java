@@ -94,6 +94,9 @@ public interface IComputationProgress {
 	
 	public void setComputationState(ComputationState state);
 	
+	public void setException(Exception exception);
+	public Exception getException();
+	
 	public void addListener(IComputationProgressSimpleListener listener);
 	public void removeListener(IComputationProgressSimpleListener listener);
 	

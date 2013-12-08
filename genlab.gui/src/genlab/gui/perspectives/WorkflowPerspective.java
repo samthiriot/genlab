@@ -26,8 +26,8 @@ public class WorkflowPerspective implements IPerspectiveFactory {
 		layout.setEditorAreaVisible(true);
 
 		// TODO use extensions instead
-		layout.addPlaceholder("genlab.graphstream.ui.views.graphview:*", IPageLayout.TOP, 0.9f, editorArea);
-		layout.addPlaceholder("genlab.graphstream.ui.views.graphview2d:*", IPageLayout.TOP, 0.9f, editorArea);
+		//layout.addPlaceholder("genlab.graphstream.ui.views.graphview:*", IPageLayout.TOP, 0.9f, editorArea);
+		//layout.addPlaceholder("genlab.graphstream.ui.views.graphview2d:*", IPageLayout.TOP, 0.9f, editorArea);
 
 		// add a messages (console) view in the very bottom
 
@@ -43,11 +43,12 @@ public class WorkflowPerspective implements IPerspectiveFactory {
 		// add a navigator
 		folderLeft.addView("genlab.gui.views.projectexplorer");
 		folderLeft.addView(WorkflowView.ID);
+
 		
 		// add a folder at right...
 		IFolderLayout folderRight = layout.createFolder("right folder", IPageLayout.RIGHT, 0.85f, editorArea);
-		folderRight.addView("genlab.gui.views.workflowexplorer");
-		folderRight.addView(ExistingView.ID);
+		//folderRight.addView("genlab.gui.views.workflowexplorer");
+		//folderRight.addView(ExistingView.ID);
 		folderRight.addView("genlab.gui.views.AlgoInfoView");
 		folderRight.addPlaceholder("genlab.gui.views.ParametersView:*");
 		folderRight.addView(TasksProgressView.VIEW_ID);

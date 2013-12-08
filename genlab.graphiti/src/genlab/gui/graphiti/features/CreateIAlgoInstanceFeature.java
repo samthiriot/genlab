@@ -122,7 +122,7 @@ public class CreateIAlgoInstanceFeature extends AbstractCreateFeature {
 
 	@Override
 	public String getCreateImageId() {
-		if (algo.getImagePath() == null)
+		if (algo.getImagePath16X16() == null)
 			return null;
 		return GraphitiImageProvider.getImageIdForAlgo(algo);
 	}

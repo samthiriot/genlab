@@ -2,17 +2,19 @@ package genlab.cytoscape.commons;
 
 import org.osgi.framework.Bundle;
 
+import genlab.core.model.meta.AlgoCategory;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.cytoscape.Activator;
 
 public abstract class CytoscapeAlgo extends BasicAlgo {
 
-	public CytoscapeAlgo(String name, String description, String categoryId) {
+	public CytoscapeAlgo(String name, String description, AlgoCategory category) {
 		super(
-				name, description, 
-				null, 
-				categoryId, 
-				"/icons/cytoscape_logo.gif"
+				name, 
+				description, 
+				category, 
+				"/icons/cytoscape_logo.gif", // TODO !!!
+				null
 				);
 
 	}

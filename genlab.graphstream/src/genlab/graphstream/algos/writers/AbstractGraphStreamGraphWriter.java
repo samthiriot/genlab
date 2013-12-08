@@ -37,7 +37,7 @@ public abstract class AbstractGraphStreamGraphWriter extends GraphStreamAlgo {
 	);
 	
 	public AbstractGraphStreamGraphWriter(String name, String description) {
-		super(name, description, ExistingAlgoCategories.WRITER_GRAPH.getTotalId());
+		super(name, description, ExistingAlgoCategories.WRITER_GRAPH);
 
 		inputs.add(PARAM_GRAPH);
 		outputs.add(OUTPUT_FILE);

@@ -207,7 +207,7 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 					Object value = m.get(s);
 					i.setValueForParameter(s, value);
 				} catch (RuntimeException e) {
-					GLLogger.warnUser("error while loading parameter \""+s+"\" for algo \""+i.getName()+"\" in workflow "+i.getWorkflow().getName()+"; the value for this parameter has been lost", getClass());
+					GLLogger.errorUser("error while loading parameter \""+s+"\" for algo \""+i.getName()+"\" in workflow "+i.getWorkflow().getName()+"; the value for this parameter has been lost", getClass());
 				}
 			}
 		}

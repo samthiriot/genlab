@@ -20,11 +20,18 @@ import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
+import org.eclipse.swt.events.MenuAdapter;
+import org.eclipse.swt.events.MenuEvent;
+import org.eclipse.swt.events.MenuListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -41,6 +48,8 @@ import org.eclipse.ui.part.ViewPart;
  * </ul> 
  * 
  * TODO optimisation: réduire la fréquence d'appel si on n'a plus rien en cours de progres
+ * TODO add a context menu
+ * TODO add a menu in the view (TCP stuff)
  * 
  * @author Samuel Thiriot
  *
@@ -200,6 +209,71 @@ public class TasksProgressView
 		
 		getViewSite().getActionBars().getToolBarManager().add(new ClearProgressAction());  
 
+		// create a contextual menu
+	    final Menu menu = new Menu(treeWidget);
+	    treeWidget.setMenu(menu);
+	    final MenuItem cancelItem = new MenuItem(menu, SWT.NONE);
+	    cancelItem.setText("cancel");
+	    cancelItem.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				
+				if (treeWidget.getSelection().length == 0)
+					return;
+				
+				for (TreeItem item : treeWidget.getSelection()) {
+
+		        	if (item == null)
+		        		return;
+		        	
+		        	ITask currentTask  = (ITask)item.getData();
+
+		        	if (currentTask == null)
+		        		return;
+		        	
+		        	currentTask.cancel();
+	
+				}
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				
+			}
+		});
+		menu.addMenuListener(new MenuListener() {
+			
+			protected boolean isCancelEnabled() {
+
+				if (treeWidget.getSelection().length == 0)
+					return false;
+				
+				// "cancel" is enabled when the computation state is not finished
+				// (for at least one item in the selection)
+				for (TreeItem item : treeWidget.getSelection()) {
+		        	ITask currentTask  = (ITask)item.getData();
+		        	if (!currentTask.getProgress().getComputationState().isFinished()) {
+		        		return true;
+		        	}
+				}
+				
+				return false;
+			}
+			
+			@Override
+			public void menuShown(MenuEvent e) {
+				
+				cancelItem.setEnabled(isCancelEnabled());
+				
+			}
+			
+			@Override
+			public void menuHidden(MenuEvent e) {
+				
+			}
+		});
+
 	}
 
 	@Override
@@ -280,7 +354,7 @@ public class TasksProgressView
 				
 				try {
 					IAlgo algo = ae.getAlgoInstance().getAlgo();
-					String imagePath = algo.getImagePath();
+					String imagePath = algo.getImagePath16X16();
 					Image img = algo2image.get(algo);
 					if (imagePath != null && img == null) {
 					
@@ -375,6 +449,8 @@ public class TasksProgressView
 			txt  = state.toString();
 			break;
 		}
+		if (txt == null)
+			return; // was cleaned during this process
 		item.setText(1, txt);
 		
 		// progress bar :-)

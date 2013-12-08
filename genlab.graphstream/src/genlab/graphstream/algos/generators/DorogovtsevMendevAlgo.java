@@ -30,7 +30,7 @@ public class DorogovtsevMendevAlgo extends GraphStreamGeneratorAlgo {
 		super(
 				ALGO_NAME,
 				"Generates a graph using the Dorogovtsev-Mendes algorithm. This starts by creating three nodes and tree edges, making a triangle, and then add one node at a time. Each time a node is added, an edge is chosen randomly and the node is connected to the two extremities of this edge.",
-				ExistingAlgoCategories.GENERATORS_GRAPHS.getTotalId()
+				ExistingAlgoCategories.GENERATORS_GRAPHS
 				);
 		
 		inputs.add(PARAM_N);

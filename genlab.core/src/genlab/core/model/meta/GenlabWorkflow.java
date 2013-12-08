@@ -97,14 +97,9 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 		return false;
 	}
 
-	@Override
-	public String getHTMLDescription() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
-	public String getImagePath() {
+	public String getImagePath16X16() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -123,6 +118,24 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 	@Override
 	public boolean canContain(IAlgo algo) {
 		return true;
+	}
+
+	@Override
+	public String getImagePath32X32() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getImagePath64X64() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getImagePathBig() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	

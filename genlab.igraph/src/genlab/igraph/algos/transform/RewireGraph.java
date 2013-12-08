@@ -22,8 +22,7 @@ public class RewireGraph extends AbstractIGraphTransform {
 		super(
 				"rewire (igraph)", 
 				"This function generates a new graph based on the original one by randomly rewiring edges while preserving the original graph's degree distribution.", 
-				null, 
-				ExistingAlgoCategories.NOISE_GRAPH.getTotalId()
+				ExistingAlgoCategories.NOISE_GRAPH
 				);
 		
 		inputs.add(INPUT_COUNT);

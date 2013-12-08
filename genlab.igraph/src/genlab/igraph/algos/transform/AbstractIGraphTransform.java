@@ -1,5 +1,6 @@
 package genlab.igraph.algos.transform;
 
+import genlab.core.model.meta.AlgoCategory;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
@@ -28,15 +29,14 @@ public abstract class AbstractIGraphTransform extends BasicAlgo {
 	public AbstractIGraphTransform(
 			String name, 
 			String description,
-			String longDescription,
-			String categoryId
+			AlgoCategory category
 			) {
 		super(
 				name, 
 				description, 
-				longDescription,
-				categoryId,
-				"/icons/igraph.gif"
+				category,
+				"/icons/igraph"+IMAGE_PATH_PLACEHOLDER_SIZE+".png",
+				"/icons/igraphBig.png"
 				);
 		
 		inputs.add(INPUT_GRAPH);

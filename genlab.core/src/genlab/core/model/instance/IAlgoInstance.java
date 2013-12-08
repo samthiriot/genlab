@@ -65,8 +65,14 @@ public interface IAlgoInstance extends IGenlabResource {
 	public void delete();
 	
 	public Object getValueForParameter(String name);
+	public Object getValueForParameter(Parameter<?> parameter);
+
 
 	public void setValueForParameter(String name, Object value);
+	
+	public void addParametersListener(IParametersListener list);
+	public void removeParametersListener(IParametersListener list);
+
 	
 	public void checkForRun(WorkflowCheckResult res);
 

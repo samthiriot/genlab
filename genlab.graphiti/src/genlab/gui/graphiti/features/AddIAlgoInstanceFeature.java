@@ -139,17 +139,22 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
             		height
             		);
             
+		}
+		
+
+		
+		// create rounded rect
+		{
 			roundedRectangle = gaService.createRoundedRectangle(invisibleRectangle, ROUNDED, ROUNDED);
-			roundedRectangle.setForeground(manageColor(IColorConstant.DARK_GRAY));
-			roundedRectangle.setBackground(manageColor(IColorConstant.WHITE));
-			roundedRectangle.setLineWidth(2);
+			//roundedRectangle.setForeground(manageColor(IColorConstant.DARK_GRAY));
+			roundedRectangle.setStyle(StylesUtils.getStyleFor(getDiagram()));
 
 			gaService.setLocationAndSize(
 					roundedRectangle, 
 					LayoutIAlgoFeature.INVISIBLE_RECT_MARGIN_HORIZ, 
-					0, 
+					LayoutIAlgoFeature.INVISIBLE_RECT_MARGIN_TOP, 
 					width, 
-					height
+					height-LayoutIAlgoFeature.INVISIBLE_RECT_MARGIN_TOP
 					);
 			
 			// TODO remove
@@ -159,7 +164,33 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 			link(containerShape, addedAlgo);
 		}
 		
-		final int lineY = 20 + LayoutIAlgoFeature.ANCHOR_WIDTH/2;
+		final int lineY = 20 + LayoutIAlgoFeature.INVISIBLE_RECT_MARGIN_TOP + LayoutIAlgoFeature.ANCHOR_WIDTH/2;
+
+		// add icon
+		{
+			String image = addedAlgo.getAlgo().getImagePath16X16();
+			if (image != null) {
+				final int IMG_WIDTH = 32;
+				final int IMG_HEIGHT = 32;
+				String id = GraphitiImageProvider.getImageIdForAlgo(addedAlgo.getAlgo());
+				Image img = gaService.createImage(invisibleRectangle, id);
+				/*gaService.setLocationAndSize(
+						img, 
+						LayoutIAlgoFeature.ANCHOR_WIDTH/2+5 , 
+						6, 
+						16, 
+						16
+						);
+						*/
+				gaService.setLocationAndSize(
+						img, 
+						LayoutIAlgoFeature.ANCHOR_WIDTH, 
+						0, 
+						32, 
+						32
+						);
+			}
+		}
 		
 		// add line
 		{
@@ -170,41 +201,29 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 					width, 
 					lineY }
 			);
-			polyline.setForeground(manageColor(IColorConstant.DARK_GRAY));
-			polyline.setLineWidth(2);
-			
+			//polyline.setForeground(manageColor(IColorConstant.DARK_GRAY));
+			//polyline.setLineWidth(2);
+			polyline.setStyle(StylesUtils.getStyleFor(getDiagram()));
+
 			
 		}
 		
-		// add icon
-		{
-			String image = addedAlgo.getAlgo().getImagePath();
-			if (image != null) {
-				String id = GraphitiImageProvider.getImageIdForAlgo(addedAlgo.getAlgo());
-				Image img = gaService.createImage(invisibleRectangle, id);
-				gaService.setLocationAndSize(
-						img, 
-						LayoutIAlgoFeature.ANCHOR_WIDTH/2+5 , 
-						6, 
-						16, 
-						16
-						);
-			}
-		}
 		
 		// add text
 		{
 			Shape shape = peCreateService.createShape(containerShape, false);
 		
 			Text text = gaService.createText(shape, addedAlgo.getName());
-			text.setForeground(manageColor(IColorConstant.BLACK));
+			//text.setForeground(manageColor(IColorConstant.BLACK));
 			text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
 			text.setVerticalAlignment(Orientation.ALIGNMENT_CENTER);
-			text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
+			//text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
+	        text.setStyle(StylesUtils.getStyleForEClassText(getDiagram()));
+
 			gaService.setLocationAndSize(
 					text, 
 					LayoutIAlgoFeature.TITLE_TEXT_LEFT,
-					LayoutIAlgoFeature.ANCHOR_WIDTH/2, 
+					LayoutIAlgoFeature.ANCHOR_WIDTH/2 + LayoutIAlgoFeature.INVISIBLE_RECT_MARGIN_TOP, 
 					width-LayoutIAlgoFeature.INVISIBLE_RECT_MARGIN_HORIZ-LayoutIAlgoFeature.ANCHOR_WIDTH-LayoutIAlgoFeature.TITLE_TEXT_LEFT, 
 					20
 					);
@@ -227,10 +246,11 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 				anchor.setActive(true);
 				anchor.setLocation(gaService.createPoint(0, yText+LayoutIAlgoFeature.ANCHOR_WIDTH/2));
 				Ellipse ellipse = gaService.createEllipse(anchor);
-				ellipse.setForeground(manageColor(IColorConstant.DARK_GRAY));
-				ellipse.setBackground(manageColor(IColorConstant.WHITE));
-				ellipse.setLineWidth(2);
+				//ellipse.setForeground(manageColor(IColorConstant.DARK_GRAY));
+				//ellipse.setBackground(manageColor(IColorConstant.WHITE));
+				//ellipse.setLineWidth(2);
 				ellipse.setWidth(LayoutIAlgoFeature.ANCHOR_WIDTH);
+				ellipse.setStyle(StylesUtils.getStyleFor(getDiagram()));
 				//anchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
 				link(anchor, input);
 				
@@ -246,11 +266,12 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 				Shape shape = peCreateService.createShape(containerShape, false);
 				
 				Text text = gaService.createText(shape, input.getMeta().getName());
-				text.setForeground(manageColor(IColorConstant.BLACK));
+				//text.setForeground(manageColor(IColorConstant.BLACK));
 				text.setHorizontalAlignment(Orientation.ALIGNMENT_LEFT);
 				text.setVerticalAlignment(Orientation.ALIGNMENT_BOTTOM);
-				text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
-								
+				//text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
+				text.setStyle(StylesUtils.getStyleForEClassText(getDiagram()));
+				
 				gaService.setLocationAndSize(
 						text, 
 						LayoutIAlgoFeature.ANCHOR_WIDTH*3/2, 
@@ -280,17 +301,19 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 				anchor.setActive(true);
 				anchor.setLocation(
 						gaService.createPoint(
-								width-LayoutIAlgoFeature.ANCHOR_WIDTH*2, 
+								width-LayoutIAlgoFeature.ANCHOR_WIDTH,//*2, 
 								yText+LayoutIAlgoFeature.ANCHOR_WIDTH/2
 								)
 								);
 				Ellipse ellipse = gaService.createEllipse(anchor);
-				ellipse.setForeground(manageColor(IColorConstant.DARK_GRAY));
-				ellipse.setBackground(manageColor(IColorConstant.WHITE));
-				ellipse.setLineWidth(2);
+				//ellipse.setForeground(manageColor(IColorConstant.DARK_GRAY));
+				//ellipse.setBackground(manageColor(IColorConstant.WHITE));
+				//ellipse.setLineWidth(2);
 				ellipse.setWidth(LayoutIAlgoFeature.ANCHOR_WIDTH);
+				ellipse.setStyle(StylesUtils.getStyleFor(getDiagram()));
 				anchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
 				anchor.setGraphicsAlgorithm(ellipse);
+				
 	//			anchor.setParent(containerShape);
 				link(anchor, output);
 	
@@ -318,10 +341,11 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 				Shape shape = peCreateService.createShape(containerShape, false);
 				
 				Text text = gaService.createText(shape, output.getMeta().getName());
-				text.setForeground(manageColor(IColorConstant.BLACK));
+				//text.setForeground(manageColor(IColorConstant.BLACK));
 				text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
 				text.setVerticalAlignment(Orientation.ALIGNMENT_TOP);
-				text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
+				//text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
+				text.setStyle(StylesUtils.getStyleForEClassText(getDiagram()));
 
 				gaService.setLocationAndSize(
 						text, 

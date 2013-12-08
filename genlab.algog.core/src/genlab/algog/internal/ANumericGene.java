@@ -29,6 +29,8 @@ public abstract class ANumericGene<TypeName extends Number> extends AGene<TypeNa
 	 */
 	public abstract TypeName generateRandomnly(Uniform uniform);
 	
+	public abstract TypeName mutate(Uniform uniform, Object previousValue);
+	
 	public abstract TypeName crossoverArithmetic(TypeName one, TypeName other, double weight);
 	
 	public abstract TypeName crossoverArithmetic(Object one, Object other, double weight);

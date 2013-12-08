@@ -244,6 +244,21 @@ public class IGraphLibrary {
 			boolean simplifyMultiplex
 			) {
 
+		if (islands_n < 0)
+			throw new WrongParametersException("the number of islands should be greater than 0");
+		
+		if (islands_size < 0)
+			throw new WrongParametersException("the size of islands should be greater than 0");
+		
+		if (islands_pin < 0.0 || islands_pin > 1.0)
+			throw new WrongParametersException("the probability to create links within islands should be between 0.0 and 1.0");
+		
+		if (n_inter < 0)
+			throw new WrongParametersException("the number of links inter islands should be greater than 0");
+		
+		if (n_inter > islands_size)
+			throw new WrongParametersException("the number of links inter islands should be lower than the size of islands");
+		
 		final InternalGraphStruct g = createEmptyGraph();
 				
 		//GLLogger.debugTech("calling igraph", getClass());

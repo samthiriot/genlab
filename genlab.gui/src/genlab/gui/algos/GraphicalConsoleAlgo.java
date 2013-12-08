@@ -35,8 +35,8 @@ public class GraphicalConsoleAlgo extends BasicAlgo implements IDisplayAlgo  {
 		super(
 				"graphical console", 
 				"displays everything into the console dedicated to this run",
-				null,
-				ExistingAlgoCategories.DISPLAY.getTotalId(),
+				ExistingAlgoCategories.DISPLAY,
+				"/icons/console_view"+IMAGE_PATH_PLACEHOLDER_SIZE+".gif",
 				"/icons/console_view.gif"
 				);
 		

@@ -63,8 +63,7 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 	public GephiAveragePathLengthAlgo() {
 		super(
 				"average path length (Gephi)", 
-				"computes the average path length",
-				null
+				"computes the average path length"
 				);
 		
 		outputs.add(OUTPUT_AVERAGE_PATH_LENGTH);

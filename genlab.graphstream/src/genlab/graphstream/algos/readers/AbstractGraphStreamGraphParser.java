@@ -33,7 +33,7 @@ public abstract class AbstractGraphStreamGraphParser extends GraphStreamAlgo {
 	);
 	
 	public AbstractGraphStreamGraphParser(String name, String desc) {
-		super(name, desc, ExistingAlgoCategories.PARSER_GRAPH.getTotalId());
+		super(name, desc, ExistingAlgoCategories.PARSER_GRAPH);
 		inputs.add(PARAM_FILE);
 		outputs.add(OUTPUT_GRAPH);
 		

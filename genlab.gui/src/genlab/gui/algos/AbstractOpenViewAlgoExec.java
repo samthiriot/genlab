@@ -137,7 +137,7 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 	
 	public void callbackRegisterView(AbstractViewOpenedByAlgo theView) {
 		
-		GLLogger.debugTech("received a console view ! Let's display results.", getClass());
+		GLLogger.debugTech("received a view ! Let's display results.", getClass());
 		this.theView = theView;
 		
 		displayResults(theView);

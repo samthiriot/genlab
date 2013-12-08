@@ -42,8 +42,8 @@ public abstract class AbstractBasicAlgoRandomEdges extends BasicAlgo {
 		super(
 				name, 
 				desc, 
+				ExistingAlgoCategories.NOISE_GRAPH, 
 				null, 
-				ExistingAlgoCategories.NOISE_GRAPH.getTotalId(), 
 				null
 				);
 		inputs.add(INPUT_GRAPH);

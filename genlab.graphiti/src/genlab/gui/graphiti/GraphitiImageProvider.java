@@ -1,19 +1,14 @@
 package genlab.gui.graphiti;
 
-import genlab.core.commons.FileUtils;
 import genlab.core.commons.NotImplementedException;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.graphiti.ui.internal.GraphitiUIPlugin;
 import org.eclipse.graphiti.ui.platform.AbstractImageProvider;
-import org.eclipse.jface.resource.ImageDescriptor;
 
 /**
  * Provides images for our use of graphiti.
@@ -97,7 +92,8 @@ public class GraphitiImageProvider extends AbstractImageProvider {
         */
         
         for (IAlgo algo : ExistingAlgos.getExistingAlgos().getAlgos()) {
-        	algoImg = algo.getImagePath();
+        	//algoImg = algo.getImagePath32X32();
+        	algoImg = algo.getImagePath16X16();
         	if (algoImg != null) {
         		GLLogger.traceTech("attempting to load image for algo "+algo.getName()+": "+algoImg, getClass());
         		

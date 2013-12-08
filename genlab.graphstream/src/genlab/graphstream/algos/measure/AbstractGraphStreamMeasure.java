@@ -19,7 +19,7 @@ public abstract class AbstractGraphStreamMeasure extends GraphStreamAlgo {
 		super(
 				name,
 				desc,
-				ExistingAlgoCategories.ANALYSIS_GRAPH.getTotalId()
+				ExistingAlgoCategories.ANALYSIS_GRAPH
 				);
 		
 		inputs.add(INPUT_GRAPH);

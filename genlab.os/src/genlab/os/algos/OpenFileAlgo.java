@@ -40,8 +40,8 @@ public class OpenFileAlgo extends BasicAlgo {
 		super(
 				"open the file with the default system editor (os)", 
 				"opens this file using the OS default command line", 
-				null, 
-				ExistingAlgoCategories.DISPLAY.getTotalId(),  
+				ExistingAlgoCategories.DISPLAY,  
+				null,
 				null
 				);
 		

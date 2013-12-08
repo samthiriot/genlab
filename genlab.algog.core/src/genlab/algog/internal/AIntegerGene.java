@@ -8,10 +8,6 @@ public class AIntegerGene extends ANumericGene<Integer> {
 		super(name, mutationProba, min, max);
 	}
 
-	@Override
-	public Integer generateRandomnly(Uniform uniform) {
-		return uniform.nextIntFromTo(min, max);
-	}
 
 	@Override
 	public Integer crossoverArithmetic(Integer one, Integer other, double weight) {
@@ -29,6 +25,23 @@ public class AIntegerGene extends ANumericGene<Integer> {
 	@Override
 	public Integer crossoverArithmetic(Object one, Object other, double weight) {
 		return crossoverArithmetic((Integer)one, (Integer)other, weight);
+	}
+
+	@Override
+	public Integer generateRandomnly(Uniform uniform) {
+		return uniform.nextIntFromTo(min, max);
+	}
+
+	@Override
+	public Integer mutate(Uniform uniform, Object previousValue) {
+		
+		return Math.min(
+				max, 
+				Math.max(
+						(Integer) previousValue + uniform.nextIntFromTo(-20, 20), // TODO parameter ?
+						min
+						)
+				);
 	}
 
 	

@@ -49,8 +49,8 @@ public class WriteTableCSV extends BasicAlgo {
 		super(
 				"write table as CSV", 
 				"writes a table into a file as a CSV file", 
-				null, 
-				ExistingAlgoCategories.WRITER.getTotalId(), 
+				ExistingAlgoCategories.WRITER, 
+				null,
 				null
 				);
 		

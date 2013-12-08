@@ -43,8 +43,8 @@ public class StandardOutputAlgo extends BasicAlgo implements IDisplayAlgo {
 		super(
 				name, 
 				desc, 
+				ExistingAlgoCategories.DISPLAY,
 				null, 
-				ExistingAlgoCategories.DISPLAY.getTotalId(),
 				null
 				);
 

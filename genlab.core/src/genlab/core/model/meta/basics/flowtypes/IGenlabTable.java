@@ -1,6 +1,7 @@
 package genlab.core.model.meta.basics.flowtypes;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface IGenlabTable {
 
@@ -16,7 +17,10 @@ public interface IGenlabTable {
 	 * Returns the columns ids in their order
 	 * @return
 	 */
-	public Collection<String> getColumnsId();
+	public List<String> getColumnsId();
+	
+	public String getColumnIdForIdx(int colIdx);
+		
 	
 	/**
 	 * adds a line and returns it id
@@ -29,7 +33,7 @@ public interface IGenlabTable {
 	public void setValues(int rowId, Object[] values);
 	public void fillColumn(int colIndex, Object value);
 
-	
+	public Object getValue(int rowId, int columnIdx);
 	public Object getValue(int rowId, String columnId);
 	public Object[] getValues(int rowId);
 	

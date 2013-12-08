@@ -33,8 +33,8 @@ public abstract class ConstantValue<JavaType> extends BasicAlgo implements ICons
 		super(
 				name, 
 				desc, 
+				ExistingAlgoCategories.CONSTANTS,
 				null,
-				ExistingAlgoCategories.CONSTANTS.getId(),
 				null
 				);
 

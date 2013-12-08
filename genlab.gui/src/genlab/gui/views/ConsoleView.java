@@ -2,6 +2,7 @@ package genlab.gui.views;
 
 import java.util.LinkedList;
 
+import genlab.core.model.instance.IAlgoInstance;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 
 import org.eclipse.swt.SWT;

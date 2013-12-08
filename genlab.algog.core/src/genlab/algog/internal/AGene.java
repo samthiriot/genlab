@@ -21,6 +21,8 @@ public abstract class AGene<TypeName> {
 	
 	public abstract TypeName generateRandomnly(Uniform uniform);
 	
+	public abstract TypeName mutate(Uniform uniform, Object previousValue);
+
 	@Override
 	public final String toString() {
 		return name;

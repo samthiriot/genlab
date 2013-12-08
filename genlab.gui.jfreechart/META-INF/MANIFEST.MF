@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Jfreechart
+Bundle-SymbolicName: genlab.gui.jfreechart;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: genlab.gui.jfreechart.Activator
+Bundle-Vendor: Samuel Thiriot
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui,
+ org.eclipse.ui.forms;bundle-version="3.6.1",
+ genlab.core;bundle-version="0.0.1",
+ genlab.gui;bundle-version="0.0.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: ext/hamcrest-core-1.3.jar,
+ ext/jcommon-1.0.20.jar,
+ ext/jcommon-xml-1.0.21.jar,
+ ext/jfreechart-1.0.16-experimental.jar,
+ ext/jfreechart-1.0.16-swt.jar,
+ ext/jfreechart-1.0.16.jar,
+ ext/jfreesvg-1.2.jar,
+ ext/junit-4.11.jar,
+ ext/orsonpdf-1.2-eval.jar,
+ ext/servlet.jar,
+ ext/swtgraphics2d.jar,
+ .

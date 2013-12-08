@@ -17,8 +17,8 @@ public abstract class AbstractJungGeneratorAlgo extends BasicAlgo {
 		super(
 				name, 
 				description, 
-				null, 
-				ExistingAlgoCategories.GENERATORS_GRAPHS.getTotalId(), 
+				ExistingAlgoCategories.GENERATORS_GRAPHS, 
+				null,
 				null
 				);
 		

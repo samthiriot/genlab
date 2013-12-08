@@ -437,6 +437,12 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	public Object getValueForParameter(String name) {
 		throw new NotImplementedException();
 	}
+	
+
+	@Override
+	public Object getValueForParameter(Parameter<?> parameter) {
+		throw new NotImplementedException();
+	}
 
 	@Override
 	public void setValueForParameter(String name, Object value) {
@@ -666,6 +672,19 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	public boolean isContainedInto(IAlgoContainerInstance otherInstance) {
 		return false;
 	}
+
+	@Override
+	public void addParametersListener(IParametersListener list) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void removeParametersListener(IParametersListener list) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	
 }

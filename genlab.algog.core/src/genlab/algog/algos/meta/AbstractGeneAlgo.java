@@ -63,7 +63,7 @@ public class AbstractGeneAlgo extends AbstractGeneticAlgo {
 	@Override
 	public boolean canBeContainedInto(IAlgoInstance algoInstance) {
 		// genes can only be contained into genetic exploration algos
-		return (algoInstance.getAlgo() instanceof GeneticExplorationAlgo);
+		return (algoInstance.getAlgo() instanceof AbstractGeneticExplorationAlgo);
 	}
 	
 

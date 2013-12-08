@@ -25,7 +25,7 @@ public class PetersenAlgo extends GraphStreamGeneratorAlgo {
 		super(
 				ALGO_NAME,
 				"Generate a Petersen graph. In the mathematical field of graph theory, the Petersen graph is an undirected graph with 10 vertices and 15 edges",
-				ExistingAlgoCategories.STATIC_GRAPHS.getTotalId()
+				ExistingAlgoCategories.STATIC_GRAPHS
 				);
 		
 	}

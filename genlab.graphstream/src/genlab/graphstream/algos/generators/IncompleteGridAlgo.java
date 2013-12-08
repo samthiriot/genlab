@@ -40,7 +40,7 @@ public class IncompleteGridAlgo extends GraphStreamGeneratorAlgo {
 		super(
 				ALGO_NAME,
 				"Generator for square grids of any size.",
-				ExistingAlgoCategories.GENERATORS_GRAPHS.getTotalId()
+				ExistingAlgoCategories.GENERATORS_GRAPHS
 				);
 		
 		inputs.add(PARAM_X);

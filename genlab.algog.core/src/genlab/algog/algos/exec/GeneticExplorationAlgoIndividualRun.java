@@ -1,9 +1,7 @@
 package genlab.algog.algos.exec;
 
 import genlab.algog.algos.meta.AbstractGeneAlgo;
-import genlab.algog.algos.meta.IntegerGeneAlgo;
 import genlab.algog.internal.AGene;
-import genlab.algog.internal.AGenome;
 import genlab.algog.internal.AnIndividual;
 import genlab.core.exec.ICleanableTask;
 import genlab.core.exec.IExecution;
@@ -11,10 +9,7 @@ import genlab.core.model.exec.AbstractContainerExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
-import genlab.core.model.exec.ConnectionExec;
 import genlab.core.model.exec.IAlgoExecution;
-import genlab.core.model.exec.IComputationProgress;
-import genlab.core.model.exec.IComputationResult;
 import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
@@ -23,7 +18,10 @@ import genlab.core.model.instance.IInputOutputInstance;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import cern.colt.Arrays;
 
 /**
  * A run of only one individual. Contains all the required individuals.
@@ -37,8 +35,8 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 	private final int individualId;
 	private final Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance;
 	private final Map <IConnection,Object> inputConnection2value;
-	private final IInputOutputInstance fitnessOutput;
-	private Double resultFitness = null;
+	private final List<IAlgoInstance> fitnessOutput;
+	private Double[] resultFitness = null;
 	private final AnIndividual individual;
 	
 	public GeneticExplorationAlgoIndividualRun(
@@ -48,7 +46,7 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 			Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance,
 			Map <IConnection,Object> inputConnection2value,
 			Collection<IAlgoInstance> algoInstancesToRun,
-			IInputOutputInstance fitnessOutput,
+			List<IAlgoInstance> fitnessOutput2,
 			AnIndividual individual,
 			int individualId
 			) {
@@ -60,9 +58,9 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 		this.individual = individual;
 		this.gene2geneAlgoInstance = gene2geneAlgoInstance;
 		this.inputConnection2value = inputConnection2value;
-		this.fitnessOutput = fitnessOutput;
+		this.fitnessOutput = fitnessOutput2;
 		
-		this.autoFinishWhenChildrenFinished = false;
+		this.autoFinishWhenChildrenFinished = true;
 	}
 
 	
@@ -73,30 +71,34 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 		super.notifyInputAvailable(to);
 	}
 
-	
 
 	@Override
-	public void computationStateChanged(IComputationProgress progress) {
+	protected void hookContainerExecutionFinished(ComputationState state) {
 		
-		super.computationStateChanged(progress);
+		resultFitness = new Double[fitnessOutput.size()];
+		
+		if (state  == ComputationState.FINISHED_FAILURE) {
+			// when there is an error, then goal fitness becomes negative infinity.
 
-		if (!progress.getComputationState().isFinished())
-			return;
-		
-		IComputationResult result = progress.getAlgoExecution().getResult();
-		if (result.getResults().containsKey(fitnessOutput)) {
-			// this is the expected fitness :-)
-			resultFitness = (Double)result.getResults().get(fitnessOutput);
-			messages.debugTech("received fitness "+resultFitness, getClass());
-			
-			autoFinishWhenChildrenFinished = true;
-			updateProgressFromChildren();
+			java.util.Arrays.fill(resultFitness, Double.POSITIVE_INFINITY);
+		} else {
+			for (int i=0; i<fitnessOutput.size(); i++) {
+				IAlgoInstance ai = fitnessOutput.get(i);
+				IGoalExec goal = (IGoalExec) instance2execForSubtasks.get(ai);
+				
+				resultFitness[i] = goal.getFitness();
+				
+				
+			}
 		}
 		
+		messages.debugTech("received fitness "+Arrays.toString(resultFitness), getClass());
+
+		
 	}
+	
 
-
-
+	
 	@Override
 	public void initInputs(Map<IAlgoInstance, IAlgoExecution> instance2exec) {
 
@@ -214,7 +216,7 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 		
 	}
 	
-	public Double getResultFitness() {
+	public Double[] getResultFitness() {
 		return resultFitness;
 	}
 	

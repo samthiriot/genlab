@@ -36,9 +36,9 @@ public abstract class BasicIsomorphism extends BasicAlgo {
 		super(
 				name, 
 				description, 
-				null, 
-				ExistingAlgoCategories.COMPARISON_GRAPHS.getTotalId(), 
-				"/icons/igraph.gif"
+				ExistingAlgoCategories.COMPARISON_GRAPHS, 
+				"/icons/igraph"+IMAGE_PATH_PLACEHOLDER_SIZE+".png",
+				"/icons/igraphBig.png"
 				);
 
 		inputs.add(INPUT_GRAPH1);

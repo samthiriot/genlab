@@ -37,7 +37,7 @@ public class BarabasiAlbertAlgo extends GraphStreamGeneratorAlgo {
 		super(
 				ALGO_NAME,
 				" Scale-free graph generator using the preferential attachment rule as defined in the Barabási-Albert model.",
-				ExistingAlgoCategories.GENERATORS_GRAPHS.getTotalId()
+				ExistingAlgoCategories.GENERATORS_GRAPHS
 				);
 		
 		inputs.add(PARAM_N);
