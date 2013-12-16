@@ -23,6 +23,10 @@ public class IntuitiveObjectCreation {
 		// TODO Auto-generated constructor stub
 	}
 	
+	/**
+	 * 
+	 * @author Samuel Thiriot
+	 */
 	public static class ProposalObjectCreation {
 		
 		public final IAlgo algoToCreate;

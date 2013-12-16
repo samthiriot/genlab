@@ -49,7 +49,7 @@ public abstract class AbstractGeneticExplorationAlgo extends AlgoContainer {
 				name, 
 				desc,
 				ExistingAlgoCategories.EXPLORATION_GENETIC_ALGOS, 
-				"/icons/dna"+IMAGE_PATH_PLACEHOLDER_SIZE+".gif",
+				"/icons/dna"+IMAGE_PATH_PLACEHOLDER_SIZE+".png",
 				"/icons/dnaBig.png"
 				);
 		

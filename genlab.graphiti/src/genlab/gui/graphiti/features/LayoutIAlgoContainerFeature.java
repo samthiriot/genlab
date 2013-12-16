@@ -1,11 +1,11 @@
 package genlab.gui.graphiti.features;
 
+import genlab.core.model.instance.AlgoContainerInstance;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.meta.IConstantAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 
-import org.eclipse.core.commands.operations.ICompositeOperation;
 import org.eclipse.graphiti.datatypes.IDimension;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.ILayoutContext;
@@ -29,34 +29,86 @@ import org.eclipse.graphiti.services.IGaService;
  * @author Samuel Thiriot
  *
  */
-public class LayoutIAlgoFeature extends AbstractLayoutFeature {
+public class LayoutIAlgoContainerFeature extends AbstractLayoutFeature {
 
 	public static final int INVISIBLE_RECT_MARGIN_TOP = 5;
 
-	
 	public static final int ANCHOR_WIDTH = 12;
-	
-	/**
-	 * Margin required on the right and left of the visible rectangle, in order
-	 * to display half of the anchors.
-	 */
 	public static final int INVISIBLE_RECT_MARGIN_HORIZ = ANCHOR_WIDTH/2;
 
 	public static final int TITLE_TEXT_LEFT = INVISIBLE_RECT_MARGIN_HORIZ+ANCHOR_WIDTH+16;
+
+	/**
+	 * the y coordinate of the line between title and details
+	 */
+	public static final int Y_LINE = ANCHOR_WIDTH/2 + INVISIBLE_RECT_MARGIN_TOP + 20;
 	
+	/**
+	 * The width of the "right column", for "anchors" (graphiti world) or outputs (genlab world).
+	 */
+	public static final int IO_LABELS_WIDTH = 80 + ANCHOR_WIDTH;
 	
-	public static final int MIN_HEIGHT = 100;
+
+	public static final int RECTANGLE_INSIDE_TOP = Y_LINE + 2;
+	public static final int RECTANGLE_INSIDE_BOTTOM_MARGIN = 10;
+	public static final int RECTANGLE_INSIDE_LEFT = 20;
+	
 	 
+	/**
+	 * The minimal width and height for ergonomic reasons
+	 */
 	public static final int MIN_WIDTH = 100;
-	    
-	public LayoutIAlgoFeature(IFeatureProvider fp) {
+	public static final int MIN_HEIGHT = 100 + INVISIBLE_RECT_MARGIN_TOP + Y_LINE + RECTANGLE_INSIDE_TOP;
+	
+	
+	/**
+	 * computes the minimal width for this precise algo container
+	 * @param addedAlgo
+	 */
+	public static int computeMinimumWidth(AlgoContainerInstance addedAlgo) {
+		
+		int width = 0; 
+		
+		// adds the space for these anchors
+		width += ANCHOR_WIDTH*2;
+		
+		// include the space for label on the left (if required)
+		width += addedAlgo.getInputInstances().isEmpty()?0: LayoutIAlgoContainerFeature.IO_LABELS_WIDTH;
+		
+		// include the space for labels on the right (if required)
+		width += addedAlgo.getOutputInstances().isEmpty()?0: LayoutIAlgoContainerFeature.IO_LABELS_WIDTH;
+		
+		// and, add some more space
+		width += 20;
+		
+		return Math.max(MIN_WIDTH, width);
+		
+	}
+	
+	public static int computeMinimumHeight(AlgoContainerInstance addedAlgo) {
+		
+		int height = 0; 
+		
+		height += Y_LINE;
+		
+		// add the space for anchors
+		// TODO compute the line height based on the font size ? 
+		height += Math.max(
+					addedAlgo.getInputInstances().size(),
+					addedAlgo.getOutputInstances().size()
+					) * LayoutIAlgoFeature.ANCHOR_WIDTH * 2;
+		
+		return Math.max(MIN_HEIGHT, height);
+		
+	}
+	
+	public LayoutIAlgoContainerFeature(IFeatureProvider fp) {
 		super(fp);
 		
 	}
 
 	@Override
 	public boolean canLayout(ILayoutContext context) {
-		
 		PictogramElement pe = context.getPictogramElement();
 	    if (!(pe instanceof ContainerShape))
 	    	return false;
@@ -65,10 +117,10 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
 	    if (genlabObj == null) 
 	    	return false;
 	   
-	    if (!(genlabObj instanceof IAlgoInstance))
+	    if (!(genlabObj instanceof IAlgoContainerInstance))
 	    	return false; 
 	    
-	    IAlgoInstance ai = (IAlgoInstance)genlabObj;
+	    IAlgoContainerInstance ai = (IAlgoContainerInstance)genlabObj;
 	    
 	    return !(ai.getAlgo() instanceof IConstantAlgo);
 	}
@@ -107,14 +159,14 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
             			// this is a right element
             			gaService.setLocationAndSize(
             					text, 
-            					containerWidth/2,
+            					containerWidth - IO_LABELS_WIDTH - ANCHOR_WIDTH/2 - INVISIBLE_RECT_MARGIN_HORIZ,
             					text.getY(),
-            					containerWidth/2-ANCHOR_WIDTH,
+            					IO_LABELS_WIDTH,
             					text.getHeight()
             					);
             		} else {
             			// this is a left element: just resize it
-            			gaService.setWidth(text, containerWidth/2-ANCHOR_WIDTH);
+            			gaService.setWidth(text, IO_LABELS_WIDTH - ANCHOR_WIDTH/2 - INVISIBLE_RECT_MARGIN_HORIZ);
             		}
             	}
                 
@@ -136,7 +188,6 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
         if (anchor.getLocation().getX() == 0)
         	return false;
         
-        //final int theoreticalX = 0;
         
         final int theoreticalX =  (containerWidth - INVISIBLE_RECT_MARGIN_HORIZ*2);
         
@@ -170,6 +221,7 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
 
 	}
 	
+	
 	@Override
 	public boolean layout(ILayoutContext context) {
 
@@ -180,7 +232,11 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
         
         ContainerShape containerShape = (ContainerShape) context.getPictogramElement();
         GraphicsAlgorithm containerGa = containerShape.getGraphicsAlgorithm();
-        
+
+
+        // retrieve the corresponding business object
+	    IAlgoContainerInstance ai = (IAlgoContainerInstance)getBusinessObjectForPictogramElement(containerShape);
+
         // ensure min height and width are ok for invisible rectangle
         
         // height
@@ -194,7 +250,7 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
             containerGa.setWidth(MIN_WIDTH);
             anythingChanged = true;
         }        
-        
+  
         int containerWidth = containerGa.getWidth() - INVISIBLE_RECT_MARGIN_HORIZ*2;
 
         // resize visible rectangle
@@ -209,6 +265,30 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
             	anythingChanged = true;
             }        
             containerWidth = rectangle.getWidth();
+
+        }
+        
+        // resize visible rectangle inside
+        {
+        	final int marginLeft = RECTANGLE_INSIDE_LEFT + (ai.getInputInstances().isEmpty()?0:LayoutIAlgoContainerFeature.IO_LABELS_WIDTH);
+        	final int marginTop = RECTANGLE_INSIDE_TOP;
+        	final int marginRight = ANCHOR_WIDTH*2 +
+        			(ai.getOutputInstances().isEmpty()?0:LayoutIAlgoContainerFeature.IO_LABELS_WIDTH)
+        			;
+        	final int marginBottom = RECTANGLE_INSIDE_BOTTOM_MARGIN;
+        	
+            GraphicsAlgorithm rectangle = containerGa.getGraphicsAlgorithmChildren().get(1);
+            final int expectedHeight = containerGa.getHeight() - INVISIBLE_RECT_MARGIN_TOP - marginTop - marginBottom;
+        	final int expectedWidth = containerGa.getWidth() - INVISIBLE_RECT_MARGIN_HORIZ*2 - marginLeft - marginRight;
+			
+            if (rectangle.getHeight() != expectedHeight) {
+            	rectangle.setHeight(expectedHeight);
+            	anythingChanged = true;
+            }
+            if (rectangle.getWidth() != expectedWidth) {
+            	rectangle.setWidth(expectedWidth);
+            	anythingChanged = true;
+            }        
 
         }
         

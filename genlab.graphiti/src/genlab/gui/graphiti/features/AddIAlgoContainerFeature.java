@@ -51,9 +51,6 @@ import org.eclipse.graphiti.util.IColorConstant;
  */
 public class AddIAlgoContainerFeature extends AbstractAddFeature {
 
-	public static final int WIDTH = 80;
-	public static final int HEIGHT = 80;
-	
 	public static final int ROUNDED = 10;
 	
 	public static final int FONT_SIZE = 20;
@@ -139,15 +136,14 @@ public class AddIAlgoContainerFeature extends AbstractAddFeature {
 		IPeCreateService peCreateService = Graphiti.getPeCreateService();
 		ContainerShape containerShape = peCreateService.createContainerShape(contextContainerShape, true);
 
-		
 		// with default size..
 		int width = Math.max(
 				context.getWidth(), 
-				WIDTH
+				LayoutIAlgoContainerFeature.computeMinimumWidth(addedAlgo)
 				);
 		int height = Math.max(
 				context.getHeight(), 
-				HEIGHT
+				LayoutIAlgoContainerFeature.computeMinimumHeight(addedAlgo)
 				);
 	
 		// TODO detect children...
@@ -213,10 +209,16 @@ public class AddIAlgoContainerFeature extends AbstractAddFeature {
 
 			gaService.setLocationAndSize(
 					roundedRectangleInside, 
-					20+LayoutIAlgoFeature.INVISIBLE_RECT_MARGIN_HORIZ, 
-					40, 
-					width-40, 
-					height-40
+					// x1
+					LayoutIAlgoContainerFeature.RECTANGLE_INSIDE_LEFT
+						+ LayoutIAlgoFeature.INVISIBLE_RECT_MARGIN_HORIZ
+						+(addedAlgo.getInputInstances().isEmpty()? 0:LayoutIAlgoContainerFeature.IO_LABELS_WIDTH), 
+					// y1
+					LayoutIAlgoContainerFeature.RECTANGLE_INSIDE_TOP, 
+					// x2
+					width-(addedAlgo.getOutputInstances().isEmpty()?0:LayoutIAlgoContainerFeature.IO_LABELS_WIDTH), 
+					// y2
+					height-LayoutIAlgoContainerFeature.RECTANGLE_INSIDE_TOP
 					);
 			
 			// TODO remove
@@ -272,7 +274,7 @@ public class AddIAlgoContainerFeature extends AbstractAddFeature {
 			link(shape, addedAlgo);
 		}
 		
-		final int lineY = 20 + LayoutIAlgoFeature.ANCHOR_WIDTH/2 + LayoutIAlgoContainerFeature.INVISIBLE_RECT_MARGIN_TOP;
+		final int lineY = LayoutIAlgoContainerFeature.Y_LINE;
 		
 
 		// add line
@@ -337,9 +339,13 @@ public class AddIAlgoContainerFeature extends AbstractAddFeature {
 
 				gaService.setLocationAndSize(
 						text, 
+						// x
 						LayoutIAlgoFeature.ANCHOR_WIDTH*3/2, 
-						yText, 
-						width/2, 
+						// y
+						yText,
+						// width
+						LayoutIAlgoContainerFeature.IO_LABELS_WIDTH,
+						// height
 						LayoutIAlgoFeature.ANCHOR_WIDTH*2,
 						false
 						);
@@ -414,9 +420,13 @@ public class AddIAlgoContainerFeature extends AbstractAddFeature {
 
 				gaService.setLocationAndSize(
 						text, 
-						width/2, 
+						// x
+						width/2,
+						// y
 						yText, 
-						width/2-LayoutIAlgoFeature.ANCHOR_WIDTH, 
+						// width
+						LayoutIAlgoContainerFeature.IO_LABELS_WIDTH,
+						// height
 						LayoutIAlgoFeature.ANCHOR_WIDTH*2
 						);
 				
@@ -428,8 +438,7 @@ public class AddIAlgoContainerFeature extends AbstractAddFeature {
 		}
 		
 
-		
-		 gaService.setLocationAndSize(
+		gaService.setLocationAndSize(
 	     		invisibleRectangle,
 	     		context.getX(), 
 	     		context.getY(), 
@@ -438,10 +447,7 @@ public class AddIAlgoContainerFeature extends AbstractAddFeature {
 	     		);
 		 
 		containerShape.setActive(true);
-		 
-		System.err.println(Graphiti.getPeService().getAllContainedPictogramElements(containerShape));
-
-		
+				
 		
         //layoutPictogramElement(containerShape);
 	      
