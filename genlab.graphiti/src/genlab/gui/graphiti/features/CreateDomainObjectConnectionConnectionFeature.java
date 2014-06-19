@@ -1,8 +1,11 @@
 package genlab.gui.graphiti.features;
 
+import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IInputOutputInstance;
+import genlab.core.model.instance.InputInstance;
+import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.Utils;
 import genlab.gui.graphiti.editors.IntuitiveObjectCreation;
@@ -33,7 +36,19 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 		try {
 			IInputOutputInstance from = (IInputOutputInstance)getBusinessObjectForPictogramElement(context.getSourceAnchor());
 			
-			return (from != null);
+			// if there is not starting point, then don't propose to create
+			if (from == null)
+				return false;
+			
+			// if user is attempting to create a connection starting from an input...
+			if (from instanceof InputInstance) {
+				// accept the creation if the input has no link OR accepts multiple inputs
+				return (from.getConnections().isEmpty() || from.getMeta().acceptsMultipleInputs());
+			} else {
+				// this is an output
+				// always accept to create output connections
+				return true;
+			}
 			
 		} catch (NullPointerException e) {
 			return false;
@@ -121,7 +136,22 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 				
 				// no standard case: dest == null, probably the user wants us to help him.
 				// engage in a suggestion process: given the destination, what can we provide as an input ?
-				ProposalObjectCreation proposal = IntuitiveObjectCreation.getAutoInputForOutput(from.getMeta());
+				
+				// first retrieve the target container
+				if (context.getTargetPictogramElement() == null)
+					return false;
+				
+				IAlgoContainerInstance aci = null;
+				try {
+					aci = (IAlgoContainerInstance) getBusinessObjectForPictogramElement(context.getTargetPictogramElement());
+				} catch (ClassCastException e) {
+					return false;
+				}
+				
+				ProposalObjectCreation proposal = IntuitiveObjectCreation.getAutoInputForOutput(
+						(IAlgoContainer)aci.getAlgo(), 
+						from.getMeta()
+						);
 				
 				// no proposal => can no create
 				return (proposal != null); 
@@ -185,9 +215,20 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 			
 			correctedTo = from;
 			correctedFrom = null;
-					
+			
+			IAlgoContainerInstance aci = null;
+			try {
+				aci = (IAlgoContainerInstance) getBusinessObjectForPictogramElement(context.getTargetPictogramElement());
+			} catch (ClassCastException e) {
+				// TODO what ?
+			}
+			
 			// engage in a suggestion process: given the destination, what can we provide as an input ?
-			ProposalObjectCreation proposal = IntuitiveObjectCreation.getAutoInputForOutput(correctedTo.getMeta());
+			ProposalObjectCreation proposal = IntuitiveObjectCreation.getAutoInputForOutput(
+					(IAlgoContainer)aci.getAlgo(), 
+					from.getMeta()
+					);
+					
 			
 			// no proposal => can no create
 			if (proposal == null) {
@@ -206,8 +247,8 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 				WorkflowListener.lastInstance.transmitLastUIParameters(
 						addInstance, 
 						new WorkflowListener.UIInfos() {{
-							x = context.getTargetLocation().getX();
-							y = context.getTargetLocation().getY();
+							x = context.getTargetLocation().getX() - context.getTargetPictogramElement().getGraphicsAlgorithm().getX();
+							y = context.getTargetLocation().getY() - context.getTargetPictogramElement().getGraphicsAlgorithm().getY();
 							width = 30;
 							height = 30;
 							containerShape = Utils.getFirstContainer(context.getTargetPictogramElement());
@@ -216,6 +257,9 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 				
 				// add this instance to the workflow, this will create the corresponding graphical representation
 				workflow.addAlgoInstance(addInstance);
+				
+				aci.addChildren(addInstance);
+				addInstance.setContainer(aci);
 				
 				// then create the connection
 				correctedFrom = addInstance.getOutputInstanceForOutput(proposal.ioToUse);

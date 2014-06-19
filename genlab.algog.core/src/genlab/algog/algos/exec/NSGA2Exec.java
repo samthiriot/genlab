@@ -1,6 +1,8 @@
 package genlab.algog.algos.exec;
 
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
+import genlab.algog.algos.meta.AbstractGeneticExplorationAlgo;
+import genlab.algog.algos.meta.GeneticExplorationAlgo;
 import genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo;
 import genlab.algog.internal.AGenome;
 import genlab.algog.internal.AnIndividual;
@@ -23,6 +25,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 /**
  * TODO changer taille offspring en paramètre
@@ -120,6 +124,7 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		
 		messages.infoUser("for generation "+iterationsMade+", the Pareto front contains "+currentFront.size()+": "+currentFront.toString(), getClass());
 		System.err.println("first domination front: "+currentFront.toString());
+		
 		// save the first domination front
 		generation2paretoFront.put(iterationsMade, currentFront);
 		frontIdx2individuals.put(1, currentFront);
@@ -310,11 +315,9 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		
 		return offsprings;
 	}
-
 	
-	@Override
-	protected Map<AGenome, Set<AnIndividual>> selectIndividuals(Map<AnIndividual, Double[]> indiv2fitness) {
-
+	protected void analyzeLastPopulation(Map<AnIndividual, Double[]> indiv2fitness) {
+		
 		// we are called from the parent class with only the last generation.
 		// but NSGA2, in order to introduce elitism, compares the current generation and the previous one (if any).
 		// so we first preprocess the received fitness with the previous generation
@@ -343,6 +346,13 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		// compute fronts and rank
 		fastNonDominatedSort(indiv2fitness);
 		
+	}
+	
+	@Override
+	protected Map<AGenome, Set<AnIndividual>> selectIndividuals(Map<AnIndividual, Double[]> indiv2fitness) {
+
+		analyzeLastPopulation(indiv2fitness);
+		
 		// select parents
 		Set<AnIndividual> offsprings  = selectParents(indiv2fitness, indiv2fitness.size()/2);
 
@@ -368,37 +378,60 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		return genome2individuals;
 	}
 	
-	@Override
-	protected void hookProcessResults(ComputationResult res, ComputationState ourState) {
-
-		if (ourState != ComputationState.FINISHED_OK)
-			return;
-		
+	/**
+	 * Takes all the pareto fronts detected during simulation, 
+	 * and packs them as a table to be exported.
+	 * @return
+	 */
+	protected GenlabTable packParetoFrontsAsTable() {
 		
 		final String titleIteration = "iteration";
 		final String titleParetoGenome = "pareto genome";
 		
 		GenlabTable tab = new GenlabTable();
 		tab.declareColumn(titleIteration);
+		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION, titleIteration);
+		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_MAX_ITERATIONS, paramStopMaxIterations);
+		
 		tab.declareColumn(titleParetoGenome);		
 		
 		// declare columns for each fitness
 		Map<AGenome,String[]> genome2fitnessColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
+		Map<String,Map<String,String>> tableMetadataGoals = new HashMap<String, Map<String,String>>();
 		for (AGenome currentGenome: genome2fitnessOutput.keySet()) {
 		
-			String[] names = new String[genome2fitnessOutput.get(currentGenome).size()];
+			String[] names = new String[genome2fitnessOutput.get(currentGenome).size()*3];
 			int j=0;
 			for (IAlgoInstance goalAI: genome2fitnessOutput.get(currentGenome)) {
 			
-				names[j] = "fitness "+currentGenome.name+" / "+goalAI.getName();
+				Map<String,String> colMetadataForGenome = new HashMap<String, String>();
+				tableMetadataGoals.put(currentGenome.name+" / "+goalAI.getName(), colMetadataForGenome);
+				
+				names[j] = "value "+currentGenome.name+" / "+goalAI.getName();
 				tab.declareColumn(names[j]);
+				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_VALUE, names[j]);
 				
 				j++;
+				
+				names[j] = "target "+currentGenome.name+" / "+goalAI.getName();
+				tab.declareColumn(names[j]);
+				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_TARGET, names[j]);
+				
+				j++;
+				
+				names[j] = "fitness "+currentGenome.name+" / "+goalAI.getName();
+				tab.declareColumn(names[j]);
+				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_FITNESS, names[j]);
+				
+				j++;
+				
+				
 			}
 			
 			genome2fitnessColumns.put(currentGenome, names);
 			
 		}
+		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GOALS2COLS, tableMetadataGoals);
 		
 		// declare columns for each possible gene
 		Map<AGenome,String[]> genome2geneColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
@@ -419,27 +452,49 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		for (Integer iterationId : generation2paretoFront.keySet()) {
 			
 			// for each iteration
-			Collection<AnIndividual> individuals = generation2paretoFront.get(iterationId);
-			Map<AnIndividual,Double[]> generationFitness = generation2fitness.get(iterationId);
-			
+			final Collection<AnIndividual> individuals = generation2paretoFront.get(iterationId);
+			final Map<AnIndividual,Double[]> generationFitness = generation2fitness.get(iterationId);
+			final Map<AnIndividual,Object[]> indiv2value = generation2values.get(iterationId);
+			final Map<AnIndividual,Object[]> indiv2target = generation2targets.get(iterationId);
+
 			for (AnIndividual indiv : individuals) {
 				
 				int rowId = tab.addRow();
-				Double[] fitness = generationFitness.get(indiv);
+				final Double[] fitness = generationFitness.get(indiv);
+				final Object[] values = indiv2value.get(indiv);
+				final Object[] targets = indiv2target.get(indiv);
 
 				tab.setValue(rowId, titleIteration, iterationId);
 				tab.setValue(rowId, titleParetoGenome, indiv.genome.name);
 
 				// export fitness
 				String[] colnames = genome2fitnessColumns.get(indiv.genome);
-				for (int i=0; i<colnames.length; i++) {
+				for (int i=0; i<colnames.length/3; i++) {
 					
+					int I = i*3;
+
 					tab.setValue(
 							rowId, 
-							colnames[i], 
+							colnames[I], 
+							values[i]
+							);
+					
+					
+					I=I+1;
+					tab.setValue(
+							rowId, 
+							colnames[I], 
+							targets[i]
+							);
+					
+					I=I+1;
+
+					tab.setValue(
+							rowId, 
+							colnames[I], 
 							fitness[i]
 							);
-
+					
 				}
 				
 				// export genes
@@ -455,9 +510,45 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 			}
 			
 		}
+		
+		return tab;
+	}
 	
-		res.setResult(NSGA2GeneticExplorationAlgo.OUTPUT_TABLE_PARETO, tab);
+	@Override
+	protected void hookProcessResults(ComputationResult res, ComputationState ourState) {
+
+		if (ourState != ComputationState.FINISHED_OK)
+			return;
+		
+		// process the last Pareto front
+		analyzeLastPopulation(generation2fitness.get(iterationsMade));
+
+		// and define the result for Pareto
+		res.setResult(
+				NSGA2GeneticExplorationAlgo.OUTPUT_TABLE_PARETO, 
+				packParetoFrontsAsTable()
+				);
 		
 	}
 
+	/**
+	 * Add something to the result to be exported as an intermediate version.
+	 * @param res
+	 */
+	protected void completeContinuousIntermediateResult(ComputationResult res) {
+
+		super.completeContinuousIntermediateResult(res);
+		
+		// add our pareto fronts
+		res.setResult(
+				NSGA2GeneticExplorationAlgo.OUTPUT_TABLE_PARETO, 
+				packParetoFrontsAsTable()
+				);
+		
+	}
+	
+	@Override
+	protected void updateProgressFromChildren() {
+		super.updateProgressFromChildren();
+	}
 }

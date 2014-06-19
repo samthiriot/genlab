@@ -10,6 +10,8 @@ import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.parameters.Parameter;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import org.osgi.framework.Bundle;
@@ -136,6 +138,14 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 	public String getImagePathBig() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	@Override
+	public Map<IAlgo, Integer> recommandAlgosContained() {
+
+		// we recommand nothing special. It will come back to the fallback (constants)
+		return Collections.EMPTY_MAP;
 	}
 
 	

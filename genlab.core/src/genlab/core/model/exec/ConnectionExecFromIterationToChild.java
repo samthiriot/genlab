@@ -46,6 +46,5 @@ public class ConnectionExecFromIterationToChild extends AbstractConnectionExec<I
 		this.value = value;
 		to.notifyInputAvailable(c.getTo());
 	}
-	
 
 }

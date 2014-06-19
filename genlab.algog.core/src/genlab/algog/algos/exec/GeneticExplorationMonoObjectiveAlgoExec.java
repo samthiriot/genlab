@@ -110,16 +110,20 @@ public class GeneticExplorationMonoObjectiveAlgoExec extends AbstractGeneticExpl
 
 	
 	@Override
-	protected void manageStatisticsForCurrentGeneration(Map<AnIndividual,Double[]> result2) {
+	protected void manageStatisticsForCurrentGeneration(
+			Map<AnIndividual,Double[]> resultFitness, 
+			Map<AnIndividual,Object[]> resultTargets,
+			Map<AnIndividual,Object[]> resultValues
+			) {
 
 		// display info on it
 		double min = Double.MAX_VALUE;
 		double max = Double.MIN_VALUE;
 		double total = 0.0;
-		final int count = result2.size();
+		final int count = resultFitness.size();
 		
 		// TODO avoid to do it twice...
-		Map<AnIndividual,Double> result = reduceFitness(result2);
+		Map<AnIndividual,Double> result = reduceFitness(resultFitness);
 		
 		AnIndividual best = null;
 		

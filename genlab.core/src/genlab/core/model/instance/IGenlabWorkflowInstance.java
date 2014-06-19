@@ -3,6 +3,7 @@ package genlab.core.model.instance;
 import genlab.core.commons.IWithAssociatedData;
 import genlab.core.commons.IWithAssociatedTransientData;
 import genlab.core.model.meta.IAlgo;
+import genlab.core.model.meta.IInputOutput;
 import genlab.core.projects.IGenlabProject;
 
 import java.io.File;
@@ -11,6 +12,8 @@ import java.util.Collection;
 /**
  * 
  * A workflow instance.
+ * 
+ * TODO checking: add check that the contain is a DAG
  * 
  * Contributors may store objects in order to persist data related to workflows.
  * 
@@ -37,6 +40,9 @@ public interface IGenlabWorkflowInstance extends IAlgoContainerInstance, IWithAs
 	public void addConnection(Connection c);
 
 	public IConnection connect(IInputOutputInstance from, IInputOutputInstance to);
+	
+	public IConnection connect(IAlgoInstance fromAlgoInstance, IInputOutput<?> output, IAlgoInstance toAlgoInstance, IInputOutput<?> input);
+
 	
 	public File getFilePersisted();
 	

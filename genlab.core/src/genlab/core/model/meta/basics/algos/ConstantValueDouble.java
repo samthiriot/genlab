@@ -39,7 +39,10 @@ public class ConstantValueDouble extends ConstantValue<Double> {
 		return new DoubleParameter(paramId, "value", "the value of this constant", 0.0);
 	}
 
-	
+	@Override
+	public Integer getPriorityForIntuitiveCreation() {
+		return 1;
+	}
 
 
 }

@@ -20,6 +20,13 @@ public interface IInputOutput<JavaType> {
 	public IFlowType<JavaType> getType();
 	
 	public boolean acceptsMultipleInputs();
+	
+	/**
+	 * Returns true if this is an output able to export successive updates of the same value.
+	 * @return
+	 */
+	public boolean isContinuousOutput();
+
 		
 	/**
 	 * 	for this given Input or output type, checks that this flow type is described into values with a relevant type

@@ -22,6 +22,12 @@ public enum ComputationState {
 	 */
 	STARTED,
 	
+	/**
+	 * The task started to emit continuous datan, or refreshed continuous data,
+	 * so data can be readen in an intermediate state.
+	 */
+	SENDING_CONTINOUS,
+	
 	FINISHED_CANCEL,
 	
 	FINISHED_OK,

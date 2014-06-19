@@ -40,7 +40,7 @@ import org.eclipse.graphiti.util.IColorConstant;
  * @author Samuel Thiriot
  *
  */
-public class AddIAlgoInstanceFeature extends AbstractAddFeature {
+public class AddIAlgoInstanceFeature extends AddFeatureAbstract {
 
 	public static final int ROUNDED = 20;
 	
@@ -242,24 +242,8 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 			
 			// add anchor...
 			{	
-				FixPointAnchor anchor = peCreateService.createFixPointAnchor(containerShape);
-				anchor.setActive(true);
-				anchor.setLocation(gaService.createPoint(0, yText+LayoutIAlgoFeature.ANCHOR_WIDTH/2));
-				Ellipse ellipse = gaService.createEllipse(anchor);
-				//ellipse.setForeground(manageColor(IColorConstant.DARK_GRAY));
-				//ellipse.setBackground(manageColor(IColorConstant.WHITE));
-				//ellipse.setLineWidth(2);
-				ellipse.setWidth(LayoutIAlgoFeature.ANCHOR_WIDTH);
-				ellipse.setStyle(StylesUtils.getStyleFor(getDiagram()));
-				//anchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
-				link(anchor, input);
+				createInputEllipse(containerShape, input, yText);
 				
-				gaService.setLocationAndSize(
-						ellipse, 
-						0, 0, 
-						LayoutIAlgoFeature.ANCHOR_WIDTH, LayoutIAlgoFeature.ANCHOR_WIDTH, 
-						false
-						);
 			}
 			// and text !
 			{
@@ -296,35 +280,8 @@ public class AddIAlgoInstanceFeature extends AbstractAddFeature {
 
 			// add anchor...
 			{
-				FixPointAnchor anchor = peCreateService.createFixPointAnchor(containerShape);
-				// TODO to explore ? peCreateService.createBoxRelativeAnchor(containerShape);
-				anchor.setActive(true);
-				anchor.setLocation(
-						gaService.createPoint(
-								width-LayoutIAlgoFeature.ANCHOR_WIDTH,//*2, 
-								yText+LayoutIAlgoFeature.ANCHOR_WIDTH/2
-								)
-								);
-				Ellipse ellipse = gaService.createEllipse(anchor);
-				//ellipse.setForeground(manageColor(IColorConstant.DARK_GRAY));
-				//ellipse.setBackground(manageColor(IColorConstant.WHITE));
-				//ellipse.setLineWidth(2);
-				ellipse.setWidth(LayoutIAlgoFeature.ANCHOR_WIDTH);
-				ellipse.setStyle(StylesUtils.getStyleFor(getDiagram()));
-				anchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
-				anchor.setGraphicsAlgorithm(ellipse);
+				createOutputEllipse(containerShape, output, yText, width);
 				
-	//			anchor.setParent(containerShape);
-				link(anchor, output);
-	
-	
-				gaService.setLocationAndSize(
-						ellipse, 
-						0, 
-						0, 
-						LayoutIAlgoFeature.ANCHOR_WIDTH, 
-						LayoutIAlgoFeature.ANCHOR_WIDTH
-						);
 				/*
 				 * gaService.setLocationAndSize(
 						ellipse, 

@@ -50,6 +50,7 @@ public abstract class AbstractViewOpenedByAlgo extends ViewPart implements IProp
 		GLLogger.traceTech("received property: "+event.getProperty(), getClass());
 		
 		if (event.getProperty().equals(PROPERTY_ALGOVIEW_EXEC)) {
+			
 			AbstractOpenViewAlgoExec exec = AbstractOpenViewAlgoExec.getViewExecForId((String) event.getNewValue());
 			if (exec == null) {
 				GLLogger.warnTech("unable to retrieve the content to display for exec: "+event.getNewValue(), getClass());

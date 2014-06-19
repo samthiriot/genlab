@@ -1,6 +1,7 @@
 package genlab.algog.algos.exec;
 
 import genlab.algog.algos.meta.GoalAlgo;
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
@@ -14,6 +15,8 @@ import genlab.core.model.instance.IInputOutputInstance;
 public class GoalExec extends AbstractAlgoExecutionOneshot implements IGoalExec {
 
 	private Double resultDiffAbs = null;
+	private Number target = null;
+	private Number value = null;
 	
 	public GoalExec(IExecution exec, IAlgoInstance algoInst, IComputationProgress progress) {
 		super(exec, algoInst, progress);
@@ -30,8 +33,8 @@ public class GoalExec extends AbstractAlgoExecutionOneshot implements IGoalExec 
 
 		progress.setComputationState(ComputationState.STARTED);
 		
-		Number target = (Number)getInputValueForInput(GoalAlgo.INPUT_TARGET);
-		Number value = (Number)getInputValueForInput(GoalAlgo.INPUT_VALUE);
+		target = (Number)getInputValueForInput(GoalAlgo.INPUT_TARGET);
+		value = (Number)getInputValueForInput(GoalAlgo.INPUT_VALUE);
 		
 		resultDiffAbs = Math.abs(target.doubleValue()-value.doubleValue());
 		
@@ -44,17 +47,31 @@ public class GoalExec extends AbstractAlgoExecutionOneshot implements IGoalExec 
 
 	@Override
 	public void cancel() {
-
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
 	}
 
 	@Override
 	public void kill() {
-
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
 	}
 
 	@Override
 	public Double getFitness() {
+
+		if (!progress.getComputationState().isFinished())
+			throw new ProgramException("trying to read the fitness from a goal before its completion");
+		
 		return resultDiffAbs;
+	}
+
+	@Override
+	public Object getTarget() {
+		return target;
+	}
+
+	@Override
+	public Object getActualValue() {
+		return value;
 	}
 
 

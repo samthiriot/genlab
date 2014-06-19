@@ -14,7 +14,9 @@ public interface IAlgoExecutionOneshot extends IAlgoExecution {
 
 	
 	/**
-	 * Called during execution when an input became available
+	 * Called during execution when an input became available.
+	 * In the successive execution scheme, when a oneshot algo
+	 * received all the required inputs, it may run and end.
 	 * @param to
 	 */
 	public void notifyInputAvailable(IInputOutputInstance to);

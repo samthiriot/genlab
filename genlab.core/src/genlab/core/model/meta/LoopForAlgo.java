@@ -1,5 +1,7 @@
 package genlab.core.model.meta;
 
+import java.util.Map;
+
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.LoopAlgoExecutionSupervisor;
@@ -33,6 +35,8 @@ public class LoopForAlgo extends AlgoContainer {
 				);
 		
 	}
+
+	
 
 
 

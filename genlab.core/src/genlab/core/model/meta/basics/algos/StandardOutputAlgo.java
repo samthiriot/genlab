@@ -104,8 +104,8 @@ public class StandardOutputAlgo extends BasicAlgo implements IDisplayAlgo {
 			
 			@Override
 			public void cancel() {
-				// TODO Auto-generated method stub
-				
+				getProgress().setComputationState(ComputationState.FINISHED_CANCEL);
+				messages.warnUser("canceled the execution of "+this+", as an input execution faield", getClass());
 			}
 			
 		

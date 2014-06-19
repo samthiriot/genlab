@@ -2,6 +2,7 @@ package genlab.algog.algos.exec;
 
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
 import genlab.algog.algos.meta.AbstractGeneAlgo;
+import genlab.algog.algos.meta.AbstractGeneticExplorationAlgo;
 import genlab.algog.algos.meta.BooleanGeneAlgo;
 import genlab.algog.algos.meta.DoubleGeneAlgo;
 import genlab.algog.algos.meta.GeneticExplorationAlgo;
@@ -15,6 +16,7 @@ import genlab.algog.internal.AIntegerGene;
 import genlab.algog.internal.ANumericGene;
 import genlab.algog.internal.AnIndividual;
 import genlab.core.commons.ProgramException;
+import genlab.core.commons.UniqueTimestamp;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.exec.ITask;
@@ -29,6 +31,7 @@ import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -61,8 +64,6 @@ import cern.jet.random.engine.RandomEngine;
  */
 public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContainerExecution {
 
-
-	protected int TODO_POP_SIZE_PER_GENOME = 100; 
 		
 	// random number generation
 	protected RandomEngine coltRandom;
@@ -79,6 +80,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 
 	// for each generation, and each individual, stores the corresponding fitness
 	protected LinkedHashMap<Integer,Map<AnIndividual,Double[]>> generation2fitness = new LinkedHashMap<Integer, Map<AnIndividual,Double[]>>(500);
+	protected LinkedHashMap<Integer,Map<AnIndividual,Object[]>> generation2targets = new LinkedHashMap<Integer, Map<AnIndividual,Object[]>>(500);
+	protected LinkedHashMap<Integer,Map<AnIndividual,Object[]>> generation2values = new LinkedHashMap<Integer, Map<AnIndividual,Object[]>>(500);
 
 	protected final GeneticExplorationAlgoContainerInstance algoInst;
 	
@@ -103,6 +106,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		
 		this.autoFinishWhenChildrenFinished = false;
 		this.autoUpdateProgressFromChildren = false;
+		this.ignoreCancelFromChildren = true;
+		this.ignoreFailuresFromChildren = true;
 
 		// read parameters
 		paramPopulationSize = (Integer) algoInst.getValueForParameter(GeneticExplorationAlgo.PARAM_SIZE_POPULATION);
@@ -369,14 +374,24 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * Opportunity for the algo to display stats on the current generation, or even export it.
 	 * @param result
 	 */
-	protected abstract void manageStatisticsForCurrentGeneration(Map<AnIndividual,Double[]> result);
+	protected abstract void manageStatisticsForCurrentGeneration(
+			Map<AnIndividual,Double[]> resultFitness, 
+			Map<AnIndividual,Object[]> resultTargets,
+			Map<AnIndividual,Object[]> resultValues);
 	
-	protected void manageResultsForCurrentGeneration(Map<AnIndividual,Double[]> result) {
+	protected void manageResultsForCurrentGeneration(
+			Map<AnIndividual,Double[]> resultFitness,
+			Map<AnIndividual,Object[]> resultTargets,
+			Map<AnIndividual,Object[]> resultValues
+			) {
 		
 		messages.debugUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
 
 		// store it 
-		generation2fitness.put(iterationsMade, result);
+		generation2fitness.put(iterationsMade, resultFitness);
+		generation2targets.put(iterationsMade, resultTargets);
+		generation2values.put(iterationsMade, resultValues);
+
 		
 		this.progress.incProgressMade();
 
@@ -389,76 +404,136 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		return (iterationsMade < paramStopMaxIterations) && !hasConverged();
 	}
 	
+	
+	protected final GenlabTable packDataInTable() {
 
-	protected void updateProgressFromChildren() {
+		final String titleIteration = "iteration";
+		final String titleGenome = "genome";
 		
-		if (!autoUpdateProgressFromChildren)
-			return;
+		GenlabTable tab = new GenlabTable();
+		tab.declareColumn(titleIteration);
+		tab.declareColumn(titleGenome);
+		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION, titleIteration);
+		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_MAX_ITERATIONS, paramStopMaxIterations);
 		
-		ComputationState ourState = null;
 		
-		long totalToDo = subTasksRemovedDone;
-		long totalDone = subTasksRemovedDone;
-		boolean somethingNotFinished = false;
-
-		for (ITask sub: tasks) {
+		// declare columns for each fitness
+		Map<AGenome,String[]> genome2fitnessColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
+		Map<String,Map<String,String>> tableMetadataGoals = new HashMap<String, Map<String,String>>();
+		for (AGenome currentGenome: genome2fitnessOutput.keySet()) {
+		
+			String[] names = new String[genome2fitnessOutput.get(currentGenome).size()*3];
+			int j=0;
+			for (IAlgoInstance goalAI: genome2fitnessOutput.get(currentGenome)) {
 			
-			final ComputationState subState = sub.getProgress().getComputationState(); 
-			
+				Map<String,String> colMetadataForGenome = new HashMap<String, String>();
+				tableMetadataGoals.put(currentGenome.name+" / "+goalAI.getName(), colMetadataForGenome);
 				
-			// well, looks like it knows a count
-			totalToDo += sub.getProgress().getProgressTotalToDo();
-			totalToDo ++;
-						
-			if (!subState.isFinished()) {
-				somethingNotFinished = true;
-				totalDone += sub.getProgress().getProgressDone();
-				continue;
-			}  else {
-				totalDone ++;
+				names[j] = "target "+currentGenome.name+" / "+goalAI.getName();
+				tab.declareColumn(names[j]);
+				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_TARGET, names[j]);
+				j++;
+				
+				names[j] = "value "+currentGenome.name+" / "+goalAI.getName();
+				tab.declareColumn(names[j]);
+				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_VALUE, names[j]);
+				j++;
+				
+				names[j] = "fitness "+currentGenome.name+" / "+goalAI.getName();
+				tab.declareColumn(names[j]);
+				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_FITNESS, names[j]);
+				
+				j++;
 			}
 			
-			switch (subState) {
-			case FINISHED_FAILURE:
-				cancel();
-				somethingFailed = true;
-				break;
-			case FINISHED_CANCEL:
-				somethingCanceled = true;
-				break;
-			case FINISHED_OK:
-				// don't care 
-				break;
-			default:
-				throw new ProgramException("unknown computation status with property 'finished': "+subState);
-			}
+			genome2fitnessColumns.put(currentGenome, names);
 			
 		}
-	
+		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GOALS2COLS, tableMetadataGoals);
+
+
+		// declare columns for each possible gene
+		Map<AGenome,String[]> genome2geneColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
+		for (AGenome currentGenome: genome2fitnessOutput.keySet()) {
+			
+			String[] names = new String[currentGenome.getGenes().length];
+			for (int j=0; j<names.length; j++) {
+			
+				names[j] = "genes "+currentGenome.name+" / "+currentGenome.getGenes()[j].name;
+				tab.declareColumn(names[j]);
 		
-		if (somethingNotFinished && !somethingFailed && !somethingCanceled) {
+			}
 			
-			this.progress.setProgressTotal(totalToDo);
-			this.progress.setProgressMade(totalDone);
-			
-		} else if (autoFinishWhenChildrenFinished) {
-			// if we reached this step, then all our children have finished.
-			// as a container, we end ourself
-			//if (somethingFailed)
-			//	ourState = ComputationState.FINISHED_FAILURE;
-			//else 
-			if (somethingCanceled)
-				ourState = ComputationState.FINISHED_CANCEL;
-			else 
-				ourState = ComputationState.FINISHED_OK;
-			
-			messages.traceTech("all subs terminated; should transmit results", getClass());
-			hookContainerExecutionFinished(ourState);
-			this.progress.setComputationState(ourState);
+			genome2geneColumns.put(currentGenome, names);
 			
 		}
+		
+		for (Integer iterationId : generation2fitness.keySet()) {
+			
+			// for each iteration
+			final Map<AnIndividual,Double[]> indiv2fitness = generation2fitness.get(iterationId);
+			final Map<AnIndividual,Object[]> indiv2value = generation2values.get(iterationId);
+			final Map<AnIndividual,Object[]> indiv2target = generation2targets.get(iterationId);
+
+			for (Map.Entry<AnIndividual,Double[]> ind2fit : indiv2fitness.entrySet()) {
+				
+				final AnIndividual ind = ind2fit.getKey();
+				final Double[] fitness = ind2fit.getValue();
+				final Object[] values = indiv2value.get(ind);
+				final Object[] targets = indiv2target.get(ind);
+
+									
+				int rowId = tab.addRow();
+				tab.setValue(rowId, titleIteration, iterationId);
+				tab.setValue(rowId, titleGenome, ind.genome.name);
+				
+				// export fitness
+				String[] colnames = genome2fitnessColumns.get(ind.genome);
+				for (int i=0; i<colnames.length/3; i++) {
+					
+					int I=i*3;
+					
+					tab.setValue(
+							rowId, 
+							colnames[I], 
+							targets[i]
+							);
+					
+					I=I+1;
+					
+					tab.setValue(
+							rowId, 
+							colnames[I], 
+							values[i]
+							);
+
+					I=I+1;
+					
+					tab.setValue(
+							rowId, 
+							colnames[I], 
+							fitness[i]
+							);
+				}
+				
+				// export genes
+				String[] genesNames = genome2geneColumns.get(ind.genome);
+				for (int i=0; i<genesNames.length; i++) {
+				
+					tab.setValue(
+							rowId, 
+							genesNames[i], 
+							ind.genes[i]
+							);
+				}
+				
+				
+			}
+			
+		}
+		
+		return tab;
 	}
-	
 	
 	protected final void manageEndOfExploration() {
 		
@@ -480,85 +555,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		}
 		
 		if (ourState == ComputationState.FINISHED_OK) {
-			final String titleIteration = "iteration";
-			final String titleGenome = "genome";
-	
-			GenlabTable tab = new GenlabTable();
-			tab.declareColumn(titleIteration);
-			tab.declareColumn(titleGenome);
-			// declare columns for each fitness
-			Map<AGenome,String[]> genome2fitnessColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
-			for (AGenome currentGenome: genome2fitnessOutput.keySet()) {
 			
-				String[] names = new String[genome2fitnessOutput.get(currentGenome).size()];
-				int j=0;
-				for (IAlgoInstance goalAI: genome2fitnessOutput.get(currentGenome)) {
-				
-					names[j] = "fitness "+currentGenome.name+" / "+goalAI.getName();
-					tab.declareColumn(names[j]);
-					
-					j++;
-				}
-				
-				genome2fitnessColumns.put(currentGenome, names);
-				
-			}
-			// declare columns for each possible gene
-			Map<AGenome,String[]> genome2geneColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
-			for (AGenome currentGenome: genome2fitnessOutput.keySet()) {
-				
-				String[] names = new String[currentGenome.getGenes().length];
-				for (int j=0; j<names.length; j++) {
-				
-					names[j] = "genes "+currentGenome.name+" / "+currentGenome.getGenes()[j].name;
-					tab.declareColumn(names[j]);
-			
-				}
-				
-				genome2geneColumns.put(currentGenome, names);
-				
-			}
-			
-			for (Integer iterationId : generation2fitness.keySet()) {
-				
-				// for each iteration
-				Map<AnIndividual,Double[]> indiv2fitness = generation2fitness.get(iterationId);
-				for (Map.Entry<AnIndividual,Double[]> ind2fit : indiv2fitness.entrySet()) {
-					
-					AnIndividual ind = ind2fit.getKey();
-					Double[] fitness = ind2fit.getValue();
-										
-					int rowId = tab.addRow();
-					tab.setValue(rowId, titleIteration, iterationId);
-					tab.setValue(rowId, titleGenome, ind.genome.name);
-					
-					// export fitness
-					String[] colnames = genome2fitnessColumns.get(ind.genome);
-					for (int i=0; i<colnames.length; i++) {
-						
-						tab.setValue(
-								rowId, 
-								colnames[i], 
-								fitness[i]
-								);
-
-					}
-					
-					// export genes
-					String[] genesNames = genome2geneColumns.get(ind.genome);
-					for (int i=0; i<genesNames.length; i++) {
-					
-						tab.setValue(
-								rowId, 
-								genesNames[i], 
-								ind.genes[i]
-								);
-					}
-					
-					
-				}
-				
-			}
+			GenlabTable tab = packDataInTable();
 		
 			res.setResult(GeneticExplorationAlgo.OUTPUT_TABLE, tab);
 		}
@@ -758,7 +756,41 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			messages.infoUser(sb.toString(), getClass());
 		}
 		
+		exportContinuousOutput();
+		
 		return novelGenome2Population;
+		
+	}
+	
+	/**
+	 * Add something to the result to be exported as an intermediate version.
+	 * @param res
+	 */
+	protected void completeContinuousIntermediateResult(ComputationResult res) {
+
+		GenlabTable tab = packDataInTable();
+		res.setResult(AbstractGeneticExplorationAlgo.OUTPUT_TABLE, tab);
+		
+	}
+	
+	/**
+	 * exports an intermediate version of the result, if possible
+	 */
+	protected final void exportContinuousOutput() {
+		
+	
+	
+		ComputationResult res = new ComputationResult(algoInst, progress, messages);
+		
+		completeContinuousIntermediateResult(res);
+		
+		setResult(res);
+		
+		// notify children of our updates
+		progress.setComputationState(ComputationState.SENDING_CONTINOUS);
+
+		
+		
 		
 	}
 	
@@ -782,11 +814,13 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			
 			final GeneticExplorationOneGeneration algoFinished = (GeneticExplorationOneGeneration)progress.getAlgoExecution();
 			
-			final Map<AnIndividual,Double[]> result = new HashMap<AnIndividual, Double[]>(algoFinished.getComputedFitness());
+			final Map<AnIndividual,Double[]> resultFitness = algoFinished.getComputedFitness(); // (this is already a copy)
+			final Map<AnIndividual,Object[]> resultValues = algoFinished.getComputedValues(); // (this is already a copy)
+			final Map<AnIndividual,Object[]> resultTargets = algoFinished.getComputedTargets(); // (this is already a copy)
 
 			// manage results
-			manageResultsForCurrentGeneration(result);
-			manageStatisticsForCurrentGeneration(result);
+			manageResultsForCurrentGeneration(resultFitness, resultTargets, resultValues);
+			manageStatisticsForCurrentGeneration(resultFitness, resultTargets,  resultValues);
 			
 			Runtime.getRuntime().gc();
 			Thread.yield();
@@ -917,6 +951,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		}
 		
 	}
+
 
 	
 }

@@ -48,6 +48,9 @@ public class GeneticExplorationOneGeneration extends
 
 	private final Object lockerResults = new Object();
 	private Map<AnIndividual,Double[]> computedFitness = new HashMap<AnIndividual, Double[]>();
+	private Map<AnIndividual,Object[]> computedValues = new HashMap<AnIndividual, Object[]>();
+	private Map<AnIndividual,Object[]> computedTargets = new HashMap<AnIndividual, Object[]>();
+
 	
 	private final Map <IConnection,Object> inputConnection2value;
 	
@@ -81,6 +84,9 @@ public class GeneticExplorationOneGeneration extends
 		this.inputConnection2value = inputConnection2value;
 		
 		this.autoUpdateProgressFromChildren = false;
+		// we don't want to die if a subprocess has a problem; we will assume the fitness is infinite instead.
+		this.ignoreCancelFromChildren = true;
+		this.ignoreFailuresFromChildren = true;
 	}
 
 	@Override
@@ -196,7 +202,10 @@ public class GeneticExplorationOneGeneration extends
 	
 	protected void computeResultsForIndividual(GeneticExplorationAlgoIndividualRun indivRun) {
 
-		Double[] resultFitness = indivRun.getResultFitness();
+		final Double[] resultFitness = indivRun.getResultFitness();
+		final Object[] resultTargets = indivRun.getResultTargets();
+		final Object[] resultValues = indivRun.getResultValues();
+		
 		AnIndividual indiv = indivRun.getIndividual();
 		int individualId = indivRun.getIndividualId();
 
@@ -206,6 +215,9 @@ public class GeneticExplorationOneGeneration extends
 		synchronized (lockerResults) {
 			
 			computedFitness.put(indiv, resultFitness);
+			computedTargets.put(indiv, resultTargets);
+			computedValues.put(indiv, resultValues);
+
 			
 		}
 		
@@ -238,7 +250,8 @@ public class GeneticExplorationOneGeneration extends
 			break; // don't use this result
 			
 		case FINISHED_CANCEL:
-			this.progress.setComputationState(ComputationState.FINISHED_CANCEL);
+			// don't care (failures accepted) 
+			// this.progress.setComputationState(ComputationState.FINISHED_CANCEL);
 			cancel(); // kill other tasks
 			return; // don't use this result
 			
@@ -272,14 +285,50 @@ public class GeneticExplorationOneGeneration extends
 	}
 	
 	/**
-	 * Returns the computed fitness for each individual of the generation.
+	 * Returns a copy of the computed fitness for each individual of the generation.
 	 * @return
 	 */
 	public Map<AnIndividual,Double[]> getComputedFitness() {
 		// store results
 		synchronized (lockerResults) {
+			
+			if (!progress.getComputationState().isFinished())
+				throw new ProgramException("asked for a fitness for an exploration which did not terminated yet");
 				
-			return computedFitness;
+				
+			return new HashMap<AnIndividual, Double[]>(computedFitness);
+		}
+	}
+	
+	/**
+	 * Returns a copy of the computed targets for each individual of the generation.
+	 * @return
+	 */
+	public Map<AnIndividual,Object[]> getComputedTargets() {
+		// store results
+		synchronized (lockerResults) {
+			
+			if (!progress.getComputationState().isFinished())
+				throw new ProgramException("asked for a fitness for an exploration which did not terminated yet");
+				
+				
+			return new HashMap<AnIndividual, Object[]>(computedTargets);
+		}
+	}
+	
+	/**
+	 * Returns a copy of the computed targets for each individual of the generation.
+	 * @return
+	 */
+	public Map<AnIndividual,Object[]> getComputedValues() {
+		// store results
+		synchronized (lockerResults) {
+			
+			if (!progress.getComputationState().isFinished())
+				throw new ProgramException("asked for a fitness for an exploration which did not terminated yet");
+				
+				
+			return new HashMap<AnIndividual, Object[]>(computedValues);
 		}
 	}
 	
@@ -304,6 +353,12 @@ public class GeneticExplorationOneGeneration extends
 		*/
 		
 		progress.setComputationState(ComputationState.READY);
+	}
+	
+
+	@Override
+	protected void updateProgressFromChildren() {
+		super.updateProgressFromChildren();
 	}
 
 }

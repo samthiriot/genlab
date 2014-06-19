@@ -57,6 +57,10 @@ public class ConnectionExecFromSupervisorToChild extends AbstractConnectionExec<
 			throw new ProgramException("unknown computation state: "+status);
 		}
 		
+		if (status == ComputationState.FINISHED_CANCEL || status == ComputationState.FINISHED_FAILURE) {
+			to.cancel();
+		}
+		
 	}
 
 	@Override

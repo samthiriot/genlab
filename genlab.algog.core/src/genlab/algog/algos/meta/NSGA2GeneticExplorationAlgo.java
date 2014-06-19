@@ -18,6 +18,10 @@ public class NSGA2GeneticExplorationAlgo extends AbstractGeneticExplorationAlgo 
 			"a table containing all the pareto fronts for each iteration"
 			);
 	
+	static {
+		OUTPUT_TABLE_PARETO.setIsContinuousOutput(true);
+	}
+	
 	
 	
 	public NSGA2GeneticExplorationAlgo() {

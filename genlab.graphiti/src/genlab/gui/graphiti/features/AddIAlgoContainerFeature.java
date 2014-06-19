@@ -49,7 +49,7 @@ import org.eclipse.graphiti.util.IColorConstant;
  * @author Samuel Thiriot
  *
  */
-public class AddIAlgoContainerFeature extends AbstractAddFeature {
+public class AddIAlgoContainerFeature extends AddFeatureAbstract {
 
 	public static final int ROUNDED = 10;
 	
@@ -303,28 +303,8 @@ public class AddIAlgoContainerFeature extends AbstractAddFeature {
 		for (IInputOutputInstance input: addedAlgo.getInputInstances()) {
 			
 			// add anchor...
-			{	
-				FixPointAnchor anchor = peCreateService.createFixPointAnchor(containerShape);
-				anchor.setActive(true);
-				anchor.setLocation(gaService.createPoint(0, yText+LayoutIAlgoFeature.ANCHOR_WIDTH/2));
-				Ellipse ellipse = gaService.createEllipse(anchor);
-				//ellipse.setForeground(manageColor(IColorConstant.DARK_GRAY));
-				//ellipse.setBackground(manageColor(IColorConstant.WHITE));
-				//ellipse.setLineWidth(2);
-				ellipse.setWidth(LayoutIAlgoFeature.ANCHOR_WIDTH);
-				
-				ellipse.setStyle(StylesUtils.getStyleFor(getDiagram()));
-
-				//anchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
-				link(anchor, input);
-				
-				gaService.setLocationAndSize(
-						ellipse, 
-						0, 0, 
-						LayoutIAlgoFeature.ANCHOR_WIDTH, LayoutIAlgoFeature.ANCHOR_WIDTH, 
-						false
-						);
-			}
+			createInputEllipse(containerShape, input, yText);
+			
 			// and text !
 			{
 				Shape shape = peCreateService.createShape(containerShape, false);
@@ -364,47 +344,7 @@ public class AddIAlgoContainerFeature extends AbstractAddFeature {
 		for (IInputOutputInstance output: addedAlgo.getOutputInstances()) {
 
 			// add anchor...
-			{
-				FixPointAnchor anchor = peCreateService.createFixPointAnchor(containerShape);
-				// TODO to explore ? peCreateService.createBoxRelativeAnchor(containerShape);
-				anchor.setActive(true);
-				anchor.setLocation(
-						gaService.createPoint(
-								width-LayoutIAlgoFeature.ANCHOR_WIDTH*2, 
-								yText+LayoutIAlgoFeature.ANCHOR_WIDTH/2
-								)
-								);
-				Ellipse ellipse = gaService.createEllipse(anchor);
-				//ellipse.setForeground(manageColor(IColorConstant.DARK_GRAY));
-				//ellipse.setBackground(manageColor(IColorConstant.WHITE));
-				//ellipse.setLineWidth(2);
-				ellipse.setWidth(LayoutIAlgoFeature.ANCHOR_WIDTH);
-	
-				ellipse.setStyle(StylesUtils.getStyleFor(getDiagram()));
-
-				anchor.setReferencedGraphicsAlgorithm(invisibleRectangle);
-				anchor.setGraphicsAlgorithm(ellipse);
-	//			anchor.setParent(containerShape);
-				link(anchor, output);
-	
-	
-				gaService.setLocationAndSize(
-						ellipse, 
-						0, 
-						0, 
-						LayoutIAlgoFeature.ANCHOR_WIDTH, 
-						LayoutIAlgoFeature.ANCHOR_WIDTH
-						);
-				/*
-				 * gaService.setLocationAndSize(
-						ellipse, 
-						width-LayoutIAlgoFeature.ANCHOR_WIDTH*2, 
-						yAnchors, 
-						LayoutIAlgoFeature.ANCHOR_WIDTH, 
-						LayoutIAlgoFeature.ANCHOR_WIDTH
-						);
-				 */
-			}
+			createOutputEllipse(containerShape, output, yText, width);
 			
 			// and text !
 			{

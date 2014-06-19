@@ -17,7 +17,8 @@ import genlab.core.model.instance.IConnection;
  * @author Samuel Thiriot
  *
  */
-public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, TypeTo extends IAlgoExecution> implements IConnectionExecution {
+public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, TypeTo extends IAlgoExecution> 
+						implements IConnectionExecution {
 
 	public final IConnection c;
 	
@@ -109,5 +110,20 @@ public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, Ty
 		
 		value = null;
 	}
+	
+	
+	@Override
+	public boolean canSendContinuousUpdate() {
+		
+		if (!(to instanceof IAlgoExecutionContinuous))
+			return false;
+		
+		if (!c.getFrom().getMeta().isContinuousOutput())
+			return false;
+		
+		return true;
+		
+	}
+	
 
 }

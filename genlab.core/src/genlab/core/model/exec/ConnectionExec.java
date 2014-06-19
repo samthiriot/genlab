@@ -1,7 +1,6 @@
 package genlab.core.model.exec;
 
 import genlab.core.commons.ProgramException;
-import genlab.core.exec.ITask;
 import genlab.core.model.instance.IConnection;
 
 /**
@@ -51,6 +50,30 @@ public class ConnectionExec extends AbstractConnectionExec<IAlgoExecution, IAlgo
 
 		final ComputationState state = progress.getComputationState();
 		
+		if (
+				(state == ComputationState.SENDING_CONTINOUS) &&
+				canSendContinuousUpdate()
+				) {
+			
+			IAlgoExecutionContinuous toContinuous = (IAlgoExecutionContinuous)to;
+			toContinuous.receiveInputContinuous(
+					from, 
+					from.getResult().getWave(), 
+					this, 
+					from.getResult().getResults().get(c.getFrom())
+					);
+		}
+		
+		// if parent failed, cancel child
+		if (
+				(state == ComputationState.FINISHED_FAILURE) 
+				|| 
+				(state == ComputationState.FINISHED_CANCEL)
+				) {
+			to.cancel();
+		} 
+		
+		// if parent not finished, reset value so child does not read it and trust its ok while its not relevant
 		if (state != ComputationState.FINISHED_OK) {
 			value = null;
 			return;
@@ -71,7 +94,7 @@ public class ConnectionExec extends AbstractConnectionExec<IAlgoExecution, IAlgo
 
 		// warn children
 		to.notifyInputAvailable(c.getTo());
-
+		
 		
 	}
 	
@@ -89,6 +112,14 @@ public class ConnectionExec extends AbstractConnectionExec<IAlgoExecution, IAlgo
 		to.notifyInputAvailable(c.getTo());
 	}
 
+	@Override
+	public final String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("executable connection ").append(from.getAlgoInstance().getName());
+		sb.append(" --> ");
+		sb.append(to.getAlgoInstance().getName());
+		return sb.toString();
+	}
 
 
 }

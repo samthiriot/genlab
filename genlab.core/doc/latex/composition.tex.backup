@@ -1,0 +1,291 @@
+\documentclass[a4paper,10pt]{book}
+\usepackage[utf8x]{inputenc}
+
+%opening
+\title{Algorithms and their composition in GenLab}
+\author{Samuel Thiriot}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\chapter{Basics of Genlab and simple example}
+
+\section{Basic concepts in GenLab}
+
+\subsection{Workflow}
+
+\paragraph*{}
+In genlab, users create workflows. A workflow may be visualized and edited as a graph of boxes - the algorithms - linked together by arrows. Each box is an algorithm which takes inputs, exports outputs, and maybe have associated parameters. A workflow is made to be executed; each box will be ran after each other (or in parallel to each other), the output of each box being used as an input of the boxes it is connected to. 
+
+\paragraph*{}
+Execution of a workflow means GenLab will execute the graph of computations depending on their links (the structure of the workflow).
+
+
+\subsection{Algorithm}
+
+
+\subsection{Links between algorithms}
+
+
+\subsection{Parameters}
+
+
+\section{Tutorial: plot random data}
+
+\subsection{create the workflow}
+\paragraph*{}
+Create a novel project.
+Create a novel workflow.
+
+\subsection{populate the workflow}
+
+Add a table generator.
+Add a plot.
+Link them.
+
+\subsection{run the workflow}
+
+At runtime, each algorithm will run. You can see several windows opened.
+One is the messages log for this execution. It will always open at runtime. It contains messages about what happened during the computation of the workflow. Each algorithm may report notices, warnings or errors to help you to understand what happened during the workflow execution.
+
+Tune parameters of dispkay
+
+\subsection{tune parameters of algorithms}
+
+run again
+
+
+
+
+\section{Tutorial: use the same output several times}
+
+One may add a file save of this table.
+
+\section{Tutorial: merge several outputs as one input}
+
+Most of inputs of algorithms accept only one connection. 
+
+But in some cases it may be usefull to merge several ouputs as one unique input.
+Specific algorithms accept several arrows for an input. 
+
+Example of fusionning several inputs to display them
+
+Example of funsionning several graphs to display them.
+
+
+
+
+\chapter{Advanced concepts: container algorithms}
+
+\section{Motivation and examples}
+
+\paragraph*{}
+use case: be willing to run one thousands generations of graphs, analyse their statistical properties, and compare them with some statistical processes (like: mean and standard deviation).
+
+\subsection{``foor'' loop example}
+
+Add a for loop in the workflow. Inside it, create the algorithms for this task. 
+Run it. 
+Observe that:
+\begin{itemize}
+\item The algorithms inside the containers are going to be executed several times.
+\item The algorithms inside the containers are sometimes executing in parallel.
+\item 
+\end{itemize}
+
+\section{Inputs out of the container connected inside the container}
+
+\subsection{Rationale}
+
+\paragraph*{}
+We executed the workflow depicted in figure TODO.
+In this example, each element of this workflow was executed several times.
+But some are useless. We may have placed these algorithms out of the loop.
+
+
+\subsection{What happens}
+
+\paragraph*{}
+When preparing the execution of the workflow, GenLab will detect the presence of these links which are connected from an output 
+
+
+\section{All the possible and impossible combinations}
+
+\subsection{A linked to C inside B: ok}
+
+\subsubsection{Principle}
+
+\begin{verbatim}
++-------+     +-------------+
+|   A   |     |      B      |
++-------+     +-------------+
+|       |     |             |
+|       |     |  +------+   |
+|       |     |  |   C  |   |
+|       |     |  +------+   |
+|    o1 |> ---|--|>i1   |   |
+|       |     |  +------+   |
++-------+     +-------------+
+\end{verbatim} 
+
+
+\subsubsection{Behaviour}
+
+\paragraph*{}
+What happens: B has for input (A, a1).
+Will execute A \textit{one time}. \textit{One} result of a1 transmitted to B.
+Then B will run. B will execute C several times. For each run, it will transmit \textit{the same value} a1 as an input of C.
+
+\subsubsection{Example}
+
+\paragraph*{}
+Example: a random generator. It will run once. All subsequent iterations will lead to differnt results.
+
+
+\subsection{A linked to D inside C inside B: should be OK}
+
+\begin{verbatim}
++-------------+      +-------------+
+|      A      |      |      B      |
++-------------+      +-------------+
+|             |      |             |
+|  +------+   |      |  +------+   |
+|  |   C  |   |      |  |  D   |   |
+|  +------+   |      |  +------+   |
+|  |    o1|>--|------|--|>i1   |   |
+|  +------+   |      |  +------+   |
++-------------+      +-------------+
+\end{verbatim} 
+
+\paragraph*{}
+TODO
+
+
+\subsection{C inside A linked to D inside B: not possible}
+
+\begin{verbatim}
++-------+     +---------+
+|   A   |     |    B    |
++-------+     +---------+
+|   C --|-----|---> D   |
++-------+     +---------+
+\end{verbatim} 
+
+\paragraph*{}
+A runs. C exports the result several times.
+
+\chapter{TODO reuse}
+
+\section{Algorithms}
+
+\subsection{Algorithm: definition}
+
+\paragraph*{}
+In genlab, an \textit{algorithm is a process which can be instanciated inside workflows; when ran, an algorithm will, for a given set of inputs and based on parameters, compute outputs}. Algorithms have several properties:
+\begin{itemize}
+\item no side effect (TODO effet de bord): during and after the computation, the algorithm exports outputs and messages, but did not changes anything else in the environment (except for filesystem, database or external storage aspects).
+\item 
+\end{itemize}
+
+\paragraph*{}
+An algorithm exists at the ``meta'' level (in the library of modules). Then a module can be instanciated - meaning it was added inside a workflow. Then the workflow, and so the corresponding algorithm instances, can be executed.
+
+\subsection{Types of algorithms}
+
+\paragraph*{}
+TODO Deterministic/stochastic
+
+\paragraph*{}
+TODO graphic / nongraphic
+
+
+\subsubsection{Atomic vs. Container algorithms}
+
+\paragraph*{}
+An algorithm is either atomic or container.
+
+\paragraph*{}
+An atomic algorithm is the simplest version of an algorithm. 
+
+\paragraph*{}
+A \textit{container algorithm} may contain instances of algorithms, exactly as workflows may contain algorithm instances.
+ 
+
+\subsubsection{Constant algorithms}
+
+\paragraph*{}
+\textit{Constant algorithms} have no input, no parameter, and always produce the very same output. Examples of constants include integer values or boolean values.
+
+\section{Input and outputs}
+
+\subsection{oneshot vs. continuous}
+
+\paragraph*{}
+The most straightforward input and output is one-shot, meaning there will be one unique activity on these input/outputs during an execution.
+\begin{itemize}
+\item During an execution, a one-shot input will receive only one value sent by another algorithm.
+\item During an execution, a one-shot ouput will produce only one value at the end of the execution of the algorithm.
+\end{itemize}
+
+\paragraph*{}
+One-shot outputs may not be enough for certain types of algorithms:
+\begin{itemize}
+\item when an algorithm executes during very long times, the user may be willing to observe intermediate results, or to retrieve intermediate results in case of failure of the algorithm
+\item when an algorithm processes large amounts of data, one does not wants the rest of the chain to wait for the whole output
+\item 
+\end{itemize}
+
+In these cases:
+\begin{itemize}
+\item a continuous output is an output which may sent results during the computation
+\item a continuous input is an input which accepts several different inputs
+\end{itemize}
+
+\subsection{multiple inputs vs. unique inputs}
+
+\paragraph*{}
+Most inputs accept only one input. For instance, to generate a table, you may generate a table with either 12 or 23, but this would be a non sense to transmit both 12 and 23. 
+But some algorithms may accept several different inputs and combine them because this is meaningfull for their task. Typically a console display will take anything as input and print it as soon as possible in output. A graph display may accept several graphs and display them all (TODO ?)
+
+\paragraph*{}
+Unique inputs accept only one input arrow. The graphical user interface will not allow you to plug several inputs arrows on it.
+
+
+\paragraph*{}
+This concept should not be confused with continuous vs. one-shot.
+
+
+\section{Examples of workflows}
+
+\subsection{simple workflow: generate random data and plot it}
+
+\paragraph*{}
+(C1, C2) --> A --> B
+
+\paragraph*{}
+When executing the workflow, Genlab will detect how to execute it:
+\begin{itemize}
+\item C1 and C2 will be executed in parallel; maybe C1 will finish first, then C2
+\item C1 terminates and sends its output to A. A reviews its inputs and analyzes it is still waiting for C2, so it still waits.
+\item C2 terminates and sends its ouput to A. A reviews its inputs and discovers all the inputs are available. So it switches to state ``ready''. The runner discovers that and starts the execution of A
+\item A terminates its computation and sends the result to B. 
+\item B receives a notification of a novel input; B has all inputs ready, so will run.
+\item B is terminated. No more algorithm is in status running or pending, so the workflow execution is terminated.
+\end{itemize}
+
+\subsection{use case: debugging workflows}
+
+One possibility is to observe possible outcomes. You may always plug a value you are not certain of to a console display, to have it displayed as text in a console.
+
+\subsection{simple workflow: generate a network and display it}
+
+\section{execution options}
+
+\paragraph*{}
+A --> [ B ]
+
+
+\end{document}

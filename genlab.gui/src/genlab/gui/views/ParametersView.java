@@ -7,6 +7,7 @@ import genlab.core.parameters.BooleanParameter;
 import genlab.core.parameters.DoubleParameter;
 import genlab.core.parameters.FileParameter;
 import genlab.core.parameters.IntParameter;
+import genlab.core.parameters.ListParameter;
 import genlab.core.parameters.Parameter;
 import genlab.core.parameters.StringBasedParameter;
 import genlab.core.projects.GenlabProject;
@@ -28,6 +29,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -162,7 +164,20 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 			
 			Control createdWidget = null;
 			
-			if (param instanceof IntParameter) {
+			if (param instanceof ListParameter) {
+				
+				ListParameter p = (ListParameter)param;
+				Combo combo = new Combo(form.getBody(), SWT.READ_ONLY);
+				combo.setItems(p.getItemsAsArray());
+				combo.select((Integer)value);
+				combo.setEnabled(true);
+
+				createdWidget = combo;
+				toolkit.adapt(combo);
+
+				combo.addSelectionListener(this);
+				
+			} else if (param instanceof IntParameter) {
 				IntParameter p = (IntParameter)param;
 				Spinner sp = new Spinner(form.getBody(), SWT.NONE);
 				Integer minValue = p.getMinValue();
@@ -250,9 +265,9 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				else 
 					txt = ((File)value).getAbsolutePath();
 				
-				Button button = toolkit.createButton(form.getBody(), txt, SWT.PUSH);
+				final Button button = toolkit.createButton(form.getBody(), txt, SWT.PUSH);
 
-				//Button button = new Button(form.getBody(), SWT.PUSH);
+				createdWidget = button;
 				
 				button.addSelectionListener(new SelectionListener() {
 					
@@ -262,7 +277,7 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 						String res = dialog.open();
 						if (res != null)
 							algo.setValueForParameter(f.getId(), new File(res));
-						
+						button.setText(res);
 					}
 					
 					@Override
@@ -334,7 +349,12 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 		}
 		
 		// TODO depends of the type !
-		if (param instanceof IntParameter) {
+		if (param instanceof ListParameter) {
+			
+			Integer idx = ((Combo)e.widget).getSelectionIndex();
+			algo.setValueForParameter(param.getId(), idx);
+			
+		} else if (param instanceof IntParameter) {
 			Integer value = ((Spinner)e.widget).getSelection();
 			algo.setValueForParameter(param.getId(), value);
 		} else if (param instanceof DoubleParameter) {

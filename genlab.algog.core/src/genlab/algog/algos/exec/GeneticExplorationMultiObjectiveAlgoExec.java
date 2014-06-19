@@ -30,7 +30,9 @@ public abstract class GeneticExplorationMultiObjectiveAlgoExec
 
 	@Override
 	protected void manageStatisticsForCurrentGeneration(
-			Map<AnIndividual, Double[]> result) {
+			Map<AnIndividual,Double[]> resultFitness, 
+			Map<AnIndividual,Object[]> resultTargets,
+			Map<AnIndividual,Object[]> resultValues) {
 		// TODO Auto-generated method stub
 		
 	}

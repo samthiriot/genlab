@@ -9,6 +9,8 @@ public class InputOutput<JavaType> implements IInputOutput<JavaType> {
 	private final String name;
 	private final String desc;
 	private final boolean acceptMultipleInputs;
+	private boolean isContinuousOutput = false;
+
 	
 	public InputOutput(IFlowType<JavaType> type, String id, String name, String desc) {
 		super();
@@ -28,6 +30,17 @@ public class InputOutput<JavaType> implements IInputOutput<JavaType> {
 		this.acceptMultipleInputs = acceptMultipleInputs;
 	}
 	
+	
+	public void setIsContinuousOutput(boolean isContinuousOutput) {
+		this.isContinuousOutput = isContinuousOutput;
+	}
+	
+	
+	@Override
+	public boolean isContinuousOutput() {
+		return isContinuousOutput;
+	}
+
 	@Override
 	public String getId() {
 		return id;

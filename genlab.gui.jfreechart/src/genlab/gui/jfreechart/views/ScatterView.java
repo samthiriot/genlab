@@ -6,7 +6,7 @@ import genlab.core.model.instance.IParametersListener;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.gui.actions.ShowParametersAction;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
-import genlab.gui.jfreechart.algos.ScatterPlotAlgo;
+import genlab.gui.jfreechart.instance.ScatterPlotAlgoInstance;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
 
 import org.eclipse.swt.SWT;
@@ -42,11 +42,10 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 			
 	protected JFreeChart chart = null;
 	protected ChartComposite compositeChart = null;
-	
 
 	private FormToolkit toolkit;
 	private ScrolledForm form;
-	
+		
 	public ScatterView() {
 		
 	}
@@ -58,8 +57,10 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 	
 	public void loadDataFromParameters(IAlgoInstance viewAlgoInstance) {
 		
-		this.glTableColumnXIdx = (Integer) viewAlgoInstance.getValueForParameter(ScatterPlotAlgo.PARAM_COLUMN_X);
-		this.glTableColumnYIdx = (Integer) viewAlgoInstance.getValueForParameter(ScatterPlotAlgo.PARAM_COLUMN_Y);
+		ScatterPlotAlgoInstance ai = (ScatterPlotAlgoInstance)viewAlgoInstance;
+		
+		this.glTableColumnXIdx = (Integer) viewAlgoInstance.getValueForParameter(ai.getParameterColumnX());
+		this.glTableColumnYIdx = (Integer) viewAlgoInstance.getValueForParameter(ai.getParameterColumnY());
 		
 	}
 	
@@ -114,8 +115,20 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 		}
 	}
 	
+	public void adaptParametersWidgets() {
+		
+		String[] titles = new String[glTable.getColumnsCount()];
+		
+		glTable.getColumnsId().toArray(titles);
+		
+	}
+	
 	
 	public void setData(IAlgoInstance viewAlgoInstance, GenlabTable glTable) {
+
+
+		if (glTable == null)
+			return;
 		
 		messages.traceTech("received data to display.", getClass());
 
@@ -126,9 +139,13 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 		// retrieve data
 		this.glTable = glTable;
 
+		adaptParametersWidgets();
+		
 		loadDataFromParameters(viewAlgoInstance);
 		
 		loadDataFromTable();
+		
+		//chart.getXYPlot().
 		
 		
 	}
@@ -142,7 +159,7 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 		toolkit = new FormToolkit(parent.getDisplay());
 		parent.setLayout(new FillLayout());
 		form = toolkit.createScrolledForm(parent);
-		Layout layout = new RowLayout();
+		Layout layout = new RowLayout(SWT.VERTICAL);
 		form.getBody().setLayout(layout);
 
 		messages.traceTech("init the jfreechart dataset...", getClass());
@@ -201,6 +218,7 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 		compositeChart.setSize(preferedWidth, preferedHeight);
 		compositeChart.setLayoutData(new RowData(preferedWidth, preferedHeight));
 		compositeChart.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
+		
 		
 		// update display
 		form.layout(true);

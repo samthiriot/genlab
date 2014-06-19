@@ -123,7 +123,7 @@ public class ConstDirectEditingFeature extends AbstractDirectEditingFeature {
 		
 		Parameter param = algo.getConstantParameter();
 		
-		ai.setValueForParameter(param.getId(), param.parseFromString(value));
+		ai.setValueForParameter(param, param.parseFromString(value));
 		
 		
         // Explicitly update the shape to display the new value in the diagram

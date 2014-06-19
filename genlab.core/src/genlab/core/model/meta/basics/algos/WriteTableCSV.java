@@ -9,6 +9,9 @@ import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.WorkflowCheckResult;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
@@ -57,6 +60,32 @@ public class WriteTableCSV extends BasicAlgo {
 		inputs.add(INPUT_TABLE);
 		outputs.add(OUTPUT_FILE);
 		registerParameter(PARAMETER_FILE);
+	}
+	
+
+	@Override
+	public IAlgoInstance createInstance(String id, IGenlabWorkflowInstance workflow) {
+		return new AlgoInstance(this, workflow, id) {
+
+			@Override
+			public void checkForRun(WorkflowCheckResult res) {
+				// checks by parent: connected, etc.
+				super.checkForRun(res);
+				
+				// local checks: conformity of parameters
+				File file = (File)getValueForParameter(PARAMETER_FILE);
+				if (file.isDirectory()) {
+					res.messages.errorUser("invalid value for the parameter "+PARAMETER_FILE.getName()+": the path "+file.getPath()+" is a directory while a file is expected", getClass());
+				} else if (file.exists()) {
+					if (!file.canWrite()) {
+						res.messages.errorUser("invalid value for the parameter "+PARAMETER_FILE.getName()+": the file "+file.getPath()+" is not writable", getClass());
+					} else {
+						res.messages.warnUser("the parameter "+PARAMETER_FILE.getName()+" will lead to the replacement of the file "+file.getPath()+"; its previous content will be lost", getClass());
+					}
+				}
+			}
+			
+		};
 	}
 
 	@Override
@@ -126,13 +155,15 @@ public class WriteTableCSV extends BasicAlgo {
 					e.printStackTrace();
 					messages.errorUser("an error occured during the writing of the table to a file: "+e.getMessage(), getClass(), e);
 					progress.setComputationState(ComputationState.FINISHED_FAILURE);
-
+					progress.setException(e);
+					
 				} catch (FileNotFoundException e) {
 					
 					e.printStackTrace();
-					messages.errorUser("an error occured during the writing of the table to a file: "+e.getMessage(), getClass(), e);
+					messages.errorUser("unable to create a file named \""+file+"\": "+e.getMessage(), getClass(), e);
 					progress.setComputationState(ComputationState.FINISHED_FAILURE);
-
+					progress.setException(e);
+					
 				}
 				
 					

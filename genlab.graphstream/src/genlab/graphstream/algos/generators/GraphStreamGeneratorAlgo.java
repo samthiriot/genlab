@@ -148,7 +148,7 @@ public abstract class GraphStreamGeneratorAlgo extends GraphStreamAlgo {
 				} catch (RuntimeException e) {
 										
 					result.getMessages().errorUser("something went wrong during the execution", getClass());
-					result.getMessages().errorTech("exception catch when running "+e.getMessage(), getClass(), e);
+					result.getMessages().errorTech("exception catch when running: "+e.getMessage(), getClass(), e);
 					
 					progress.setProgressMade(1);
 					progress.setComputationState(ComputationState.FINISHED_FAILURE);

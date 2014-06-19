@@ -1,0 +1,52 @@
+\contentsline {chapter}{\numberline {1}Basics of Genlab and simple example}{5}
+\contentsline {section}{\numberline {1.1}Basic concepts in GenLab}{5}
+\contentsline {subsection}{\numberline {1.1.1}Workflow}{5}
+\contentsline {subsection}{\numberline {1.1.2}Algorithm}{5}
+\contentsline {subsection}{\numberline {1.1.3}Links between algorithms}{5}
+\contentsline {subsection}{\numberline {1.1.4}Parameters}{5}
+\contentsline {section}{\numberline {1.2}Execution of workflows in GenLab}{5}
+\contentsline {subsection}{\numberline {1.2.1}What happens at execution time\nobreakspace {}?}{5}
+\contentsline {section}{\numberline {1.3}Tutorial: plot random data}{6}
+\contentsline {subsection}{\numberline {1.3.1}create the workflow}{6}
+\contentsline {subsection}{\numberline {1.3.2}populate the workflow}{6}
+\contentsline {subsection}{\numberline {1.3.3}run the workflow}{6}
+\contentsline {subsection}{\numberline {1.3.4}tune parameters of algorithms}{6}
+\contentsline {section}{\numberline {1.4}Tutorial: use the same output several times}{6}
+\contentsline {section}{\numberline {1.5}Tutorial: merge several outputs as one input}{6}
+\contentsline {chapter}{\numberline {2}Advanced concepts: container algorithms}{7}
+\contentsline {section}{\numberline {2.1}Motivation and examples}{7}
+\contentsline {subsection}{\numberline {2.1.1}``foor'' loop example}{7}
+\contentsline {section}{\numberline {2.2}Inputs out of the container connected inside the container}{7}
+\contentsline {subsection}{\numberline {2.2.1}Rationale}{7}
+\contentsline {subsection}{\numberline {2.2.2}What happens}{7}
+\contentsline {section}{\numberline {2.3}All the possible and impossible combinations}{8}
+\contentsline {subsection}{\numberline {2.3.1}A linked to C inside B: OK, principle of multiple reuse}{8}
+\contentsline {subsubsection}{Principle}{8}
+\contentsline {subsubsection}{Behaviour}{8}
+\contentsline {subsubsection}{Example}{8}
+\contentsline {subsection}{\numberline {2.3.2}A linked to D inside C inside B: should be OK, principle of multiple reuse}{8}
+\contentsline {subsection}{\numberline {2.3.3}C inside A linked to D inside B: not possible}{8}
+\contentsline {subsection}{\numberline {2.3.4}B inside A linked to C: OK, principle of reduction}{9}
+\contentsline {subsubsection}{Principle}{9}
+\contentsline {subsubsection}{Behaviour}{9}
+\contentsline {subsubsection}{Example: ``append table'' export}{9}
+\contentsline {chapter}{\numberline {3}Reference}{11}
+\contentsline {section}{\numberline {3.1}Algorithms executions}{11}
+\contentsline {subsection}{\numberline {3.1.1}Atomic algorithm}{11}
+\contentsline {subsection}{\numberline {3.1.2}Constant algorithm (or algorithm without inputs)}{11}
+\contentsline {subsection}{\numberline {3.1.3}Container algorithm}{11}
+\contentsline {subsection}{\numberline {3.1.4}Reduce algorithm}{12}
+\contentsline {chapter}{\numberline {4}TODO reuse}{13}
+\contentsline {section}{\numberline {4.1}Algorithms}{13}
+\contentsline {subsection}{\numberline {4.1.1}Algorithm: definition}{13}
+\contentsline {subsection}{\numberline {4.1.2}Types of algorithms}{13}
+\contentsline {subsubsection}{Atomic vs. Container algorithms}{13}
+\contentsline {subsubsection}{Constant algorithms}{14}
+\contentsline {section}{\numberline {4.2}Input and outputs}{14}
+\contentsline {subsection}{\numberline {4.2.1}oneshot vs. continuous}{14}
+\contentsline {subsection}{\numberline {4.2.2}multiple inputs vs. unique inputs}{14}
+\contentsline {section}{\numberline {4.3}Examples of workflows}{15}
+\contentsline {subsection}{\numberline {4.3.1}simple workflow: generate random data and plot it}{15}
+\contentsline {subsection}{\numberline {4.3.2}use case: debugging workflows}{15}
+\contentsline {subsection}{\numberline {4.3.3}simple workflow: generate a network and display it}{15}
+\contentsline {section}{\numberline {4.4}execution options}{15}

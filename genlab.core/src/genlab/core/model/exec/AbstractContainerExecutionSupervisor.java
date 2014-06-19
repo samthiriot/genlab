@@ -7,10 +7,12 @@ import genlab.core.exec.ITasksDynamicProducer;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
+import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.instance.IReduceAlgoInstance;
 import genlab.core.model.meta.IReduceAlgo;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -42,6 +44,15 @@ public abstract class AbstractContainerExecutionSupervisor
 		
 	}
 
+	@Override
+	protected void initComputationState() {
+		
+		// note that the set of inputs not available is going to grow later, during initLinks. 
+		// so always assume we wait for something
+		progress.setComputationState(ComputationState.WAITING_DEPENDENCY);
+		
+	}
+
 	protected abstract void initFirstRun();
 	
 	protected abstract void startOfIteration();
@@ -65,9 +76,12 @@ public abstract class AbstractContainerExecutionSupervisor
 
 	@Override
 	public boolean cannotSendTasksNow() {
+		
 		// by default, we announce we are always able to send novel tasks
+		// (at least, if we are started !)
 		// override to change this behaviour
-		return false;
+		return (progress.getComputationState() != ComputationState.STARTED);
+		
 	}
 
 	
@@ -167,6 +181,12 @@ public abstract class AbstractContainerExecutionSupervisor
 			// contact during exec will be the supervisor.
 			instance2execForSubtasks.put(c.getFrom().getAlgoInstance(), this);	
 		}
+		
+		// maybe we can start, if there is not input expected ?
+		// at the very beginning, all the inputs are waiting for data
+		if (inputsNotAvailable.isEmpty())
+			progress.setComputationState(ComputationState.READY);
+		
 		
 	}
 	
@@ -304,9 +324,9 @@ public abstract class AbstractContainerExecutionSupervisor
 		} else {
 			// if we reached this step, then all our children have finished.
 			// as a container, we end ourself
-			if (somethingFailed)
+			if (somethingFailed && !ignoreFailuresFromChildren)
 				ourState = ComputationState.FINISHED_FAILURE;
-			else if (somethingCanceled)
+			else if (somethingCanceled && !ignoreCancelFromChildren)
 				ourState = ComputationState.FINISHED_CANCEL;
 			else 
 				ourState = ComputationState.FINISHED_OK;
@@ -318,4 +338,5 @@ public abstract class AbstractContainerExecutionSupervisor
 			
 		}
 	}
+	
 }

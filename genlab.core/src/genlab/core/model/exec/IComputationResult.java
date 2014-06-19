@@ -30,6 +30,15 @@ public interface IComputationResult extends IStaticMessagesEmitter {
 	
 	public Map<IInputOutputInstance,Object> getResults();
 	
+	/**
+	 * Cleans the data (possibly, a large space in memory).
+	 */
 	public void clean();
-	
+
+	/**
+	 * Returns something which, in the case of repeated updates of 
+	 * the same result, helps to match results sent at the same time / step / logical step.
+	 * @return
+	 */
+	public Object getWave();
 }

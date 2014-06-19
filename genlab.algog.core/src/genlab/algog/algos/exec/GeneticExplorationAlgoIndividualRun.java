@@ -3,6 +3,7 @@ package genlab.algog.algos.exec;
 import genlab.algog.algos.meta.AbstractGeneAlgo;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AnIndividual;
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.ICleanableTask;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractContainerExecution;
@@ -16,7 +17,9 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +40,9 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 	private final Map <IConnection,Object> inputConnection2value;
 	private final List<IAlgoInstance> fitnessOutput;
 	private Double[] resultFitness = null;
+	private Object[] resultValues = null;
+	private Object[] resultTargets = null;
+	
 	private final AnIndividual individual;
 	
 	public GeneticExplorationAlgoIndividualRun(
@@ -61,6 +67,11 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 		this.fitnessOutput = fitnessOutput2;
 		
 		this.autoFinishWhenChildrenFinished = true;
+		
+		// we don't want to die if a subprocess has a problem; we will assume the fitness is infinite instead.
+		this.ignoreCancelFromChildren = false;
+		this.ignoreFailuresFromChildren = false;
+		
 	}
 
 	
@@ -76,10 +87,12 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 	protected void hookContainerExecutionFinished(ComputationState state) {
 		
 		resultFitness = new Double[fitnessOutput.size()];
+		resultTargets = new Object[fitnessOutput.size()];
+		resultValues = new Object[fitnessOutput.size()];
 		
-		if (state  == ComputationState.FINISHED_FAILURE) {
+		if (state  == ComputationState.FINISHED_FAILURE || state  == ComputationState.FINISHED_CANCEL) {
 			// when there is an error, then goal fitness becomes negative infinity.
-
+			messages.warnUser("the evaluation of this individual led to an error. We assume the space of parameters is not full, and a defined Infinite fitness for this individual", getClass());
 			java.util.Arrays.fill(resultFitness, Double.POSITIVE_INFINITY);
 		} else {
 			for (int i=0; i<fitnessOutput.size(); i++) {
@@ -87,7 +100,8 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 				IGoalExec goal = (IGoalExec) instance2execForSubtasks.get(ai);
 				
 				resultFitness[i] = goal.getFitness();
-				
+				resultTargets[i] = goal.getTarget();
+				resultValues[i] = goal.getActualValue();
 				
 			}
 		}
@@ -216,15 +230,36 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 		
 	}
 	
-	public Double[] getResultFitness() {
+	public final Double[] getResultFitness() {
+		
+		if (!progress.getComputationState().isFinished())
+			throw new ProgramException("asked for the fitness of an individual run which is not finished yet");
+		
 		return resultFitness;
+	}
+	
+	public final Object[] getResultValues() {
+		
+		if (!progress.getComputationState().isFinished())
+			throw new ProgramException("asked for the fitness of an individual run which is not finished yet");
+		
+		return resultValues;
+	}
+	
+
+	public final Object[] getResultTargets() {
+		
+		if (!progress.getComputationState().isFinished())
+			throw new ProgramException("asked for the fitness of an individual run which is not finished yet");
+		
+		return resultTargets;
 	}
 	
 	public final AnIndividual getIndividual() {
 		return individual; 
 	}
 	
-	public int getIndividualId() {
+	public final int getIndividualId() {
 		return individualId;
 	}
 	

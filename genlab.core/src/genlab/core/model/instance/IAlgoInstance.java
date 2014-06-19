@@ -67,13 +67,20 @@ public interface IAlgoInstance extends IGenlabResource {
 	public Object getValueForParameter(String name);
 	public Object getValueForParameter(Parameter<?> parameter);
 
+	public void setValueForParameter(Parameter<?> parameter, Object value);
+
 
 	public void setValueForParameter(String name, Object value);
 	
 	public void addParametersListener(IParametersListener list);
 	public void removeParametersListener(IParametersListener list);
 
-	
+	/**
+	 * Check this instance would be able to run. 
+	 * The WorkflowCheckResult passed as parameter will receive the messages 
+	 * from all the instances of a workflow; an error will mean no run.
+	 * @param res
+	 */
 	public void checkForRun(WorkflowCheckResult res);
 
 	public IAlgoContainerInstance getContainer();
@@ -95,5 +102,7 @@ public interface IAlgoInstance extends IGenlabResource {
 	public Parameter<?> getParameter(String id);
 	
 	public boolean isContainedInto(IAlgoContainerInstance otherInstance);
+	
+	
 	
 }

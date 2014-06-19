@@ -1,12 +1,18 @@
 package genlab.algog.algos.meta;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
 import genlab.algog.core.Activator;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.AlgoContainer;
 import genlab.core.model.meta.ExistingAlgoCategories;
+import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
+import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import genlab.core.model.meta.basics.flowtypes.TableFlowType;
@@ -40,9 +46,14 @@ public abstract class AbstractGeneticExplorationAlgo extends AlgoContainer {
 			);
 	
 	static {
+
+		OUTPUT_TABLE.setIsContinuousOutput(true);
+
 		PARAM_STOP_MAXITERATIONS.setMinValue(5);
 		PARAM_SIZE_POPULATION.setMinValue(10);
+
 	}
+	
 	
 	public AbstractGeneticExplorationAlgo(String name, String desc) {
 		super(
@@ -88,5 +99,37 @@ public abstract class AbstractGeneticExplorationAlgo extends AlgoContainer {
 		return new GeneticExplorationAlgoContainerInstance(this, workflow);
 	}
 
-	
+	@Override
+	public Map<IAlgo, Integer> recommandAlgosContained() {
+		
+		Map<IAlgo, Integer> res = new HashMap<IAlgo, Integer>(20);
+		
+		
+		// -- genes
+		
+		// boolean gene
+		res.put(
+				ExistingAlgos.getExistingAlgos().getAlgoForClass(BooleanGeneAlgo.class.getCanonicalName()),
+				100
+				);
+		// integer gene (prefer integer to double, because double is always possible while integer is not)
+		res.put(
+				ExistingAlgos.getExistingAlgos().getAlgoForClass(IntegerGeneAlgo.class.getCanonicalName()),
+				102
+				);
+		res.put(
+				ExistingAlgos.getExistingAlgos().getAlgoForClass(DoubleGeneAlgo.class.getCanonicalName()),
+				101
+				);
+		
+		// -- genome
+		res.put(
+				ExistingAlgos.getExistingAlgos().getAlgoForClass(GenomeAlgo.class.getCanonicalName()),
+				100
+				);
+		
+		
+		return res;
+	}
+
 }

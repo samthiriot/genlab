@@ -52,6 +52,7 @@ Export-Package: genlab.basics.javaTypes.graphs,
    genlab.core.projects",
  genlab.core.projects;uses:="genlab.core.model.instance",
  genlab.core.usermachineinteraction;uses:="genlab.core.model.exec,genlab.core.commons",
+ genlab.testing.commons,
  org.apache.log4j;uses:="org.apache.log4j.helpers,org.apache.log4j.or,org.apache.log4j.spi",
  tests.genlab.core.persistence;uses:="genlab.core.model.instance,genlab.core.projects"
 Bundle-ClassPath: .,

@@ -1,11 +1,15 @@
 package genlab.gui.algos;
 
 import genlab.core.exec.IExecution;
-import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
+import genlab.core.model.exec.AbstractAlgoExecutionOneshotOrReduce;
+import genlab.core.model.exec.AbstractAlgoExecutionReduce;
+import genlab.core.model.exec.AbstractContainerExecutionSupervisor;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
+import genlab.core.model.exec.IAlgoExecution;
+import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
@@ -28,7 +32,7 @@ import org.eclipse.ui.part.WorkbenchPart;
  * @author Samuel Thiriot
  *
  */
-public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOneshot {
+public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOneshotOrReduce {
 
 	/**
 	 * Associates ids of these views with the corresponding instance.
@@ -54,6 +58,7 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 	 * The view part counterpart for this algo, once the callback was called.
 	 */
 	protected AbstractViewOpenedByAlgo theView = null;
+	
 	
 	public AbstractOpenViewAlgoExec(IExecution exec, IAlgoInstance algoInst, String viewId) {
 		
@@ -131,31 +136,60 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 			});
 		}
 	}
-	
-	protected abstract void displayResults(AbstractViewOpenedByAlgo theView);
 
+	protected abstract void displayResultsSync(AbstractViewOpenedByAlgo theView);
+
+	protected void displayResultsAsync(final AbstractViewOpenedByAlgo theView) {
+		Display.getDefault().asyncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				displayResultsSync(theView);
+			}
+		});
+	}
 	
 	public void callbackRegisterView(AbstractViewOpenedByAlgo theView) {
 		
 		GLLogger.debugTech("received a view ! Let's display results.", getClass());
 		this.theView = theView;
 		
-		displayResults(theView);
+		displayResultsSync(theView);
 		
 	}
+	
+	/**
+	 * returns true if the display has to be opened
+	 * @return
+	 */
+	protected boolean openDisplayIfNecessary() {
+		
+		if (theView != null)
+			return false;
+		
+		GLLogger.debugTech("opening the  view...", getClass());
+		
+		openView();
+		
+		return true;
+	}
 
+	protected abstract void loadDataSuccessiveFromInput();
+	
 	@Override
 	public void run() {
 
 		try {
 
+			getProgress().setComputationState(ComputationState.STARTED);
+
 			setResult(new ComputationResult(getAlgoInstance(), progress, exec.getListOfMessages()));
 			
-			GLLogger.debugTech("opening the  view...", getClass());
-			
-			getProgress().setComputationState(ComputationState.STARTED);
-			
-			openView();
+			loadDataSuccessiveFromInput();
+
+			if (!openDisplayIfNecessary())
+				// if the display is already open, refresh it (else it will be refreshed at callback, once the view will be opened.
+				displayResultsAsync(theView);
 			
 			// in fact, the actual display will (should) be done when the view if opened, and registers itself.
 		
@@ -184,4 +218,33 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 
 	}
 
+	@Override
+	public void receiveInput(IAlgoExecution executionRun,
+			IConnectionExecution connectionExec, Object value) {
+
+		// will be called in continuous mode: in this case, will display the result continuously
+		
+		if (!openDisplayIfNecessary())
+			// if the display is already open, refresh it (else it will be refreshed at callback, once the view will be opened.
+			displayResultsAsync(theView);
+		
+	}
+
+	@Override
+	public void signalIncomingSupervisor(
+			AbstractContainerExecutionSupervisor supervisor) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void signalEndOfTasksForSupervisor(
+			AbstractContainerExecutionSupervisor supervisor,
+			ComputationState state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+	
 }

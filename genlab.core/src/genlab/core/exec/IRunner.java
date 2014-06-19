@@ -9,7 +9,20 @@ public interface IRunner extends IComputationProgressSimpleListener {
 
 	public void addTasks(Collection<IAlgoExecution> allTasks);
 
+	/**
+	 * Adds the task. If the task is raedy, it could be executed immediatly. 
+	 * If the task is a container, then subtasks will be added recursively
+	 * @param exec
+	 */
 	public void addTask(IAlgoExecution exec);
+	
+	/**
+	 * Returns true if this task is known by this runner
+	 * @param exec
+	 * @return
+	 */
+	public boolean containsTask(IAlgoExecution exec);
+
 
 	public void cancel();
 	public void kill();
@@ -28,4 +41,16 @@ public interface IRunner extends IComputationProgressSimpleListener {
 	 */
 	public void possibilityOfTaskCleanup(ITask task);
 
+	public int getCountPending();
+	
+	public int getCountReady();
+	
+	public int getCountRunning();
+
+	public int getCountDone();
+
+	public int getCountNotFinished();
+	
+	public String getHumanReadableState();
+	
 }

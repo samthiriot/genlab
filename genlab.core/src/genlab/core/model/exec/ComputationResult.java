@@ -1,6 +1,7 @@
 package genlab.core.model.exec;
 
 import genlab.core.commons.ProgramException;
+import genlab.core.commons.UniqueTimestamp;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IInputOutput;
@@ -17,6 +18,8 @@ public class ComputationResult implements IComputationResult {
 	public Map<IInputOutputInstance,Object> results;
 
 	protected final ListOfMessages listOfMessages;
+	
+	protected Object wave = new UniqueTimestamp();
 	
 	public ComputationResult(IAlgoInstance algo, IComputationProgress progress, ListOfMessages listOfMessages) {
 		this.algo = algo;
@@ -93,6 +96,15 @@ public class ComputationResult implements IComputationResult {
 		}
 	}
 
+	@Override
+	public Object getWave() {
+		return wave;
+	}
 
+	public void setWave(Object wave) {
+		this.wave = wave;
+	}
+
+	
 	
 }

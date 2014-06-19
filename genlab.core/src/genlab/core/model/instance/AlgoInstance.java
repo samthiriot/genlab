@@ -193,7 +193,7 @@ public class AlgoInstance implements IAlgoInstance {
 	public void setValueForParameter(String name, Object value) {
 		
 		if (!hasParameter(name))
-			throw new WrongParametersException("wrong parameter "+name);
+			throw new WrongParametersException("wrong parameter "+name+": no parameter found with this name");
 		final Object previousValue = parametersKey2value.get(name); 
 		
 		if ((previousValue == null) || (!previousValue.equals(value))) {
@@ -212,6 +212,14 @@ public class AlgoInstance implements IAlgoInstance {
 		}
 		
 	}
+	
+
+	@Override
+	public void setValueForParameter(Parameter<?> parameter, Object value) {
+		setValueForParameter(parameter.getId(), value);
+	}
+	
+
 
 	public void clearValueForParameter(String name) {
 		
@@ -388,5 +396,6 @@ public class AlgoInstance implements IAlgoInstance {
 		parametersListener.remove(list);
 		
 	}
+
 
 }

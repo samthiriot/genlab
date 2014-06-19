@@ -6,6 +6,7 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.IDisplayAlgo;
+import genlab.core.model.meta.IReduceAlgo;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.AnythingFlowType;
 import genlab.gui.Activator;
@@ -20,7 +21,7 @@ import org.osgi.framework.Bundle;
  * @author Samuel Thiriot
  *
  */
-public class GraphicalConsoleAlgo extends BasicAlgo implements IDisplayAlgo  {
+public class GraphicalConsoleAlgo extends BasicAlgo implements IDisplayAlgo, IReduceAlgo  {
 
 
 	public static final InputOutput<Object> INPUT = new InputOutput<Object>(
@@ -30,6 +31,7 @@ public class GraphicalConsoleAlgo extends BasicAlgo implements IDisplayAlgo  {
 			"any data to be displayed into the console",
 			true
 			);
+	
 	
 	public GraphicalConsoleAlgo() {
 		super(

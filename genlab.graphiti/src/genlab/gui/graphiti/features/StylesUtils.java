@@ -36,6 +36,9 @@ public class StylesUtils {
 //    private static final IColorConstant E_CLASS_FOREGROUND = new ColorConstant(255, 102, 0);
     private static final IColorConstant E_CLASS_FOREGROUND = new ColorConstant(98, 131, 167);
 
+    private static final IColorConstant E_OUTPUT_CONTINUOUS = new ColorConstant(177, 59, 40);
+
+
     private static final IColorConstant E_CLASS_BACKGROUND = new ColorConstant(255, 204, 153);
     
     private static final IColorConstant ALGOINSTANCE_CONTAINER_INSIDE_FOREGROUND = new ColorConstant(98, 131, 167);
@@ -215,6 +218,48 @@ public class StylesUtils {
         return style;
     }
     
+
+    public static Style getStyleForOutputOneshot(Diagram diagram) {
+    	
+        final String styleId = "E-CLASS-OUTPUT-ONESHOT";
+ 
+        Style style = findStyle(diagram, styleId);
+ 
+        if (style == null) { // style not found - create new style
+            IGaService gaService = Graphiti.getGaService();
+            style = gaService.createStyle(diagram, styleId);
+            style.setForeground(gaService.manageColor(diagram, E_CLASS_FOREGROUND));
+            //style.setBackground(gaService.manageColor(diagram, E_CLASS_BACKGROUND));
+            style.setLineStyle(LineStyle.SOLID);
+            style.setLineWidth(1);
+            gaService.setRenderingStyle(style, PredefinedColoredAreas.getBlueWhiteGlossAdaptions());
+            
+           
+        }
+        return style;
+    }
+ 
+    public static Style getStyleForOutputContinuous(Diagram diagram) {
+    	
+        final String styleId = "E-CLASS-OUTPUT-CONTINUOUS";
+ 
+        Style style = findStyle(diagram, styleId);
+ 
+        if (style == null) { // style not found - create new style
+            IGaService gaService = Graphiti.getGaService();
+            style = gaService.createStyle(diagram, styleId);
+            //style.setForeground(gaService.manageColor(diagram,  E_CLASS_FOREGROUND));
+            style.setForeground(gaService.manageColor(diagram, E_OUTPUT_CONTINUOUS));
+            //style.setBackground(gaService.manageColor(diagram, E_CLASS_BACKGROUND));
+            style.setLineStyle(LineStyle.SOLID);
+            style.setLineWidth(1);
+            gaService.setRenderingStyle(style, PredefinedColoredAreas.getBlueWhiteGlossAdaptions());
+            
+            
+        }
+        return style;
+    }
+ 
   public static Style getStyleForConnection(Diagram diagram) {
     	
         final String styleId = "connection";

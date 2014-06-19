@@ -143,6 +143,7 @@ public class Runner extends Thread implements IRunner {
 	 */
 	@Override
 	public void addTasks(Collection<IAlgoExecution> allTasks) {
+		
 		for (IAlgoExecution e: allTasks)
 			addTask(e);	
 		
@@ -181,16 +182,17 @@ public class Runner extends Thread implements IRunner {
 	@Override
 	public void addTask(IAlgoExecution exec) {
 		
+		messagesRun.debugTech("adding task: "+exec+" (state "+exec.getProgress().getComputationState()+")", getClass());
+		
 		synchronized (all) {
 			
 			if (all.contains(exec))
 				return;
 			
-			all.add(exec);
-			
 			exec.getProgress().addListener(this);
 
-		
+			all.add(exec);
+			
 			// add the task in the place it can be used
 			switch (exec.getProgress().getComputationState()) {
 			case READY:
@@ -216,6 +218,16 @@ public class Runner extends Thread implements IRunner {
 			}
 		}
 		
+		// add subtasks
+		if (exec instanceof IContainerTask) {
+			IContainerTask execContainer = (IContainerTask)exec;
+			if (!execContainer.getTasks().isEmpty()) {
+				for (ITask subtask: execContainer.getTasks()) {
+					addTask((IAlgoExecution) subtask);
+				}
+			} 
+		}
+		
 		// wake up the thread an make him think about the idea of working.
 		wakeUp();
 		
@@ -234,6 +246,8 @@ public class Runner extends Thread implements IRunner {
 	}
 
 	protected Collection<IAlgoExecution> detectRoots() {
+		
+		messagesRun.debugTech("detecting the roots of tasks", getClass());
 		
 		LinkedList<IAlgoExecution> res = new LinkedList<IAlgoExecution>();
 		
@@ -305,8 +319,8 @@ public class Runner extends Thread implements IRunner {
 		
 	}
 	
-	protected void printState() {
-		
+	public final String getHumanReadableState() {
+
 		StringBuffer sb = new StringBuffer();
 		
 		synchronized (all) {
@@ -314,11 +328,21 @@ public class Runner extends Thread implements IRunner {
 				.append(done.size()).append(" done, ")
 				.append(running.size()).append(" running, ")
 				.append(ready.size()).append(" ready, ")
-				.append(notReady.size()).append(" waiting.");
+				.append(notReady.size()).append(" waiting.")
+				//.append("\n(Running: ").append(running.toString()).append(")")
+				//.append("\n(Ready: ").append(ready.toString()).append(")")
+				//.append("\n(Pending: ").append(notReady.toString()).append(")")
+				;
+			
 			
 		}
 		
-		messagesRun.traceTech(sb.toString(), getClass());
+		return sb.toString();
+	}
+	
+	protected void printState() {
+		
+		messagesRun.traceTech(getHumanReadableState(), getClass());
 		
 	}
 	
@@ -393,28 +417,36 @@ public class Runner extends Thread implements IRunner {
 					
 			Iterator<ICleanableTask> itSub = cleanable.iterator();
 			while (itSub.hasNext()) {
-				ICleanableTask sub = itSub.next();
-				
-				// sometimes we attempt to clean the tasks a bit too quickly
-				// just don't.
-				if (sub.getProgress().getTimestampEnd() > minimalTimestamp)
-					continue;
-					
 				try {
-					messagesRun.traceTech("cleaning task: "+sub, getClass());
+					ICleanableTask sub = itSub.next();
+					
+					// sometimes we attempt to clean the tasks a bit too quickly
+					// just don't.
+					if (sub.getProgress().getTimestampEnd() > minimalTimestamp)
+						continue;
+						
+					if (sub.getProgress() != null && sub.getProgress().getComputationState() != null && !sub.getProgress().getComputationState().isFinished())
+						continue;
+					
+					try {
+						messagesRun.traceTech("cleaning task: "+sub, getClass());
+	
+						// now clean it !
+						
+						sub.clean();
+						
+					} catch (RuntimeException e) {
+						messagesRun.warnTech("oops,  catched an error while attempting to clean a task: "+sub, getClass(), e);
+						e.printStackTrace();
+					}
+					
+					itSub.remove();
 
-					// now clean it !
-					
-					sub.clean();
-					
 				} catch (RuntimeException e) {
-					messagesRun.warnTech("oops,  catched an error while attempting to clean a task: "+sub, getClass(), e);
+					// don't care about cleaning
+					messagesRun.warnTech("exception while attempting to clean a task", getClass());
 					e.printStackTrace();
 				}
-				
-				itSub.remove();
-
-				
 			}
 			
 		}
@@ -477,6 +509,9 @@ public class Runner extends Thread implements IRunner {
 	 * @see genlab.core.exec.IRunner#cancelTasks()
 	 */
 	public void cancelTasks() {
+		
+		messagesRun.debugTech("asked to cancel all tasks", getClass());
+
 		cancel = true;
 		
 		synchronized (all) {
@@ -493,6 +528,29 @@ public class Runner extends Thread implements IRunner {
 			}
 		}
 	}
+	
+	public final int getCountPending() {
+		return notReady.size();
+	}
+	
+	public final int getCountReady() {
+		return ready.size();
+	}
+	
+	public final int getCountRunning() {
+		return running.size();
+	}
+
+	public final int getCountDone() {
+		return done.size();
+	}
+
+
+	public final int getCountNotFinished() {
+		return running.size() + ready.size() + notReady.size();
+	}
+	
+	
 
 	/* (non-Javadoc)
 	 * @see genlab.core.exec.IRunner#computationStateChanged(genlab.core.model.exec.IComputationProgress)
@@ -500,15 +558,14 @@ public class Runner extends Thread implements IRunner {
 	@Override
 	public void computationStateChanged(IComputationProgress progress) {
 		
-		
-		//messages.traceTech("computation state changed: "+progress.getAlgoExecution()+": "+progress.getComputationState(), getClass());
-		
 		IAlgoExecution e = progress.getAlgoExecution();
 
 		boolean wakeUp = false;
 		
 		final ListOfMessages messages = e.getExecution().getListOfMessages();
 		
+		messages.traceTech("receiving state change: "+progress.getAlgoExecution()+" is now "+progress.getComputationState(), getClass());
+
 		synchronized (all) {
 	
 			// check event
@@ -525,9 +582,16 @@ public class Runner extends Thread implements IRunner {
 			case FINISHED_OK:
 			case FINISHED_CANCEL:
 				messages.traceTech("task finished: "+e+" ("+progress.getDurationMs()+" ms)", getClass());
-				if (running.contains(e)) {
-					running.remove(e);
+				
+				// remove this task from its previous state
+				boolean wasRunning = running.remove(e);
+				boolean wasContained = wasRunning || ready.remove(e) || notReady.remove(e) || done.remove(e);
+				
+				// and if we knew it, then add it to "done" tasks
+				if (wasContained) {
 					done.add(e);
+				}
+				if (wasRunning) {
 					
 					if (e.getThreadsUsed() == 0) {
 						usedThreadsWithoutThread--;
@@ -550,6 +614,7 @@ public class Runner extends Thread implements IRunner {
 				break;
 			
 			case STARTED:
+				messages.traceTech("task started: "+e, getClass());
 				ready.remove(e);
 				notReady.remove(e);
 				if (running.add(e)) {
@@ -559,6 +624,10 @@ public class Runner extends Thread implements IRunner {
 						usedThreads += e.getThreadsUsed();
 					}
 				}
+				break;
+				
+			case SENDING_CONTINOUS:
+				// ignore
 				break;
 				
 			case CREATED:
@@ -636,11 +705,21 @@ public class Runner extends Thread implements IRunner {
 	@Override
 	public void possibilityOfTaskCleanup(ITask task) {
 		
+		messagesRun.traceTech("notified of the possibility to clean a task: "+task, getClass());
+
 		// only clean the tasks marked as "you may clean me"
 		if (!(task instanceof ICleanableTask))
 			return;
 		
 		cleanable.add((ICleanableTask)task);
+	}
+
+
+	@Override
+	public boolean containsTask(IAlgoExecution exec) {
+		synchronized (all) {
+			return all.contains(exec);	
+		} 
 	}
 	
 }

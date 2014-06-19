@@ -1,10 +1,7 @@
 package genlab.gui.algos;
 
 import genlab.core.exec.IExecution;
-import genlab.core.model.exec.AbstractContainerExecutionSupervisor;
 import genlab.core.model.exec.ComputationState;
-import genlab.core.model.exec.IAlgoExecution;
-import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
@@ -28,7 +25,7 @@ public class GraphicalConsoleExec extends AbstractOpenViewAlgoExec {
 	}
 	
 	@Override
-	protected void displayResults(AbstractViewOpenedByAlgo theView) {
+	protected void displayResultsSync(AbstractViewOpenedByAlgo theView) {
 		
 		ConsoleView cv = (ConsoleView)theView;
 		
@@ -37,7 +34,9 @@ public class GraphicalConsoleExec extends AbstractOpenViewAlgoExec {
 			getProgress().setComputationState(ComputationState.FINISHED_FAILURE);
 			return;
 		}
-		
+				
+		cv.showBusy(true);
+
 		// just read the values and display them
 		Map<IConnection, Object> values = getInputValuesForInput(GraphicalConsoleAlgo.INPUT);
 		
@@ -61,6 +60,8 @@ public class GraphicalConsoleExec extends AbstractOpenViewAlgoExec {
 		
 		cv.write(sb.toString());
 		
+		cv.showBusy(false);
+
 		// in fact, we have nothing to do here
 		// just set result to finished
 		setResult(null);
@@ -71,6 +72,12 @@ public class GraphicalConsoleExec extends AbstractOpenViewAlgoExec {
 	@Override
 	public long getTimeout() {
 		return 1000*5;
+	}
+
+	@Override
+	protected void loadDataSuccessiveFromInput() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	

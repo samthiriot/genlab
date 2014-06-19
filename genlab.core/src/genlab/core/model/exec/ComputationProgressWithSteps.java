@@ -167,14 +167,14 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 	@Override
 	public void setComputationState(ComputationState state) {
 		
-		if (state == this.state)
-			return; // quick exit
+		if ( (state == this.state) && (state != ComputationState.SENDING_CONTINOUS) )
+			return; // quick exit: don't repeat messages, except for the messages which have to be updated
 		
 		if (state == null)
 			throw new ProgramException("state should not be null");
-		
-		synchronized (stateLock) {
 
+		synchronized (stateLock) {
+			
 			switch (state) {
 			case STARTED:
 				this.timestampStart = System.currentTimeMillis();
@@ -195,6 +195,7 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 	@Override
 	public void addListener(IComputationProgressSimpleListener listener) {
 		synchronized (listeners) {
+			
 			if (!listeners.contains(listener))
 				listeners.add(listener);
 		}	
@@ -209,13 +210,14 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 	}
 	
 	protected void dispatchComputationStateChanged() {
+		
 		LinkedList<IComputationProgressSimpleListener> listenersCopy = null; 
 		
 		synchronized (listeners) {
 			listenersCopy = (LinkedList<IComputationProgressSimpleListener>) listeners.clone();
 		}
+		
 		// produce a clone, so a change during dispatching would not raise a problem
-		//ComputationProgressWithSteps clone = (ComputationProgressWithSteps) this.clone();
 		for (IComputationProgressSimpleListener l:  listenersCopy) {
 			try {
 				l.computationStateChanged(this);
@@ -225,6 +227,7 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 						getClass(), 
 						e
 						);
+				e.printStackTrace();
 			}
 		}	
 		
@@ -326,6 +329,7 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 		dispatchCleaning();
 		
 		// clear local data
+		
 		listeners.clear();
 		listeners = null;
 		if (listenersDetails != null) {

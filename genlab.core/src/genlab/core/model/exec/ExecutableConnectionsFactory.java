@@ -44,9 +44,12 @@ public class ExecutableConnectionsFactory {
 			
 		}
 		
+		// cases of creation from supervisors to reduce algos
+		
+
+		// origin is a supervisor;
 		if (fromExec instanceof AbstractContainerExecutionSupervisor) {
 			
-
 			if (!(toExec instanceof IReduceAlgoExecution))
 				throw new ProgramException("algorithms placed after parallel blocks should always be reduce algorithms");
 			
@@ -56,10 +59,23 @@ public class ExecutableConnectionsFactory {
 					(IReduceAlgoExecution)toExec
 					);
 						
+		} 
+		
+		if (
+				// the target executable accepts continuous inputs
+				(toExec instanceof IAlgoExecutionContinuous)
+				&&
+				// and the output produces continuous output
+				(c.getFrom().getMeta().isContinuousOutput())
+				) {
+			
+			// TODO !!!
+			
 		}
 		
+		
 		// one shot connection, the easiest one :-) 
-		if ( toExec instanceof IAlgoExecutionOneshot ) {
+		if (toExec instanceof IAlgoExecutionOneshot) {
 			
 			return new ConnectionExec(
 					c, 

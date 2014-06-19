@@ -9,6 +9,7 @@ import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.IInputOutput;
+import genlab.core.model.meta.InputOutput;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.util.Collection;
@@ -144,6 +145,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	protected void setResult(IComputationResult res) {
 		this.result = res;
 	}
+
 	
 	@Override
 	public IAlgoInstance getAlgoInstance() {
@@ -280,8 +282,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 
 	@Override
 	public void clean() {
-		
-		
+				
 		// check feasibility
 		if (progress != null && progress.getComputationState() != null && !progress.getComputationState().isFinished())
 			throw new ProgramException("attempting to clean a task which is not finished.");

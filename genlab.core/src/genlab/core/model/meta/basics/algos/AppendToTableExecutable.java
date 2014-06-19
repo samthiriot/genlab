@@ -2,23 +2,19 @@ package genlab.core.model.meta.basics.algos;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
-import genlab.core.exec.ITask;
 import genlab.core.model.exec.AbstractAlgoReduceExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
-import genlab.core.model.exec.ConnectionExec;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IAlgoExecutionOneshot;
 import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
-import genlab.core.model.instance.IReduceAlgoInstance;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -148,7 +144,7 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution impleme
 	 * As long as connections come from Container algos, then we will have received the values
 	 * with an execution context.
 	 * But, we may also receive some values from non "to be reduced" algos. In this case, 
-	 * we just retrieve their values in the stardart way.
+	 * we just retrieve their values in the standard way.
 	 * 
 	 */
 	protected void completeValues() {

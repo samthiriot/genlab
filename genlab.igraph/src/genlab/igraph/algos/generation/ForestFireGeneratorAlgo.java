@@ -1,5 +1,6 @@
 package genlab.igraph.algos.generation;
 
+import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
@@ -96,11 +97,27 @@ public class ForestFireGeneratorAlgo extends AbstractIGraphGenerator {
 				try {
 					lib.installProgressCallback(new GenlabProgressCallback(progress));
 					
+					Integer N = (Integer)getInputValueForInput(INPUT_N);
+					//System.err.println("N "+N);
+					Double fwProb = (Double)getInputValueForInput(INPUT_fw_prob);
+					if (fwProb == 0.0)
+						throw new WrongParametersException(INPUT_fw_prob+" should be > 0");
+						
+					//System.err.println("fw "+fwProb);
+
+					Double bwFactor = (Double)getInputValueForInput(INPUT_bw_factor);
+					//System.err.println("bwFactor "+bwFactor);
+
+					Integer pambs = (Integer)getInputValueForInput(INPUT_pambs);
+					//System.err.println("pambs "+pambs);
+					if (pambs == 0)
+						throw new WrongParametersException(INPUT_pambs+" should be > 0");
+					
 					IGraphGraph g = lib.generateForestFire(
-							(Integer)getInputValueForInput(INPUT_N), 
-							(Double)getInputValueForInput(INPUT_fw_prob), 
-							(Double)getInputValueForInput(INPUT_bw_factor), 
-							(Integer)getInputValueForInput(INPUT_pambs), 
+							N, 
+							fwProb, 
+							bwFactor, 
+							pambs, 
 							(Boolean)algoInst.getValueForParameter(PARAM_DIRECTED.getId())
 							);
 					

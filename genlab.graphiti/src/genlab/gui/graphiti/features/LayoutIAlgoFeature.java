@@ -107,9 +107,13 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
             			// this is a right element
             			gaService.setLocationAndSize(
             					text, 
+            					// x
             					containerWidth/2,
+            					// y
             					text.getY(),
-            					containerWidth/2-ANCHOR_WIDTH,
+            					// width
+            					containerWidth/2-ANCHOR_WIDTH/2,
+            					// height
             					text.getHeight()
             					);
             		} else {

@@ -33,7 +33,11 @@ public class ConstantValueFile extends ConstantValue<File> {
 		return new FileParameter(paramId, "value", "the value of this constant", FileUtils.getHomeDirectoryFile());
 	}
 
-	
+
+	@Override
+	public Integer getPriorityForIntuitiveCreation() {
+		return 1;
+	}
 
 
 }

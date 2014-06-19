@@ -345,6 +345,23 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		// TODO check the connection !?
 	}
 
+
+	@Override
+	public IConnection connect(IAlgoInstance fromAlgoInstance,
+			IInputOutput<?> output, IAlgoInstance toAlgoInstance,
+			IInputOutput<?> input) {
+
+		IInputOutputInstance from = fromAlgoInstance.getOutputInstanceForOutput(output);
+		IInputOutputInstance to = toAlgoInstance.getInputInstanceForInput(input);
+		
+		if (from == null)
+			throw new WrongParametersException("unable to find ouput "+output.getName()+" for algorithm instance "+fromAlgoInstance.getName());
+		if (to == null)
+			throw new WrongParametersException("unable to find ouput "+input.getName()+" for algorithm instance "+toAlgoInstance.getName());
+
+		return connect(from, to);
+	}
+
 	@Override
 	public IConnection connect(IInputOutputInstance from, IInputOutputInstance to) {
 	
@@ -683,6 +700,11 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	public void removeParametersListener(IParametersListener list) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void setValueForParameter(Parameter<?> parameter, Object value) {
+		setValueForParameter(parameter.getId(), value);
 	}
 
 

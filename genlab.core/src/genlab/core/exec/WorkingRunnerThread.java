@@ -39,7 +39,13 @@ public class WorkingRunnerThread extends Thread {
 			}
 			// run the task
 			messages.debugTech(getName()+" running task: "+exec.getName(), getClass());
-			exec.run();
+			try {
+				exec.run();
+			} catch (Exception e) {
+				messages.errorUser("task "+exec.getName()+" raised an error:"+e.getMessage(), getClass(), e);
+				exec.getProgress().setComputationState(ComputationState.FINISHED_FAILURE);
+				exec.getProgress().setException(e);
+			}
 			messages.debugTech(getName()+" ran task: "+exec.getName(), getClass());
 			
 		}

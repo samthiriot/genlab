@@ -24,4 +24,6 @@ public interface IConnectionExecution extends IComputationProgressSimpleListener
 	 */
 	public void clean();
 	
+	public boolean canSendContinuousUpdate();
+	
 }

@@ -82,7 +82,7 @@ public class GraphBasicPropertiesAlgo extends BasicAlgo {
 			
 			@Override
 			public void cancel() {
-				// useless
+				progress.setComputationState(ComputationState.FINISHED_CANCEL);
 			}
 			
 			@Override
@@ -116,7 +116,7 @@ public class GraphBasicPropertiesAlgo extends BasicAlgo {
 			
 			@Override
 			public void kill() {
-				// useless
+				progress.setComputationState(ComputationState.FINISHED_CANCEL);
 			}
 			
 			@Override

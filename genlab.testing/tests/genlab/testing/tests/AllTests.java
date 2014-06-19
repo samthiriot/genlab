@@ -8,7 +8,16 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses(
 		{ 
-			genlab.igraph.AllTests.class,
+			// tests defined by this pluging
+			genlab.testing.referenceWorkflows.TestSimpleGraphGeneratorChains.class,
+			genlab.testing.referenceWorkflows.LoopedGraphGeneratorChains.class,
+			
+			tests.genlab.core.persistence.TestPersistenceChains.class,
+			
+			// tests from other plugins
+			
+			// genlab.igraph.AllTests.class,
+			
 			
 			}
 		)

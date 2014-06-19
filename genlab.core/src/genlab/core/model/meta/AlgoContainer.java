@@ -1,5 +1,8 @@
 package genlab.core.model.meta;
 
+import java.util.Collections;
+import java.util.Map;
+
 import genlab.core.model.instance.AlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
@@ -43,6 +46,11 @@ public abstract class AlgoContainer extends BasicAlgo implements IAlgoContainer 
 		return true;
 	}
 
-
+	@Override
+	public Map<IAlgo, Integer> recommandAlgosContained() {
+		// by default, recommand nothing specific to this algo.
+		// if relevant, override with values.
+		return Collections.EMPTY_MAP;
+	}
 
 }

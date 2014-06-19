@@ -3,11 +3,14 @@ package genlab.gui.jfreechart.algos;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import genlab.core.model.meta.basics.flowtypes.TableFlowType;
-import genlab.core.parameters.IntParameter;
+import genlab.core.parameters.ListParameter;
 import genlab.gui.jfreechart.exec.ScatterPlotExec;
+import genlab.gui.jfreechart.instance.ScatterPlotAlgoInstance;
 import genlab.gui.jfreechart.views.ScatterView;
 
 public class ScatterPlotAlgo extends AbstractJFreechartAlgo {
@@ -20,24 +23,16 @@ public class ScatterPlotAlgo extends AbstractJFreechartAlgo {
 			"the table to be displayed as a chart display"
 			);
 	
-	public static final IntParameter PARAM_COLUMN_X = new IntParameter(
+	public static final ListParameter PARAM_COLUMN_X = new ListParameter(
 			"param_columnX", 
 			"column for X", 
-			"the column of the table to use as a X value", 
-			0,
-			0,
-			null,
-			1
+			"the column of the table to use as a X value"
 			);
 	
-	public static final IntParameter PARAM_COLUMN_Y = new IntParameter(
+	public static final ListParameter PARAM_COLUMN_Y = new ListParameter(
 			"param_columnY", 
 			"column for Y", 
-			"the column of the table to use as a y value", 
-			1,
-			0,
-			null,
-			1
+			"the column of the table to use as a y value"
 			);
 	
 	public ScatterPlotAlgo() {
@@ -58,7 +53,16 @@ public class ScatterPlotAlgo extends AbstractJFreechartAlgo {
 		return new ScatterPlotExec(execution, algoInstance);
 	}
 
-	
+	@Override
+	public IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
+		return new ScatterPlotAlgoInstance(this, workflow);
+	}
+
+	@Override
+	public IAlgoInstance createInstance(String id,
+			IGenlabWorkflowInstance workflow) {
+		return new ScatterPlotAlgoInstance(this, workflow, id);
+	}
 
 	
 }

@@ -102,12 +102,14 @@ public abstract class AbstractGraphstreamMeasureExecution extends
 	
 	@Override
 	public void kill() {
-		cancelled = true;				
+		cancelled = true;
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
 	}
 
 	@Override
 	public void cancel() {
 		cancelled = true;
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
 	}
 	
 

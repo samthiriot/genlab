@@ -11,6 +11,7 @@ import genlab.core.parameters.Parameter;
 import java.util.Collection;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.osgi.framework.Bundle;
 
 /**
@@ -88,6 +89,11 @@ public interface IAlgo extends IGenlabResource {
 	 */
 	public Bundle getBundle();
 	
+	/**
+	 * Returns true if an algo of this type may be contained into the instance passed as parameter.
+	 * @param algoInstance
+	 * @return
+	 */
 	public boolean canBeContainedInto(IAlgoInstance algoInstance);
 	
 }

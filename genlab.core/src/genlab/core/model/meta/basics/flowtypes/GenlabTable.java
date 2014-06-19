@@ -27,10 +27,95 @@ public class GenlabTable implements IGenlabTable {
 	
 	private List<String> columnsTitles = new LinkedList<String>();
 	private Map<String,Integer> columnId2idx = new HashMap<String, Integer>(50);
+
+	private Map<String,Object> tableMetadata = null;
+	
+	private Map<String,Map<String,Object>> columns2Metadata = new HashMap<String, Map<String,Object>>();
 	
 	public GenlabTable() {
 	}
+	
+	public void setTableMetaData(String key, Object value) {
+		
+		if (tableMetadata == null) {
+			tableMetadata = new HashMap<String, Object>();
+		}
+		
+		tableMetadata.put(key, value);
+	}
+	
+	public Map<String,Object> getTableMetaData() {
+		if (tableMetadata == null)
+			return Collections.EMPTY_MAP;
+		else
+			return Collections.unmodifiableMap(tableMetadata);
+	}
+	
+	public Object getTableMetaData(String key) {
+		if (tableMetadata == null)
+			return null;
+		else
+			return tableMetadata.get(key);
+	}
+	
 
+	public boolean containsTableMetaData(String key) {
+		if (tableMetadata == null)
+			return false;
+		else
+			return tableMetadata.containsKey(key);
+	}
+	
+	public void setColumnMetaData(String column, String key, Object value) {
+		
+		Map<String,Object> columnMetadata = columns2Metadata.get(column);
+		
+		if (columnMetadata == null) {
+			if (!columnId2idx.containsKey(column))
+				throw new WrongParametersException("this column does not exists in the table: "+column);
+			
+			columnMetadata = new HashMap<String, Object>();
+			columns2Metadata.put(column, columnMetadata);
+		}
+		
+		columnMetadata.put(key, value);
+	}
+	
+	public Map<String,Object> getColumnMetaData(String column) {
+		
+		Map<String,Object> columnMetadata = columns2Metadata.get(column);
+		
+		if (columnMetadata == null)
+			return Collections.EMPTY_MAP;
+		else
+			return Collections.unmodifiableMap(columnMetadata);
+	}
+	
+	public Object getColumnMetaData(String column, String key) {
+		
+		Map<String,Object> columnMetadata = columns2Metadata.get(column);
+		
+		if (columnMetadata == null)
+			return null;
+		else
+			return tableMetadata.get(key);
+		
+	}
+	
+	public boolean containsColumnMetaData(String column, String key) {
+		
+		Map<String,Object> columnMetadata = columns2Metadata.get(column);
+		
+		if (columnMetadata == null) {
+			if (!columnId2idx.containsKey(column))
+				throw new WrongParametersException("this column does not exists in the table: "+column);
+			return false;
+		} else {
+			return columnMetadata.containsKey(key);
+		}
+		
+	}
+	
 	@Override
 	public boolean isEmpty() {
 		return content.isEmpty();

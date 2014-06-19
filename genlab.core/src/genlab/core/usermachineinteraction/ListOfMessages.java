@@ -2,7 +2,9 @@ package genlab.core.usermachineinteraction;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
+import genlab.core.model.exec.ComputationState;
 
+import java.io.PrintStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -47,7 +49,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	/**
 	 * If true, relays every message to a log4j logger.
 	 */
-	public static boolean DEFAULT_RELAY_TO_LOG4J = true;
+	public static boolean DEFAULT_RELAY_TO_LOG4J = false;
 
 	public int limitStartCleanup = DEFAULT_CLEANUP_TARGET_SIZE;
 	public int cleanupTarget = DEFAULT_CLEANUP_TARGET_SIZE;
@@ -58,9 +60,9 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 */
 	public static final int QUEUE_SIZE = 2000;
 
-	public static final MessageLevel DEFAULT_LEVEL = MessageLevel.WARNING;;
+	public static final MessageLevel DEFAULT_LEVEL = MessageLevel.TRACE;
 
-	protected MessageLevel filterIgnoreBelow = null;
+	protected MessageLevel filterIgnoreBelow = MessageLevel.INFO;
 	
 	public MessageLevel getFilterIgnoreBelow() {
 		return filterIgnoreBelow;
@@ -87,6 +89,10 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	
 	protected final ReceiveMessagesThread queueConsumerThread;
 
+	/**
+	 * true if received one message (even if it was cleaned) or level error.
+	 */
+	protected boolean containedAnError = false;
 	
 	protected static final Map<MessageLevel,Priority> messageLevel2log4jPriority = new HashMap<MessageLevel, Priority>(){{
 		put(MessageLevel.TRACE, Priority.DEBUG);
@@ -136,7 +142,15 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	public ITextMessage last() {
 		return sortedMessages.last();
 	}
-	
+
+	/**
+	 * Returns true if the list of messages contained an error. Takes into account all the messages (no flush time).
+	 * Takes into account deleted messages.
+	 * @return
+	 */
+	public final boolean containedAnError() {
+		return containedAnError;
+	}
 
 	protected void clearOld() {
 			
@@ -362,6 +376,10 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 			e1.printStackTrace();
 		} 
 		
+		if (e.getLevel() == MessageLevel.ERROR) {
+			containedAnError = true; 
+		}
+		
 		return true;
 	}
 	
@@ -463,6 +481,8 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 				l.contentChanged(this);
 			}
 		}
+		
+		containedAnError = false;
 		
 	}
 
@@ -966,6 +986,37 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 		super.finalize();
 	}
 	
+	/**
+	 * Returns true if it contains a messages of this level. O(n).
+	 * @param searchedLevel
+	 * @return
+	 */
+	public boolean containsMessageLevel(MessageLevel searchedLevel) {
+		 
+		synchronized (sortedMessages) {
+	
+			for (ITextMessage message: sortedMessages) {
+				if (message.getLevel() == searchedLevel)
+					return true;
+			}
+
+		}
+		return false;
+	}
+	
+	/**
+	 * Dumps the messages to stream
+	 * @param ps
+	 */
+	public void dumpToStream(PrintStream ps) {
+		
+		synchronized (sortedMessages) {
+
+			for (ITextMessage message: sortedMessages) {
+				ps.println(message.toString());
+			}
+		}
+	}
 	
 }
 

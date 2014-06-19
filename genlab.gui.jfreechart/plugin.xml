@@ -22,18 +22,18 @@
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
-            targetID="genlab.gui.perspectives.WorkflowPerspective">
+            targetID="genlab.gui.perspectives.RunPerspective">
          <view
                closeable="true"
-               id="genlab.gui.jfreechart.views.ScatterView"
+               id="genlab.gui.jfreechart.views.ScatterView:*"
                minimized="false"
-               relationship="top"
-               relative="org.eclipse.ui.editorss"
-               visible="true">
+               moveable="true"
+               relationship="stack"
+               relative="genlab.gui.perspectives.RunPerspective.folders.middle"
+               showTitle="true"
+               standalone="false"
+               visible="false">
          </view>
-         <viewShortcut
-               id="genlab.gui.jfreechart.views.ScatterView">
-         </viewShortcut>
       </perspectiveExtension>
    </extension>
 

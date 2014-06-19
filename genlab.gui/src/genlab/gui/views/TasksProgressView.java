@@ -434,6 +434,7 @@ public class TasksProgressView
 		case FINISHED_FAILURE:
 			tasksDisplayedNotStopped.remove(t);
 			break;
+		case SENDING_CONTINOUS:
 		case STARTED: { 
 			StringBuffer sb = new StringBuffer();
 			sb.append("running (").append(t.getProgress().getProgressDone()).append("/").append(t.getProgress().getProgressTotalToDo()).append(")");

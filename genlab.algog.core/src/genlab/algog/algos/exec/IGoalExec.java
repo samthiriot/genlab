@@ -10,5 +10,17 @@ public interface IGoalExec extends IAlgoExecution {
 	 */
 	public Double getFitness();
 	
+	/**
+	 * Returns the targets for this goal
+	 * @return
+	 */
+	public Object getTarget();
+	
+	/**
+	 * Returns the actual value
+	 * @return
+	 */
+	public Object getActualValue();
+		
 	
 }

@@ -128,5 +128,17 @@ public class TextMessage implements ITextMessage {
 	public final String getShortEmitter() {
 		return fromShort;
 	}
+	
+	public final String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(timestamp.timestamp).append(" |\t");
+		sb.append(level).append(" |\t");
+		sb.append(audience).append(" |\t");
+		if (count > 1) {
+			sb.append("(").append(count).append(" times) ");
+		}
+		sb.append(message);
+		return sb.toString();
+	}
 
 }

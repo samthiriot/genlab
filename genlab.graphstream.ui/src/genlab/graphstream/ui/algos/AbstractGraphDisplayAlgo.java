@@ -74,15 +74,17 @@ public abstract class AbstractGraphDisplayAlgo extends GraphStreamAlgo {
 		
 		return new AbstractOpenViewAlgoExec(execution, algoInstance, getViewId()) {
 			
+			IGenlabGraph glGraph = null;
+
 			@Override
-			protected void displayResults(AbstractViewOpenedByAlgo theView) {
+			protected void displayResultsSync(AbstractViewOpenedByAlgo theView) {
 				
 				GLLogger.tipUser("if the window opened to display the graph remains gray, please try to move or resize it to correct the problem (known bug, sorry)", getClass());
 				
 				GLLogger.traceTech("displaying the graph...", getClass());
 				AbstractGraphView gv = (AbstractGraphView)theView;
 				
-				IGenlabGraph glGraph = (IGenlabGraph)getInputValueForInput(INPUT_GRAPH);
+				//IGenlabGraph glGraph = (IGenlabGraph)getInputValueForInput(INPUT_GRAPH);
 				
 				File fileCss = (File)algoInstance.getValueForParameter(PARAM_STYLESHEET);
 				String filenameCss = null;
@@ -102,6 +104,13 @@ public abstract class AbstractGraphDisplayAlgo extends GraphStreamAlgo {
 			@Override
 			public long getTimeout() {
 				return 1000*5;
+			}
+
+			@Override
+			protected void loadDataSuccessiveFromInput() {
+				
+				glGraph = (IGenlabGraph)getInputValueForInput(INPUT_GRAPH);
+
 			}
 		};
 	}

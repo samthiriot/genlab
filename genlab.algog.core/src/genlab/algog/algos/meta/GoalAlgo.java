@@ -9,6 +9,14 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.NumberFlowType;
 
+/**
+ * TODO check the algorithm with the principle: the goal should not come from a genetic algo, from a gene, in 
+ * brief: it should be a constant !
+ * 
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class GoalAlgo extends AbstractGeneticAlgo  {
 
 

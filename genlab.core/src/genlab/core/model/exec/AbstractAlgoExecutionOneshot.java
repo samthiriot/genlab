@@ -19,16 +19,26 @@ public abstract class AbstractAlgoExecutionOneshot
 			IAlgoInstance algoInst, IComputationProgress progress) {
 		super(exec, algoInst, progress);
 		
+
 		// at the very beginning, all the inputs are waiting for data
 		inputsNotAvailable = new HashSet<IInputOutputInstance>(algoInst.getInputInstances());
+		
+		initComputationState();
+		
+	} 
+	
+	/**
+	 * Init the set of not available inputs, and the corresponding state (ready or waiting).
+	 * Please override if relevant.
+	 */
+	protected void initComputationState() {
 		
 		if (inputsNotAvailable.isEmpty())
 			progress.setComputationState(ComputationState.READY);
 		else	
 			progress.setComputationState(ComputationState.WAITING_DEPENDENCY);
 		
-		
-	} 
+	}
 
 
 	@Override
@@ -60,11 +70,11 @@ public abstract class AbstractAlgoExecutionOneshot
 			// this input only accepts one connection; so we can assume it is satisfied :-)
 			inputsNotAvailable.remove(to);
 		
-		// maybe now we have all the required inputs ?
-		if (inputsNotAvailable.isEmpty()) {
-			exec.getListOfMessages().traceTech("all inputs are available, now ready to run !", getClass());
-			progress.setComputationState(ComputationState.READY);
-		}
+			// maybe now we have all the required inputs ?
+			if (inputsNotAvailable.isEmpty()) {
+				exec.getListOfMessages().traceTech("all inputs are available, now ready to run !", getClass());
+				progress.setComputationState(ComputationState.READY);
+			}
 			
 		}
 	}

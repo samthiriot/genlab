@@ -47,6 +47,11 @@
             id="genlab.gui.perspectives.WorkflowPerspective"
             name="Workflow perspective">
       </perspective>
+      <perspective
+            class="genlab.gui.perspectives.RunPerspective"
+            id="genlab.gui.perspectives.RunPerspective"
+            name="Run perspective">
+      </perspective>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -69,7 +74,7 @@
             class="genlab.gui.views.WorkflowView"
             id="genlab.gui.views.WorkflowView"
             name="Workflow"
-            restorable="true">
+            restorable="false">
       </view>
       <view
             category="genlab.gui.views.categorygenlab"
@@ -94,7 +99,7 @@
             icon="icons/workflow_explorer.gif"
             id="genlab.gui.views.workflowexplorer"
             name="Workflow explorer"
-            restorable="true">
+            restorable="false">
       </view>
       <view
             allowMultiple="true"
@@ -375,16 +380,103 @@
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="genlab.gui.perspectives.WorkflowPerspective">
+         <newWizardShortcut
+               id="genlab.gui.wizards.newworkflow">
+         </newWizardShortcut>
+         <newWizardShortcut
+               id="genlab.gui.wizards.newgenlabproject">
+         </newWizardShortcut>
+         <perspectiveShortcut
+               id="genlab.gui.perspectives.RunPerspective">
+         </perspectiveShortcut>
          <view
-               closeable="true"
-               id="genlab.gui.views.MessagesView"
+               closeable="false"
+               id="genlab.gui.views.projectexplorer"
+               minimized="false"
+               moveable="false"
+               relationship="stack"
+               relative="genlab.gui.perspectives.WorkflowPerspective.folders.left"
+               showTitle="true"
+               standalone="false"
+               visible="true">
+         </view>
+         <view
+               closeable="false"
+               id="genlab.gui.views.MessagesViewGeneral"
                minimized="false"
                moveable="true"
-               relationship="bottom"
-               relative="org.eclipse.ui.editorss"
+               relationship="stack"
+               relative="genlab.gui.perspectives.WorkflowPerspective.folders.bottom"
                showTitle="true"
-               standalone="true"
+               standalone="false"
                visible="true">
+         </view>
+         <viewShortcut
+               id="genlab.gui.views.AlgoInfoView">
+         </viewShortcut>
+         <view
+               closeable="false"
+               id="genlab.gui.views.AlgoInfoView"
+               minimized="false"
+               relationship="stack"
+               relative="genlab.gui.perspectives.WorkflowPerspective.folders.right"
+               visible="true">
+         </view>
+         <view
+               closeable="true"
+               id="genlab.gui.views.ParametersView:*"
+               minimized="false"
+               moveable="true"
+               relationship="stack"
+               relative="genlab.gui.perspectives.WorkflowPerspective.folders.right"
+               showTitle="true"
+               standalone="false"
+               visible="false">
+         </view>
+      </perspectiveExtension>
+      <perspectiveExtension
+            targetID="genlab.gui.perspectives.RunPerspective">
+         <perspectiveShortcut
+               id="genlab.gui.perspectives.WorkflowPerspective">
+         </perspectiveShortcut>
+         <view
+               closeable="false"
+               id="genlab.gui.views.ProgressView"
+               minimized="false"
+               moveable="true"
+               ratio="0.85"
+               relationship="stack"
+               relative="genlab.gui.perspectives.RunPerspective.folders.right"
+               showTitle="true"
+               standalone="false"
+               visible="true">
+         </view>
+         <viewShortcut
+               id="genlab.gui.views.ProgressView">
+         </viewShortcut>
+         <view
+               closeable="false"
+               id="genlab.gui.views.MessagesViewGeneral"
+               minimized="false"
+               moveable="true"
+               ratio="0.85"
+               relationship="stack"
+               relative="genlab.gui.perspectives.RunPerspective.folders.bottom"
+               showTitle="true"
+               standalone="false"
+               visible="true">
+         </view>
+         <view
+               closeable="true"
+               id="genlab.gui.views.MessagesView:*"
+               minimized="false"
+               moveable="true"
+               ratio="0.85"
+               relationship="stack"
+               relative="genlab.gui.perspectives.RunPerspective.folders.bottom"
+               showTitle="true"
+               standalone="false"
+               visible="false">
          </view>
       </perspectiveExtension>
    </extension>

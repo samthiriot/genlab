@@ -31,7 +31,8 @@ public class ViewHelpers {
 					// id of the view (provided by the genlab.gui package)
 					"genlab.gui.views.ParametersView",
 					// if of the content (so several instances can be opened)
-					algoInstance.getId(),
+					//algoInstance.getId(),
+					"uniqueId",
 					IWorkbenchPage.VIEW_ACTIVATE
 					);
 			// transmit info to enable the view to load what is required

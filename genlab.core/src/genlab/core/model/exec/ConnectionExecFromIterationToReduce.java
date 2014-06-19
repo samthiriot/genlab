@@ -36,11 +36,19 @@ public class ConnectionExecFromIterationToReduce extends AbstractConnectionExec<
 			return;	// no reason for this case...
 
 		final ComputationState state = progress.getComputationState();
+
+		// propagate failure / cancel
+		if (state == ComputationState.FINISHED_CANCEL || state == ComputationState.FINISHED_FAILURE) {
+			value = null;
+			to.cancel();
+			return;
+		}
 		
 		if (state != ComputationState.FINISHED_OK) {
 			value = null;
 			return;
 		}
+		
 		
 		// there should be a value
 		

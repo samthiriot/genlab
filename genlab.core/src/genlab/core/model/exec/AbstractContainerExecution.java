@@ -59,6 +59,15 @@ public abstract class AbstractContainerExecution
 	protected boolean somethingCanceled = false;
 	
 	protected boolean autoFinishWhenChildrenFinished = true;
+	
+	/**
+	 * if true, when adapting our progress based on the progress of children, 
+	 * we will ignore them being failed.
+	 */
+	protected boolean ignoreFailuresFromChildren = false;
+	protected boolean ignoreCancelFromChildren = false;
+
+
 	protected boolean autoUpdateProgressFromChildren = true;
 	
 	
@@ -136,7 +145,6 @@ public abstract class AbstractContainerExecution
 			
 			switch (subState) {
 			case FINISHED_FAILURE:
-				cancel();
 				somethingFailed = true;
 				break;
 			case FINISHED_CANCEL:
@@ -159,16 +167,21 @@ public abstract class AbstractContainerExecution
 			
 		} else if (autoFinishWhenChildrenFinished) {
 			// if we reached this step, then all our children have finished.
+
 			// as a container, we end ourself
-			if (somethingFailed)
+			if (somethingFailed && !ignoreFailuresFromChildren) {
+				//cancel();
 				ourState = ComputationState.FINISHED_FAILURE;
-			else if (somethingCanceled)
+				
+			} else if (somethingCanceled && !ignoreCancelFromChildren) {
+				//cancel();
 				ourState = ComputationState.FINISHED_CANCEL;
-			else 
+			} else 
 				ourState = ComputationState.FINISHED_OK;
 			
-			messages.traceTech("all subs terminated; should transmit results", getClass());
+			messages.traceTech("all subs terminated; should transmit results (and set my state to "+ourState+")", getClass());
 			hookContainerExecutionFinished(ourState);
+			
 			this.progress.setComputationState(ourState);
 			
 		}
@@ -178,6 +191,8 @@ public abstract class AbstractContainerExecution
 
 	@Override
 	public void computationProgressChanged(IComputationProgress progress) {
+		
+		messages.traceTech("received a state change: "+progress.getAlgoExecution()+" changed to "+progress.getComputationState(), getClass());
 		updateProgressFromChildren();
 	}
 
@@ -214,7 +229,13 @@ public abstract class AbstractContainerExecution
 				t.getProgress().addListener(this);
 				if (autoUpdateProgressFromChildren)
 					t.getProgress().addDetailedListener(this);
-				exec.getRunner().addTask((IAlgoExecution) t);
+				
+				// add this subtask to the runner, but only if we are already running.
+				// if we are not running yet, then the runner will discover the task itself when adding us as a task.
+				// we don't want the runner to run our tasks while we are not in his pool yet.
+				if (exec.getRunner().containsTask(this)) {
+					exec.getRunner().addTask((IAlgoExecution) t);
+				}
 			}	
 		//}
 		
@@ -244,11 +265,12 @@ public abstract class AbstractContainerExecution
 		synchronized (tasks) {
 			// pass the messages to children
 			for (ITask subTask : tasks) {
-				try {
-					subTask.cancel();
-				} catch (RuntimeException e) {
-					messages.warnTech("catched an exception while attempting to cancel subtask "+subTask+": "+e.getMessage(), getClass(), e);
-				}
+				if (!subTask.getProgress().getComputationState().isFinished())
+					try {
+						subTask.cancel();
+					} catch (RuntimeException e) {
+						messages.warnTech("catched an exception while attempting to cancel subtask "+subTask+": "+e.getMessage(), getClass(), e);
+					}
 			}
 		}
 	}

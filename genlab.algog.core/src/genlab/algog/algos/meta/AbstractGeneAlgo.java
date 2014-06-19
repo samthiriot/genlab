@@ -1,5 +1,6 @@
 package genlab.algog.algos.meta;
 
+import genlab.algog.algos.instance.GeneInstance;
 import genlab.algog.types.Genome;
 import genlab.algog.types.GenomeFlowType;
 import genlab.core.commons.NotImplementedException;
@@ -7,6 +8,7 @@ import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.parameters.DoubleParameter;
@@ -57,6 +59,7 @@ public class AbstractGeneAlgo extends AbstractGeneticAlgo {
 	@Override
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {
+		//return null;
 		throw new NotImplementedException("gene algorithms are not supposed to be executed");
 	}
 
@@ -64,6 +67,17 @@ public class AbstractGeneAlgo extends AbstractGeneticAlgo {
 	public boolean canBeContainedInto(IAlgoInstance algoInstance) {
 		// genes can only be contained into genetic exploration algos
 		return (algoInstance.getAlgo() instanceof AbstractGeneticExplorationAlgo);
+	}
+
+	@Override
+	public IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
+		return new GeneInstance(this, workflow);
+	}
+
+	@Override
+	public IAlgoInstance createInstance(String id,
+			IGenlabWorkflowInstance workflow) {
+		return new GeneInstance(this, workflow, id);
 	}
 	
 

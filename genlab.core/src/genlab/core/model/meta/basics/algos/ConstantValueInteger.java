@@ -30,5 +30,11 @@ public class ConstantValueInteger extends ConstantValue<Integer> {
 		return new IntParameter(paramId, "value", "the value of this constant", 0);
 	}
 
+	@Override
+	public Integer getPriorityForIntuitiveCreation() {
+		// higher pririty than double, so we use integer as soon as possible (double will always be accepted for numbers)
+		return 2;
+	}
+
 
 }
