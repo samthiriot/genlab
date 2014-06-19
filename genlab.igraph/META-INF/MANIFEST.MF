@@ -52,5 +52,13 @@ Bundle-NativeCode: ext/native/linux/x86/libigraph.so ;
  processor=x86 ;
  processor=x86-64 ;
  processor=PowerPC
-Export-Package: genlab.igraph
- 
+Export-Package: genlab.igraph,
+ genlab.igraph.algos.compare,
+ genlab.igraph.algos.generation,
+ genlab.igraph.algos.generation.lcffamous,
+ genlab.igraph.algos.measure,
+ genlab.igraph.algos.transform,
+ genlab.igraph.commons
+Bundle-ClassPath: .,
+ ext/native/linux/x86/,
+ ext/native/linux/x86_64/

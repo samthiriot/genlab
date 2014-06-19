@@ -357,7 +357,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		if (from == null)
 			throw new WrongParametersException("unable to find ouput "+output.getName()+" for algorithm instance "+fromAlgoInstance.getName());
 		if (to == null)
-			throw new WrongParametersException("unable to find ouput "+input.getName()+" for algorithm instance "+toAlgoInstance.getName());
+			throw new WrongParametersException("unable to find input "+input.getName()+" for algorithm instance "+toAlgoInstance.getName());
 
 		return connect(from, to);
 	}
@@ -481,6 +481,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	public void checkForRun(WorkflowCheckResult res) {
 		
 		// first, deleguate checking for each result
+		res.messages.infoUser("checking the workflow to ensure it may be ran...", getClass());
 		
 		for (IAlgoInstance subInstance : id2algoInstance.values()) {
 			

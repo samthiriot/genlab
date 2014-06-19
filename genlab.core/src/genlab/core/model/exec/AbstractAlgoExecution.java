@@ -7,15 +7,12 @@ import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
-import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.IInputOutput;
-import genlab.core.model.meta.InputOutput;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;

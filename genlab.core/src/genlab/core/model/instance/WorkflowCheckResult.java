@@ -46,10 +46,8 @@ public class WorkflowCheckResult implements IListOfMessagesListener {
 	}
 	
 	public boolean isReady() {
-		
-		GLLogger.debugTech("Checking the workflow instance "+this, getClass());
-		
-		return highestLevel.compareTo(MessageLevel.WARNING) <= 0;
+				
+		return highestLevel.compareTo(MessageLevel.ERROR) <= 0;
 	}
 	
 }

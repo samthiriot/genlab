@@ -1,13 +1,5 @@
 package genlab.gui.perspectives;
 
-import genlab.gui.views.ConsoleView;
-import genlab.gui.views.ExistingView;
-import genlab.gui.views.MessagesView;
-import genlab.gui.views.MessagesViewGeneral;
-import genlab.gui.views.TasksProgressView;
-import genlab.gui.views.WorkflowView;
-
-import org.eclipse.osgi.service.debug.DebugOptionsListener;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;

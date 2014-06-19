@@ -196,8 +196,12 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 	public void addListener(IComputationProgressSimpleListener listener) {
 		synchronized (listeners) {
 			
-			if (!listeners.contains(listener))
-				listeners.add(listener);
+			if (!listeners.contains(listener)) {
+				if (listener instanceof IComputationProgressListenerSimpleHighPriority) 
+					listeners.addFirst(listener);
+				else
+					listeners.add(listener);
+			}
 		}	
 	}
 		

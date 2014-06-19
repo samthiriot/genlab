@@ -38,60 +38,66 @@ public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecutionO
 	@Override
 	public void run() {
 		
-		// notify start
-		progress.setProgressMade(0);
-		progress.setProgressTotal(1);
-		progress.setComputationState(ComputationState.STARTED);
-		
-		ComputationResult result = new ComputationResult(algoInst, progress, exec.getListOfMessages());
-		setResult(result);
-		
-
-		if (noOutputIsUsed() && !exec.getExecutionForced()) {
+		try { 
+			// notify start
+			progress.setProgressMade(0);
+			progress.setProgressTotal(1);
+			progress.setComputationState(ComputationState.STARTED);
 			
-			result.getMessages().debugUser("nobody is using the result of this computation; it will not be computed at all.", getClass());
-		
-		} else {
-		
-			// decode parameters
+			ComputationResult result = new ComputationResult(algoInst, progress, exec.getListOfMessages());
+			setResult(result);
 			
-			IGraphLibrary lib = new IGraphLibrary();
+	
+			if (noOutputIsUsed() && !exec.getExecutionForced()) {
+				
+				result.getMessages().debugUser("nobody is using the result of this computation; it will not be computed at all.", getClass());
+			
+			} else {
+			
+				// decode parameters
+				
+				IGraphLibrary lib = new IGraphLibrary();
+						
+				IGraphGraph igraphGraph = null;
+						
+				try {
 					
-			IGraphGraph igraphGraph = null;
+					result.getMessages().debugUser("using the igraph native library version "+lib.getVersionString(), getClass());
 					
-			try {
+					// ask the lib to transmit its information as the result of OUR computations
+					lib.setListOfMessages(result.getMessages());
+					
+					// generate
+					igraphGraph = generateGraph(lib, messages);
+					
+					IGenlabGraph genlabGraph = IGraph2GenLabConvertor.getGenlabGraphForIgraph(igraphGraph, exec);
+	
+					result.setResult(AbstractIGraphGenerator.OUTPUT_GRAPH, genlabGraph);
+	
+					
+					progress.setProgressMade(1);
+					progress.setComputationState(ComputationState.FINISHED_OK);
+	
+				} catch (RuntimeException e) {
+					
+					messages.errorTech("error during the igraph call: "+e.getMessage(), getClass(), e);
+					progress.setException(e);
+					progress.setComputationState(ComputationState.FINISHED_FAILURE);
+					//throw new ProgramException("error during the igraph call: "+e.getMessage(), e);
+					
+				} finally {
+					// clear memory
+					lib.clearGraphMemory(igraphGraph);
+					lib.setListOfMessages(null);
+	
+				}
 				
-				result.getMessages().debugUser("using the igraph native library version "+lib.getVersionString(), getClass());
 				
-				// ask the lib to transmit its information as the result of OUR computations
-				lib.setListOfMessages(result.getMessages());
-				
-				// generate
-				igraphGraph = generateGraph(lib, messages);
-				
-				IGenlabGraph genlabGraph = IGraph2GenLabConvertor.getGenlabGraphForIgraph(igraphGraph, exec);
-
-				result.setResult(AbstractIGraphGenerator.OUTPUT_GRAPH, genlabGraph);
-
-				
-				progress.setProgressMade(1);
-				progress.setComputationState(ComputationState.FINISHED_OK);
-
-			} catch (RuntimeException e) {
-				
-				messages.errorTech("error during the igraph call: "+e.getMessage(), getClass(), e);
-				progress.setException(e);
-				progress.setComputationState(ComputationState.FINISHED_FAILURE);
-				//throw new ProgramException("error during the igraph call: "+e.getMessage(), e);
-				
-			} finally {
-				// clear memory
-				lib.clearGraphMemory(igraphGraph);
-				lib.setListOfMessages(null);
-
 			}
-			
-			
+		} catch (RuntimeException e) {
+			messages.errorTech("error during the execution of this generator: "+e.getLocalizedMessage(), getClass(), e);
+			progress.setException(e);
+			progress.setComputationState(ComputationState.FINISHED_FAILURE);
 		}
 		
 	}
@@ -99,11 +105,13 @@ public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecutionO
 	@Override
 	public void kill() {
 		GLLogger.infoUser("sorry, for technical reasons, an igraph execution can not be cancelled", getClass());
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
 	}
 
 	@Override
 	public void cancel() {
 		GLLogger.infoUser("sorry, for technical reasons, an igraph execution can not be cancelled", getClass());
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
 	}
 
 }

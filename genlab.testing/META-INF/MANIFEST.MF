@@ -17,3 +17,6 @@ Require-Bundle: genlab.core;bundle-version="0.0.1",
  genlab.algog.core;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: ext/native/linux/x86/,
+ ext/native/linux/x86_64/,
+ .

@@ -34,9 +34,11 @@ public class GenlabExecution {
 				ListsOfMessages.getGenlabMessages().addAll(checkInfo.messages); // report errors somewhere they can be viewed !
 				
 				if (checkInfo.isReady()) {
-					GLLogger.infoUser("ready :-)", GenlabExecution.class);
+					ListsOfMessages.getGenlabMessages().infoUser("the workflow is ready for execution :-)", GenlabExecution.class);
+					checkInfo.messages.infoUser("the workflow is ready for execution :-)", GenlabExecution.class);
 				} else {
-					GLLogger.errorUser("problem..;", GenlabExecution.class);
+					ListsOfMessages.getGenlabMessages().errorUser("the workflow is not ready for execution: please report to previous errors to solve this issue.", GenlabExecution.class);
+					checkInfo.messages.errorUser("the workflow is not ready for execution: please report to previous errors to solve this issue.", GenlabExecution.class);
 					return;
 				}
 			
@@ -44,6 +46,7 @@ public class GenlabExecution {
 
 				Execution exec = new Execution(r);
 				exec.setExecutionForced(true);
+				exec.getListOfMessages().addAll(checkInfo.messages);
 				exec.getListOfMessages().setFilterIgnoreBelow(MessageLevel.INFO);
 
 				ExecutionHooks.singleton.notifyParentTaskAdded(exec);	// TODO something clean...

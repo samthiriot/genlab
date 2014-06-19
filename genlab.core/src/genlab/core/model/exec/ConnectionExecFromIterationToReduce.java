@@ -49,7 +49,6 @@ public class ConnectionExecFromIterationToReduce extends AbstractConnectionExec<
 			return;
 		}
 		
-		
 		// there should be a value
 		
 		// retrieve the value

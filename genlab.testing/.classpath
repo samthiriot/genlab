@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="ext/native/linux/x86/"/>
+	<classpathentry exported="true" kind="lib" path="ext/native/linux/x86_64/"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="tests">
@@ -7,15 +9,6 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="genlab.testing/ext/native/linux/x86_64"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/genlab.igraph/ext/native/linux/x86_64">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="genlab.igraph/ext/native/linux/x86_64"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/native igraph">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/local00/home/B12772/workspaceJunoRCP/genlab/genlab.igraph/ext/native/linux/x86_64"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="src" path="src/"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

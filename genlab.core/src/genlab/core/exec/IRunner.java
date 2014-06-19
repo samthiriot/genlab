@@ -23,6 +23,12 @@ public interface IRunner extends IComputationProgressSimpleListener {
 	 */
 	public boolean containsTask(IAlgoExecution exec);
 
+	/**
+	 * Returns all the tasks known by this runner
+	 * @return
+	 */
+	public Collection<IAlgoExecution> getAllTasks();
+
 
 	public void cancel();
 	public void kill();

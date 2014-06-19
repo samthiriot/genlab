@@ -1,6 +1,7 @@
 package genlab.gui.views;
 
 import genlab.core.exec.IContainerTask;
+import genlab.core.exec.IRunner;
 import genlab.core.exec.ITask;
 import genlab.core.exec.ITaskLifecycleListener;
 import genlab.core.exec.ITaskManagerListener;
@@ -20,7 +21,6 @@ import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
-import org.eclipse.swt.events.MenuAdapter;
 import org.eclipse.swt.events.MenuEvent;
 import org.eclipse.swt.events.MenuListener;
 import org.eclipse.swt.events.SelectionEvent;
@@ -36,7 +36,6 @@ import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.internal.ide.dialogs.CleanDialog;
 import org.eclipse.ui.part.ViewPart;
 
 /**
@@ -190,9 +189,22 @@ public class TasksProgressView
 		return display;
 	}
 	
+	/**
+	 * The widget displays tasks based on events: it listens the manager and 
+	 * discovers new tasks thanks to events. But at the original creation,
+	 * it has to discover the tasks which may already be runnning.
+	 */
+	protected void loadTasksAlreadyRunning() {
+		for (IRunner runner: TasksManager.singleton.getRunners()) {
+			for (IAlgoExecution exec: runner.getAllTasks()) {
+				addTaskToManage(exec);		
+			}
+		}
+	}
+	
 	@Override
 	public void createPartControl(Composite parent) {
-		
+				
 		display = parent.getDisplay();
 		
 		treeWidget = new Tree(parent, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -274,6 +286,8 @@ public class TasksProgressView
 			}
 		});
 
+		// discover tasks which are already running
+		loadTasksAlreadyRunning();
 	}
 
 	@Override
@@ -587,8 +601,7 @@ public class TasksProgressView
 		
 	}
 
-	private void manageTaskChanged(ITask task) {
-
+	private void addTaskToManage(ITask task) {
 		//GLLogger.debugTech("a task was added: "+task, getClass());
 		synchronized (tasksToUpdate) {
 			tasksToUpdate.add(task);	
@@ -601,7 +614,12 @@ public class TasksProgressView
 			}
 		}
 		//thread.interrupt();
-		
+				
+	}
+	
+	private void manageTaskChanged(ITask task) {
+
+		addTaskToManage(task);
 	}
 
 	@Override

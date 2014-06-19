@@ -99,17 +99,6 @@
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="genlab.gui.perspectives.WorkflowPerspective">
-         <viewShortcut
-               id="genlab.graphiti.views.WorkflowGraphityView">
-         </viewShortcut>
-         <view
-               id="genlab.graphiti.views.WorkflowGraphityView"
-               minimized="false"
-               ratio="0.8"
-               relationship="stack"
-               relative="org.eclipse.ui.editorss"
-               visible="true">
-         </view>
       </perspectiveExtension>
    </extension>
 

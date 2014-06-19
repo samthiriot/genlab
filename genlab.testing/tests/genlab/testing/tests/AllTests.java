@@ -16,6 +16,9 @@ import org.junit.runners.Suite.SuiteClasses;
 			
 			// tests from other plugins
 			
+			// genetic algos
+			genlab.algog.testing.TestAlgoGNetwork.class,
+
 			// genlab.igraph.AllTests.class,
 			
 			

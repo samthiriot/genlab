@@ -62,9 +62,16 @@ public class IGraphLibrary {
 	 */
 	public IGraphLibrary() {
 
+		try {
+			
 		if (versionString == null)
 			retrieveVersion();
-		
+		} catch (UnsatisfiedLinkError e) {
+			final String errorMsg = "the igraph library was not correctingly started. Probably the native igraph library can not be found, or it is not compliant with the current execution environment (platform, OS...)"; 
+			GLLogger.errorTech(errorMsg, getClass(), e); 
+			e.printStackTrace();
+			throw new ProgramException(errorMsg, e);
+		}
 		// define a seed for the random generator
 		//Pointer p = IGraphRawLibrary.igraph_rng_default();
 		//IGraphRawLibrary.igraph_rng_seed(p, new NativeLong((long)Math.round(Math.random()*65000)));

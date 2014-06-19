@@ -1,9 +1,13 @@
 package genlab.gui;
 
+import genlab.gui.perspectives.RunPerspective;
+import genlab.gui.perspectives.WorkflowPerspective;
 import genlab.quality.TestResponsivity;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
@@ -45,7 +49,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
     	// try again (will have no impact if it worked the first time)
 		VisualResources.initVisualResource(Display.getCurrent().getActiveShell());
-    	        
+    
+		
     }
     
 }

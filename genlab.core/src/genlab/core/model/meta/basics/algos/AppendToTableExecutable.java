@@ -159,6 +159,7 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution impleme
 		if (emptyColumns.isEmpty()) {
 			messages.debugTech("all columns are already availabe.", getClass());
 			return;
+		} else {
 		}
 		messages.debugTech("attempting to fill columns: "+emptyColumns.toString(), getClass());
 		

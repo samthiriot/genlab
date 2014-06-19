@@ -2,7 +2,7 @@ package genlab.core.model.exec;
 
 import genlab.core.model.instance.IConnection;
 
-public interface IConnectionExecution extends IComputationProgressSimpleListener {
+public interface IConnectionExecution extends IComputationProgressListenerSimpleHighPriority {
 
 	/**
 	 * Used by the target algo exec to retrieve the value

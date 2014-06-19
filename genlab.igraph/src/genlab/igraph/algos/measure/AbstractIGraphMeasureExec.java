@@ -94,11 +94,13 @@ public abstract class AbstractIGraphMeasureExec extends AbstractAlgoExecutionOne
 	@Override
 	public void kill() {
 		//GLLogger.infoUser("sorry, for technical reasons, an igraph execution can not be cancelled", getClass());
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
 	}
 
 	@Override
 	public void cancel() {
 		//GLLogger.infoUser("sorry, for technical reasons, an igraph execution can not be cancelled", getClass());
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
 	}
 
 }

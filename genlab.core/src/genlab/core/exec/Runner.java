@@ -58,20 +58,20 @@ public class Runner extends Thread implements IRunner {
 	/**
 	 * Acts as the locker for: all, roots, done, ready, running, notReady
 	 */
-	final Set<IAlgoExecution> all = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
+	final HashSet<IAlgoExecution> all = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
 	
-	final Set<ICleanableTask> cleanable = new HashSet<ICleanableTask>(START_TASKS_SIZE);
+	final HashSet<ICleanableTask> cleanable = new HashSet<ICleanableTask>(START_TASKS_SIZE);
 
 
-	final Set<IAlgoExecution> roots = new HashSet<IAlgoExecution>();;
+	final HashSet<IAlgoExecution> roots = new HashSet<IAlgoExecution>();;
 
-	final Set<IAlgoExecution> done = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
-	final Set<IAlgoExecution> ready = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
-	final Set<IAlgoExecution> running = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
-	final Set<IAlgoExecution> notReady = new HashSet<IAlgoExecution>(START_TASKS_SIZE);	
+	final HashSet<IAlgoExecution> done = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
+	final HashSet<IAlgoExecution> ready = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
+	final HashSet<IAlgoExecution> running = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
+	final HashSet<IAlgoExecution> notReady = new HashSet<IAlgoExecution>(START_TASKS_SIZE);	
 	
 
-	final Set<ITasksDynamicProducer> tasksProducers = new HashSet<ITasksDynamicProducer>();
+	final HashSet<ITasksDynamicProducer> tasksProducers = new HashSet<ITasksDynamicProducer>();
 	
 	
 
@@ -135,6 +135,9 @@ public class Runner extends Thread implements IRunner {
 			t.start();
 			threadsPoolTaskNoThread.add(t);
 		}
+		
+		// notify the work of our existence
+		TasksManager.singleton.addRunner(this);
 	}
 	
 	
@@ -719,6 +722,14 @@ public class Runner extends Thread implements IRunner {
 	public boolean containsTask(IAlgoExecution exec) {
 		synchronized (all) {
 			return all.contains(exec);	
+		} 
+	}
+
+
+	@Override
+	public Collection<IAlgoExecution> getAllTasks() {
+		synchronized (all) {
+			return (Collection<IAlgoExecution>) all.clone();
 		} 
 	}
 	
