@@ -206,6 +206,7 @@ public class ExistingAlgoCategories {
 		declareCategory(EXPLORATION_GENETIC_ALGOS);
 		declareCategory(CASTING);
 		declareCategory(DISPLAY);
+		declareCategory(DISPLAY_EXPLORATION_GENETIC_ALGOS);
 		declareCategory(LOOPS);
 		declareCategory(NOISE);
 		declareCategory(NOISE_GRAPH);
