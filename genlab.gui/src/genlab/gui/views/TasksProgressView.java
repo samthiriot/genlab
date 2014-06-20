@@ -587,7 +587,10 @@ public class TasksProgressView
 				updateWidget(t);
 			} catch (RuntimeException e) {
 				// log ? 
-				GLLogger.warnTech("catched an error while updating a progress: "+e.getMessage(), getClass(), e);
+				GLLogger.warnTech("catched an error while updating a progress: "+e.getMessage()+" for task "+t, getClass(), e);
+				/*synchronized (tasksToUpdate) {
+					tasksToUpdate.remove(t);
+				}*/
 			}
 		}
 

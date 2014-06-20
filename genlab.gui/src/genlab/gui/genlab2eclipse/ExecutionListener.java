@@ -4,6 +4,7 @@ import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ExecutionHooks;
 import genlab.core.model.exec.ITasksListener;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.perspectives.OutputsGUIManagement;
 import genlab.gui.views.MessagesView;
 
 import org.eclipse.swt.widgets.Display;
@@ -36,12 +37,16 @@ public class ExecutionListener implements ITasksListener {
 					IWorkbenchPage.VIEW_ACTIVATE
 					);
 			
+			// register this view as an output of the exec
+			OutputsGUIManagement.singleton.registerOutputGUI(view, task);
+			
 			// transmit info to enable the view to load what is required
 			WorkbenchPart v = (WorkbenchPart)view;
 			v.setPartProperty(
 					MessagesView.PROPERTY_MESSAGES_ID, 
 					task.getId()
 					);
+	
 			
 		} catch (PartInitException e) {
 			GLLogger.warnUser("error while attempting to open the console view: "+e.getLocalizedMessage(), getClass());

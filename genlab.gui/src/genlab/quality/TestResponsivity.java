@@ -1,5 +1,9 @@
 package genlab.quality;
 
+import genlab.core.GenLab;
+import genlab.core.usermachineinteraction.GLLogger;
+import genlab.core.usermachineinteraction.ListsOfMessages;
+
 import org.eclipse.swt.widgets.Display;
 
 /**
@@ -42,6 +46,8 @@ public class TestResponsivity extends Thread {
 				if (DISPLAY_ALERTS_STDERR && (timeBeforeRun >= THRESHOLD_ALERT_PEAK)) {
 					System.err.println("BAD RESPONSIVITY DETECTED: delay before reaching the SWT thread: "+timeBeforeRun+" ms");
 					System.err.println("something is overloading the SWT thread. This is not a normal user experience. Please feel free to open a bug or download a newer version of the soft.");
+					ListsOfMessages.getGenlabMessages().warnTech("BAD RESPONSIVITY DETECTED: delay before reaching the SWT thread: "+timeBeforeRun+" ms", getClass());
+					ListsOfMessages.getGenlabMessages().infoTech("something is overloading the SWT thread. This is not a normal user experience. Please feel free to open a bug or download a newer version of the soft.", getClass());
 				}
 				submitted = false;
 			}

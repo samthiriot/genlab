@@ -1,6 +1,7 @@
 package genlab.core.persistence;
 
 import genlab.core.commons.FileUtils;
+import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.Connection;
 import genlab.core.model.instance.GenlabWorkflowInstance;
@@ -16,6 +17,7 @@ import genlab.core.usermachineinteraction.ListsOfMessages;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -103,7 +105,12 @@ public class GenlabPersistence {
 		}
 		
 		// search the corresponding project
-		IGenlabProject project = filename2project.get(testedFile.getAbsolutePath());
+		IGenlabProject project;
+		try {
+			project = filename2project.get(testedFile.getCanonicalPath());
+		} catch (IOException e) {
+			throw new ProgramException("error with canonical path", e);
+		}
 		if (project == null) {
 			GLLogger.debugTech("this project was not yet loaded, will load it "+parentFile, getClass());
 			project = readProject(parentFile.getAbsolutePath());
@@ -237,8 +244,19 @@ public class GenlabPersistence {
 		}
 	}
 	
-	public IGenlabProject readProject(String baseDirectory) {
+	private String ensurePathCanonical(String pathRaw) {
+		File pathF = new File(pathRaw);
+		try {
+			return pathF.getCanonicalPath();
+		} catch (IOException e1) {
+			throw new ProgramException("error while attempting to clean path "+pathRaw, e1);
+		}
+	}
 	
+	public IGenlabProject readProject(String baseDirectoryRaw) {
+	
+		String baseDirectory = ensurePathCanonical(baseDirectoryRaw);
+				
 		// first attempt to find it already loaded
 		GenlabProject project = filename2project.get(baseDirectory);
 		if (project != null) {

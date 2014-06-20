@@ -284,6 +284,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 */
 	protected void mutatePopulation(AGenome genome, Object[][] novelPopulation, Map<AGene<?>,Integer> statsGene2countMutations) {
 		
+		int countMutations = 0;
+		
 		for (int i=0; i<novelPopulation.length; i++) {
 			
 			
@@ -303,12 +305,15 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 						count = 0;
 					} 
 					statsGene2countMutations.put(genes[j], count+1);
+					countMutations++;
 				}
 				
 			}
 			
 			
 		}
+		
+		messages.infoTech("mutations: "+countMutations, getClass());
 	}
 	
 	/**

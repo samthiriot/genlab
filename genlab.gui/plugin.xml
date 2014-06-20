@@ -393,9 +393,31 @@
       </docalgo>
    </extension>
    <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="genlab.gui.actionseats.run"
+            label="run actions"
+            visible="true">
+         <action
+               accelerator="r"
+               class="org.eclipse.debug.internal.ui.actions.RunToolbarAction"
+               icon="icons/run16x16.png"
+               id="genlab.gui.actions.run"
+               label="run"
+               pulldown="true"
+               state="true"
+               style="pulldown"
+               toolbarPath="main/Run">
+         </action>
+      </actionSet>
+   </extension>
+   <extension
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension
             targetID="genlab.gui.perspectives.WorkflowPerspective">
+         <actionSet
+               id="genlab.gui.actionseats.run">
+         </actionSet>
          <newWizardShortcut
                id="genlab.gui.wizards.newworkflow">
          </newWizardShortcut>
@@ -464,6 +486,9 @@
       </perspectiveExtension>
       <perspectiveExtension
             targetID="genlab.gui.perspectives.RunPerspective">
+         <actionSet
+               id="genlab.gui.actionseats.run">
+         </actionSet>
          <perspectiveShortcut
                id="genlab.gui.perspectives.WorkflowPerspective">
          </perspectiveShortcut>
@@ -531,6 +556,112 @@
                visible="false">
          </view>
       </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="genlab.gui.launchconfigurations.GenlabLaunchConfiguration"
+            delegateDescription="Execute this workflow within Genlab"
+            delegateName="Genlab launcher"
+            id="genlab.gui.launchconfigurations.workflow"
+            modes="run"
+            name="Genlab Workflow"
+            public="true">
+         <fileExtension
+               default="true"
+               extension="*.glw">
+         </fileExtension>
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="genlab.gui.launchconfigurations.workflow"
+            icon="icons/run16x16.png"
+            id="genlab.gui.launchconfigurations.workflow.img">
+      </launchConfigurationTypeImage>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchDelegates">
+      <launchDelegate
+            delegate="genlab.gui.launchconfigurations.GenlabLaunchConfiguration"
+            id="genlab.gui.launchconfigurations.GenlabLaunchConfiguration"
+            name="Genlab launch"
+            type="genlab.gui.launchconfigurations.workflow">
+      </launchDelegate>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="genlab.gui.launchconfigurations.GenlabWorkflowLaunchConfigurationTabGroup"
+            description="genlab workflow"
+            id="genlab.gui.launchconfigurations.tabgroup"
+            type="genlab.gui.launchconfigurations.workflow">
+         <launchMode
+               mode="run"
+               perspective="genlab.gui.perspectives.RunPerspective">
+         </launchMode>
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="genlab.gui.launchconfigurations.WorkspaceRunShortcut"
+            description="run as a genlab workflow "
+            icon="icons/run16x16.png"
+            id="genlab.gui.launchconfigurations.workflow.shortcut"
+            label="run as workflow"
+            modes="run">
+         <contextualLaunch>
+            <contextLabel
+                  label="workflow"
+                  mode="run">
+            </contextLabel>
+            <enablement>
+               <with
+                     variable="selection">
+                  <count
+                        value="1">
+                  </count>
+                  <iterate
+                        ifEmpty="false"
+                        operator="or">
+                     <or>
+                        <adapt
+                              type="org.eclipse.core.resources.IFile">
+                           <test
+                                 property="org.eclipse.debug.ui.matchesPattern"
+                                 value="*.glw">
+                           </test>
+                        </adapt>
+                        <instanceof
+                              value="genlab.gui.editors.IWorkflowEditor">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </with>
+            </enablement></contextualLaunch>
+         <configurationType
+               id="genlab.gui.launchconfigurations.workflow">
+         </configurationType>
+      </shortcut>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchGroups">
+      <launchGroup
+            bannerImage="icons/run16x16.png"
+            id="genlab.gui.launchconfigurations.workflow.launchgroup"
+            image="icons/run16x16.png"
+            label="Genlab Workflow"
+            mode="run">
+      </launchGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.processFactories">
+      <processFactory
+            class="genlab.gui.launchconfigurations.GenlabWorkflowLaunchProcessFactory"
+            id="genlab.gui.launchconfigurations.processfactory">
+      </processFactory>
    </extension>
 
 </plugin>

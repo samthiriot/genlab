@@ -1,16 +1,26 @@
 package genlab.gui;
 
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 
+import org.eclipse.core.internal.resources.File;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ContentViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
+import org.eclipse.ui.dialogs.ISelectionStatusValidator;
+import org.eclipse.ui.model.BaseWorkbenchContentProvider;
+import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.navigator.CommonNavigator;
 
 public class Utils {
@@ -110,6 +120,110 @@ public class Utils {
 		}
 		cn.selectReveal(new StructuredSelection(elem));
 		
+	}
+	
+	/**
+	 * Displays a dialog which enables the selection of a workflow in the workspace.
+	 * @return
+	 */
+	public static File dialogSelectWorkflow(Shell shell, IProject project, String title, String message) {
+
+		ElementTreeSelectionDialog elementSelector = new ElementTreeSelectionDialog(
+				shell, 
+				new WorkbenchLabelProvider() ,
+				new BaseWorkbenchContentProvider()
+				);
+		elementSelector.addFilter(new ProjectsAndWorkflowsFilter());
+		elementSelector.setInput(project);
+		elementSelector.setTitle(title);
+		elementSelector.setMessage(message);
+		elementSelector.setAllowMultiple(false);
+		//elementSelector.setImage(image);
+		elementSelector.setValidator(new ISelectionStatusValidator() {
+			
+			@Override
+			public IStatus validate(Object[] selection) {
+				
+				if ( 
+						(selection.length != 1)
+						|| 
+						!(selection[0] instanceof File)
+						|| 
+						(!GenLab2eclipseUtils.isGenlabWorkflow((File)selection[0]))
+						)
+					return new Status(
+							IStatus.ERROR,
+							Activator.PLUGIN_ID,
+                            "please select a genlab workflow"
+							);
+				else
+					return new Status(IStatus.OK, Activator.PLUGIN_ID, "");
+					
+			}
+		});
+		elementSelector.open();
+		
+		if (elementSelector.getReturnCode() == ElementTreeSelectionDialog.OK){
+			File f = (File) elementSelector.getFirstResult();
+			//return f.getLocation().toOSString();
+			return f;
+		}
+		return null;
+		//else {
+		//	return null;
+		//}
+	}
+	
+	/**
+	 * Displays a dialog which enables the selection of a workflow in the workspace.
+	 * @return
+	 */
+	public static IProject dialogSelectProject(Shell shell, String title, String message) {
+
+		ElementTreeSelectionDialog elementSelector = new ElementTreeSelectionDialog(
+				shell, 
+				new WorkbenchLabelProvider() ,
+				new BaseWorkbenchContentProvider()
+				);
+		elementSelector.addFilter(new ProjectsFilter());
+		elementSelector.setInput(ResourcesPlugin.getWorkspace().getRoot());
+		elementSelector.setTitle(title);
+		elementSelector.setMessage(message);
+		elementSelector.setAllowMultiple(false);
+		//elementSelector.setImage(image);
+		elementSelector.setValidator(new ISelectionStatusValidator() {
+			
+			@Override
+			public IStatus validate(Object[] selection) {
+				
+				if ( 
+						(selection.length != 1)
+						|| 
+						!(selection[0] instanceof IProject)
+						|| 
+						(!GenLab2eclipseUtils.isGenlabProject((IProject)selection[0]))
+						)
+					return new Status(
+							IStatus.ERROR,
+							Activator.PLUGIN_ID,
+                            "please select a Genlab project"
+							);
+				else
+					return new Status(IStatus.OK, Activator.PLUGIN_ID, "");
+					
+			}
+		});
+		elementSelector.open();
+		
+		if (elementSelector.getReturnCode() == ElementTreeSelectionDialog.OK){
+			IProject f = (IProject) elementSelector.getFirstResult();
+			//return f.getLocation().toOSString();
+			return f;
+		}
+		return null;
+		//else {
+		//	return null;
+		//}
 	}
 	
 	private Utils() {

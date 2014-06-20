@@ -5,19 +5,33 @@ import genlab.core.model.instance.WorkflowHooks;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.usermachineinteraction.GLLogger;
 
+import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 
-public class Activator implements BundleActivator {
+public class Activator extends Plugin implements BundleActivator {
 
 	public static BundleContext context;
 
+	// The shared instance
+	private static Activator plugin;
+	
+	
 	static BundleContext getContext() {
 		return context;
 	}
 
+	/**
+	 * Returns the shared instance
+	 *
+	 * @return the shared instance
+	 */
+	public static Activator getDefault() {
+		return plugin;
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
@@ -26,6 +40,9 @@ public class Activator implements BundleActivator {
 		
 		Activator.context = bundleContext;
 		GLLogger.infoTech("initializing the genlab core...", getClass());
+		
+		plugin = this;
+
 		
 		// once we will have been started, we will be able to init things
 		bundleContext.addBundleListener(new BundleListener() {
@@ -60,7 +77,8 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
-		
+		plugin = null;
+
 	}
 
 }

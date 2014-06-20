@@ -22,7 +22,6 @@ import org.eclipse.ui.part.ViewPart;
  */
 public abstract class AbstractViewOpenedByAlgo extends ViewPart implements IPropertyChangeListener, IExecutionView, IViewAttachedToAlgoInstance  {
 
-	public static final String PROPERTY_ALGOVIEW_EXEC = "algoview_id";
 	
 	protected IExecution execution = null;
 	
@@ -32,7 +31,6 @@ public abstract class AbstractViewOpenedByAlgo extends ViewPart implements IProp
 	
 	public AbstractViewOpenedByAlgo() {
 		addPartPropertyListener(this);
-		
 	}
 		
 	protected abstract String getName(AbstractOpenViewAlgoExec exec);
@@ -49,9 +47,9 @@ public abstract class AbstractViewOpenedByAlgo extends ViewPart implements IProp
 		
 		GLLogger.traceTech("received property: "+event.getProperty(), getClass());
 		
-		if (event.getProperty().equals(PROPERTY_ALGOVIEW_EXEC)) {
+		if (event.getProperty().equals(OutputsGUIManagement.PROPERTY_ALGOVIEW_EXEC)) {
 			
-			AbstractOpenViewAlgoExec exec = AbstractOpenViewAlgoExec.getViewExecForId((String) event.getNewValue());
+			AbstractOpenViewAlgoExec exec = OutputsGUIManagement.singleton.getViewExecForId((String) event.getNewValue());
 			if (exec == null) {
 				GLLogger.warnTech("unable to retrieve the content to display for exec: "+event.getNewValue(), getClass());
 				return;
@@ -62,10 +60,7 @@ public abstract class AbstractViewOpenedByAlgo extends ViewPart implements IProp
 			
 			setPartName(getName(exec));
 			
-			this.execution = exec.getExecution();
-			this.messages = exec.getExecution().getListOfMessages();
-			this.algoInstance = exec.getAlgoInstance();
-			OutputsGUIManagement.singleton.registerOutputGUI(this);
+			setExecution(exec);
 			
 		}
 	}
@@ -75,9 +70,22 @@ public abstract class AbstractViewOpenedByAlgo extends ViewPart implements IProp
 		return execution;
 	}
 
+	public void setExecution(AbstractOpenViewAlgoExec exec) {
+		this.execution = exec.getExecution();
+		this.messages = exec.getExecution().getListOfMessages();
+		this.algoInstance = exec.getAlgoInstance();
+		OutputsGUIManagement.singleton.registerOutputGUI(this);
+
+	}
 	@Override
 	public IAlgoInstance getAlgoInstance() {
 		return algoInstance;
+	}
+
+	@Override
+	public void dispose() {
+		OutputsGUIManagement.singleton.unregisterOutputGUI(this);
+		super.dispose();
 	}
 	
 

@@ -1,5 +1,6 @@
 package genlab.core.model.meta.basics.algos;
 
+import genlab.core.Activator;
 import genlab.core.commons.FileUtils;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
@@ -23,6 +24,8 @@ import genlab.core.parameters.FileParameter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+
+import org.osgi.framework.Bundle;
 
 public class WriteTableCSV extends BasicAlgo {
 
@@ -53,7 +56,7 @@ public class WriteTableCSV extends BasicAlgo {
 				"write table as CSV", 
 				"writes a table into a file as a CSV file", 
 				ExistingAlgoCategories.WRITER, 
-				null,
+				"/icons/writeToFile"+IMAGE_PATH_PLACEHOLDER_SIZE+".png",
 				null
 				);
 		
@@ -182,6 +185,12 @@ public class WriteTableCSV extends BasicAlgo {
 				return 5000;
 			}
 		};
+	}
+
+
+	@Override
+	public Bundle getBundle() {
+		return Activator.getDefault().getBundle();
 	}
 
 }

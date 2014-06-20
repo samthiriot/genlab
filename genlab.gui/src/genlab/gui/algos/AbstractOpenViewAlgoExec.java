@@ -12,6 +12,7 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.perspectives.OutputsGUIManagement;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
 
 import java.util.HashMap;
@@ -34,21 +35,7 @@ import org.eclipse.ui.part.WorkbenchPart;
  */
 public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOneshotOrReduce {
 
-	/**
-	 * Associates ids of these views with the corresponding instance.
-	 * This enables views opened to search for their counterpart.
-	 * 
-	 */
-	private static Map<String,AbstractOpenViewAlgoExec> id2algoView = new HashMap<String, AbstractOpenViewAlgoExec>(20);
 
-	public static AbstractOpenViewAlgoExec getViewExecForId(String id) {
-		
-		GLLogger.debugTech("attempting to provide an execview for id: "+id, GraphicalConsoleExec.class);
-		
-		AbstractOpenViewAlgoExec res = id2algoView.get(id);
-		
-		return res;
-	}
 	
 	protected final String id;
 	
@@ -101,9 +88,11 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 			
 			// transmit info to enable the view to load what is required
 			WorkbenchPart v = (WorkbenchPart)view;
-			id2algoView.put(getId(), this);
+			
+			OutputsGUIManagement.singleton.setViewExecForId(getId(), this);
+
 			v.setPartProperty(
-					AbstractViewOpenedByAlgo.PROPERTY_ALGOVIEW_EXEC, 
+					OutputsGUIManagement.PROPERTY_ALGOVIEW_EXEC, 
 					getId()
 					);
 			
@@ -200,9 +189,8 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 			getProgress().setComputationState(ComputationState.FINISHED_FAILURE);
 			
 		} finally {
-			// now deregister this console (do enable its garbage collecting)
-			id2algoView.remove(getId());
-
+			// now deregister this view (do enable its garbage collecting)
+			
 		}
 	}
 
