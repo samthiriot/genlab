@@ -496,22 +496,21 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 				@Override
 				public String getToolTipText(Object element) {
 					ITextMessage message = (ITextMessage)element;
-					if (message.getException() != null) {
-						StringWriter sw = new StringWriter();
-						PrintWriter pw = new PrintWriter(sw);
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					pw.println(message.getMessage());
+					if (message.getException() != null)
 						message.getException().printStackTrace(pw);
-						return sw.toString(); 
-					} else
-						return null;
+					return sw.toString();
 				}
 				
 
 				public int getToolTipDisplayDelayTime(Object object) {
-					return 500;
+					return 100;
 				}
 
 				public int getToolTipTimeDisplayed(Object object) {
-					return 10000;
+					return 40000;
 				}
 
 				  @Override

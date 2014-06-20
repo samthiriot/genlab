@@ -285,6 +285,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	protected void mutatePopulation(AGenome genome, Object[][] novelPopulation, Map<AGene<?>,Integer> statsGene2countMutations) {
 		
 		int countMutations = 0;
+		StringBuffer sb = new StringBuffer();
 		
 		for (int i=0; i<novelPopulation.length; i++) {
 			
@@ -297,8 +298,11 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					Object[] individual = novelPopulation[i];
 					String debugIndivBefore = Arrays.toString(individual);
 					individual[j] = genes[j].mutate(uniform, individual[j]);
-					System.err.println("mutate individual "+i+": "+debugIndivBefore +" => "+Arrays.toString(individual));
-					
+					sb.append("mutate individual ").append(i)
+						.append(": ").append(debugIndivBefore)
+						.append(" => ").append(Arrays.toString(individual))
+						.append("\n")
+						;
 					// stats on mutation
 					Integer count = statsGene2countMutations.get(genes[j]);
 					if (count == null) {
@@ -313,7 +317,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			
 		}
 		
-		messages.infoTech("mutations: "+countMutations, getClass());
+		messages.infoTech(countMutations+" mutations: "+sb.toString(), getClass());
 	}
 	
 	/**
@@ -667,6 +671,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		
 		List<AnIndividual> selectedPopIndex = new LinkedList<AnIndividual>(indivs);
 
+		StringBuffer sb = new StringBuffer();
+		
 		while (novelPopulationSize < popSize) {
 		
 			// randomly select individual 1
@@ -685,11 +691,18 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			if (genome.crossoverProbability == 1.0 || uniform.nextDoubleFromTo(0.0, 1.0) <= genome.crossoverProbability) {
 				// TODO use a parameter for crossover method
 				Object[][] novelIndividuals = crossoverArithmetic(genome, indiv1, indiv2);
-				String msgBefore = "crossover: "+Arrays.toString(indiv1)+" and "+Arrays.toString(indiv2)+" => ";
+				
+				sb.append("crossover: ")
+					.append(Arrays.toString(indiv1))
+					.append(" and ")
+					.append(Arrays.toString(indiv2))
+					.append(" => ");
+				
 				indiv1 = novelIndividuals[0];
 				indiv2 = novelIndividuals[1];
-				System.err.println(msgBefore+Arrays.toString(indiv1));
-				System.err.println(msgBefore+Arrays.toString(indiv2));
+				
+				sb.append(Arrays.toString(indiv1)).append(" and ").append(Arrays.toString(indiv2));
+				sb.append("\n");
 			}
 			
 			// add these individuals to the population (if the population is not already filled)
@@ -702,6 +715,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			
 			
 		}
+		
+		messages.infoUser("mutations : "+sb.toString(), getClass());
 
 		return novelPopulation;
 	}

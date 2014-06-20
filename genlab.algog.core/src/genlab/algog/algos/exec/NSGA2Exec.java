@@ -123,6 +123,7 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		}
 		
 		messages.infoUser("for generation "+iterationsMade+", the Pareto front contains "+currentFront.size()+": "+currentFront.toString(), getClass());
+		
 		System.err.println("first domination front: "+currentFront.toString());
 		
 		// save the first domination front
