@@ -171,17 +171,48 @@ public class TasksProgressView
 	@Override
 	public void dispose() {
 		
+		
 		thread.cancel();
 		
 		TasksManager.singleton.removeListener(this);
 		
-		treeWidget.dispose();
 		
+		// dispose the images
 		for (Image img : algo2image.values()) {
-			img.dispose();
+			try {
+				img.dispose();
+			} catch (RuntimeException e) {
+			}		
 		}
 		algo2image.clear();
-
+		
+		// dispose task widgets
+		for (TreeEditor editor: task2editor.values()) {
+			try {
+				editor.dispose();
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+			}
+		}
+		for (ProgressBar bar: task2progress.values()) {
+			try {
+				bar.dispose();
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+			}
+		}
+		for (TreeItem item: task2item.values()) {
+			try {
+				item.dispose();
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		// dispose the widgets
+		treeWidget.dispose();
+		
+		
 		super.dispose();
 	}
 
@@ -430,9 +461,8 @@ public class TasksProgressView
 		// update its state ? 
 		final ComputationState state = t.getProgress().getComputationState();
 		if (state == null) {
-			System.err.println("******************************** NULL state ???");
 			tasksDisplayedNotStopped.remove(t);
-
+			clear(t);
 			return; // this should never happen. In practice, sometimes a task was removed but this is not yet obvious.
 		}
 		
@@ -487,6 +517,7 @@ public class TasksProgressView
 					pb.setSelection((int)Math.floor(t.getProgress().getProgressPercent()));
 				} catch (NullPointerException e) {
 					// ignore it
+					clear(t);
 				}
 			} else if (pb != null) {
 				pb.setVisible(false);
