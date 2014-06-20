@@ -12,7 +12,7 @@ import org.eclipse.jface.viewers.ViewerFilter;
  * A filter usable with a content provider which displays only
  * genlab projects and workflow files.
  * 
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public class ProjectsAndWorkflowsFilter extends ViewerFilter {

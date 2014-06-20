@@ -435,19 +435,23 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		
 		// declare columns for each possible gene
 		Map<AGenome,String[]> genome2geneColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
+		Map<String,String> tableMetadataGenes = new HashMap<String,String>();
+
 		for (AGenome currentGenome: genome2fitnessOutput.keySet()) {
-			
+						
 			String[] names = new String[currentGenome.getGenes().length];
 			for (int j=0; j<names.length; j++) {
 			
 				names[j] = "genes "+currentGenome.name+" / "+currentGenome.getGenes()[j].name;
 				tab.declareColumn(names[j]);
-		
+				tableMetadataGenes.put(currentGenome.name+" / "+currentGenome.getGenes()[j].name, names[j]);
 			}
 			
 			genome2geneColumns.put(currentGenome, names);
 			
 		}
+		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GENES2VALUES, tableMetadataGenes);
+
 		
 		for (Integer iterationId : generation2paretoFront.keySet()) {
 			

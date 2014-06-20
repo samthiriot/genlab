@@ -420,8 +420,9 @@ public class Runner extends Thread implements IRunner {
 					
 			Iterator<ICleanableTask> itSub = cleanable.iterator();
 			while (itSub.hasNext()) {
+				ICleanableTask sub = itSub.next();
+
 				try {
-					ICleanableTask sub = itSub.next();
 					
 					// sometimes we attempt to clean the tasks a bit too quickly
 					// just don't.
@@ -448,6 +449,7 @@ public class Runner extends Thread implements IRunner {
 				} catch (RuntimeException e) {
 					// don't care about cleaning
 					messagesRun.warnTech("exception while attempting to clean a task", getClass());
+					System.err.println("error when cleaning task "+sub);
 					e.printStackTrace();
 				}
 			}

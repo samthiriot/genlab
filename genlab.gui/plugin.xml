@@ -445,7 +445,7 @@
                moveable="true"
                relationship="stack"
                relative="genlab.gui.perspectives.WorkflowPerspective.folders.bottom"
-               showTitle="true"
+               showTitle="false"
                standalone="false"
                visible="true">
          </view>
@@ -457,7 +457,7 @@
                id="genlab.gui.views.AlgoInfoView"
                minimized="false"
                relationship="stack"
-               relative="genlab.gui.perspectives.WorkflowPerspective.folders.right"
+               relative="genlab.gui.perspectives.WorkflowPerspective.folders.left"
                visible="true">
          </view>
          <view

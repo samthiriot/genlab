@@ -5,14 +5,11 @@ import genlab.core.commons.WrongParametersException;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IParametersListener;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
+import genlab.gui.VisualResources;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Rectangle;
-import java.awt.Shape;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,34 +19,21 @@ import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.annotations.XYLineAnnotation;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
-import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.plot.SpiderWebPlot;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.RectangleEdge;
-import org.jfree.util.ShapeUtilities;
 
 public class ViewAlgogRadarTable extends AbstractViewOpenedByAlgo implements IParametersListener {
 
@@ -61,6 +45,7 @@ public class ViewAlgogRadarTable extends AbstractViewOpenedByAlgo implements IPa
 	protected Map<Integer, CategoryDataset> individualIdx2dataset = new HashMap<Integer, CategoryDataset>();
 	protected Map<Integer, JFreeChart> individualIdx2chart = new HashMap<Integer, JFreeChart>();
 	protected Map<Integer, ChartComposite> individualIdx2compositeChart = new HashMap<Integer, ChartComposite>();
+	protected Map<Integer, Composite> individualIdx2hostChart = new HashMap<Integer, Composite>();
 
 	private FormToolkit toolkit;
 	private ScrolledForm form;
@@ -69,8 +54,8 @@ public class ViewAlgogRadarTable extends AbstractViewOpenedByAlgo implements IPa
 	private Composite compositeCharts;
 	private GridLayout gridLayoutCompositeCharts;
 	
-	final int preferedWidth = 300;
-	final int preferedHeight = 300;
+	final int preferedWidth = 350;
+	final int preferedHeight = 200;
 		
 	public ViewAlgogRadarTable() {
 		
@@ -204,8 +189,12 @@ public class ViewAlgogRadarTable extends AbstractViewOpenedByAlgo implements IPa
 		// add in a composite
 		messages.traceTech("init the chart composite for individual "+displayIndividualId+"...", getClass());
 
+		Composite compositeHost = toolkit.createComposite(compositeCharts);
+		individualIdx2hostChart.put(rowId, compositeHost);
+		compositeHost.setLayout(new GridLayout(1, false));
+		
 		ChartComposite compositeChart = new ChartComposite(
-				compositeCharts, 
+				compositeHost, 
 				SWT.NONE, 
 				jfreechart,
 				true // use a buffer
@@ -214,6 +203,14 @@ public class ViewAlgogRadarTable extends AbstractViewOpenedByAlgo implements IPa
 		compositeChart.setLayoutData(new GridData(preferedWidth, preferedHeight));
 		compositeChart.setBackground(compositeCharts.getBackground());
 		
+		Map<String,String> gene2col = (Map<String, String>) glTable.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GENES2VALUES);
+		for (String gene: gene2col.keySet()) {
+			String col = gene2col.get(gene);
+			Label l = toolkit.createLabel(compositeHost, "gene "+gene+": "+glTable.getValue(rowId, col));
+			l.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, false, false));
+			
+		}
+		compositeHost.layout(true);
 		individualIdx2compositeChart.put(rowId, compositeChart);
 		
 	}
@@ -223,10 +220,14 @@ public class ViewAlgogRadarTable extends AbstractViewOpenedByAlgo implements IPa
 		for (ChartComposite compositeChart: individualIdx2compositeChart.values()) {
 			compositeChart.dispose();
 		}
+		for (Composite c: individualIdx2hostChart.values()) {
+			VisualResources.disposeChildrenFirstLevel(c);
+			c.dispose();
+		}
 		individualIdx2chart.clear();
 		individualIdx2compositeChart.clear();
 		individualIdx2dataset.clear();
-		
+		individualIdx2hostChart.clear();
 	}
 	
 	public void loadDataFromTable() {
@@ -301,7 +302,7 @@ public class ViewAlgogRadarTable extends AbstractViewOpenedByAlgo implements IPa
 			} while ( (currentRowIteration == iterationToDisplay) && (currentRow >= 0) );
 
 			// display all the individuals for this iteration ID
-			final int rowEnd = currentRow;
+			final int rowEnd = currentRow+1;
 			int individualDisplayId = 1;
 			for (currentRow = rowFirst; currentRow > rowEnd; currentRow --) {
 				displayDataForIndividual(individualDisplayId, currentRow, columnIteration, metadata, key2min, key2max);
@@ -319,6 +320,7 @@ public class ViewAlgogRadarTable extends AbstractViewOpenedByAlgo implements IPa
 			compositeCharts.setLayoutDeferred(false);
 			compositeCharts.layout(true);
 			form.getBody().layout(true);
+			form.reflow(true);
 			showBusy(false);	
 		}
 	}
@@ -402,9 +404,9 @@ public class ViewAlgogRadarTable extends AbstractViewOpenedByAlgo implements IPa
 				);
 		compositeCharts.setLayout(gridLayoutCompositeCharts);
 		// update display
-		form.layout(true);
-
 		form.getBody().layout(true);
+
+		form.reflow(true);
 		
 	
 	}

@@ -1,9 +1,6 @@
 package genlab.algog.algos.meta;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
+import genlab.algog.algos.flowtypes.GeneticTableFlowType;
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
 import genlab.algog.core.Activator;
 import genlab.core.model.instance.IAlgoInstance;
@@ -12,11 +9,12 @@ import genlab.core.model.meta.AlgoContainer;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
-import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
-import genlab.core.model.meta.basics.flowtypes.TableFlowType;
 import genlab.core.parameters.IntParameter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.osgi.framework.Bundle;
 
@@ -24,7 +22,7 @@ public abstract class AbstractGeneticExplorationAlgo extends AlgoContainer {
 
 
 	public static final InputOutput<IGenlabTable> OUTPUT_TABLE = new InputOutput<IGenlabTable>(
-			TableFlowType.SINGLETON, 
+			GeneticTableFlowType.SINGLETON, 
 			"out_table", 
 			"complete results", 
 			"a table containing the detailed results of computations"

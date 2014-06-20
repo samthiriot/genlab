@@ -343,6 +343,8 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		if (hostSwtComposite != null && !hostSwtComposite.isDisposed())
 			hostSwtComposite.dispose();
 		
+		awtFrame.dispose();
+		
 		super.dispose();
 	}
 

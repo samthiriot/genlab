@@ -1,26 +1,16 @@
 package genlab.gui.launchconfigurations;
 
-import java.util.Arrays;
-
-import genlab.core.persistence.GenlabPersistence;
 import genlab.gui.Utils;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 
 import org.eclipse.core.internal.resources.File;
-import org.eclipse.core.internal.resources.Folder;
-import org.eclipse.core.internal.resources.Project;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -31,10 +21,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
-import org.eclipse.ui.dialogs.ListSelectionDialog;
-import org.eclipse.ui.model.BaseWorkbenchContentProvider;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 public class GenlabWorkflowLaunchConfigurationTabFirst 
 								extends AbstractLaunchConfigurationTab 
@@ -62,6 +48,18 @@ public class GenlabWorkflowLaunchConfigurationTabFirst
 		
 	}
 	
+	protected boolean isProjectOK() {
+		return getProjectAsIProject() != null;
+	}
+	
+	protected boolean isWorkflowOK() {
+		
+		IProject p = getProjectAsIProject();
+		IFile f = p.getFile(workflowText.getText());
+		
+		return GenLab2eclipseUtils.isGenlabWorkflow(f);
+	}
+	
 	private void hasChangedSomething() {
 
 		setDirty(true);
@@ -85,6 +83,9 @@ public class GenlabWorkflowLaunchConfigurationTabFirst
 	}
 	
 	private void updateEnabledStates() {
+		
+		validate();
+		
 		// state of the select workflow button
 		workflowButton.setEnabled(getProjectAsIProject()!=null);
 	}
@@ -102,6 +103,8 @@ public class GenlabWorkflowLaunchConfigurationTabFirst
 		hasChangedSomething();
 		
 	}
+	
+	
 
 	@Override
 	public void createControl(Composite parent) {
@@ -122,6 +125,7 @@ public class GenlabWorkflowLaunchConfigurationTabFirst
 			
 			projectText = new Text(groupWorkflow, SWT.BORDER);
 			projectText.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+			projectText.setEnabled(false);
 			
 			projectButton = new Button(groupWorkflow, SWT.PUSH);
 			projectButton.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false));
@@ -145,6 +149,7 @@ public class GenlabWorkflowLaunchConfigurationTabFirst
 			
 			workflowText = new Text(groupWorkflow, SWT.BORDER);
 			workflowText.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+			workflowText.setEnabled(false);
 			
 			workflowButton = new Button(groupWorkflow, SWT.PUSH);
 			workflowButton.setLayoutData(new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false));
@@ -214,5 +219,29 @@ public class GenlabWorkflowLaunchConfigurationTabFirst
 
 		return "Main";
 	}
+
+
+	protected void validate() {
+
+		setErrorMessage(null);
+
+		if (!isProjectOK()) {
+			setErrorMessage("please select a valid project");
+			return;
+		} 
+		if (!isWorkflowOK()) {
+			setErrorMessage("please select a valid workflow");
+			return;
+		}
+
+	}
+	@Override
+	public boolean isValid(ILaunchConfiguration launchConfig) {
+		
+		return isProjectOK() && isWorkflowOK();
+		
+	}
+	
+	
 
 }

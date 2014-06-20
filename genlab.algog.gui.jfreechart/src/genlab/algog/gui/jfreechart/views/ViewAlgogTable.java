@@ -16,6 +16,8 @@ import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -23,6 +25,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.ui.forms.widgets.Section;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.XYLineAnnotation;
@@ -49,8 +52,18 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 	protected Map<String, ChartComposite> goal2compositeChart = new HashMap<String, ChartComposite>();
 	protected Map<String, XYLineAnnotation> goal2targetAnnotation = new HashMap<String, XYLineAnnotation>();
 
+	protected Map<String, XYSeries> gene2serie = new HashMap<String, XYSeries>();
+	protected Map<String, JFreeChart> gene2chart = new HashMap<String, JFreeChart>();
+	protected Map<String, ChartComposite> gene2compositeChart = new HashMap<String, ChartComposite>();
+	
 	private FormToolkit toolkit;
 	private ScrolledForm form;
+	
+	private Section sectionGenes;
+	private Section sectionGoals;
+	
+	private Composite compoGoals;
+	private Composite compoGenes;
 		
 	public ViewAlgogTable() {
 		
@@ -116,14 +129,15 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 		final int preferedHeight = 400;
 	
 		ChartComposite compositeChart = new ChartComposite(
-				form.getBody(), 
+				compoGoals, 
 				SWT.NONE, 
 				chart,
 				true // use a buffer
 				);	
 		compositeChart.setSize(preferedWidth, preferedHeight);
 		compositeChart.setLayoutData(new RowData(preferedWidth, preferedHeight));
-		compositeChart.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
+		toolkit.adapt(compositeChart, true, true);
+		//compositeChart.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
 		
 		// save all of them
 		goal2chart.put(goal, chart);
@@ -131,8 +145,8 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 		goal2serie.put(goal, serie);
 		
 		// update display
-		form.layout(true);
-
+		compoGoals.layout(true);
+		sectionGoals.layout(true);
 		
 	}
 	
@@ -171,12 +185,13 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 				}
 		    }
 			
-			// retrieve the plot
-			final JFreeChart chart = goal2chart.get(goal);
-			final XYPlot plot = chart.getXYPlot();
 			
 			if (!goal2targetAnnotation.containsKey(goal)) {
 
+				// retrieve the plot
+				final JFreeChart chart = goal2chart.get(goal);
+				final XYPlot plot = chart.getXYPlot();
+			
 				// add the annotation
 				final Number targetValue = (Number)glTable.getValue(0, columnTarget);
 				XYLineAnnotation line = new XYLineAnnotation(
@@ -203,41 +218,183 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 		
 	}
 	
+
+	private void displayDataForGene(String gene,
+			String columnValue, String columnIteration,
+			Integer maxIterations) {
+		
+		XYSeries serie = gene2serie.get(gene);
+		
+		// create if necessary
+		if (serie == null) {
+			createWidgetsForGene(gene, maxIterations);
+			serie = gene2serie.get(gene);
+		}
+		
+		// update data !
+		try {
+			serie.setNotify(false);
+			serie.clear();
+			for (int rowId=0; rowId<glTable.getRowsCount(); rowId++) {
+		    	
+				try {
+					Object dataX = glTable.getValue(rowId, columnIteration);
+					Object dataY = glTable.getValue(rowId, columnValue);
+					
+					// ignore incomplete data
+			        if (dataX == null || dataY == null)
+			        	continue;
+			        
+			        serie.add((Number)dataX, (Number)dataY);
+				} catch (ClassCastException e) {
+					// ignore, but this should not happen !
+				}
+		    }
+				
+		} finally {
+			serie.setNotify(true);
+
+		}
+	}
+	
+	private void createWidgetsForGene(String gene, Integer maxIterations) {
+
+		messages.traceTech("init the jfreechart dataset for gene "+gene+" ...", getClass());
+		
+		XYDataset dataset = null;
+		XYSeries serie = null;
+		{
+			XYSeriesCollection seriesAll = new XYSeriesCollection();
+		 
+			serie = new XYSeries(gene+"/values");
+		    
+			seriesAll.addSeries(serie);
+			
+			dataset = seriesAll;
+		}
+		
+		
+		messages.traceTech("init the jfreechart chart for gene "+gene+"...", getClass());
+		
+		// create chart
+		JFreeChart chart = ChartFactory.createScatterPlot(
+				"gene "+gene+" values for iterations", 
+				"iterations", 
+				"value", 
+				dataset
+				);
+		
+		// set parameters of chart
+		chart.setAntiAlias(true);
+		
+		// set up X axis with fixed range (we know the max there)
+		NumberAxis range = (NumberAxis) chart.getXYPlot().getDomainAxis();
+        range.setRange(0, maxIterations+1);
+        //range.setTickUnit(new NumberTickUnit(1d));
+        
+        // set small dots as shape
+        /*
+        XYItemRenderer renderer = chart.getXYPlot().getRenderer();
+        Shape dotShape = ShapeUtilities.createRegularCross(3, 3); // new Rectangle(1, 1);
+        renderer.setBaseShape(dotShape);
+        renderer.setBasePaint(Color.DARK_GRAY);
+        renderer.setSeriesShape(0, dotShape);
+        renderer.setSeriesPaint(0, Color.DARK_GRAY);
+        */
+        
+
+        
+		messages.traceTech("init the chart composite for gene "+gene+"...", getClass());
+
+		final int preferedWidth = 900;
+		final int preferedHeight = 400;
+	
+		ChartComposite compositeChart = new ChartComposite(
+				compoGenes, 
+				SWT.NONE, 
+				chart,
+				true // use a buffer
+				);	
+		compositeChart.setSize(preferedWidth, preferedHeight);
+		compositeChart.setLayoutData(new RowData(preferedWidth, preferedHeight));
+		//compositeChart.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
+		toolkit.adapt(compositeChart, true, true);
+		
+		
+		// save all of them
+		gene2chart.put(gene, chart);
+		gene2compositeChart.put(gene, compositeChart);
+		gene2serie.put(gene, serie);
+		
+		// update display
+		compoGenes.layout(true);
+		sectionGenes.layout(true);
+
+	}
+
 	public void loadDataFromTable() {
 		
 		try {
 			showBusy(true);
+			
 
-			Object metadataRaw = glTable.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GOALS2COLS);
-			if (metadataRaw == null) {
-				messages.warnTech("unable to find the expected metadata in this table; maybe it does not comes from a genetic algorithm ?", getClass());
-				return;
-			}
-			Map<String,Map<String,String>> metadata = null;
-			try {
-				metadata = (Map<String,Map<String,String>>)metadataRaw;
-			} catch (ClassCastException e) {
-				messages.warnTech("wrong metadata in this table; maybe it does not comes from a genetic algorithm ?", getClass());
-				return;
-			}
-				
 			final String columnIteration = (String) glTable.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION);
 			final Integer maxIterations = (Integer)glTable.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_MAX_ITERATIONS);
 			
-			for (String goal: metadata.keySet()) {
-				
-				final Map<String,String> goalMetadata = metadata.get(goal);
-				
-				displayDataForGoal(goal, goalMetadata, columnIteration, maxIterations);
-				
+
+			{
+				Object metadataRawGoals = glTable.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GOALS2COLS);
+				if (metadataRawGoals == null) {
+					messages.warnTech("unable to find the expected metadata in this table; maybe it does not comes from a genetic algorithm ?", getClass());
+					return;
+				}
+				Map<String,Map<String,String>> metadata = null;
+				try {
+					metadata = (Map<String,Map<String,String>>)metadataRawGoals;
+				} catch (ClassCastException e) {
+					messages.warnTech("wrong metadata in this table; maybe it does not comes from a genetic algorithm ?", getClass());
+					return;
+				}
+					
+				// display goals
+				for (String goal: metadata.keySet()) {
+					
+					final Map<String,String> goalMetadata = metadata.get(goal);
+					
+					displayDataForGoal(goal, goalMetadata, columnIteration, maxIterations);
+					
+				}
 			}
 			
+			{
+				Object metadataRawGenes = glTable.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GENES2VALUES);
+				if (metadataRawGenes == null) {
+					messages.warnTech("unable to find the expected metadata in this table; maybe it does not comes from a genetic algorithm ?", getClass());
+					return;
+				}
+				Map<String,String> metadata = null;
+				try {
+					metadata = (Map<String,String>)metadataRawGenes;
+				} catch (ClassCastException e) {
+					messages.warnTech("wrong metadata in this table; maybe it does not comes from a genetic algorithm ?", getClass());
+					return;
+				}
+					
+				// display genes
+				for (String gene: metadata.keySet()) {
+										
+					displayDataForGene(gene, metadata.get(gene), columnIteration, maxIterations);
+					
+				}
+			}
 			
+			form.layout(true);
 		} finally {
 			showBusy(false);	
 		}
 	}
 	
+
 	public void adaptParametersWidgets() {
 		
 		String[] titles = new String[glTable.getColumnsCount()];
@@ -278,12 +435,35 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 		
 		toolkit = new FormToolkit(parent.getDisplay());
 		parent.setLayout(new FillLayout());
+		
 		form = toolkit.createScrolledForm(parent);
-		Layout layout = new RowLayout(SWT.VERTICAL);
+		Layout layout = new GridLayout(1, false);
 		form.getBody().setLayout(layout);
 
+		
+		sectionGoals = toolkit.createSection(form.getBody(),  Section.TITLE_BAR);
+		sectionGoals.setExpanded(true);
+		sectionGoals.setText("Measures and targets");
+		sectionGoals.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+		
+		compoGoals = toolkit.createComposite(sectionGoals);
+		compoGoals.setLayout(new RowLayout(SWT.VERTICAL));
+		sectionGoals.setClient(compoGoals);
+		
+		sectionGenes = toolkit.createSection(form.getBody(),  Section.TITLE_BAR);
+		sectionGenes.setExpanded(true);
+		sectionGenes.setText("Genes");
+		sectionGenes.setLayout(new RowLayout(SWT.VERTICAL));
+		sectionGenes.setLayoutData(new GridData(GridData.FILL, GridData.BEGINNING, true, false));
+		
+		compoGenes = toolkit.createComposite(sectionGenes);
+		compoGenes.setLayout(new RowLayout(SWT.VERTICAL));
+		sectionGenes.setClient(compoGenes);
+		
+		
 		// update display
 		form.layout(true);
+		form.reflow(true);
 
 		
 	

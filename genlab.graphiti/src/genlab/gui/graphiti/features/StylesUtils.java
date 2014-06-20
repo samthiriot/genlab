@@ -25,7 +25,7 @@ import org.eclipse.graphiti.util.PredefinedColoredAreas;
 /**
  * @see http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.graphiti.doc%2Fresources%2Fdocu%2Fgfw%2Fstyles.htm
  * @see http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.graphiti.doc%2Fresources%2Fdocu%2Fgfw%2Fcolor-schemas.htm
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public class StylesUtils {

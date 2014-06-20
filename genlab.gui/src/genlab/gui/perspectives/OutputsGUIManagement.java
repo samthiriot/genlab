@@ -164,7 +164,7 @@ public class OutputsGUIManagement implements IPartListener {
 
 			for (IExecution execution: exec2guis.keySet()) {
 				for (IViewPart view : new LinkedList<IViewPart>(exec2guis.get(execution))) {
-					GLLogger.warnTech("attempting to close the view "+view, getClass());
+					GLLogger.traceTech("attempting to close the view "+view, getClass());
 					view.getViewSite().getPage().hideView(view);
 				}
 			}

@@ -57,27 +57,6 @@
       </view>
    </extension>
    <extension
-         point="org.eclipse.ui.commands">
-      <command
-            defaultHandler="genlab.gui.graphiti.handlers.CallGraffitiEditor"
-            description="opens a workflow editor"
-            id="genlab.gui.graphiti.commands.showWorkflowEditor"
-            name="edit workflow">
-      </command>
-   </extension>
-   <extension
-         point="org.eclipse.ui.menus">
-      <menuContribution
-            allPopups="false"
-            locationURI="menu:window">
-         <command
-               commandId="genlab.gui.graphiti.commands.showWorkflowEditor"
-               label="edit workflow"
-               style="push">
-         </command>
-      </menuContribution>
-   </extension>
-   <extension
          point="genlab.core.workflow.listeners">
       <listener
             class="genlab.gui.graphiti.genlab2graphiti.WorkflowListener">

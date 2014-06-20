@@ -1,5 +1,5 @@
 /**
- * 
+ * TODO disable connection between visu and non genetic table
  */
 /**
  * @author Samuel Thiriot

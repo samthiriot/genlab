@@ -7,7 +7,7 @@ import genlab.core.model.meta.basics.flowtypes.TableFlowType;
  * A table exactly similar to a standart table, 
  * but with metadata related to a genetic algorithm
  * 
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public class GeneticTableFlowType extends TableFlowType {

@@ -56,7 +56,7 @@ public class GenLab2eclipseUtils {
 		
 	}
 
-	public static boolean isGenlabWorkflow(File file) {
+	public static boolean isGenlabWorkflow(IFile file) {
 		// TODO Auto-generated method stub
 		return file.getFileExtension().toLowerCase().equals("glw");
 	}

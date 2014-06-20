@@ -130,6 +130,7 @@ public class ExistingAlgoCategories {
 			"genetic_algorithms"
 			);
 	
+	
 	public static final AlgoCategory CASTING = new AlgoCategory(
 			null, 
 			"conversions", 
@@ -142,6 +143,13 @@ public class ExistingAlgoCategories {
 			"displays", 
 			"display information", 
 			"dislap"
+			);
+	
+	public static final AlgoCategory DISPLAY_EXPLORATION_GENETIC_ALGOS = new AlgoCategory(
+			DISPLAY, 
+			"genetic algorithms", 
+			"genetic algorithms", 
+			"genetic_algorithms"
 			);
 	
 

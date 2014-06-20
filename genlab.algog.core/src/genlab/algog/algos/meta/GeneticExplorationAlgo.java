@@ -11,6 +11,8 @@ public class GeneticExplorationAlgo extends AbstractGeneticExplorationAlgo {
 	/**
 	 * This metadata of the table will contain a map associating each goal to its target, value, fitness
 	 */
+	public static final String TABLE_METADATA_KEY_GENES2VALUES = "algog.genes2cols";
+
 	public static final String TABLE_METADATA_KEY_GOALS2COLS = "algog.goals2cols";
 	
 	public static final String TABLE_METADATA_KEY_COLTITLE_ITERATION = "algog.columnContainingIterations";

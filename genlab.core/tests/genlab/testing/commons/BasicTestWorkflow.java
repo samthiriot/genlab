@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
  * BAsic test for a workflow: user just has to fill the workflow, and this basic class
  * provides tests for init, saving, exec, etc.
  * 
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public abstract class BasicTestWorkflow {

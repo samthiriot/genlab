@@ -4,7 +4,7 @@ import genlab.core.model.meta.IFlowType;
 
 public abstract class AbstractFlowType<JavaType> implements IFlowType<JavaType> {
 
-	protected final String id;
+	public final String id;
 
 	protected final String name;
 	protected final String desc;

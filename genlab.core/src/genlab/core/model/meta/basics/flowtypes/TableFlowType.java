@@ -13,7 +13,14 @@ public class TableFlowType extends AbstractFlowType<IGenlabTable> {
 		
 	}
 	
-	
+	public TableFlowType(String name, String desc, String desc2) {
+		super(
+				"core.types.table", 
+				"a table of values",
+				"stores values in a table"
+				);
+		
+	}
 
 	@Override
 	public IGenlabTable decodeFrom(Object value) {

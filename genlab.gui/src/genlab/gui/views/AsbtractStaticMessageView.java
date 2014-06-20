@@ -12,7 +12,7 @@ import org.eclipse.ui.part.ViewPart;
 /**
  * This view just displays a form.
  * 
- * @author B12772
+ * @author Samuel Thiriot
  */
 public class AsbtractStaticMessageView extends ViewPart {
 

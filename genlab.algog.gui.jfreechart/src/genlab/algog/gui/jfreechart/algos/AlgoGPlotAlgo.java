@@ -5,6 +5,7 @@ import genlab.algog.gui.jfreechart.views.ViewAlgogTable;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import genlab.core.model.meta.basics.flowtypes.TableFlowType;
@@ -24,7 +25,8 @@ public class AlgoGPlotAlgo extends AbstractJFreechartAlgo {
 		super(
 				"algog plot", 
 				"displays scatter data", 
-				ViewAlgogTable.VIEW_ID
+				ViewAlgogTable.VIEW_ID,
+				ExistingAlgoCategories.DISPLAY_EXPLORATION_GENETIC_ALGOS
 				);
 		
 		inputs.add(INPUT_TABLE);

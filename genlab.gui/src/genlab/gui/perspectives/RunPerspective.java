@@ -9,7 +9,7 @@ import org.eclipse.ui.IPerspectiveFactory;
  * Plugins should use the extension mechanism of plugins to add themselves in "stack" mode
  * inside these folders (just use the folder id as a "relative" element in the extension) 
  * 
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
 public class RunPerspective implements IPerspectiveFactory {

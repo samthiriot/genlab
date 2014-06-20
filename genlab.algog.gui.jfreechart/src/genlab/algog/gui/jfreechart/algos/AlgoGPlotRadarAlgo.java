@@ -6,6 +6,7 @@ import genlab.algog.gui.jfreechart.views.ViewAlgogRadarTable;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import genlab.core.model.meta.basics.flowtypes.TableFlowType;
@@ -24,7 +25,8 @@ public class AlgoGPlotRadarAlgo extends AbstractJFreechartAlgo {
 		super(
 				"algog radar plot", 
 				"displays scatter data", 
-				ViewAlgogRadarTable.VIEW_ID
+				ViewAlgogRadarTable.VIEW_ID,
+				ExistingAlgoCategories.DISPLAY_EXPLORATION_GENETIC_ALGOS
 				);
 		
 		inputs.add(INPUT_TABLE);
