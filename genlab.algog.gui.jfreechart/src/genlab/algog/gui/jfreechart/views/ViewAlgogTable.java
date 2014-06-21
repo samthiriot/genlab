@@ -65,6 +65,12 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 	private Composite compoGoals;
 	private Composite compoGenes;
 		
+	/**
+	 * stores the max row line for which data was already displayed 
+	 * (avoid to redisplay everything)
+	 */
+	private Integer dataProcessedUntilRow = 0;
+	
 	public ViewAlgogTable() {
 		
 	}
@@ -168,8 +174,7 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 		// update data !
 		try {
 			serie.setNotify(false);
-			serie.clear();
-			for (int rowId=0; rowId<glTable.getRowsCount(); rowId++) {
+			for (int rowId=dataProcessedUntilRow; rowId<glTable.getRowsCount(); rowId++) {
 		    	
 				try {
 					Object dataX = glTable.getValue(rowId, columnIteration);
@@ -184,7 +189,6 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 					// ignore, but this should not happen !
 				}
 		    }
-			
 			
 			if (!goal2targetAnnotation.containsKey(goal)) {
 
@@ -234,8 +238,7 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 		// update data !
 		try {
 			serie.setNotify(false);
-			serie.clear();
-			for (int rowId=0; rowId<glTable.getRowsCount(); rowId++) {
+			for (int rowId=dataProcessedUntilRow ; rowId<glTable.getRowsCount(); rowId++) {
 		    	
 				try {
 					Object dataX = glTable.getValue(rowId, columnIteration);
@@ -250,7 +253,7 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 					// ignore, but this should not happen !
 				}
 		    }
-				
+			
 		} finally {
 			serie.setNotify(true);
 
@@ -388,6 +391,9 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 				}
 			}
 			
+			dataProcessedUntilRow = glTable.getRowsCount();
+
+			
 			form.layout(true);
 		} finally {
 			showBusy(false);	
@@ -395,14 +401,6 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 	}
 	
 
-	public void adaptParametersWidgets() {
-		
-		String[] titles = new String[glTable.getColumnsCount()];
-		
-		glTable.getColumnsId().toArray(titles);
-		
-	}
-	
 	
 	public void setData(IAlgoInstance viewAlgoInstance, GenlabTable glTable) {
 
@@ -418,8 +416,6 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 
 		// retrieve data
 		this.glTable = glTable;
-
-		adaptParametersWidgets();
 				
 		loadDataFromTable();
 		
@@ -512,5 +508,9 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 		return form != null && form.isDisposed();
 	}
 
+	@Override
+	public String toString() {
+		return getClass().getSimpleName();
+	}
 
 }

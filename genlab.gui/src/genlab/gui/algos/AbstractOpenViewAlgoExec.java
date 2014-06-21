@@ -36,6 +36,10 @@ import org.eclipse.ui.part.WorkbenchPart;
  */
 public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOneshotOrReduce {
 
+	/**
+	 * if true, there is already a task submitted in the gui thread to update the display
+	 */
+	protected boolean updatePending = false;
 
 	
 	protected final String id;
@@ -47,6 +51,8 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 	 */
 	protected AbstractViewOpenedByAlgo theView = null;
 	
+	protected int statsCount = 0;
+	protected long statsCumulatedDelay = 0;
 	
 	public AbstractOpenViewAlgoExec(IExecution exec, IAlgoInstance algoInst, String viewId) {
 		
@@ -129,13 +135,37 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 
 	protected abstract void displayResultsSync(AbstractViewOpenedByAlgo theView);
 
+	
 	protected void displayResultsAsync(final AbstractViewOpenedByAlgo theView) {
+		if (updatePending)
+			return;
+		updatePending = true;
 		Display.getDefault().asyncExec(new Runnable() {
 			
 			@Override
 			public void run() {
+				
 				System.out.println("reading data to display it");
+				
+				long start = System.currentTimeMillis();
+				
+				// actual display
 				displayResultsSync(theView);
+				updatePending = false;
+				
+				// update stats
+				statsCount++;
+				statsCumulatedDelay += System.currentTimeMillis() - start;
+				
+				// display stats sometimes
+				if (statsCount % 10 == 0) {
+					
+					System.out.println(this+" time for display :"+(statsCumulatedDelay/statsCount)+" ms");
+					
+					statsCount = 0;
+					statsCumulatedDelay = 0;
+						
+				}
 			}
 		});
 	}
