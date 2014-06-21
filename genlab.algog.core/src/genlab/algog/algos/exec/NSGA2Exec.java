@@ -76,6 +76,13 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		
 	}
 
+	protected String frontToString(Collection<AnIndividual> front) {
+		StringBuffer sb = new StringBuffer("\t");
+		for (AnIndividual i: front) {
+			sb.append(i.toString()).append("\n\t");
+		}
+		return sb.toString();
+	}
 	/**
 	 * As described in NSGA-II
 	 * @param indiv2fitness
@@ -124,7 +131,9 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		
 		messages.infoUser("for generation "+iterationsMade+", the Pareto front contains "+currentFront.size()+": "+currentFront.toString(), getClass());
 		
-		System.err.println("first domination front: "+currentFront.toString());
+		StringBuffer sbDomFronts = new StringBuffer();
+		
+		sbDomFronts.append("1st domination front (").append(currentFront.size()).append("): ").append(frontToString(currentFront)).append("\n");
 		
 		// save the first domination front
 		generation2paretoFront.put(iterationsMade, currentFront);
@@ -158,7 +167,7 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 			if (!nextFront.isEmpty())
 				frontIdx2individuals.put(frontIdx, nextFront);
 			currentFront = nextFront;
-			System.err.println(frontIdx+"th domination front: "+nextFront.toString());
+			sbDomFronts.append(frontIdx).append("th domination front (").append(nextFront.size()).append("): ").append(frontToString(nextFront)).append("\n");
 			
 		}
 		
@@ -166,6 +175,7 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		this.fronts = frontIdx2individuals;
 		this.individual2rank = individual2rank;
 		
+		messages.infoUser("computed "+frontIdx2individuals.size()+" Pareto domination fronts: "+sbDomFronts.toString(), getClass());
 	}
 	
 	/**

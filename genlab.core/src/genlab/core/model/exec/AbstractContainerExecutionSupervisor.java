@@ -222,6 +222,11 @@ public abstract class AbstractContainerExecutionSupervisor
 				instance2execOriginal, // instance2execForSubtasks,
 				getSuffixForCurrentIteration()
 				);
+		resExecIteration.autoFinishWhenChildrenFinished = true;
+		resExecIteration.autoUpdateProgressFromChildren = true;
+		resExecIteration.ignoreCancelFromChildren = false;
+		resExecIteration.ignoreFailuresFromChildren = false;
+		
 		
 		// now create the links to call this iteration
 		messages.traceTech("init links for this iteration...", getClass());
@@ -241,6 +246,8 @@ public abstract class AbstractContainerExecutionSupervisor
 			}
 				
 		}
+		
+	
 		
 		return resExecIteration;
 	}

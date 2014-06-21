@@ -734,5 +734,11 @@ public class Runner extends Thread implements IRunner {
 			return (Collection<IAlgoExecution>) all.clone();
 		} 
 	}
+
+
+	@Override
+	public void propagateRank(Integer rank, Set<ITask> visited) {
+		// not relevant
+	}
 	
 }

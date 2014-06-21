@@ -284,8 +284,8 @@ public class IGraphLibrary {
 		}
 		
 		IGraphGraph result = new IGraphGraph(this, g, false);
-		if (simplifyMultiplex)
-			result.multiplex = false;
+		
+		result.setMultiGraph(!simplifyMultiplex); 
 
 		// basic checks
 		// TODO
@@ -542,9 +542,16 @@ public class IGraphLibrary {
 		if (count <= 0)
 			throw new WrongParametersException("count of nodes should be positive");
 		
-		final int res = IGraphRawLibrary.igraph_rewire(g.getPointer(), count, 0);
+		int res = IGraphRawLibrary.igraph_rewire(g.getPointer(), count, 0);
 		
 		checkIGraphResult(res);
+
+		//res = IGraphRawLibrary.igraph_simplify(g.getStruct(), true, true);
+		
+		//checkIGraphResult(res);
+
+		//g.setMultiGraph(false); 
+
 	}
 	
 	public int getVertexCount(IGraphGraph g) {

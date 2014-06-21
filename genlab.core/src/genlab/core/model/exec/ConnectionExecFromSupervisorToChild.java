@@ -1,7 +1,10 @@
 package genlab.core.model.exec;
 
+import java.util.Set;
+
 import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.ProgramException;
+import genlab.core.exec.ITask;
 import genlab.core.model.instance.IConnection;
 
 /**
@@ -68,5 +71,10 @@ public class ConnectionExecFromSupervisorToChild extends AbstractConnectionExec<
 		throw new NotImplementedException();		
 	}
 	
+	@Override
+	public void propagateRank(Integer rank, Set<ITask> visited) {
+		// don't propagate
+	}
+
 
 }

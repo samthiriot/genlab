@@ -200,6 +200,117 @@ public class LoopedGraphGeneratorChains {
 		
 	}
 	
+
+	@Test
+	/**
+	 * Tests the case where there is no constant outside (is the loops still able to manage runing ?)
+	 */
+	public void testLoopWithConstantInputsWithReduceWSConstantsOutside() {
+		
+		(new BasicTestWorkflow() {
+			
+			@Override
+			protected void populateWorkflow(IGenlabWorkflowInstance workflow) {
+				
+				// params
+				int N = 500, k=4;
+				double p=0.1;
+				
+				// ref algos
+				WattsStrogatzAlgo ws = new WattsStrogatzAlgo();
+				ConstantValueInteger constantInt = new ConstantValueInteger();
+				ConstantValueDouble constantDouble = new ConstantValueDouble();
+				LoopForAlgo loopAlgo = new LoopForAlgo();
+				AppendToTableAlgo appendTableAlgo = new AppendToTableAlgo();
+				GraphBasicPropertiesAlgo graphPropertiesAlgo = new GraphBasicPropertiesAlgo();
+				StandardOutputAlgo outputAlgo =  new StandardOutputAlgo();
+				
+				// create instances inside the workflow
+				{	
+					IAlgoContainerInstance loopInstnace = (IAlgoContainerInstance)loopAlgo.createInstance(workflow);
+					workflow.addAlgoInstance(loopInstnace);
+					loopInstnace.setValueForParameter(loopAlgo.PARAM_ITERATIONS, 10);
+							
+					IAlgoInstance wsInstance = ws.createInstance(workflow);
+					workflow.addAlgoInstance(wsInstance);
+					wsInstance.setContainer(loopInstnace);
+					loopInstnace.addChildren(wsInstance);
+					
+					IAlgoInstance graphPropertiesInstance = graphPropertiesAlgo.createInstance(workflow);
+					workflow.addAlgoInstance(graphPropertiesInstance);
+					graphPropertiesInstance.setContainer(loopInstnace);
+					loopInstnace.addChildren(graphPropertiesInstance);
+				
+					workflow.connect(
+							wsInstance.getOutputInstanceForOutput(ws.OUTPUT_GRAPH), 
+							graphPropertiesInstance.getInputInstanceForInput(graphPropertiesAlgo.INPUT_GRAPH)
+							);
+					
+					{
+						IAlgoInstance constantN = constantInt.createInstance(workflow);
+						workflow.addAlgoInstance(constantN);
+						loopInstnace.addChildren(constantN);
+						constantN.setContainer(loopInstnace);
+						constantN.setValueForParameter(constantInt.getConstantParameter(), N);
+						workflow.connect(
+								 constantN.getOutputInstanceForOutput(ConstantValueInteger.OUTPUT),
+								 wsInstance.getInputInstanceForInput(WattsStrogatzAlgo.INPUT_N)
+						);
+					}
+					
+					{
+						IAlgoInstance constantK = constantInt.createInstance(workflow);
+						workflow.addAlgoInstance(constantK);
+						loopInstnace.addChildren(constantK);
+						constantK.setContainer(loopInstnace);
+						constantK.setValueForParameter(constantInt.getConstantParameter(), k);
+						workflow.connect(
+								constantK.getOutputInstanceForOutput(ConstantValueInteger.OUTPUT),
+								 wsInstance.getInputInstanceForInput(WattsStrogatzAlgo.INPUT_K)
+						);
+					}
+					
+					{
+						IAlgoInstance constantP = constantDouble.createInstance(workflow);
+						workflow.addAlgoInstance(constantP);
+						loopInstnace.addChildren(constantP);
+						constantP.setContainer(loopInstnace);
+						constantP.setValueForParameter(constantDouble.getConstantParameter(), p);
+						workflow.connect(
+								constantP.getOutputInstanceForOutput(ConstantValueDouble.OUTPUT),
+								 wsInstance.getInputInstanceForInput(WattsStrogatzAlgo.INPUT_P)
+						);
+					}
+					
+
+					IAlgoInstance appendTableInstance = appendTableAlgo.createInstance(workflow);
+					workflow.addAlgoInstance(appendTableInstance);
+					workflow.connect(
+							graphPropertiesInstance.getOutputInstanceForOutput(GraphBasicPropertiesAlgo.OUTPUT_COUNT_EDGES), 
+							appendTableInstance.getInputInstanceForInput(AppendToTableAlgo.INPUT_ANYTHING)
+							);
+					workflow.connect(
+							graphPropertiesInstance.getOutputInstanceForOutput(GraphBasicPropertiesAlgo.OUTPUT_COUNT_VERTICES), 
+							appendTableInstance.getInputInstanceForInput(AppendToTableAlgo.INPUT_ANYTHING)
+							);
+					
+					IAlgoInstance stdOutInstance = outputAlgo.createInstance(workflow);
+					workflow.addAlgoInstance(stdOutInstance);
+					workflow.connect(
+							appendTableInstance.getOutputInstanceForOutput(AppendToTableAlgo.OUTPUT_TABLE), 
+							stdOutInstance.getInputInstanceForInput(StandardOutputAlgo.INPUT)
+							);
+					
+				}
+			}
+		}).execAll(
+				false,
+				false,
+				false
+				);
+		
+	}
+	
 	@Test
 	public void testLoopWithConstantInputsWithReduceWSigraph() {
 		

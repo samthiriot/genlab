@@ -33,6 +33,7 @@ import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -234,9 +235,15 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		
 		Object[][] population;
 		
-		messages.infoUser("generating the initial population for genome "+genome.name, getClass());
+		messages.infoUser("generating the initial population ("+popsize+" individuals) for genome "+genome.name, getClass());
 		population = genome.generateInitialGeneration(uniform, popsize);
-		genome.printToStream(System.out, population);
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(baos);
+
+		genome.printToStream(ps , population);
+
+		messages.infoUser("generated "+popsize+" individuals: "+baos.toString(), getClass());		
 		
 		return population;
 	}
@@ -691,7 +698,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			if (genome.crossoverProbability == 1.0 || uniform.nextDoubleFromTo(0.0, 1.0) <= genome.crossoverProbability) {
 				// TODO use a parameter for crossover method
 				Object[][] novelIndividuals = crossoverArithmetic(genome, indiv1, indiv2);
-				
+				//Object[][] novelIndividuals = crossoverOnePoint(genome, indiv1, indiv2);
+
 				sb.append("crossover: ")
 					.append(Arrays.toString(indiv1))
 					.append(" and ")
@@ -863,6 +871,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			GeneticExplorationOneGeneration execFirstGen = createExecutableForGeneration(prepareNextGeneration());
 			
 			// start it !
+			messages.infoUser("starting the evaluation of generation "+iterationsMade, getClass());
 			addTask(execFirstGen);
 			
 			

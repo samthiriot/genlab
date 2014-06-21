@@ -1,7 +1,10 @@
 package genlab.core.model.exec;
 
+import java.util.Set;
+
 import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.ProgramException;
+import genlab.core.exec.ITask;
 import genlab.core.model.instance.IConnection;
 
 /**
@@ -45,6 +48,7 @@ public class ConnectionExecFromIterationToReduce extends AbstractConnectionExec<
 		}
 		
 		if (state != ComputationState.FINISHED_OK) {
+			System.out.println("clean value because parent "+from+" is "+state+": "+this);
 			value = null;
 			return;
 		}
@@ -83,6 +87,10 @@ public class ConnectionExecFromIterationToReduce extends AbstractConnectionExec<
 		
 	}
 	
-	
+	@Override
+	public void propagateRank(Integer rank, Set<ITask> visited) {
+		// don't propagate
+	}
+
 
 }

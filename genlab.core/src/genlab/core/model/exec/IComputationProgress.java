@@ -1,6 +1,9 @@
 package genlab.core.model.exec;
 
+import java.util.Set;
+
 import genlab.core.commons.UniqueTimestamp;
+import genlab.core.exec.ITask;
 import genlab.core.model.meta.IAlgo;
 
 /**
@@ -94,8 +97,8 @@ public interface IComputationProgress {
 	
 	public void setComputationState(ComputationState state);
 	
-	public void setException(Exception exception);
-	public Exception getException();
+	public void setException(Throwable exception);
+	public Throwable getException();
 	
 	public void addListener(IComputationProgressSimpleListener listener);
 	public void removeListener(IComputationProgressSimpleListener listener);
@@ -114,4 +117,6 @@ public interface IComputationProgress {
 	public String getCurrentTaskName();
 	
 	public void clean();
+
+	public void propagateRank(Integer rank, Set<ITask> visited);
 }

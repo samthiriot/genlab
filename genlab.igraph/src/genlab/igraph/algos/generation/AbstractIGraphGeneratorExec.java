@@ -1,6 +1,7 @@
 package genlab.igraph.algos.generation;
 
 import genlab.core.commons.ProgramException;
+import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
@@ -38,66 +39,67 @@ public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecutionO
 	@Override
 	public void run() {
 		
-		try { 
-			// notify start
-			progress.setProgressMade(0);
-			progress.setProgressTotal(1);
-			progress.setComputationState(ComputationState.STARTED);
+		// notify start
+		progress.setProgressMade(0);
+		progress.setProgressTotal(1);
+		progress.setComputationState(ComputationState.STARTED);
+		
+		ComputationResult result = new ComputationResult(algoInst, progress, exec.getListOfMessages());
+		setResult(result);
+		
+
+		if (noOutputIsUsed() && !exec.getExecutionForced()) {
 			
-			ComputationResult result = new ComputationResult(algoInst, progress, exec.getListOfMessages());
-			setResult(result);
+			result.getMessages().debugUser("nobody is using the result of this computation; it will not be computed at all.", getClass());
+		
+		} else {
+		
+			// decode parameters
 			
-	
-			if (noOutputIsUsed() && !exec.getExecutionForced()) {
+			IGraphLibrary lib = new IGraphLibrary();
+					
+			IGraphGraph igraphGraph = null;
+					
+			try {
 				
-				result.getMessages().debugUser("nobody is using the result of this computation; it will not be computed at all.", getClass());
+				result.getMessages().debugUser("using the igraph native library version "+lib.getVersionString(), getClass());
+				
+				// ask the lib to transmit its information as the result of OUR computations
+				lib.setListOfMessages(result.getMessages());
+				
+				// generate
+				igraphGraph = generateGraph(lib, messages);
+				
+				IGenlabGraph genlabGraph = IGraph2GenLabConvertor.getGenlabGraphForIgraph(igraphGraph, exec);
+
+				result.setResult(AbstractIGraphGenerator.OUTPUT_GRAPH, genlabGraph);
+
+				
+				progress.setProgressMade(1);
+				progress.setComputationState(ComputationState.FINISHED_OK);
+
+			} catch(WrongParametersException e) {
+				
+				messages.errorUser("wrong parameters for this algorithm: "+e.getMessage(), getClass(), e);
+				progress.setException(e);
+				progress.setComputationState(ComputationState.FINISHED_FAILURE);
+				
+			} catch (RuntimeException e) {
 			
-			} else {
-			
-				// decode parameters
 				
-				IGraphLibrary lib = new IGraphLibrary();
-						
-				IGraphGraph igraphGraph = null;
-						
-				try {
-					
-					result.getMessages().debugUser("using the igraph native library version "+lib.getVersionString(), getClass());
-					
-					// ask the lib to transmit its information as the result of OUR computations
-					lib.setListOfMessages(result.getMessages());
-					
-					// generate
-					igraphGraph = generateGraph(lib, messages);
-					
-					IGenlabGraph genlabGraph = IGraph2GenLabConvertor.getGenlabGraphForIgraph(igraphGraph, exec);
-	
-					result.setResult(AbstractIGraphGenerator.OUTPUT_GRAPH, genlabGraph);
-	
-					
-					progress.setProgressMade(1);
-					progress.setComputationState(ComputationState.FINISHED_OK);
-	
-				} catch (RuntimeException e) {
-					
-					messages.errorTech("error during the igraph call: "+e.getMessage(), getClass(), e);
-					progress.setException(e);
-					progress.setComputationState(ComputationState.FINISHED_FAILURE);
-					//throw new ProgramException("error during the igraph call: "+e.getMessage(), e);
-					
-				} finally {
-					// clear memory
-					lib.clearGraphMemory(igraphGraph);
-					lib.setListOfMessages(null);
-	
-				}
+				messages.errorTech("error during the igraph call: "+e.getMessage(), getClass(), e);
+				progress.setException(e);
+				progress.setComputationState(ComputationState.FINISHED_FAILURE);
+				//throw new ProgramException("error during the igraph call: "+e.getMessage(), e);
 				
-				
+			} finally {
+				// clear memory
+				lib.clearGraphMemory(igraphGraph);
+				lib.setListOfMessages(null);
+
 			}
-		} catch (RuntimeException e) {
-			messages.errorTech("error during the execution of this generator: "+e.getLocalizedMessage(), getClass(), e);
-			progress.setException(e);
-			progress.setComputationState(ComputationState.FINISHED_FAILURE);
+			
+			
 		}
 		
 	}

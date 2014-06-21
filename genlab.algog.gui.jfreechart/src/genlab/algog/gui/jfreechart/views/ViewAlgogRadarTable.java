@@ -232,6 +232,9 @@ public class ViewAlgogRadarTable extends AbstractViewOpenedByAlgo implements IPa
 	
 	public void loadDataFromTable() {
 		
+		if (compositeCharts.isDisposed())
+			return;
+		
 		try {
 			showBusy(true);
 			
@@ -259,7 +262,6 @@ public class ViewAlgogRadarTable extends AbstractViewOpenedByAlgo implements IPa
 			
 			// TODO make a parameter of that
 			final Integer iterationToDisplay = (Integer)glTable.getValue(glTable.getRowsCount()-1, columnIteration);
-			labelIteration.setText("results for iteration "+iterationToDisplay);
 			
 			// search for the first line to display
 			int currentRow = glTable.getRowsCount();
@@ -301,8 +303,12 @@ public class ViewAlgogRadarTable extends AbstractViewOpenedByAlgo implements IPa
 				currentRow --;
 			} while ( (currentRowIteration == iterationToDisplay) && (currentRow >= 0) );
 
+			
 			// display all the individuals for this iteration ID
 			final int rowEnd = currentRow+1;
+			
+			labelIteration.setText("results for iteration "+iterationToDisplay+" ("+(rowFirst-rowEnd)+" Pareto efficient solutions)");
+			
 			int individualDisplayId = 1;
 			for (currentRow = rowFirst; currentRow > rowEnd; currentRow --) {
 				displayDataForIndividual(individualDisplayId, currentRow, columnIteration, metadata, key2min, key2max);

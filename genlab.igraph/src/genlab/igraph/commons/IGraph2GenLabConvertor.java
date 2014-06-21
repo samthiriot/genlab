@@ -38,83 +38,93 @@ public class IGraph2GenLabConvertor {
 		
 		final long timestampStart = System.currentTimeMillis();
 		
-		if (graph.isMultiGraph() == null) {
-			messages.infoUser("the multiplicity of the converted graph is unknown; will assume it is multiplex, but this will lead to bad performance", IGraph2GenLabConvertor.class);
-		}		
+		int totalNodes = -1;
+		IGenlabGraph glGraph = null;
 		
-		IGenlabGraph glGraph = GraphFactory.createGraph(
-				"igraphGen", 
-				graph.directed?GraphDirectionality.DIRECTED:GraphDirectionality.UNDIRECTED, 
-				(graph.isMultiGraph() != Boolean.FALSE)
-				);
+		try {
 		
-		
-		// add node attributes
-		if (graph.xPositions != null) {
+			if (graph.isMultiGraph() == null) {
+				messages.infoUser("the multiplicity of the converted graph is unknown; will assume it is multiplex, but this will lead to bad performance", IGraph2GenLabConvertor.class);
+			}		
 			
-			// declare attributes
-			glGraph.declareVertexAttribute("x", Double.class);
-			glGraph.declareVertexAttribute("y", Double.class);
+			glGraph = GraphFactory.createGraph(
+					"igraphGen", 
+					graph.directed?GraphDirectionality.DIRECTED:GraphDirectionality.UNDIRECTED, 
+					(graph.isMultiGraph() != Boolean.FALSE)
+					);
 			
-			messages.debugUser("x and y attributes are provided by igraph; will copy them", IGraph2GenLabConvertor.class);
-		}
-		
-		// add nodes
-		final int totalNodes = graph.lib.getVertexCount(graph);
-		for (int i=0; i<totalNodes; i++) {
-			
-			String vertexId = Integer.toString(i);
-
-			glGraph.addVertex(vertexId);
 			
 			// add node attributes
 			if (graph.xPositions != null) {
-				glGraph.setVertexAttribute(
-						vertexId, 
-						"x", graph.xPositions[i]
-						);
-				glGraph.setVertexAttribute(
-						vertexId, 
-						"y", graph.yPositions[i]
+				
+				// declare attributes
+				glGraph.declareVertexAttribute("x", Double.class);
+				glGraph.declareVertexAttribute("y", Double.class);
+				
+				messages.debugUser("x and y attributes are provided by igraph; will copy them", IGraph2GenLabConvertor.class);
+			}
+			
+			// add nodes
+			totalNodes = graph.lib.getVertexCount(graph);
+			for (int i=0; i<totalNodes; i++) {
+				
+				String vertexId = Integer.toString(i);
+	
+				glGraph.addVertex(vertexId);
+				
+				// add node attributes
+				if (graph.xPositions != null) {
+					glGraph.setVertexAttribute(
+							vertexId, 
+							"x", graph.xPositions[i]
+							);
+					glGraph.setVertexAttribute(
+							vertexId, 
+							"y", graph.yPositions[i]
+							);
+					
+				}			
+				
+			}
+			
+			// add edges
+			for (IGraphEdge edge : graph) {
+			
+				
+				glGraph.addEdge(
+						Integer.toString(edge.id), 
+						Integer.toString(edge.node1id),
+						Integer.toString(edge.node2id)
 						);
 				
-			}			
+			}
 			
+			{
+				long timeElapsed = System.currentTimeMillis()-timestampStart;
+				
+				execution.incrementTechnicalInformationLong(KEY_INFO_CONVERT_IGRAPH_TO_GENLAB);
+				execution.incrementTechnicalInformationLong(KEY_INFO_CONVERT_IGRAPH_TO_GENLAB_TIME, timeElapsed);
+	
+				messages.traceTech(
+						"transformed an igraph graph with "+totalNodes+" vertices and "+glGraph.getEdgesCount()+" edges in "+
+						UserMachineInteractionUtils.getHumanReadableTimeRepresentation(timeElapsed), 
+						IGraph2GenLabConvertor.class
+						);
+			}
+			
+			// basic checks
+			if (glGraph.getVerticesCount() != graph.lib.getVertexCount(graph))
+				throw new ProgramException("wrong vertex count after copy: the genlab graph has "+glGraph.getVerticesCount()+", while the copy has "+graph.lib.getVertexCount(graph));
+			if (glGraph.getEdgesCount() != graph.lib.getEdgeCount(graph))
+				throw new ProgramException("wrong edge count after copy: the genlab graph has "+glGraph.getEdgesCount()+", while the copy has "+graph.lib.getEdgeCount(graph));
+			
+			
+			return glGraph;
+			
+		} catch (OutOfMemoryError e) {
+			messages.errorUser("error during the conversion of a graph from igraph ("+totalNodes+" vertices, more than "+glGraph.getEdgesCount()+" edges): no enough memory", IGraph2GenLabConvertor.class, e);
+			throw new ProgramException("not enough memory", e);
 		}
-		
-		// add edges
-		for (IGraphEdge edge : graph) {
-		
-			
-			glGraph.addEdge(
-					Integer.toString(edge.id), 
-					Integer.toString(edge.node1id),
-					Integer.toString(edge.node2id)
-					);
-			
-		}
-		
-		{
-			long timeElapsed = System.currentTimeMillis()-timestampStart;
-			
-			execution.incrementTechnicalInformationLong(KEY_INFO_CONVERT_IGRAPH_TO_GENLAB);
-			execution.incrementTechnicalInformationLong(KEY_INFO_CONVERT_IGRAPH_TO_GENLAB_TIME, timeElapsed);
-
-			messages.traceTech(
-					"transformed an igraph graph with "+totalNodes+" vertices and "+glGraph.getEdgesCount()+" edges in "+
-					UserMachineInteractionUtils.getHumanReadableTimeRepresentation(timeElapsed), 
-					IGraph2GenLabConvertor.class
-					);
-		}
-		
-		// basic checks
-		if (glGraph.getVerticesCount() != graph.lib.getVertexCount(graph))
-			throw new ProgramException("wrong vertex count after copy: the genlab graph has "+glGraph.getVerticesCount()+", while the copy has "+graph.lib.getVertexCount(graph));
-		if (glGraph.getEdgesCount() != graph.lib.getEdgeCount(graph))
-			throw new ProgramException("wrong edge count after copy: the genlab graph has "+glGraph.getEdgesCount()+", while the copy has "+graph.lib.getEdgeCount(graph));
-		
-		
-		return glGraph;
 		
 	}
 	
@@ -128,84 +138,89 @@ public class IGraph2GenLabConvertor {
 
 		final long timestampStart = System.currentTimeMillis();
 
-		// TODO emit messages
-		
-		// TODO check parameters
-		
-		// TODO check directionaliy
+		try {
+			// TODO emit messages
 			
-		// init the igraph network (with the good directionality and vertex count)
-		IGraphGraph igraphGraph = lib.generateEmpty(
-				(int)genlabGraph.getVerticesCount(), 
-				genlabGraph.getDirectionality()==GraphDirectionality.DIRECTED
-				);
-		// TODO multigrapph ??
-		
-		// copy links
-		if (genlabGraph.getEdgesCount() > 0) {
+			// TODO check parameters
 			
-			int sizeBuffer = 	Math.min(
-					BUFFER_EDGES_CREATION, 
-					(int)genlabGraph.getEdgesCount()*2
-					);
-			InternalVectorStruct vectorEdges = lib.createEmptyVector(
-					sizeBuffer
-					);
-			int filledInBuffer = 0;
-					
-			double[] buffer = new double[sizeBuffer];
-			
-			try { 
+			// TODO check directionaliy
 				
-				for (String edgeId : genlabGraph.getEdges()) {
-					
-					final Integer id1 = igraphGraph.getOrCreateIGraphNodeIdForGenlabId(genlabGraph.getEdgeVertexFrom(edgeId)); 
-					final Integer id2 = igraphGraph.getOrCreateIGraphNodeIdForGenlabId(genlabGraph.getEdgeVertexTo(edgeId));
+			// init the igraph network (with the good directionality and vertex count)
+			IGraphGraph igraphGraph = lib.generateEmpty(
+					(int)genlabGraph.getVerticesCount(), 
+					genlabGraph.getDirectionality()==GraphDirectionality.DIRECTED
+					);
+			// TODO multigrapph ??
 			
-					buffer[filledInBuffer++] = id1.doubleValue();
-					buffer[filledInBuffer++] = id2.doubleValue();
-	
-					if (sizeBuffer - filledInBuffer < 2) {
-						// no more place in this buffer...
+			// copy links
+			if (genlabGraph.getEdgesCount() > 0) {
+				
+				int sizeBuffer = 	Math.min(
+						BUFFER_EDGES_CREATION, 
+						(int)genlabGraph.getEdgesCount()*2
+						);
+				InternalVectorStruct vectorEdges = lib.createEmptyVector(
+						sizeBuffer
+						);
+				int filledInBuffer = 0;
+						
+				double[] buffer = new double[sizeBuffer];
+				
+				try { 
+					
+					for (String edgeId : genlabGraph.getEdges()) {
+						
+						final Integer id1 = igraphGraph.getOrCreateIGraphNodeIdForGenlabId(genlabGraph.getEdgeVertexFrom(edgeId)); 
+						final Integer id2 = igraphGraph.getOrCreateIGraphNodeIdForGenlabId(genlabGraph.getEdgeVertexTo(edgeId));
+				
+						buffer[filledInBuffer++] = id1.doubleValue();
+						buffer[filledInBuffer++] = id2.doubleValue();
+		
+						if (sizeBuffer - filledInBuffer < 2) {
+							// no more place in this buffer...
+							// fill the vector with this data
+							vectorEdges.fillWithArray(buffer, filledInBuffer);
+							// write this data
+							lib.addEdges(igraphGraph, vectorEdges);
+							// continue
+							filledInBuffer = 0;
+						}
+						//lib.addEdge(igraphGraph, id1, id2);
+					}
+					
+					// push remaining data
+					if (filledInBuffer > 0) {
 						// fill the vector with this data
 						vectorEdges.fillWithArray(buffer, filledInBuffer);
 						// write this data
 						lib.addEdges(igraphGraph, vectorEdges);
-						// continue
-						filledInBuffer = 0;
 					}
-					//lib.addEdge(igraphGraph, id1, id2);
-				}
 				
-				// push remaining data
-				if (filledInBuffer > 0) {
-					// fill the vector with this data
-					vectorEdges.fillWithArray(buffer, filledInBuffer);
-					// write this data
-					lib.addEdges(igraphGraph, vectorEdges);
+				} finally {
+					lib.clearVector(vectorEdges);
 				}
-			
-			} finally {
-				lib.clearVector(vectorEdges);
 			}
-		}
-		
-		// basic checks
-		if (genlabGraph.getVerticesCount() != lib.getVertexCount(igraphGraph))
-			throw new ProgramException("wrong vertex count after copy: the genlab graph has "+genlabGraph.getVerticesCount()+", while the copy has "+lib.getVertexCount(igraphGraph));
-		if (genlabGraph.getEdgesCount() != lib.getEdgeCount(igraphGraph))
-			throw new ProgramException("wrong edge count after copy: the genlab graph has "+genlabGraph.getEdgesCount()+", while the copy has "+lib.getEdgeCount(igraphGraph));
-		
-
-		{ // communicate
-			long timeElapsed = System.currentTimeMillis()-timestampStart;
+			
+			// basic checks
+			if (genlabGraph.getVerticesCount() != lib.getVertexCount(igraphGraph))
+				throw new ProgramException("wrong vertex count after copy: the genlab graph has "+genlabGraph.getVerticesCount()+", while the copy has "+lib.getVertexCount(igraphGraph));
+			if (genlabGraph.getEdgesCount() != lib.getEdgeCount(igraphGraph))
+				throw new ProgramException("wrong edge count after copy: the genlab graph has "+genlabGraph.getEdgesCount()+", while the copy has "+lib.getEdgeCount(igraphGraph));
+			
 	
-			execution.incrementTechnicalInformationLong(KEY_INFO_CONVERT_GENLAB_TO_IGRAPH);
-			execution.incrementTechnicalInformationLong(KEY_INFO_CONVERT_GENLAB_TO_IGRAPH_TIME, timeElapsed);
-
+			{ // communicate
+				long timeElapsed = System.currentTimeMillis()-timestampStart;
+		
+				execution.incrementTechnicalInformationLong(KEY_INFO_CONVERT_GENLAB_TO_IGRAPH);
+				execution.incrementTechnicalInformationLong(KEY_INFO_CONVERT_GENLAB_TO_IGRAPH_TIME, timeElapsed);
+	
+			}
+			// end !
+			return igraphGraph;
+		} catch (OutOfMemoryError e) {
+			messages.errorUser("error during the conversion of a graph to igraph ("+genlabGraph.getVerticesCount()+" vertices, "+genlabGraph.getEdgesCount()+" edges): no enough memory", IGraph2GenLabConvertor.class, e);
+			throw new ProgramException("not enough memory", e);
 		}
-		// end !
-		return igraphGraph;
 		
 	}
 	

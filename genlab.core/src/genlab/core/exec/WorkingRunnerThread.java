@@ -45,6 +45,10 @@ public class WorkingRunnerThread extends Thread {
 				messages.errorUser("task "+exec.getName()+" raised an error:"+e.getMessage(), getClass(), e);
 				exec.getProgress().setComputationState(ComputationState.FINISHED_FAILURE);
 				exec.getProgress().setException(e);
+			} catch (OutOfMemoryError e) {
+				messages.errorUser("no more memory while processing task "+exec.getName()+"; update the memory settings", getClass(), e);
+				exec.getProgress().setComputationState(ComputationState.FINISHED_FAILURE);
+				exec.getProgress().setException(e);
 			}
 			messages.debugTech(getName()+" ran task: "+exec.getName(), getClass());
 			

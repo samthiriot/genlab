@@ -21,7 +21,8 @@ public class LoopAlgoExecutionSupervisor extends
 			throw new ProgramException("this execution should only be used for instances of loop algo");
 		
 		iterationsTotal = (Integer)algoInst.getValueForParameter(LoopForAlgo.PARAM_ITERATIONS.getId());
-		
+		autoFinishWhenChildrenFinished = true;
+		autoUpdateProgressFromChildren = true;
 		
 	}
 

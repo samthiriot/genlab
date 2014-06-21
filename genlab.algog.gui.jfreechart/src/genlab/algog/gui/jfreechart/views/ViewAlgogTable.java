@@ -126,7 +126,7 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 		messages.traceTech("init the chart composite for goal "+goal+"...", getClass());
 
 		final int preferedWidth = 900;
-		final int preferedHeight = 400;
+		final int preferedHeight = 300;
 	
 		ChartComposite compositeChart = new ChartComposite(
 				compoGoals, 

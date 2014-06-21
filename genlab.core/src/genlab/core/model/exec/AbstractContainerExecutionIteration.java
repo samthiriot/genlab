@@ -11,7 +11,9 @@ import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * An iteration execution (meaning: one run of all the algos into the container) is driven like:
@@ -21,6 +23,8 @@ import java.util.Map;
  * <li>when each subtask ended: take their results, and pass them to the various child instance (reduce)</li>
  * <li></li>
  * </ul>
+ * 
+ * TODO if no external connection, every child starts first... alone !
  * 
  * 
  * @author Samuel Thiriot
@@ -142,6 +146,16 @@ public class AbstractContainerExecutionIteration
 			
 			instance2execForSubtasks.get(outputConnection.getFrom().getAlgoInstance()).getProgress().addListener(this);
 		}
+		
+		// now propagate ranks, and so detect loops
+		for (IAlgoInstance sub : algoInst.getChildren()) {
+			
+			if (sub.getAllIncomingConnections().isEmpty()) {
+				IAlgoExecution subExec = instance2execForSubtasks.get(sub);
+				subExec.propagateRank(1, new HashSet<ITask>());
+			}
+		}
+
 		
 	}
 

@@ -2,10 +2,12 @@ package genlab.core.model.exec;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.UniqueTimestamp;
+import genlab.core.exec.ITask;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.LinkedList;
+import java.util.Set;
 
 /**
  * TODO state
@@ -27,7 +29,7 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 	private ComputationState state = null;
 	// locks the state. Used to avoid the state to be changed while we are dispatching the event on state change.
 	private final Object stateLock = new Object();
-	private Exception exception = null;
+	private Throwable exception = null;
 	private String currentTaskName = "";
 	
 	protected LinkedList<IComputationProgressSimpleListener> listeners = new LinkedList<IComputationProgressSimpleListener>();
@@ -376,14 +378,36 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 
 
 	@Override
-	public void setException(Exception exception) {
+	public void setException(Throwable exception) {
 		this.exception = exception;
 	}
 
 
 	@Override
-	public Exception getException() {
+	public Throwable getException() {
 		return exception;
+	}
+
+
+	@Override
+	public void propagateRank(Integer rank, Set<ITask> visited) {
+
+		if (listeners == null)
+			return;
+		
+		LinkedList<IComputationProgressSimpleListener> listenersCopy = null; 
+		
+		synchronized (listeners) {
+			listenersCopy = (LinkedList<IComputationProgressSimpleListener>) listeners.clone();
+		}
+		// produce a clone, so a change during dispatching would not raise a problem
+		//ComputationProgressWithSteps clone = (ComputationProgressWithSteps) this.clone();
+		for (IComputationProgressSimpleListener l:  listenersCopy) {
+			
+			l.propagateRank(rank, visited);
+			
+		}	
+		
 	}
 	
 	

@@ -17,6 +17,8 @@ import genlab.core.model.instance.IConnection;
  */
 public class ConnectionExec extends AbstractConnectionExec<IAlgoExecution, IAlgoExecutionOneshot> {
 
+	protected boolean disposed = false;
+	
 	public ConnectionExec(IConnection c, IAlgoExecution from, IAlgoExecutionOneshot to, boolean check) {
 
 		super(c, from, to);
@@ -76,6 +78,7 @@ public class ConnectionExec extends AbstractConnectionExec<IAlgoExecution, IAlgo
 		// if parent not finished, reset value so child does not read it and trust its ok while its not relevant
 		if (state != ComputationState.FINISHED_OK) {
 			value = null;
+			System.err.println("parent ("+from+") non OK ("+state+"), clearing: "+this);
 			return;
 		}
 		
@@ -112,14 +115,7 @@ public class ConnectionExec extends AbstractConnectionExec<IAlgoExecution, IAlgo
 		to.notifyInputAvailable(c.getTo());
 	}
 
-	@Override
-	public final String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("executable connection ").append(from.getAlgoInstance().getName());
-		sb.append(" --> ");
-		sb.append(to.getAlgoInstance().getName());
-		return sb.toString();
-	}
+
 
 
 }

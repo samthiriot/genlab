@@ -180,6 +180,16 @@ public class WorkflowExecution
 				}
 				
 			}
+			
+			// now propagate ranks, and so detect loops
+			for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
+				
+				if (sub.getAllIncomingConnections().isEmpty()) {
+					IAlgoExecution subExec = instance2execution.get(sub);
+					subExec.propagateRank(1, new HashSet<ITask>());
+				}
+
+			}
 
 		} catch (GenLabException e) {
 			messages.errorTech("an error occured while initializing the subtasks: "+e.getLocalizedMessage(), this.getClass());

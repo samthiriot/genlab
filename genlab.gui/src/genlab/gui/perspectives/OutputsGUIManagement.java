@@ -160,13 +160,16 @@ public class OutputsGUIManagement implements IPartListener {
 	
 		GLLogger.traceTech("attempting to close all the views", getClass());
 		
+		Map<IExecution, Collection<IViewPart>> copy = null;
 		synchronized (exec2guis) {
 
-			for (IExecution execution: exec2guis.keySet()) {
-				for (IViewPart view : new LinkedList<IViewPart>(exec2guis.get(execution))) {
-					GLLogger.traceTech("attempting to close the view "+view, getClass());
-					view.getViewSite().getPage().hideView(view);
-				}
+			copy = (Map<IExecution, Collection<IViewPart>>)exec2guis.clone();
+		}
+		
+		for (IExecution execution: copy.keySet()) {
+			for (IViewPart view : new LinkedList<IViewPart>(copy.get(execution))) {
+				GLLogger.traceTech("attempting to close the view "+view, getClass());
+				view.getViewSite().getPage().hideView(view);
 			}
 		}
 		

@@ -8,6 +8,7 @@ import genlab.core.model.exec.AbstractContainerExecutionSupervisor;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
+import genlab.core.model.exec.ConnectionExecFromIterationToReduce;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.instance.IAlgoInstance;
@@ -133,6 +134,7 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 			
 			@Override
 			public void run() {
+				System.out.println("reading data to display it");
 				displayResultsSync(theView);
 			}
 		});
@@ -203,7 +205,25 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 	@Override
 	public void cancel() {
 		// TODO Auto-generated method stub
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
+	}
 
+	protected abstract void displayResultsSyncReduced(AbstractViewOpenedByAlgo theView, IAlgoExecution executionRun,
+			IConnectionExecution connectionExec, Object value);
+	
+	protected void displayResultsASyncReduced(
+			final AbstractViewOpenedByAlgo theView, 
+			final IAlgoExecution executionRun,
+			final IConnectionExecution connectionExec, 
+			final Object value) {
+		
+		Display.getDefault().asyncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				displayResultsSyncReduced(theView, executionRun, connectionExec, value);
+			}
+		});
 	}
 
 	@Override
@@ -211,10 +231,18 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 			IConnectionExecution connectionExec, Object value) {
 
 		// will be called in continuous mode: in this case, will display the result continuously
-		
-		if (!openDisplayIfNecessary())
-			// if the display is already open, refresh it (else it will be refreshed at callback, once the view will be opened.
-			displayResultsAsync(theView);
+	
+		if (connectionExec instanceof ConnectionExecFromIterationToReduce) {
+			if (!openDisplayIfNecessary())
+				// if the display is already open, refresh it (else it will be refreshed at callback, once the view will be opened.
+				displayResultsASyncReduced(theView, executionRun, connectionExec, value);
+				
+		} else {
+			if (!openDisplayIfNecessary())
+				// if the display is already open, refresh it (else it will be refreshed at callback, once the view will be opened.
+				displayResultsAsync(theView);
+			
+		}
 		
 	}
 

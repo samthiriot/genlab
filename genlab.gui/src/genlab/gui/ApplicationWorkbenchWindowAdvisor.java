@@ -31,11 +31,11 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	 * elements to remove from the top toolbar
 	 */
 	public static final String[] toHideInToolbar = new String[]{ 
-									"SearchField",
-									"org.eclipse.search.searchActionSet",
+									//"SearchField",
+									//"org.eclipse.search.searchActionSet",
 									"org.eclipse.ui.edit.text.actionSet.annotationNavigation",
 									"org.eclipse.ui.edit.text.actionSet.navigation",
-									"org.eclipse.jdt.debug.ui.JavaSnippetToolbarActions",
+									//"org.eclipse.jdt.debug.ui.JavaSnippetToolbarActions",
 									"debug",
 									"org.eclipse.debug.ui.launchActionSet"
 									};

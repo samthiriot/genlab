@@ -3,6 +3,7 @@ package genlab.core.model.exec;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.ExecutionTask;
 import genlab.core.exec.IExecution;
+import genlab.core.exec.ITask;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
@@ -322,5 +323,9 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	
 	}
 
-
+	public void propagateRank(Integer rank, Set<ITask> visited) {
+		super.propagateRank(rank, visited);
+		
+		progress.propagateRank(this.rank, visited);
+	}
 }

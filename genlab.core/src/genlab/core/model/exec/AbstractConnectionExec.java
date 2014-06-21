@@ -1,5 +1,8 @@
 package genlab.core.model.exec;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.exec.ITask;
@@ -65,6 +68,7 @@ public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, Ty
 
 	
 	public void reset() {
+		System.out.println("clearing by reset"+this);
 		this.value = null;
 	}
 
@@ -97,6 +101,8 @@ public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, Ty
 		// don't clean the value, because maybe the children did not retrieved if now.
 		// value = null;
 		
+		System.out.println("parent cleaned, releasing the pointer to it "+this);
+		
 		from = null; // remove the pointer to the "from" executable, so it may be garbage collected.
 		
 	}
@@ -105,9 +111,11 @@ public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, Ty
 	public void clean() {
 		// clean myself
 		
+		System.out.println("cleaning byself because clean():"+this);
 		if (from != null)
 			from.getProgress().removeListener(this);
 		
+		System.out.println("cleaning connection: "+this);
 		value = null;
 	}
 	
@@ -124,6 +132,28 @@ public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, Ty
 		return true;
 		
 	}
+
+	@Override
+	public final String toString() {
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append("executable connection ");
+		if (from != null)
+			sb.append(from.getAlgoInstance().getName());
+		else 
+			sb.append("null");
+		sb.append(" --> ");
+		if (to != null)
+			sb.append(to.getAlgoInstance().getName());
+		else
+			sb.append("null");
+		return sb.toString();
+	}
 	
+
+	@Override
+	public void propagateRank(Integer rank, Set<ITask> visited) {
+		to.propagateRank(rank, new HashSet<ITask>(visited));
+	}
 
 }

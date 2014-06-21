@@ -2,6 +2,8 @@ package genlab.gui.algos;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ComputationState;
+import genlab.core.model.exec.IAlgoExecution;
+import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
@@ -78,6 +80,40 @@ public class GraphicalConsoleExec extends AbstractOpenViewAlgoExec {
 	protected void loadDataSuccessiveFromInput() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	protected void displayResultsSyncReduced(AbstractViewOpenedByAlgo theView,
+			IAlgoExecution executionRun, IConnectionExecution connectionExec,
+			Object value) {
+		
+		ConsoleView cv = (ConsoleView)theView;
+		
+		if (cv == null) 
+			return;
+
+		cv.showBusy(true);
+
+	
+		StringBuffer sb = new StringBuffer();
+			
+		IInputOutputInstance input = connectionExec.getConnection().getFrom();
+		sb.append("result for run ");
+		sb.append(executionRun);
+		sb.append(",  ");
+		sb.append(input.getAlgoInstance().getName());
+		sb.append(" / ");
+		sb.append(input.getMeta().getName());
+		sb.append(": ");
+		sb.append(value);
+		sb.append("\n");
+		
+		getProgress().incProgressMade();
+	
+		cv.write(sb.toString());
+		
+		cv.showBusy(false);
+
 	}
 
 	

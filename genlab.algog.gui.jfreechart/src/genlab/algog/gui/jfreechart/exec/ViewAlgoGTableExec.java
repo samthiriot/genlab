@@ -53,5 +53,13 @@ public class ViewAlgoGTableExec extends AbstractJFreeChartAlgoExec {
 				);
 	}
 
+	@Override
+	protected void displayResultsSyncReduced(AbstractViewOpenedByAlgo theView,
+			IAlgoExecution executionRun, IConnectionExecution connectionExec,
+			Object value) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

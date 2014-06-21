@@ -1,5 +1,8 @@
 package genlab.core.model.exec;
 
+import java.util.Set;
+
+import genlab.core.exec.ITask;
 import genlab.core.exec.ITaskLifecycleListener;
 
 /**
@@ -12,6 +15,7 @@ public interface IComputationProgressSimpleListener extends ITaskLifecycleListen
 
 	public void computationStateChanged(IComputationProgress progress);
 	
+	public void propagateRank(Integer rank, Set<ITask> visited);
 	
 	
 }

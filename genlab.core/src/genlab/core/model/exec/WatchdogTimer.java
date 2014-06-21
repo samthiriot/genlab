@@ -1,5 +1,7 @@
 package genlab.core.model.exec;
 
+import java.util.Set;
+
 import genlab.core.exec.ITask;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
@@ -88,6 +90,11 @@ public class WatchdogTimer extends Thread implements IComputationProgressSimpleL
 	@Override
 	public void taskCleaning(ITask task) {
 		cancel();
+	}
+
+	@Override
+	public void propagateRank(Integer rank, Set<ITask> visited) {
+		// not relevant
 	}
 	
 }

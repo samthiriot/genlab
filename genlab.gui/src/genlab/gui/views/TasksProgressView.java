@@ -369,9 +369,14 @@ public class TasksProgressView
 	
 	private TreeItem getOrCreateItemForTask(ITask t) {
 		
+		
 		TreeItem item = task2item.get(t);
 		
 		if (item == null) {
+			
+			// TODO task
+			System.err.println("display task "+t+", rank "+t.getRank());
+			
 			// create the item !
 			if (t.getParent() == null)
 				item = new TreeItem(

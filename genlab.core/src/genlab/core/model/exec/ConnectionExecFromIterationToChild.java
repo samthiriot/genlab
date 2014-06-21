@@ -1,6 +1,10 @@
 package genlab.core.model.exec;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import genlab.core.commons.ProgramException;
+import genlab.core.exec.ITask;
 import genlab.core.model.instance.IConnection;
 
 /**
@@ -45,6 +49,11 @@ public class ConnectionExecFromIterationToChild extends AbstractConnectionExec<I
 	public void forceValue(Object value) {
 		this.value = value;
 		to.notifyInputAvailable(c.getTo());
+	}
+	
+	@Override
+	public void propagateRank(Integer rank, Set<ITask> visited) {
+		// don't propagate
 	}
 
 }

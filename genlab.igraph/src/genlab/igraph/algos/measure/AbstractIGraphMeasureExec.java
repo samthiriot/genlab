@@ -75,7 +75,10 @@ public abstract class AbstractIGraphMeasureExec extends AbstractAlgoExecutionOne
 					Object value = stats.get(out);
 					result.setResult(out, value);	
 				}
-				
+			} catch (RuntimeException e) {
+				messages.errorTech("the measure of graph properties failed: "+e.getMessage(), getClass(), e);
+				progress.setComputationState(ComputationState.FINISHED_FAILURE);
+				progress.setException(e);
 			} finally {
 				// clear memory
 				igraphGraph.lib.clearGraphMemory(igraphGraph);

@@ -1,6 +1,9 @@
 package genlab.core.exec;
 
 
+import genlab.core.commons.LoopGraphException;
+import genlab.core.commons.WrongParametersException;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -18,6 +21,7 @@ public abstract class ExecutionTask implements IExecutionTask {
 	
 	private Collection<ITaskLifecycleListener> lifecycleListeners = null;
 
+	protected Integer rank = null;
 	
 	public ExecutionTask() {
 
@@ -101,5 +105,22 @@ public abstract class ExecutionTask implements IExecutionTask {
 		parent = null;
 				
 	}
+	
+
+	@Override
+	public final Integer getRank() {
+		return rank;
+	}
+
+	public void propagateRank(Integer rank, Set<ITask> visited) {
+		if (this.rank != null) {
+			// suspicious: maybe there is a loop ?
+			if (visited.contains(this))
+				throw new LoopGraphException("loop detected in "+this+" (rank received "+rank+", previous rank "+this.rank+")");
+		}
+		visited.add(this);
+		this.rank = rank;
+	}
+	
 
 }

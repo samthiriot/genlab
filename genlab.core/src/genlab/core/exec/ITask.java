@@ -3,9 +3,11 @@ package genlab.core.exec;
 import genlab.core.model.exec.IComputationProgress;
 
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * A task that may be running somewhere
+ * TODO manage rank
  * 
  * @author Samuel Thiriot
  *
@@ -67,6 +69,9 @@ public interface ITask {
 	 */
 	public void clean();
 	
+	public void propagateRank(Integer rank, Set<ITask> visited);
+	
+	public Integer getRank();
 	
 }
 
