@@ -507,5 +507,10 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 		super.dispose();
 	}
 
+	@Override
+	public boolean isDisposed() {
+		return form != null && form.isDisposed();
+	}
+
 
 }

@@ -663,5 +663,29 @@
             id="genlab.gui.launchconfigurations.processfactory">
       </processFactory>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="genlab.gui.preferences.GenlabPreferencePage"
+            id="org.genlab.preferences.pages.genlab"
+            name="Genlab">
+      </page>
+      <page
+            category="org.genlab.preferences.pages.genlab"
+            class="genlab.gui.preferences.RunnerPreferencePage"
+            id="org.genlab.preferences.pages.localrunner"
+            name="Local runner">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <scope
+            class="genlab.gui.preferences.RunnerPreferencePage"
+            name="RunPreferencePage">
+      </scope>
+      <initializer
+            class="genlab.gui.preferences.RunnerPreferencesInitializer">
+      </initializer>
+   </extension>
 
 </plugin>

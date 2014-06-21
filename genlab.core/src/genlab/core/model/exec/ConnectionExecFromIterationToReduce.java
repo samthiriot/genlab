@@ -48,7 +48,7 @@ public class ConnectionExecFromIterationToReduce extends AbstractConnectionExec<
 		}
 		
 		if (state != ComputationState.FINISHED_OK) {
-			System.out.println("clean value because parent "+from+" is "+state+": "+this);
+			//System.out.println("clean value because parent "+from+" is "+state+": "+this);
 			value = null;
 			return;
 		}

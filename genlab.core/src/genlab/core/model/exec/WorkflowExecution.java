@@ -295,6 +295,29 @@ public class WorkflowExecution
 
 
 	@Override
+	protected void hookContainerExecutionFinished(ComputationState state) {
+
+		switch (state) {
+		case FINISHED_OK:
+			messages.infoUser("successfull end of execution for workflow "+this.getAlgoInstance().getName(), getClass());
+			break;
+		case FINISHED_CANCEL:
+			messages.infoUser("end of execution for workflow "+this.getAlgoInstance().getName()+" (cancel)", getClass());
+			break;
+		case FINISHED_FAILURE:
+			messages.errorUser("end of execution for workflow "+this.getAlgoInstance().getName()+" (failure)", getClass());
+			// TODO Display exception
+			break;
+		default: 
+			throw new ProgramException("can not finish in such a state: "+state);
+		}
+			
+			
+	}
+
+
+
+	@Override
 	public boolean containedInto(IAlgoExecution other) {
 		return false;
 	}

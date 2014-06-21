@@ -88,5 +88,6 @@ public abstract class AbstractViewOpenedByAlgo extends ViewPart implements IProp
 		super.dispose();
 	}
 	
+	public abstract boolean isDisposed();
 
 }

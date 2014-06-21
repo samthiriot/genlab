@@ -1,6 +1,7 @@
 package genlab.gui;
 
 import genlab.gui.perspectives.WorkflowPerspective;
+import genlab.gui.preferences.Genlab2eclipsePreferences;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
@@ -45,6 +46,15 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		PlatformUI.getPreferenceStore().setValue(ResourcesPlugin.PREF_DISABLE_LINKING, true); 
 		PlatformUI.getPreferenceStore().setValue(ResourcesPlugin.PREF_AUTO_REFRESH, true);
 
+	}
+
+	@Override
+	public void postStartup() {
+		super.postStartup();
+		
+		// load preferences
+		Genlab2eclipsePreferences.singleton.atStartup();
+		
 	}
 	
 }

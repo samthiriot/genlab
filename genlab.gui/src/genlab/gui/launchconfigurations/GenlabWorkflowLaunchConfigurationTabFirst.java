@@ -1,6 +1,7 @@
 package genlab.gui.launchconfigurations;
 
 import genlab.gui.Utils;
+import genlab.gui.VisualResources;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 
 import org.eclipse.core.internal.resources.File;
@@ -28,6 +29,7 @@ public class GenlabWorkflowLaunchConfigurationTabFirst
 
 	public static String KEY_PROJECT = "project";
 	public static String KEY_WORKFLOW = "workflow";
+	public static String KEY_FORCE_EXEC = "force_exec";
 
 	//public static String KEY_CPU_COUNT = "cpus_count";
 	
@@ -36,6 +38,12 @@ public class GenlabWorkflowLaunchConfigurationTabFirst
 	private Text workflowText ;
 	private Button projectButton;
 	private Button workflowButton;
+	
+	private Button checkboxExecutionForced;
+	
+	private Composite host;
+	private Group groupWorkflow ;
+	private Group groupSettings ;
 	
 	public GenlabWorkflowLaunchConfigurationTabFirst() {
 			
@@ -109,11 +117,11 @@ public class GenlabWorkflowLaunchConfigurationTabFirst
 	@Override
 	public void createControl(Composite parent) {
 		
-		Composite host = new Composite(parent, SWT.NONE);
+		host = new Composite(parent, SWT.NONE);
 		host.setLayout(new GridLayout(1, false));
 		
 		{
-			Group groupWorkflow = new Group(host, SWT.NONE);
+			groupWorkflow = new Group(host, SWT.NONE);
 			groupWorkflow.setText("workflow to execute");
 			groupWorkflow.setLayout(new GridLayout(3, false));
 			groupWorkflow.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
@@ -168,6 +176,16 @@ public class GenlabWorkflowLaunchConfigurationTabFirst
 			});
 		}
 		
+		{
+			groupSettings = new Group(host, SWT.NONE);
+			groupSettings.setText("execution behaviour");
+			groupSettings.setLayout(new GridLayout(1, false));
+			groupSettings.setLayoutData(new GridData(GridData.FILL, GridData.FILL, true, false));
+
+			checkboxExecutionForced = new Button(groupSettings, SWT.CHECK);
+			checkboxExecutionForced.setText("force execution: compute the algorithms even if they are not connected");
+			
+		}
 		
 		host.layout(true);
 		
@@ -183,7 +201,7 @@ public class GenlabWorkflowLaunchConfigurationTabFirst
 		// TODO Auto-generated method stub
 		
 		// configuration.setAttribute(KEY_CPU_COUNT, Runtime.getRuntime().availableProcessors());
-		
+		configuration.setAttribute(KEY_FORCE_EXEC, false);
 	}
 
 	@Override
@@ -194,6 +212,7 @@ public class GenlabWorkflowLaunchConfigurationTabFirst
 			// cpus.setSelection(configuration.getAttribute(KEY_CPU_COUNT, 1));
 			workflowText.setText(configuration.getAttribute(KEY_WORKFLOW, "")); // TODO
 			projectText.setText(configuration.getAttribute(KEY_PROJECT, "")); // TODO
+			checkboxExecutionForced.setSelection(configuration.getAttribute(KEY_FORCE_EXEC, false)); 
 			
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
@@ -211,6 +230,8 @@ public class GenlabWorkflowLaunchConfigurationTabFirst
 
 		configuration.setAttribute(KEY_PROJECT, projectText.getText());
 		configuration.setAttribute(KEY_WORKFLOW, workflowText.getText());
+		configuration.setAttribute(KEY_FORCE_EXEC, checkboxExecutionForced.getSelection());
+
 		
 	}
 
@@ -239,6 +260,20 @@ public class GenlabWorkflowLaunchConfigurationTabFirst
 	public boolean isValid(ILaunchConfiguration launchConfig) {
 		
 		return isProjectOK() && isWorkflowOK();
+		
+	}
+
+
+	@Override
+	public void dispose() {
+
+		VisualResources.disposeChildrenFirstLevel(groupWorkflow);
+		groupWorkflow.dispose();
+		VisualResources.disposeChildrenFirstLevel(groupSettings);
+		groupSettings.dispose();
+		host.dispose();
+		
+		super.dispose();
 		
 	}
 	

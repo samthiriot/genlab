@@ -68,7 +68,7 @@ public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, Ty
 
 	
 	public void reset() {
-		System.out.println("clearing by reset"+this);
+		//System.out.println("clearing by reset"+this);
 		this.value = null;
 	}
 
@@ -101,7 +101,7 @@ public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, Ty
 		// don't clean the value, because maybe the children did not retrieved if now.
 		// value = null;
 		
-		System.out.println("parent cleaned, releasing the pointer to it "+this);
+		//System.out.println("parent cleaned, releasing the pointer to it "+this);
 		
 		from = null; // remove the pointer to the "from" executable, so it may be garbage collected.
 		
@@ -111,11 +111,11 @@ public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, Ty
 	public void clean() {
 		// clean myself
 		
-		System.out.println("cleaning byself because clean():"+this);
+		// System.out.println("cleaning byself because clean():"+this);
 		if (from != null)
 			from.getProgress().removeListener(this);
 		
-		System.out.println("cleaning connection: "+this);
+		// System.out.println("cleaning connection: "+this);
 		value = null;
 	}
 	

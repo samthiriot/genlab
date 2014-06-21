@@ -100,6 +100,11 @@ public class ConsoleView extends AbstractViewOpenedByAlgo {
 		return exec.getAlgoInstance().getName();
 	}
 
+
+	@Override
+	public boolean isDisposed() {
+		return text != null && text.isDisposed();
+	}
 	
 	
 }

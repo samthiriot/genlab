@@ -558,6 +558,10 @@ public class VisualResources {
 	}
 	
 	public static void disposeChildrenFirstLevel(Composite descComp) {
+		
+		if (descComp == null || descComp.isDisposed())
+			return;
+		
 		for (Control control : descComp.getChildren()) {
 			try {
 				control.dispose();

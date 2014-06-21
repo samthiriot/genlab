@@ -1,10 +1,7 @@
 package genlab.core.exec;
 
-import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.ExecutionHooks;
 import genlab.core.model.exec.IAlgoExecution;
-import genlab.core.model.exec.IComputationProgress;
-import genlab.core.model.exec.IComputationProgressSimpleListener;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.WorkflowCheckResult;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -14,16 +11,19 @@ import genlab.core.usermachineinteraction.MessageLevel;
 public class GenlabExecution {
 
 	public static void runBackground(final IGenlabWorkflowInstance workflow) {
+		runBackground(workflow, false);
+	}
+
+	public static void runBackground(final IGenlabWorkflowInstance workflow, final boolean forceExec) {
 
 		Runnable runnable = new Runnable() {
 			
 			@Override
 			public void run() {
-				GLLogger.debugTech("run called", GenlabExecution.class);
 				
-				GLLogger.debugTech("workflow: "+workflow, GenlabExecution.class);
+				//GLLogger.debugTech(" workflow: "+workflow, GenlabExecution.class);
 				if (workflow == null) {
-					GLLogger.warnTech("null...", GenlabExecution.class);
+					GLLogger.warnTech("asked for the computation of a null workflow...", GenlabExecution.class);
 					return;
 				}
 				
@@ -45,7 +45,7 @@ public class GenlabExecution {
 				IRunner r = LocalComputationNode.getSingleton().getRunner();
 
 				Execution exec = new Execution(r);
-				exec.setExecutionForced(true);
+				exec.setExecutionForced(forceExec);
 				exec.getListOfMessages().addAll(checkInfo.messages);
 				exec.getListOfMessages().setFilterIgnoreBelow(MessageLevel.INFO);
 

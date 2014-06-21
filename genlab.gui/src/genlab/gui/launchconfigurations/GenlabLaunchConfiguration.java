@@ -50,6 +50,11 @@ public class GenlabLaunchConfiguration implements ILaunchConfigurationDelegate {
 				GenlabWorkflowLaunchConfigurationTabFirst.KEY_WORKFLOW, 
 				"haha"
 				);
+		
+		final boolean forceExec = configuration.getAttribute(
+				GenlabWorkflowLaunchConfigurationTabFirst.KEY_FORCE_EXEC,
+				false
+				);
 
 		System.out.println("should launch "+projectPath);
 		System.out.println("should launch "+workflowPath);
@@ -70,7 +75,7 @@ public class GenlabLaunchConfiguration implements ILaunchConfigurationDelegate {
 						   RunPerspective.ID,       
 						   PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 						   );
-					GenlabExecution.runBackground(glWorkflow);
+					GenlabExecution.runBackground(glWorkflow, forceExec);
 
 				} catch (WorkbenchException e) {
 				   e.printStackTrace();

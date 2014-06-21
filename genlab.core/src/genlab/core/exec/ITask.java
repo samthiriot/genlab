@@ -7,7 +7,9 @@ import java.util.Set;
 
 /**
  * A task that may be running somewhere
- * TODO manage rank
+ * 
+ * TODO manage rank to be able to display tasks in a more nice way, 
+ * and to detect loops
  * 
  * @author Samuel Thiriot
  *

@@ -217,6 +217,9 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 			final IConnectionExecution connectionExec, 
 			final Object value) {
 		
+		if (theView.isDisposed())
+			return;
+		
 		Display.getDefault().asyncExec(new Runnable() {
 			
 			@Override

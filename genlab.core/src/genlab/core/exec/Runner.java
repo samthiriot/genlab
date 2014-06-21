@@ -1,28 +1,17 @@
 package genlab.core.exec;
 
 import genlab.core.commons.ProgramException;
-import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
-import genlab.core.model.exec.IComputationProgressSimpleListener;
-import genlab.core.model.exec.IComputationResult;
-import genlab.core.model.exec.IConnectionExecution;
-import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IInputOutputInstance;
-import genlab.core.usermachineinteraction.ITextMessage;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -50,7 +39,6 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class Runner extends Thread implements IRunner {
 	
-	final static int MAX_THREADS = 4; // TODO
 	
 	final static int START_TASKS_SIZE = 500;
 	
@@ -89,14 +77,14 @@ public class Runner extends Thread implements IRunner {
 	 * Contains worker threads which do not use the CPU (in fact, they are more control threads.
 	 * This thread pool will be resized on demand.
 	 */
-	private Set<WorkingRunnerThread> threadsPoolTaskNoThread = new HashSet<WorkingRunnerThread>(MAX_THREADS*20);
+	private Set<WorkingRunnerThread> threadsPoolTaskNoThread = new HashSet<WorkingRunnerThread>(500);
 	final BlockingQueue<IAlgoExecution> readyToComputeNoThread = new LinkedBlockingQueue<IAlgoExecution>();
 	private int usedThreadsWithoutThread = 0;
 
 	/**
 	 * Contains worker threads which do use the CPU. Contains only MAX_THREADS
 	 */
-	private Set<WorkingRunnerThread> threadsPoolTaskWithThreads = new HashSet<WorkingRunnerThread>(MAX_THREADS*20);
+	private Set<WorkingRunnerThread> threadsPoolTaskWithThreads = new HashSet<WorkingRunnerThread>(500);
 	final BlockingQueue<IAlgoExecution> readyToComputeWithThreads = new LinkedBlockingQueue<IAlgoExecution>();
 
 	/**
@@ -105,19 +93,23 @@ public class Runner extends Thread implements IRunner {
 	 */
 	private int usedThreads = 0;
 
+	private int availableThreads = 4;
 	
-	
-	public Runner() {
+	public Runner(int availableThreads) {
 		
 		this.messagesRun =  ListsOfMessages.getGenlabMessages();
 		
+		this.availableThreads = availableThreads;
+		
+		messagesRun.infoUser("creating local runner (threads = "+availableThreads+")", getClass());
+		
 		setName("glRunner");
-		setPriority(NORM_PRIORITY);
+		setPriority(MIN_PRIORITY);
 		setDaemon(true);
 		
 
 		// init the thread pool
-		for (int i=0; i<MAX_THREADS; i++) {
+		for (int i=0; i<availableThreads; i++) {
 			WorkingRunnerThread t = new WorkingRunnerThread(
 					"gl_worker_"+i, 
 					readyToComputeWithThreads
@@ -127,7 +119,7 @@ public class Runner extends Thread implements IRunner {
 		}
 		
 		// init the thread pool
-		for (int i=0; i<MAX_THREADS; i++) {
+		for (int i=0; i<availableThreads; i++) {
 			WorkingRunnerThread t = new WorkingRunnerThread(
 					"gl_workcontroller_"+i, 
 					readyToComputeNoThread

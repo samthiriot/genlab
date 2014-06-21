@@ -261,5 +261,10 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 		super.dispose();
 	}
 
+	@Override
+	public boolean isDisposed() {
+		return form.isDisposed();
+	}
+
 
 }

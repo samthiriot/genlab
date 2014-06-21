@@ -63,8 +63,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		    	return;
 			for (MTrimElement element : topTrim.getChildren()) {
 				
-				System.err.println("toolbar: "+element.getElementId());
-				System.err.println("toolbar: "+element.getClass());
+				//System.err.println("toolbar: "+element.getElementId());
+				//System.err.println("toolbar: "+element.getClass());
 
 				
 			    if (toRemove.contains(element.getElementId())) {                     
@@ -72,7 +72,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			    } else if (element instanceof ToolBarImpl) {
 			    	ToolBarImpl elementTB = (ToolBarImpl)element;
 			    	for (MToolBarElement e: elementTB.getChildren()) {
-						System.err.println("toolbar sub: "+e.getElementId());
+						//System.err.println("toolbar sub: "+e.getElementId());
 
 			    		if (toRemove.contains(e.getElementId())) {   
 			    			((Control)e).dispose();

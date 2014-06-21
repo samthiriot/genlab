@@ -450,5 +450,10 @@ public class ViewAlgogRadarTable extends AbstractViewOpenedByAlgo implements IPa
 		super.dispose();
 	}
 
+	@Override
+	public boolean isDisposed() {
+		return form != null && form.isDisposed();
+	}
+
 
 }

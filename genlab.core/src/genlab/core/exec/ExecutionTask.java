@@ -117,9 +117,13 @@ public abstract class ExecutionTask implements IExecutionTask {
 			// suspicious: maybe there is a loop ?
 			if (visited.contains(this))
 				throw new LoopGraphException("loop detected in "+this+" (rank received "+rank+", previous rank "+this.rank+")");
+			if (rank > this.rank)
+				this.rank = rank;
+		} else {
+			visited.add(this);
+			this.rank = rank;	
 		}
-		visited.add(this);
-		this.rank = rank;
+		
 	}
 	
 

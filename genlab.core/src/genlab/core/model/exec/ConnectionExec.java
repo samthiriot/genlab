@@ -78,7 +78,7 @@ public class ConnectionExec extends AbstractConnectionExec<IAlgoExecution, IAlgo
 		// if parent not finished, reset value so child does not read it and trust its ok while its not relevant
 		if (state != ComputationState.FINISHED_OK) {
 			value = null;
-			System.err.println("parent ("+from+") non OK ("+state+"), clearing: "+this);
+			// System.err.println("parent ("+from+") non OK ("+state+"), clearing: "+this);
 			return;
 		}
 		
