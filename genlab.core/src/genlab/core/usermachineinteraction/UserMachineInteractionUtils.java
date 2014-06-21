@@ -3,8 +3,11 @@ package genlab.core.usermachineinteraction;
 public class UserMachineInteractionUtils {
 
 
-	public static String getHumanReadableTimeRepresentation(long durationMs) {
+	public static String getHumanReadableTimeRepresentation(Long durationMs) {
 	
+		if (durationMs == null)
+			return "?";
+		
 		StringBuffer sb = new StringBuffer();
 		
 		if (durationMs < 1000)

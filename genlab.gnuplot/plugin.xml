@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.gnuplot.algos.SaveTableAsGnuplotAlgo"
+            id="genlab.gnuplot.algos.SaveTableAsGnuplotAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <author
+            id="genlab.gnuplot.authors.ThomasWilliams"
+            name="Thomas Williams">
+      </author>
+      <author
+            id="genlab.gnuplot.authors.ColinKelley"
+            name="Colin Kelley">
+      </author>
+      <library
+            description="Gnuplot is a free, command-driven, interactive, function and data plotting program."
+            id="genlab.gnuplot.library"
+            licence_name="Gnuplot&apos;s copyright"
+            licence_url="http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright"
+            name="Gnuplot"
+            url="http://www.gnuplot.info/">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.gnuplot.authors.ColinKelley">
+         </original_author_id>
+         <original_author_id
+               id="genlab.gnuplot.authors.ThomasWilliams">
+         </original_author_id>
+         <more_info
+               content="wikipedia page"
+               url="http://en.wikipedia.org/wiki/Gnuplot">
+         </more_info>
+         <more_info
+               content="gnuplot manual"
+               url="http://www.fnal.gov/docs/products/gnuplot/manual/">
+         </more_info>
+         <more_info
+               content="gnuplot FAQ"
+               url="http://www.gnuplot.info/faq/faq.html">
+         </more_info>
+         <more_info
+               content="Philipp K. Janert (2009). Gnuplot in Action. Manning Publications. ISBN 978-1933988399.">
+         </more_info>
+         <more_info
+               content="Lee Phillips (2012). gnuplot Cookbook. Packt Publishing. ISBN 978-1849517249.">
+         </more_info>
+      </library>
+      <docalgo
+            algo_id="genlab.gnuplot.algos.SaveTableAsGnuplotAlgo"
+            description="Stores the table in gnuplot data format (columns separated by spaces)"
+            library_id="genlab.gnuplot.library">
+      </docalgo>
+   </extension>
+
+</plugin>

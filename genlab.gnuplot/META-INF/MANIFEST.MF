@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Gnuplot
+Bundle-SymbolicName: genlab.gnuplot;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: genlab.gnuplot.Activator
+Bundle-Vendor: Samuel Thiriot
+Require-Bundle: org.eclipse.core.runtime,
+ genlab.core;bundle-version="0.0.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

@@ -3,6 +3,7 @@ package genlab.gui;
 import java.util.HashSet;
 import java.util.Set;
 
+import genlab.core.usermachineinteraction.GLLogger;
 import genlab.quality.TestResponsivity;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -66,7 +67,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 				//System.err.println("toolbar: "+element.getElementId());
 				//System.err.println("toolbar: "+element.getClass());
 
-				
+				try {
 			    if (toRemove.contains(element.getElementId())) {                     
 			        ((Control) element.getWidget()).dispose();
 			    } else if (element instanceof ToolBarImpl) {
@@ -79,6 +80,9 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			    		}
 			    	}
 			    }
+				} catch (RuntimeException e) {
+					GLLogger.warnTech("error while attempting to hide in toolbar: "+element, getClass());
+				}
 			}
 		}
     }

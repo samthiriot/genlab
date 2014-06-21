@@ -475,7 +475,9 @@ public class TasksProgressView
 		switch (state) {
 		case FINISHED_OK: {
 			StringBuffer sb = new StringBuffer();
-			sb.append("finished (").append(UserMachineInteractionUtils.getHumanReadableTimeRepresentation(t.getProgress().getDurationMs())).append(")");
+			sb.append("finished");
+			if (t.getProgress() != null)
+				sb.append("(").append(UserMachineInteractionUtils.getHumanReadableTimeRepresentation(t.getProgress().getDurationMs())).append(")");
 			txt = sb.toString();
 			tasksDisplayedNotStopped.remove(t);
 		} break;

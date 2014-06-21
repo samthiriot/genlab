@@ -37,6 +37,7 @@
       <plugin id="genlab.core"/>
       <plugin id="genlab.cytoscape"/>
       <plugin id="genlab.gephi"/>
+      <plugin id="genlab.gnuplot"/>
       <plugin id="genlab.graphiti"/>
       <plugin id="genlab.graphstream"/>
       <plugin id="genlab.graphstream.corejar"/>
