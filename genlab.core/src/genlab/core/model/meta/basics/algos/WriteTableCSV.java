@@ -55,7 +55,7 @@ public class WriteTableCSV extends BasicAlgo {
 		super(
 				"write table as CSV", 
 				"writes a table into a file as a CSV file", 
-				ExistingAlgoCategories.WRITER, 
+				ExistingAlgoCategories.WRITER_TABLE, 
 				"/icons/writeToFile"+IMAGE_PATH_PLACEHOLDER_SIZE+".png",
 				null
 				);

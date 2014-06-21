@@ -44,7 +44,7 @@ public abstract class AbstractTableGenerator extends BasicAlgo {
 		super(
 				name, 
 				desc, 
-				ExistingAlgoCategories.GENERATORS, 
+				ExistingAlgoCategories.GENERATORS_TABLES, 
 				null,
 				null
 				);

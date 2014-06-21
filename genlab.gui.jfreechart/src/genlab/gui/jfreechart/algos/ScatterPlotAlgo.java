@@ -5,6 +5,7 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import genlab.core.model.meta.basics.flowtypes.TableFlowType;
@@ -39,7 +40,8 @@ public class ScatterPlotAlgo extends AbstractJFreechartAlgo {
 		super(
 				"scatter plot", 
 				"displays scatter data", 
-				ScatterView.VIEW_ID
+				ScatterView.VIEW_ID,
+				ExistingAlgoCategories.DISPLAY_TABLES
 				);
 		
 		inputs.add(INPUT_TABLE);

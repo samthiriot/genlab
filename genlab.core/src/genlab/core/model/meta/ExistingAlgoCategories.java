@@ -50,11 +50,25 @@ public class ExistingAlgoCategories {
 			"graphs"
 			);
 	
+	public static final AlgoCategory WRITER_TABLE = new AlgoCategory(
+			WRITER, 
+			"tables", 
+			"write tables to files", 
+			"tables"
+			);
+	
 	public static final AlgoCategory GENERATORS = new AlgoCategory(
 			null, 
 			"generators", 
 			"generate things", 
 			"generators" 
+			);
+	
+	public static final AlgoCategory GENERATORS_TABLES = new AlgoCategory(
+			GENERATORS, 
+			"tables", 
+			"generate tables", 
+			"tables" 
 			);
 	
 	public static final AlgoCategory GENERATORS_GRAPHS = new AlgoCategory(
@@ -142,7 +156,22 @@ public class ExistingAlgoCategories {
 			null, 
 			"displays", 
 			"display information", 
-			"dislap"
+			"display"
+			);
+	
+
+	public static final AlgoCategory DISPLAY_GRAPH = new AlgoCategory(
+			DISPLAY, 
+			"graphs", 
+			"display graphs", 
+			"graphs"
+			);
+	
+	public static final AlgoCategory DISPLAY_TABLES = new AlgoCategory(
+			DISPLAY, 
+			"tables", 
+			"display tables", 
+			"tables"
 			);
 	
 	public static final AlgoCategory DISPLAY_EXPLORATION_GENETIC_ALGOS = new AlgoCategory(
@@ -192,11 +221,13 @@ public class ExistingAlgoCategories {
 		declareCategory(PARSER);
 		declareCategory(PARSER_GRAPH);
 		declareCategory(GENERATORS);
+		declareCategory(GENERATORS_TABLES);
 		declareCategory(GENERATORS_GRAPHS);
 		declareCategory(STATIC_GRAPHS_LCF);
 		
 		declareCategory(WRITER);
 		declareCategory(WRITER_GRAPH);
+		declareCategory(WRITER_TABLE);
 		declareCategory(ANALYSIS);
 		declareCategory(ANALYSIS_GRAPH);
 		declareCategory(CONSTANTS);
@@ -206,6 +237,8 @@ public class ExistingAlgoCategories {
 		declareCategory(EXPLORATION_GENETIC_ALGOS);
 		declareCategory(CASTING);
 		declareCategory(DISPLAY);
+		declareCategory(DISPLAY_TABLES);
+		declareCategory(DISPLAY_GRAPH);
 		declareCategory(DISPLAY_EXPLORATION_GENETIC_ALGOS);
 		declareCategory(LOOPS);
 		declareCategory(NOISE);

@@ -46,7 +46,7 @@ public abstract class AbstractGraphDisplayAlgo extends GraphStreamAlgo {
 		super(
 				name, 
 				description, 
-				ExistingAlgoCategories.DISPLAY
+				ExistingAlgoCategories.DISPLAY_GRAPH
 				);
 		
 		inputs.add(INPUT_GRAPH);
