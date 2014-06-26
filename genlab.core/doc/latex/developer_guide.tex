@@ -1,0 +1,35 @@
+\documentclass[a4paper,10pt]{book}
+\usepackage[utf8x]{inputenc}
+
+\begin{document}
+
+\chapter{develop algorithms}
+
+\section{develop Graphical Algorithms}
+
+\paragraph*{}
+Graphical algorithms open graphical elements during their execution. They intend to display something as a window integrated within genlab.
+
+\paragraph*{}
+These graphical algorithms are made of two parts:
+\begin{itemize}
+\item the view is the eclispe RCP view part, that is the actual window integrated inside the GUI,
+\item the algorithm is the genlab algorithm which is going to open a windows
+\end{itemize}
+
+\subsection{View}
+
+\paragraph*{}
+A view should:
+\begin{itemize}
+ \item inherit the class ``AbstractViewOpenedByAlgo''.
+\item always have an unique ID defined as a static field ID of its class
+\item be declared against eclipse using the extension org.eclipse.ui.views
+\item be associated with a position in the genlab perspectives using the extension ``org.eclipse.ui.perspectiveExstension''
+\item 
+\end{itemize}
+
+ 
+ 
+
+\end{document}
