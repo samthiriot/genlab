@@ -6,6 +6,8 @@ import genlab.core.usermachineinteraction.GLLogger;
 import genlab.igraph.Activator;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import com.sun.jna.Native;
@@ -27,7 +29,7 @@ typedef int    igraph_bool_t;
 /**
  * 
  * For debug: VM option jna.debug_load=true .
- * Allows multi thread access.
+ * Allows multi thread access. But problem of random number generator shared (or not ?) between instances.
  * On how to store a native lib: use OSGI bunder
  * http://wiki.eclipse.org/Eclipse_Plug-in_Development_FAQ#How_do_I_include_native_libraries_in_my_bundle.3F
  * http://blog.vogella.com/2010/07/27/osgi/
@@ -95,17 +97,35 @@ public class IGraphRawLibrary {
 		libraryName = libraryName.toLowerCase();
 		GLLogger.traceTech("copy of "+originalPath+"/"+libraryName+" to "+destinationFolder, IGraphRawLibrary.class);
 		InputStream originalDllStream = null;
-		{
-			originalDllStream  = Activator.getDefault().getClass().getClassLoader().getResourceAsStream(
+		if (Activator.getDefault() != null) {
+			GLLogger.traceTech("was launched with a plugin context, let's load the resource from the plugin", IGraphRawLibrary.class);
+			ClassLoader classLoader = Activator.getDefault().getClass().getClassLoader();
+			originalDllStream = classLoader.getResourceAsStream(
 					FileUtils.osPath2ressourcePath(originalPath)+libraryName
 					);
-		
-			if (originalDllStream == null) {
-				GLLogger.errorTech("unable to find the DLL path: "+libraryName, IGraphRawLibrary.class);
-				return;
+		} else {
+			GLLogger.traceTech("was launched withour a plugin context, let's load the resource from the default class loader", IGraphRawLibrary.class);
+			final String thepath = "."+FileUtils.osPath2ressourcePath(originalPath)+libraryName;
+			try {
+				originalDllStream = new FileInputStream(					
+						thepath
+						);
+			} catch (FileNotFoundException e) {
+				final String msg = "unable to read the native library from path "+thepath;
+				GLLogger.errorTech(msg, IGraphRawLibrary.class, e);
+				throw new ProgramException(msg, e);
 			}
-		
+
 		}
+		
+		GLLogger.traceTech("was launched with a plugin context, let's load the resource from the plugin", IGraphRawLibrary.class);
+	
+		if (originalDllStream == null) {
+			final String msg = "unable to find the DLL path: "+libraryName;
+			GLLogger.errorTech(msg, IGraphRawLibrary.class);
+			throw new ProgramException(msg);
+		}
+ 
 		GLLogger.traceTech("found the stream from this ressource", IGraphRawLibrary.class);
 		
 
@@ -127,7 +147,9 @@ public class IGraphRawLibrary {
 			System.load(destinationFile.getAbsolutePath());	
 			//System.loadLibrary(tmpLibraryUndecoratedName);
 		} catch (Throwable e) {
-			e.printStackTrace();
+			final String msg = "unable to load the native libray: "+destinationFile.getAbsolutePath();
+			GLLogger.errorTech(msg, IGraphRawLibrary.class, e);
+			throw new ProgramException(msg);
 		}
 	}
 	
@@ -231,8 +253,6 @@ public class IGraphRawLibrary {
 	    	}
 			
 			
-			
-			
 			GLLogger.traceTech("registering the library for JNA", IGraphRawLibrary.class);
 			Native.register(LIB_UNDECORATED_NAME);
 			
@@ -253,7 +273,6 @@ public class IGraphRawLibrary {
 		}
 	}
 	
-
 	
 	/*
 	 * int igraph_vector_init      (igraph_vector_t* v, int long size);

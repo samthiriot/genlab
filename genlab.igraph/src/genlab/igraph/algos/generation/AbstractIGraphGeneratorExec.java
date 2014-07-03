@@ -74,6 +74,11 @@ public abstract class AbstractIGraphGeneratorExec extends AbstractAlgoExecutionO
 
 				result.setResult(AbstractIGraphGenerator.OUTPUT_GRAPH, genlabGraph);
 
+				messages.warnUser("please note that the random number generator of igraph is shared between all igraph process; "
+						+ "thus randomness of this network is somewhat dependant of these other processes. "
+						+ "It is not possible to replay exactly this stochastic process.", 
+						getClass()
+						); 
 				
 				progress.setProgressMade(1);
 				progress.setComputationState(ComputationState.FINISHED_OK);

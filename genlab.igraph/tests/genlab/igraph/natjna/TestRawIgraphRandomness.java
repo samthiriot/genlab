@@ -5,6 +5,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+import java.util.concurrent.ThreadFactory;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -236,6 +239,7 @@ public class TestRawIgraphRandomness {
 		
 	}
 	
+	
 	private void testSeveralTimes(Pointer p, long seed, int count) {
 
 		long val = 0;
@@ -332,5 +336,107 @@ public class TestRawIgraphRandomness {
 		
 		
 	}
+
+	
+	class TestRandomnessRunnable extends Thread {
+	
+		private final long seed;
+		private final int count;
+		private Long[] generated = null;
+		public boolean finished = false;
+		
+		public TestRandomnessRunnable(long seed, int count) {
+			this.seed = seed;
+			this.count = count;
+		}
+		
+		@Override
+		public void run() {
+			Pointer p = IGraphRawLibrary.igraph_rng_default();
+			
+			IGraphRawLibrary.igraph_rng_seed(p, new NativeLong(seed));
+		
+			generated = new Long[count];
+			
+			for (int i=0; i<count; i++) {
+				NativeLong result = IGraphRawLibrary.igraph_rng_get_integer(
+						p, 
+						new NativeLong(0), 
+						new NativeLong(10)
+						);
+				generated[i] = result.longValue();
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			System.out.println("generated here "+this+": "+Arrays.toString(generated));
+			
+			finished = true;
+		}
+		
+	}
+	
+	
+	/**
+	 * Ensures parallel access are able to define different seeds
+	 */
+	@Test
+	public void testParallelRandomness() {
+		
+		final int paralellThreads = 3;
+		final long theSeed = getASeed();
+		final int lenghtSeriesToTest=100;
+		
+		TestRandomnessRunnable[] pThreads = new TestRandomnessRunnable[paralellThreads];
+		
+		// init the threads
+		for (int i=0; i<paralellThreads; i++) {
+			pThreads[i] = new TestRandomnessRunnable(theSeed, lenghtSeriesToTest);
+		}
+		
+		// start the threads
+		for (int i=0; i<paralellThreads; i++) {
+			pThreads[i].start();
+		}
+		
+		// now wait for all of them
+		System.out.println("waiting for threads to finish...");
+		while (true) {
+			boolean all_finished = true;
+			for (int i=0; i<paralellThreads; i++) {
+				if (!pThreads[i].finished) {
+					all_finished = false;
+					break;
+				}
+			}
+			if (all_finished) 
+				break;
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		// analyze results: are the series the same ? 
+		for (int i=0; i<paralellThreads-1; i++) {
+			
+			if (!Arrays.equals(
+					pThreads[i].generated,
+					pThreads[i+1].generated
+					)) {
+				Assert.fail("the random network generator is shared between the threads");
+			}
+			
+		}
+		
+		// ok
+	}
+	
 
 }

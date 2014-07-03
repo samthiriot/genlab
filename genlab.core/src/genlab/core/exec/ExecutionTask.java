@@ -126,5 +126,10 @@ public abstract class ExecutionTask implements IExecutionTask {
 		
 	}
 	
+	@Override
+	public boolean isCleanable() {
+	
+		return true;
+	}
 
 }

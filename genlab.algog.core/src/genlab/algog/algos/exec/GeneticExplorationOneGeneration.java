@@ -21,8 +21,9 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
 
-public class GeneticExplorationOneGeneration extends
-		AbstractContainerExecutionSupervisor implements ICleanableTask {
+public class GeneticExplorationOneGeneration 
+								extends AbstractContainerExecutionSupervisor 
+								implements ICleanableTask {
 
 	private GeneticExplorationAlgoContainerInstance geneAlgoInst;
 	
@@ -230,9 +231,7 @@ public class GeneticExplorationOneGeneration extends
 			return; // don't care about non finished events 
 		
 		// one of our child finished
-		
-		// don't super.computationStateChanged(progress);
-		
+				
 		// ignore progress which is not coming from my children
 		if (!tasks.contains(progress.getAlgoExecution()))
 			return; 
@@ -357,8 +356,9 @@ public class GeneticExplorationOneGeneration extends
 	
 
 	@Override
-	protected void updateProgressFromChildren() {
-		super.updateProgressFromChildren();
+	public void run() {
+		super.run();
+		progress.setProgressTotal(totalIterationsToDo);
+		
 	}
-
 }

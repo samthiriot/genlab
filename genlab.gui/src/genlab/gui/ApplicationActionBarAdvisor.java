@@ -55,9 +55,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     private IContributionItem viewShortListItem;
     private IContributionItem viewListItem;
     
-    //TODO
-    private IWorkbenchAction runAction;
-
     
     
     public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
@@ -114,9 +111,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         aboutAction = ActionFactory.ABOUT.create(window);
         register(aboutAction);
       
-        runAction = new RunAction();
-        register(runAction);
-        
         //ActionFactory.NEW_EDITOR
         
     }
@@ -148,9 +142,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         fileMenu.add(new Separator());
         fileMenu.add(exitAction);
 
-        // TODO !
-        fileMenu.add(new Separator());
-        fileMenu.add(runAction);
        
         // Edit
         editMenu.add(copyAction);

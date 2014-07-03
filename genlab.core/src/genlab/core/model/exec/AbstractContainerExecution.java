@@ -117,11 +117,12 @@ public abstract class AbstractContainerExecution
 	
 	protected void updateProgressFromChildren() {
 		
-		if (!autoUpdateProgressFromChildren)
+		if (!autoUpdateProgressFromChildren && !autoFinishWhenChildrenFinished)
 			return;
 		
 		ComputationState ourState = null;
-		
+
+		// review sub tasks
 		long totalToDo = subTasksRemovedDone;
 		long totalDone = subTasksRemovedDone;
 		boolean somethingNotFinished = false;
@@ -159,13 +160,17 @@ public abstract class AbstractContainerExecution
 			
 		}
 	
-		
-		if (somethingNotFinished && !somethingFailed && !somethingCanceled) {
+		// update our state
+		if (autoUpdateProgressFromChildren 
+				&& somethingNotFinished 
+				&& !somethingFailed 
+				&& !somethingCanceled) {
 			
 			this.progress.setProgressTotal(totalToDo);
 			this.progress.setProgressMade(totalDone);
 			
 		} else if (autoFinishWhenChildrenFinished) {
+			
 			// if we reached this step, then all our children have finished.
 
 			// as a container, we end ourself
@@ -334,5 +339,6 @@ public abstract class AbstractContainerExecution
 		// super clean
 		super.clean();
 	}
+	
 	
 }

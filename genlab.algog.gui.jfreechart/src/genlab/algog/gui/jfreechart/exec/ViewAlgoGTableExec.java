@@ -21,13 +21,6 @@ public class ViewAlgoGTableExec extends AbstractJFreeChartAlgoExec {
 		
 	}
 
-	protected void adaptParametersForData(IAlgoInstance algoInst, GenlabTable table) {
-		
-		if (table == null)
-			return;
-		
-		
-	}
 	
 	protected void loadDataSuccessiveFromInput() {
 		table = (GenlabTable)getInputValueForInput(AlgoGPlotAlgo.INPUT_TABLE);
@@ -44,12 +37,12 @@ public class ViewAlgoGTableExec extends AbstractJFreeChartAlgoExec {
 	
 	@Override
 	protected void displayResultsSync(AbstractViewOpenedByAlgo theView) {
+
+		// TODO force refresh for last run
 		
-		adaptParametersForData(algoInst, table);
-		
-		((ViewAlgogTable)theView).setData(
-				algoInst,
-				table
+		((ViewAlgogTable)theView).receiveData(
+				table,
+				false
 				);
 	}
 

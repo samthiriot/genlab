@@ -117,6 +117,8 @@ public interface IComputationProgress {
 	public String getCurrentTaskName();
 	
 	public void clean();
+	
+	public boolean isCleaned();
 
 	public void propagateRank(Integer rank, Set<ITask> visited);
 }

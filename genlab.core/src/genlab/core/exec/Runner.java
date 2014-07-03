@@ -50,7 +50,6 @@ public class Runner extends Thread implements IRunner {
 	
 	final HashSet<ICleanableTask> cleanable = new HashSet<ICleanableTask>(START_TASKS_SIZE);
 
-
 	final HashSet<IAlgoExecution> roots = new HashSet<IAlgoExecution>();;
 
 	final HashSet<IAlgoExecution> done = new HashSet<IAlgoExecution>(START_TASKS_SIZE);
@@ -401,27 +400,20 @@ public class Runner extends Thread implements IRunner {
 	private void mayCleanTasks(long mintimeMs) {
 		
 		// should we clean ? 
-		if (cleanable.size() < 10)
+		if (cleanable.size() < 20)
 			return;
 
 		messagesRun.debugTech("we are doing a bit of housekeeping there :-) ("+cleanable.size()+" tasks ready for cleaning)", getClass());
 		
 		synchronized (all) {
-			
-			long minimalTimestamp = System.currentTimeMillis() - mintimeMs; // don't clean tasks which are not done since mintime
-					
+								
 			Iterator<ICleanableTask> itSub = cleanable.iterator();
 			while (itSub.hasNext()) {
 				ICleanableTask sub = itSub.next();
 
 				try {
 					
-					// sometimes we attempt to clean the tasks a bit too quickly
-					// just don't.
-					if (sub.getProgress().getTimestampEnd() > minimalTimestamp)
-						continue;
-						
-					if (sub.getProgress() != null && sub.getProgress().getComputationState() != null && !sub.getProgress().getComputationState().isFinished())
+					if (!sub.isCleanable())
 						continue;
 					
 					try {

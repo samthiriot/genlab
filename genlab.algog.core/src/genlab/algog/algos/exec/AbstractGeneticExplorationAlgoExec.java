@@ -420,22 +420,61 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		return (iterationsMade < paramStopMaxIterations) && !hasConverged();
 	}
 	
-	
-	protected final GenlabTable packDataInTable() {
+	/**
+	 * Adds columns and corresponding metadata for every gene.
+	 * Returns the mapping between the genome and the corresponding gene columns 
+	 * @param tab
+	 */
+	protected Map<AGenome,String[]> declareColumnsForGenes(GenlabTable tab) {
 
-		final String titleIteration = "iteration";
-		final String titleGenome = "genome";
+		final Map<AGenome,String[]> genome2geneColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
+
+		final Map<String,Map<String,Object>> tableMetadataGenes = new HashMap<String, Map<String,Object>>();
+
+		// for each genome
+		for (AGenome currentGenome: genome2fitnessOutput.keySet()) {
+						
+			String[] names = new String[currentGenome.getGenes().length];
+			// and each gene of this genome
+			for (int j=0; j<names.length; j++) {
+			
+				names[j] = "genes "+currentGenome.name+" / "+currentGenome.getGenes()[j].name;
+				tab.declareColumn(names[j]);
+
+				// store metadata
+				Map<String,Object> geneMetadata = new HashMap<String, Object>();
+				geneMetadata.put(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_VALUE, names[j]);
+				final String nameForOutpt = currentGenome.name+" / "+currentGenome.getGenes()[j].name;
+				// min and max if possible
+				final AGene<?> gene = currentGenome.getGenes()[j];
+				if (gene instanceof ANumericGene<?>) {
+					ANumericGene nGene = (ANumericGene)gene;
+					geneMetadata.put(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_MIN, nGene.min.doubleValue());
+					geneMetadata.put(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_MAX, nGene.max.doubleValue());
+				} 
+				tableMetadataGenes.put(names[j], geneMetadata);
+
+				
+			}
+			
+			genome2geneColumns.put(currentGenome, names);
+			
+		}
+		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GENES2METADATA, tableMetadataGenes);
 		
-		GenlabTable tab = new GenlabTable();
-		tab.declareColumn(titleIteration);
-		tab.declareColumn(titleGenome);
-		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION, titleIteration);
-		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_MAX_ITERATIONS, paramStopMaxIterations);
-		
-		
-		// declare columns for each fitness
-		Map<AGenome,String[]> genome2fitnessColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
-		Map<String,Map<String,String>> tableMetadataGoals = new HashMap<String, Map<String,String>>();
+		return genome2geneColumns;
+	}
+	
+
+	/**
+	 * Adds columns and corresponding metadata for every gene.
+	 * Returns the mapping between the genome and the corresponding gene columns 
+	 * @param tab
+	 */
+	protected Map<AGenome,String[]> declareColumnsForGoals(GenlabTable tab) {
+
+		final Map<AGenome,String[]> genome2fitnessColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
+		final Map<String,Map<String,String>> tableMetadataGoals = new HashMap<String, Map<String,String>>();
 		for (AGenome currentGenome: genome2fitnessOutput.keySet()) {
 		
 			String[] names = new String[genome2fitnessOutput.get(currentGenome).size()*3];
@@ -447,47 +486,114 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 				
 				names[j] = "target "+currentGenome.name+" / "+goalAI.getName();
 				tab.declareColumn(names[j]);
-				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_TARGET, names[j]);
+				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_TARGET, names[j]);
 				j++;
 				
 				names[j] = "value "+currentGenome.name+" / "+goalAI.getName();
 				tab.declareColumn(names[j]);
-				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_VALUE, names[j]);
+				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE, names[j]);
 				j++;
 				
 				names[j] = "fitness "+currentGenome.name+" / "+goalAI.getName();
 				tab.declareColumn(names[j]);
-				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_FITNESS, names[j]);
-				
+				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_FITNESS, names[j]);
 				j++;
+				
 			}
 			
 			genome2fitnessColumns.put(currentGenome, names);
 			
 		}
 		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GOALS2COLS, tableMetadataGoals);
-
-
-		// declare columns for each possible gene
-		Map<AGenome,String[]> genome2geneColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
-		Map<String,String> tableMetadataGenes = new HashMap<String,String>();
-		for (AGenome currentGenome: genome2fitnessOutput.keySet()) {
+		
+		return genome2fitnessColumns;
+	}
+	
+	protected final void storeIndividualsData(
+				GenlabTable tab, 
+				String titleIteration, Integer iterationId, 
+				String titleGenome, 
+				Map<AGenome,String[]> genome2fitnessColumns, Map<AGenome,String[]> genome2geneColumns,
+				Collection<AnIndividual> individuals,
+				Map<AnIndividual,Double[]> indiv2fitness, Map<AnIndividual,Object[]> indiv2value, Map<AnIndividual,Object[]> indiv2target
+				) {
+		
+		
+		for (AnIndividual ind : individuals) {
 			
-			
-			String[] names = new String[currentGenome.getGenes().length];
-			for (int j=0; j<names.length; j++) {
-			
-				names[j] = "genes "+currentGenome.name+" / "+currentGenome.getGenes()[j].name;
-				tab.declareColumn(names[j]);
-				tableMetadataGenes.put(currentGenome.name+" / "+currentGenome.getGenes()[j].name, names[j]);
+			final Double[] fitness = indiv2fitness.get(ind);
+			final Object[] values = indiv2value.get(ind);
+			final Object[] targets = indiv2target.get(ind);
 
+								
+			int rowId = tab.addRow();
+			tab.setValue(rowId, titleIteration, iterationId);
+			tab.setValue(rowId, titleGenome, ind.genome.name);
+			
+			// export fitness
+			String[] colnames = genome2fitnessColumns.get(ind.genome);
+			for (int i=0; i<colnames.length/3; i++) {
+				
+				int I=i*3;
+				
+				tab.setValue(
+						rowId, 
+						colnames[I], 
+						targets[i]
+						);
+				
+				I=I+1;
+				
+				tab.setValue(
+						rowId, 
+						colnames[I], 
+						values[i]
+						);
+
+				I=I+1;
+				
+				tab.setValue(
+						rowId, 
+						colnames[I], 
+						fitness[i]
+						);
 			}
 			
-			genome2geneColumns.put(currentGenome, names);
+			// export genes
+			String[] genesNames = genome2geneColumns.get(ind.genome);
+			for (int i=0; i<genesNames.length; i++) {
+			
+				tab.setValue(
+						rowId, 
+						genesNames[i], 
+						ind.genes[i]
+						);
+			}
 			
 		}
-		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GENES2VALUES, tableMetadataGenes);
+		
+	}
+	
+	protected final GenlabTable packDataInTable() {
 
+		// TODO don't recreate a new table from 0 every time ?
+		
+		final String titleIteration = "iteration";
+		final String titleGenome = "genome";
+		
+		GenlabTable tab = new GenlabTable();
+		tab.declareColumn(titleIteration);
+		tab.declareColumn(titleGenome);
+		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION, titleIteration);
+		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_MAX_ITERATIONS, paramStopMaxIterations);
+		
+		
+		// declare columns for each fitness
+		final Map<AGenome,String[]> genome2fitnessColumns = declareColumnsForGoals(tab);
+		
+		// declare columns for each possible gene
+		final Map<AGenome,String[]> genome2geneColumns = declareColumnsForGenes(tab);
+		
 		
 		for (Integer iterationId : generation2fitness.keySet()) {
 			
@@ -496,61 +602,15 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			final Map<AnIndividual,Object[]> indiv2value = generation2values.get(iterationId);
 			final Map<AnIndividual,Object[]> indiv2target = generation2targets.get(iterationId);
 
-			for (Map.Entry<AnIndividual,Double[]> ind2fit : indiv2fitness.entrySet()) {
-				
-				final AnIndividual ind = ind2fit.getKey();
-				final Double[] fitness = ind2fit.getValue();
-				final Object[] values = indiv2value.get(ind);
-				final Object[] targets = indiv2target.get(ind);
-
-									
-				int rowId = tab.addRow();
-				tab.setValue(rowId, titleIteration, iterationId);
-				tab.setValue(rowId, titleGenome, ind.genome.name);
-				
-				// export fitness
-				String[] colnames = genome2fitnessColumns.get(ind.genome);
-				for (int i=0; i<colnames.length/3; i++) {
-					
-					int I=i*3;
-					
-					tab.setValue(
-							rowId, 
-							colnames[I], 
-							targets[i]
-							);
-					
-					I=I+1;
-					
-					tab.setValue(
-							rowId, 
-							colnames[I], 
-							values[i]
-							);
-
-					I=I+1;
-					
-					tab.setValue(
-							rowId, 
-							colnames[I], 
-							fitness[i]
-							);
-				}
-				
-				// export genes
-				String[] genesNames = genome2geneColumns.get(ind.genome);
-				for (int i=0; i<genesNames.length; i++) {
-				
-					tab.setValue(
-							rowId, 
-							genesNames[i], 
-							ind.genes[i]
-							);
-				}
-				
-				
-			}
+			storeIndividualsData(
+					tab, 
+					titleIteration, iterationId, titleGenome, 
+					genome2fitnessColumns, genome2geneColumns, 
+					indiv2fitness.keySet(),
+					indiv2fitness, indiv2value, indiv2target
+					);
 			
+				
 		}
 		
 		return tab;
@@ -733,7 +793,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * Selects a part of the existing population based on fitness.
 	 * @return
 	 */
-	protected abstract Map<AGenome,Set<AnIndividual>> selectIndividuals(Map<AnIndividual,Double[]> indiv2fitness);
+	protected abstract INextGeneration selectIndividuals(Map<AnIndividual,Double[]> indiv2fitness);
+	
 	
 	/**
 	 * Generate the next generation using specific selection, crossover and mutation operators.
@@ -746,7 +807,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		
 		// SELECT 
 		
-		Map<AGenome,Set<AnIndividual>> selectedGenome2Population = selectIndividuals(indiv2fitness);
+		final INextGeneration selectedIndividuals  = selectIndividuals(indiv2fitness);
+		final Map<AGenome,Set<AnIndividual>> selectedGenome2Population = selectedIndividuals.getAllIndividuals();
 		
 		// CROSS
 		// TODO manage multi specy !
@@ -755,7 +817,6 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 
 		// stats on the count of mutation (to be returned to the user)
 		Map<AGene<?>,Integer> statsGene2countMutations = new HashMap<AGene<?>, Integer>();
-
 		
 		for (AGenome genome: selectedGenome2Population.keySet()) {
 			

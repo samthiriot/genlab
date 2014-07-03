@@ -328,4 +328,15 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		
 		progress.propagateRank(this.rank, visited);
 	}
+	
+	@Override
+	public boolean isCleanable() {
+
+		return (progress != null) 
+				&& (progress.getComputationState() != null)
+				&& (progress.getComputationState().isFinished()) 
+				&& (System.currentTimeMillis() - progress.getTimestampEnd() > 500) // TODO cleanest method !
+				;
+		
+	}
 }

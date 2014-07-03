@@ -71,6 +71,12 @@ public interface ITask {
 	 */
 	public void clean();
 	
+	/**
+	 * returns true if this task is ready to be cleaned.
+	 * @return
+	 */
+	public boolean isCleanable();
+	
 	public void propagateRank(Integer rank, Set<ITask> visited);
 	
 	public Integer getRank();

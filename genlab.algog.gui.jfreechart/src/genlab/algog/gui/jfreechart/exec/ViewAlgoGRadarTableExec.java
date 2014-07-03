@@ -48,9 +48,9 @@ public class ViewAlgoGRadarTableExec extends AbstractJFreeChartAlgoExec {
 		
 		adaptParametersForData(algoInst, table);
 		
-		((ViewAlgogRadarTable)theView).setData(
-				algoInst,
-				table
+		((ViewAlgogRadarTable)theView).receiveData(
+				table,
+				true
 				);
 	}
 

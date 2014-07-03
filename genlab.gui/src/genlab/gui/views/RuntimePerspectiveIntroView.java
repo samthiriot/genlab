@@ -268,6 +268,9 @@ public class RuntimePerspectiveIntroView extends AsbtractStaticMessageView imple
 		if (updatePending)
 			return;
 		
+		if (form.isDisposed())
+			return;
+		
 		updatePending = true;
 		form.getDisplay().asyncExec(new Runnable() {
 			

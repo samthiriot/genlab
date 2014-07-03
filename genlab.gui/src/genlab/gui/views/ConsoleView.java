@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
+import genlab.quality.TestResponsivity;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -21,6 +22,7 @@ public class ConsoleView extends AbstractViewOpenedByAlgo {
 
 	public static final String VIEW_ID = "genlab.gui.views.ConsoleView";
 
+	public static final String SWT_THREAD_USER_ID = ConsoleView.class.getCanonicalName();
 	
 	private class ConsoleDisplayRunnable implements Runnable {
 	
@@ -30,6 +32,9 @@ public class ConsoleView extends AbstractViewOpenedByAlgo {
 		
 		@Override
 		public void run() {
+			
+			if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+				TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID);
 			
 			submitted = false; // allow another display !
 			
@@ -47,6 +52,9 @@ public class ConsoleView extends AbstractViewOpenedByAlgo {
 				text.append(s);
 			}
 			text.setRedraw(true);
+			
+			if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+				TestResponsivity.singleton.notifySWTThreadUserEndsRunnable(SWT_THREAD_USER_ID);
 			
 		}
 		
@@ -90,6 +98,9 @@ public class ConsoleView extends AbstractViewOpenedByAlgo {
 		// when there is something to display
 		if (!submitted) {	// ... if there is no refresh already queued and waiting in the SWT thread
 			submitted = true;
+			if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+				TestResponsivity.singleton.notifySWTThreadUserSubmitsRunnable(SWT_THREAD_USER_ID);
+			
 			text.getDisplay().asyncExec(runnable);
 		}
 	}

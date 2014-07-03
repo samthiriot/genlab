@@ -427,6 +427,18 @@ public class IGraphLibrary {
 
 		
 	}
+	
+	/**
+	 * sets the seed of the default random number generator
+	 * @param seed
+	 */
+	public void setSeed(long seed) {
+		
+		Pointer p = IGraphRawLibrary.igraph_rng_default();
+		int res = IGraphRawLibrary.igraph_rng_seed(p, new NativeLong(seed ));
+		checkIGraphResult(res);
+		
+	}
 
 	public IGraphGraph copyGraph(IGraphGraph original) {
 

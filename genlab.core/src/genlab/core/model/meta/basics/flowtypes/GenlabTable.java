@@ -2,8 +2,10 @@ package genlab.core.model.meta.basics.flowtypes;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
+import genlab.core.model.meta.IDumpableToText;
 import genlab.core.usermachineinteraction.GLLogger;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,7 +23,7 @@ import java.util.Map;
  * @author Samuel Thiriot
  *
  */
-public class GenlabTable implements IGenlabTable {
+public class GenlabTable implements IGenlabTable, IDumpableToText {
 
 	private ArrayList<Object[]> content = new ArrayList<Object[]>();
 	
@@ -351,5 +353,30 @@ public class GenlabTable implements IGenlabTable {
 		return emptyColumnsIdxs;
 	}
 
-	
+	@Override
+	public void dumpAsText(PrintStream ps) {
+		
+		// add titles
+		ps.print("# columns: ");
+		for (String id : getColumnsId()) {
+			ps.print(id);
+			ps.print(";\t");
+		}
+		ps.println();
+		
+		Object[] row = null;
+		for (int i=0; i<getRowsCount(); i++) {
+
+			row = getRow(i);
+			
+			for (int j=0; j<row.length; j++) {
+				if (j>0)
+					ps.print(";\t");
+				ps.print(row[j]);	
+			}
+			ps.println();
+			
+		}
+		
+	}
 }

@@ -42,7 +42,7 @@ public class WorkflowExecution
 		
 		// till now, a workflow is always ready for exec
 		progress.setComputationState(ComputationState.STARTED);
-
+		
 	}
 	
 

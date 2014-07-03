@@ -11,6 +11,7 @@ import genlab.core.usermachineinteraction.ListsOfMessages;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 import genlab.gui.editors.IGenlabGraphicalView;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
+import genlab.quality.TestResponsivity;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -25,6 +26,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IPartListener2;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartReference;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.ui.swingViewer.View;
@@ -40,7 +44,7 @@ import org.graphstream.ui.swingViewer.Viewer.CloseFramePolicy;
  * @author Samuel Thiriot
  *
  */
-public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenlabGraphicalView {
+public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenlabGraphicalView, IPartListener2 {
 
 
 
@@ -64,6 +68,8 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 	
 
 	public static final String CLASSNAME_VIEWER = "org.graphstream.ui.j2dviewer.J2DGraphRenderer";
+
+	public static final String SWT_THREAD_USER_ID = AbstractViewOpenedByAlgo.class.getCanonicalName();
 	
 	public static boolean isAvailable = true;
 	
@@ -123,6 +129,7 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		awtRootPane.getContentPane().setLayout(new BorderLayout());
 		awtRootPane.getContentPane().setBackground(Color.WHITE);
 		
+		super.createPartControl(parent);
 	}
 
 	@Override
@@ -313,12 +320,22 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 					
 			}
 				
+
+			if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+				TestResponsivity.singleton.notifySWTThreadUserSubmitsRunnable(SWT_THREAD_USER_ID);
 			
 			parent.getDisplay().asyncExec(new Runnable() {
 				
 				@Override
 				public void run() {
+					if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+						TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID);
+							
 					displayGraphSync();
+					
+					if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+						TestResponsivity.singleton.notifySWTThreadUserEndsRunnable(SWT_THREAD_USER_ID);
+							
 				}
 			});
 			
@@ -363,7 +380,41 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		messages.debugUser("saving a snapshot into "+filename+"...", getClass());
 		gsGraph.addAttribute("ui.screenshot", filename);
 	}
+
+	@Override
+	public boolean isDisposed() {
+		return parent != null && parent.isDisposed();
+	}
 	
 	
 
+	@Override
+	public void partClosed(IWorkbenchPartReference partRef) {
+		
+		if (gsViewer != null)
+			gsViewer.disableAutoLayout();
+		
+		super.partClosed(partRef);
+	}
+
+	@Override
+	public void partHidden(IWorkbenchPartReference partRef) {
+		
+		if (gsViewer != null)
+			gsViewer.disableAutoLayout();
+		
+		super.partHidden(partRef);
+	}
+	
+
+	@Override
+	public void partVisible(IWorkbenchPartReference partRef) {
+		
+		if (gsViewer != null)
+			gsViewer.enableAutoLayout();
+		
+		super.partVisible(partRef);
+		
+	}
+	
 }

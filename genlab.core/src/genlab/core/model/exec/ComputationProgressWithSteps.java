@@ -17,7 +17,7 @@ import java.util.Set;
  * @author Samuel Thiriot
  *
  */
-public class ComputationProgressWithSteps implements IComputationProgress, Cloneable {
+public final class ComputationProgressWithSteps implements IComputationProgress, Cloneable {
 
 	private IAlgoExecution algoExec = null;
 	private UniqueTimestamp timestampCreation = null;
@@ -36,6 +36,8 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 	protected LinkedList<IComputationProgressDetailedListener> listenersDetails = null;
 	protected Object listenersDetailsLock = new Object();
 
+	
+	private boolean cleaned = false;
 	
 	protected final static int MIN_DIFFERENCE_TO_DISPATCH_DETAILED_CHANGE = 5;
 	
@@ -328,25 +330,27 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 	@Override
 	public void clean() {
 		
-		if (listeners == null)
-			return;
+		cleaned = true;
 		
-		// warn listeners
-		dispatchCleaning();
+		if (listeners != null) {
+			// warn listeners
+			dispatchCleaning();
+			listeners.clear();
+			listeners = null;
+
+		}
 		
 		// clear local data
 		
-		listeners.clear();
-		listeners = null;
 		if (listenersDetails != null) {
 			listenersDetails.clear();
 			listenersDetails = null;
 		}
 		algo = null;
 		algoExec = null;
-		currentTaskName = null;
-		made = null;
-		state = null;
+		//currentTaskName = null;
+		//made = null;
+		//state = null;
 		
 	}
 
@@ -409,8 +413,11 @@ public class ComputationProgressWithSteps implements IComputationProgress, Clone
 		}	
 		
 	}
-	
-	
+
+	@Override
+	public boolean isCleaned() {
+		return cleaned;
+	}
 
 
 }

@@ -15,6 +15,7 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.perspectives.OutputsGUIManagement;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
+import genlab.quality.TestResponsivity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,14 @@ import org.eclipse.ui.part.WorkbenchPart;
  */
 public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOneshotOrReduce {
 
+	private final String SWT_THREAD_USER_ID_OPEN_VIEW = this.toString()+":open_view";
+
+	private final String SWT_THREAD_USER_ID_DISPLAY_SYNC = this.toString()+":sync";
+
+	private final String SWT_THREAD_USER_ID_DISPLAY_ASYNC = this.toString()+":display_async";
+
+	private final String SWT_THREAD_USER_ID_DISPLAY_REDUCE = this.toString()+":display_reduce";
+
 	/**
 	 * if true, there is already a task submitted in the gui thread to update the display
 	 */
@@ -51,8 +60,7 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 	 */
 	protected AbstractViewOpenedByAlgo theView = null;
 	
-	protected int statsCount = 0;
-	protected long statsCumulatedDelay = 0;
+	
 	
 	public AbstractOpenViewAlgoExec(IExecution exec, IAlgoInstance algoInst, String viewId) {
 		
@@ -123,13 +131,25 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 		}
 		
 		if (theView == null) {
+			if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+				TestResponsivity.singleton.notifySWTThreadUserSubmitsRunnable(SWT_THREAD_USER_ID_OPEN_VIEW);
+			
 			display.asyncExec(new Runnable() {
 				
 				@Override
 				public void run() {
+					if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+						TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID_OPEN_VIEW);
+					
 					openViewSync();
+					
+					if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+						TestResponsivity.singleton.notifySWTThreadUserEndsRunnable(SWT_THREAD_USER_ID_OPEN_VIEW);
+					
 				}
 			});
+			
+			
 		}
 	}
 
@@ -137,35 +157,33 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 
 	
 	protected void displayResultsAsync(final AbstractViewOpenedByAlgo theView) {
+		
 		if (updatePending)
 			return;
 		updatePending = true;
+		
+		if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+			TestResponsivity.singleton.notifySWTThreadUserSubmitsRunnable(SWT_THREAD_USER_ID_DISPLAY_ASYNC);
+		
+		
 		Display.getDefault().asyncExec(new Runnable() {
 			
 			@Override
 			public void run() {
 				
-				System.out.println("reading data to display it");
+				if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+					TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID_DISPLAY_ASYNC);
 				
-				long start = System.currentTimeMillis();
 				
 				// actual display
 				displayResultsSync(theView);
+				
+				
+				if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+					TestResponsivity.singleton.notifySWTThreadUserEndsRunnable(SWT_THREAD_USER_ID_DISPLAY_ASYNC);
+
 				updatePending = false;
-				
-				// update stats
-				statsCount++;
-				statsCumulatedDelay += System.currentTimeMillis() - start;
-				
-				// display stats sometimes
-				if (statsCount % 10 == 0) {
-					
-					System.out.println(this+" time for display :"+(statsCumulatedDelay/statsCount)+" ms");
-					
-					statsCount = 0;
-					statsCumulatedDelay = 0;
-						
-				}
+
 			}
 		});
 	}
@@ -175,7 +193,16 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 		GLLogger.debugTech("received a view ! Let's display results.", getClass());
 		this.theView = theView;
 		
+		if (TestResponsivity.AUDIT_SWT_THREAD_USE) {
+			TestResponsivity.singleton.notifySWTThreadUserSubmitsRunnable(SWT_THREAD_USER_ID_DISPLAY_SYNC);
+			TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID_DISPLAY_SYNC);
+		}
+		
 		displayResultsSync(theView);
+		
+		if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+			TestResponsivity.singleton.notifySWTThreadUserEndsRunnable(SWT_THREAD_USER_ID_DISPLAY_SYNC);
+		
 		
 	}
 	
@@ -250,11 +277,21 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 		if (theView.isDisposed())
 			return;
 		
+		if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+			TestResponsivity.singleton.notifySWTThreadUserSubmitsRunnable(SWT_THREAD_USER_ID_DISPLAY_REDUCE);
+		
 		Display.getDefault().asyncExec(new Runnable() {
 			
 			@Override
 			public void run() {
+				if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+					TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID_DISPLAY_REDUCE);
+				
 				displayResultsSyncReduced(theView, executionRun, connectionExec, value);
+				
+				if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+					TestResponsivity.singleton.notifySWTThreadUserEndsRunnable(SWT_THREAD_USER_ID_DISPLAY_REDUCE);
+				
 			}
 		});
 	}

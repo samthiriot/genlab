@@ -66,6 +66,7 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 		this.inputConnection2value = inputConnection2value;
 		this.fitnessOutput = fitnessOutput2;
 		
+		this.autoUpdateProgressFromChildren = true;
 		this.autoFinishWhenChildrenFinished = true;
 		
 		// we don't want to die if a subprocess has a problem; we will assume the fitness is infinite instead.
@@ -267,8 +268,6 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 	public String getName() {
 		return "ind "+individualId+" / "+individual.genome.name;
 	}
-	
-	
 	
 
 

@@ -1,16 +1,14 @@
 package genlab.algog.gui.jfreechart.views;
 
 import genlab.algog.algos.meta.GeneticExplorationAlgo;
-import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IParametersListener;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Rectangle;
-import java.awt.Shape;
+import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,29 +28,24 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.XYLineAnnotation;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
-import org.jfree.chart.plot.SpiderWebPlot;
+import org.jfree.chart.plot.FastScatterPlot;
+import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
-import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
-import org.jfree.util.ShapeUtilities;
 
-public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParametersListener {
+public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> {
 
 	public static final String VIEW_ID = "genlab.algog.gui.jfreechart.views.ViewAlgoGTable";
 	
-	public GenlabTable glTable = null;
-
-	protected Map<String, XYSeries> goal2serie = new HashMap<String, XYSeries>();
+	protected Map<String, float[][]> goal2serie = new HashMap<String, float[][]>();
 	protected Map<String, JFreeChart> goal2chart = new HashMap<String, JFreeChart>();
 	protected Map<String, ChartComposite> goal2compositeChart = new HashMap<String, ChartComposite>();
 	protected Map<String, XYLineAnnotation> goal2targetAnnotation = new HashMap<String, XYLineAnnotation>();
 
-	protected Map<String, XYSeries> gene2serie = new HashMap<String, XYSeries>();
+	protected Map<String, float[][]> gene2serie = new HashMap<String, float[][]>();
 	protected Map<String, JFreeChart> gene2chart = new HashMap<String, JFreeChart>();
 	protected Map<String, ChartComposite> gene2compositeChart = new HashMap<String, ChartComposite>();
 	
@@ -71,6 +64,7 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 	 */
 	private Integer dataProcessedUntilRow = 0;
 	
+	
 	public ViewAlgogTable() {
 		
 	}
@@ -80,53 +74,53 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 		return exec.getAlgoInstance().getName();
 	}
 	
+	private float[][] createEmptySerie() {
+		float[][] serie = new float[2][];
+		serie[0] = new float[0];
+		serie[1] = new float[0];
+		return serie;
+	}
+	
+	protected FastScatterPlotWithLines createFastScatteredChart(int maxIterations, float[][] serie) {
+		
+		
+		final NumberAxis domainAxis = new NumberAxis("iterations");
+		domainAxis.setRangeWithMargins(0, maxIterations);
+		domainAxis.setAutoRange(false);
+		domainAxis.setNumberFormatOverride(NumberFormat.getNumberInstance());
+		domainAxis.setAutoTickUnitSelection(true);
+		
+		final NumberAxis rangeAxis = new NumberAxis("value");
+		//rangeAxis.setAutoRangeIncludesZero(false);
+		//rangeAxis.setAutoTickUnitSelection(true);
+		rangeAxis.setAutoRange(true);
+		
+		FastScatterPlotWithLines plot = new FastScatterPlotWithLines(serie, domainAxis, rangeAxis);
+        
+		// TODO lines with decent space
+		plot.setDomainGridlinesVisible(false);
+		plot.setRangeGridlinesVisible(false);
+
+		plot.setBackgroundPaint(Color.WHITE);
+
+		
+		return plot;
+	}
 	
 	protected void createWidgetsForGoal(String goal, Map<String,String> goalMetadata, int maxIterations) {
 
 		messages.traceTech("init the jfreechart dataset for goal "+goal+" ...", getClass());
 		
-		XYDataset dataset = null;
-		XYSeries serie = null;
-		{
-			XYSeriesCollection seriesAll = new XYSeriesCollection();
-		 
-			serie = new XYSeries(goal+"/values");
-		    
-			seriesAll.addSeries(serie);
-			
-			dataset = seriesAll;
-		}
-		
-		
+		float[][] serie = createEmptySerie();
+				
 		messages.traceTech("init the jfreechart chart for goal "+goal+"...", getClass());
 		
 		// create chart
-		JFreeChart chart = ChartFactory.createScatterPlot(
-				"goal "+goal+": target and values for iterations", 
-				"iterations", 
-				"value", 
-				dataset
-				);
-		
-		// set parameters of chart
+		final FastScatterPlotWithLines plot = createFastScatteredChart(maxIterations, serie);
+			
+		final JFreeChart chart = new JFreeChart("goal "+goal+": target and values for iterations", plot);
 		chart.setAntiAlias(true);
-		
-		// set up X axis with fixed range (we know the max there)
-		NumberAxis range = (NumberAxis) chart.getXYPlot().getDomainAxis();
-        range.setRange(0, maxIterations+1);
-        //range.setTickUnit(new NumberTickUnit(1d));
-        
-        // set small dots as shape
-        /*
-        XYItemRenderer renderer = chart.getXYPlot().getRenderer();
-        Shape dotShape = ShapeUtilities.createRegularCross(3, 3); // new Rectangle(1, 1);
-        renderer.setBaseShape(dotShape);
-        renderer.setBasePaint(Color.DARK_GRAY);
-        renderer.setSeriesShape(0, dotShape);
-        renderer.setSeriesPaint(0, Color.DARK_GRAY);
-        */
-        
-
+		chart.setBackgroundPaint(Color.WHITE);
 
         
 		messages.traceTech("init the chart composite for goal "+goal+"...", getClass());
@@ -156,161 +150,204 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 		
 	}
 	
-	protected void displayDataForGoal(String goal, Map<String,String> goalMetadata, String columnIteration, int maxIterations) {
+	protected boolean displayDataForGoal(String goal, Map<String,String> goalMetadata, String columnIteration, int maxIterations) {
 
-		XYSeries serie = goal2serie.get(goal);
+		float[][] serie = goal2serie.get(goal);
+		boolean widgetCreated = false;
 		
 		// create if necessary
 		if (serie == null) {
 			createWidgetsForGoal(goal, goalMetadata, maxIterations);
 			serie = goal2serie.get(goal);
+			widgetCreated = true;
 		}
 		
 		// update data
-		final String columnTarget = goalMetadata.get(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_TARGET);
-		final String columnValue = goalMetadata.get(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_VALUE);
-		final String columnFitness = goalMetadata.get(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_FITNESS);
+		final String columnValue = goalMetadata.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
+		// TODO fitness ? final String columnFitness = goalMetadata.get(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_FITNESS);
+		final String columnTarget = goalMetadata.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_TARGET);
+		final float targetValue = ((Number)lastVersionDataToDisplay.getValue(0, columnTarget)).floatValue();
 		
+		final FastScatterPlotWithLines plot = ((FastScatterPlotWithLines)goal2chart.get(goal).getPlot());
+
 		// update data !
 		try {
-			serie.setNotify(false);
-			for (int rowId=dataProcessedUntilRow; rowId<glTable.getRowsCount(); rowId++) {
+			final int rowsToDisplay = lastVersionDataToDisplay.getRowsCount();
+			
+			float yLowest, yHighest;
+			
+			if (serie[0].length != 0) {
+				// init the values for first discovery of ranges !
+				yLowest = plot.getRangeLow();
+				yHighest = plot.getRangeUp();
+			} else {
+				// reuse previous values
+				yLowest = Float.POSITIVE_INFINITY;
+				yHighest = Float.NEGATIVE_INFINITY;
+			}
+			
+			// resize dataset
+			resizeDataSet(serie, rowsToDisplay);
+			
+			for (int rowId=dataProcessedUntilRow; rowId<rowsToDisplay; rowId++) {
 		    	
 				try {
-					Object dataX = glTable.getValue(rowId, columnIteration);
-					Object dataY = glTable.getValue(rowId, columnValue);
+					Object dataX = lastVersionDataToDisplay.getValue(rowId, columnIteration);
+					Object dataY = lastVersionDataToDisplay.getValue(rowId, columnValue);
 					
 					// ignore incomplete data
 			        if (dataX == null || dataY == null)
 			        	continue;
 			        
-			        serie.add((Number)dataX, (Number)dataY);
+			        final float x = ((Number)dataX).floatValue();
+			        final float y = ((Number)dataY).floatValue();
+			        
+			        serie[0][rowId] = x;
+			        serie[1][rowId] = y;
+			      
+			        if (y < yLowest)
+			        	yLowest = y;
+			        if (y > yHighest)
+			        	yHighest = y;
+			        
 				} catch (ClassCastException e) {
 					// ignore, but this should not happen !
 				}
 		    }
 			
-			if (!goal2targetAnnotation.containsKey(goal)) {
 
-				// retrieve the plot
-				final JFreeChart chart = goal2chart.get(goal);
-				final XYPlot plot = chart.getXYPlot();
-			
-				// add the annotation
-				final Number targetValue = (Number)glTable.getValue(0, columnTarget);
-				XYLineAnnotation line = new XYLineAnnotation(
-						// from iteration 0
-						0d, 	
-						targetValue.doubleValue(), 
-						// to last iteration
-						maxIterations,	
-						targetValue.doubleValue(),
-						new BasicStroke(1f), 
-						Color.black
-						);
-		        plot.addAnnotation(line);
-		
-		        // store annotation for later use
-				goal2targetAnnotation.put(goal, line);
-			
+			// has the line ? 
+			if (!plot.hasHorizontalLine()) {
+				plot.addHorizontalLine(targetValue, "target", Color.DARK_GRAY);
 			}
-						
+			
+			if (yLowest > targetValue)
+				yLowest = targetValue;
+			if (yHighest < targetValue)
+				yHighest = targetValue;
+			
+			plot.setRange(yLowest, yHighest);				
+			// update data
+			// no need to update, will be displayed already plot.setData(serie);
+			
 		} finally {
-			serie.setNotify(true);
 
 		}
 		
+		return widgetCreated;
 	}
 	
+	private void resizeDataSet(float[][] serie, int novelSize) {
+		
+		serie[0] = Arrays.copyOf(serie[0], novelSize);
+		serie[1] = Arrays.copyOf(serie[1], novelSize);
+		
+	}
 
-	private void displayDataForGene(String gene,
-			String columnValue, String columnIteration,
+	private boolean displayDataForGene(String gene, String columnValue, 
+			Map<String,Object> metadata, String columnIteration,
 			Integer maxIterations) {
 		
-		XYSeries serie = gene2serie.get(gene);
+		float[][] serie = gene2serie.get(gene);
+		boolean widgetCreated = false;
+
 		
 		// create if necessary
 		if (serie == null) {
 			createWidgetsForGene(gene, maxIterations);
 			serie = gene2serie.get(gene);
+			widgetCreated = true;
 		}
 		
+		final FastScatterPlotWithLines plot = ((FastScatterPlotWithLines)gene2chart.get(gene).getPlot());
+
 		// update data !
 		try {
-			serie.setNotify(false);
-			for (int rowId=dataProcessedUntilRow ; rowId<glTable.getRowsCount(); rowId++) {
+			final int rowsToDisplay = lastVersionDataToDisplay.getRowsCount();
+			
+
+			float yLowest, yHighest;
+			
+			if (serie[0].length != 0) {
+				// reuse previous values
+				yLowest = plot.getRangeLow();
+				yHighest = plot.getRangeUp();
+			} else {
+				// init the values for first discovery of ranges !
+				yLowest = Float.POSITIVE_INFINITY;
+				yHighest = Float.NEGATIVE_INFINITY;
+			}
+			
+			// resize dataset
+			resizeDataSet(serie, rowsToDisplay);
+			
+					
+			for (int rowId=dataProcessedUntilRow ; rowId<rowsToDisplay; rowId++) {
 		    	
 				try {
-					Object dataX = glTable.getValue(rowId, columnIteration);
-					Object dataY = glTable.getValue(rowId, columnValue);
+					Object dataX = lastVersionDataToDisplay.getValue(rowId, columnIteration);
+					Object dataY = lastVersionDataToDisplay.getValue(rowId, columnValue);
 					
 					// ignore incomplete data
 			        if (dataX == null || dataY == null)
 			        	continue;
 			        
-			        serie.add((Number)dataX, (Number)dataY);
+			        final float x = ((Number)dataX).floatValue();
+			        final float y = ((Number)dataY).floatValue();
+			        
+			        
+			        serie[0][rowId] = x;
+			        serie[1][rowId] = y;
+
+			        if (y < yLowest)
+			        	yLowest = y;
+			        if (y > yHighest)
+			        	yHighest = y;
+			        
 				} catch (ClassCastException e) {
 					// ignore, but this should not happen !
 				}
 		    }
+		
+
+			// has the line ? 
+			if (!plot.hasHorizontalLine() && metadata.containsKey(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_MIN)) {
+				final Double min = (Double)metadata.get(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_MIN);
+				final Double max = (Double)metadata.get(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_MAX);
+				plot.addHorizontalLine(min.floatValue(), "min", Color.BLUE);
+				plot.addHorizontalLine(max.floatValue(), "max", Color.BLUE);
+			}
+
+			plot.setRange(yLowest, yHighest);
+			
 			
 		} finally {
-			serie.setNotify(true);
-
+			// TODO ?
 		}
+		
+		return widgetCreated;
 	}
+	
 	
 	private void createWidgetsForGene(String gene, Integer maxIterations) {
 
 		messages.traceTech("init the jfreechart dataset for gene "+gene+" ...", getClass());
 		
-		XYDataset dataset = null;
-		XYSeries serie = null;
-		{
-			XYSeriesCollection seriesAll = new XYSeriesCollection();
-		 
-			serie = new XYSeries(gene+"/values");
-		    
-			seriesAll.addSeries(serie);
-			
-			dataset = seriesAll;
-		}
-		
+		final float[][] serie = createEmptySerie();
 		
 		messages.traceTech("init the jfreechart chart for gene "+gene+"...", getClass());
 		
 		// create chart
-		JFreeChart chart = ChartFactory.createScatterPlot(
-				"gene "+gene+" values for iterations", 
-				"iterations", 
-				"value", 
-				dataset
-				);
+		final FastScatterPlotWithLines plot = createFastScatteredChart(maxIterations, serie);
 		
-		// set parameters of chart
+		final JFreeChart chart = new JFreeChart("gene "+gene+" values for interactions", plot);
 		chart.setAntiAlias(true);
-		
-		// set up X axis with fixed range (we know the max there)
-		NumberAxis range = (NumberAxis) chart.getXYPlot().getDomainAxis();
-        range.setRange(0, maxIterations+1);
-        //range.setTickUnit(new NumberTickUnit(1d));
-        
-        // set small dots as shape
-        /*
-        XYItemRenderer renderer = chart.getXYPlot().getRenderer();
-        Shape dotShape = ShapeUtilities.createRegularCross(3, 3); // new Rectangle(1, 1);
-        renderer.setBaseShape(dotShape);
-        renderer.setBasePaint(Color.DARK_GRAY);
-        renderer.setSeriesShape(0, dotShape);
-        renderer.setSeriesPaint(0, Color.DARK_GRAY);
-        */
-        
-
+		chart.setBackgroundPaint(Color.WHITE);
         
 		messages.traceTech("init the chart composite for gene "+gene+"...", getClass());
 
 		final int preferedWidth = 900;
-		final int preferedHeight = 400;
+		final int preferedHeight = 300;
 	
 		ChartComposite compositeChart = new ChartComposite(
 				compoGenes, 
@@ -320,7 +357,6 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 				);	
 		compositeChart.setSize(preferedWidth, preferedHeight);
 		compositeChart.setLayoutData(new RowData(preferedWidth, preferedHeight));
-		//compositeChart.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_BLUE));
 		toolkit.adapt(compositeChart, true, true);
 		
 		
@@ -337,16 +373,19 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 
 	public void loadDataFromTable() {
 		
+		if (lastVersionDataToDisplay == null)
+			return;
+		
 		try {
 			showBusy(true);
 			
+			boolean widgetCreated = false;
 
-			final String columnIteration = (String) glTable.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION);
-			final Integer maxIterations = (Integer)glTable.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_MAX_ITERATIONS);
+			final String columnIteration = (String) lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION);
+			final Integer maxIterations = (Integer)lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_MAX_ITERATIONS);
 			
-
 			{
-				Object metadataRawGoals = glTable.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GOALS2COLS);
+				Object metadataRawGoals = lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GOALS2COLS);
 				if (metadataRawGoals == null) {
 					messages.warnTech("unable to find the expected metadata in this table; maybe it does not comes from a genetic algorithm ?", getClass());
 					return;
@@ -361,40 +400,46 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 					
 				// display goals
 				for (String goal: metadata.keySet()) {
-					
-					final Map<String,String> goalMetadata = metadata.get(goal);
-					
-					displayDataForGoal(goal, goalMetadata, columnIteration, maxIterations);
+										
+					widgetCreated = displayDataForGoal(goal, metadata.get(goal), columnIteration, maxIterations) || widgetCreated;
 					
 				}
 			}
 			
 			{
-				Object metadataRawGenes = glTable.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GENES2VALUES);
+				Object metadataRawGenes = lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GENES2METADATA);
 				if (metadataRawGenes == null) {
 					messages.warnTech("unable to find the expected metadata in this table; maybe it does not comes from a genetic algorithm ?", getClass());
 					return;
 				}
-				Map<String,String> metadata = null;
+				Map<String,Object> metadataValues = null;
 				try {
-					metadata = (Map<String,String>)metadataRawGenes;
+					metadataValues = (Map<String,Object>)metadataRawGenes;
 				} catch (ClassCastException e) {
 					messages.warnTech("wrong metadata in this table; maybe it does not comes from a genetic algorithm ?", getClass());
 					return;
 				}
 					
 				// display genes
-				for (String gene: metadata.keySet()) {
-										
-					displayDataForGene(gene, metadata.get(gene), columnIteration, maxIterations);
+				for (String gene: metadataValues.keySet()) {
+					final Map<String, Object> metadata = (Map<String, Object>) metadataValues.get(gene);
+					final String columnValue = (String)metadata.get(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_VALUE);
+	
+					widgetCreated = displayDataForGene(gene, columnValue, metadata, columnIteration, maxIterations) || widgetCreated;
 					
 				}
 			}
 			
-			dataProcessedUntilRow = glTable.getRowsCount();
+			dataProcessedUntilRow = lastVersionDataToDisplay.getRowsCount();
 
-			
-			form.layout(true);
+		
+			if (widgetCreated) {
+				form.reflow(true);
+				form.getParent().layout(true, true);
+			}
+		} catch(RuntimeException e) {
+			messages.warnTech("an error occured while displaying algog data: "+e.getMessage(), getClass(), e);
+			e.printStackTrace();
 		} finally {
 			showBusy(false);	
 		}
@@ -402,30 +447,12 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 	
 
 	
-	public void setData(IAlgoInstance viewAlgoInstance, GenlabTable glTable) {
-
-
-		if (glTable == null)
-			return;
-		
-		messages.traceTech("received data to display.", getClass());
-
-		this.algoInstance = viewAlgoInstance;
-		
-		viewAlgoInstance.addParametersListener(this);
-
-		// retrieve data
-		this.glTable = glTable;
-				
-		loadDataFromTable();
-		
-		
-		
-	}
 	
 
 	@Override
 	public void createPartControl(Composite parent) {
+		
+		super.createPartControl(parent);
 		
 		messages.traceTech("init the form...", getClass());
 		
@@ -460,9 +487,11 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 		// update display
 		form.layout(true);
 		form.reflow(true);
-
+		form.getParent().layout(true, true);
 		
-	
+		// now listen for part display
+		
+		
 	}
 
 	@Override
@@ -473,17 +502,6 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 		
 	}
 
-	@Override
-	public void parameterValueChanged(
-							IAlgoInstance ai, 
-							String parameterId,
-							Object novelValue) {
-		
-		
-		loadDataFromTable();
-		
-	}
-	
 	@Override
 	public void dispose() {
 		
@@ -500,6 +518,7 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 			form.dispose();
 		if (toolkit != null)
 			toolkit.dispose();
+		
 		super.dispose();
 	}
 
@@ -511,6 +530,12 @@ public class ViewAlgogTable extends AbstractViewOpenedByAlgo implements IParamet
 	@Override
 	public String toString() {
 		return getClass().getSimpleName();
+	}
+
+
+	@Override
+	protected void dataReceived() {
+		loadDataFromTable();
 	}
 
 }

@@ -1,5 +1,7 @@
 package genlab.igraph.natjna;
 
+import genlab.core.usermachineinteraction.ListOfMessages;
+
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -18,6 +20,8 @@ import org.junit.runners.Suite.SuiteClasses;
 public class AllTests {
 
 	public AllTests() {
+		ListOfMessages.DEFAULT_RELAY_TO_LOG4J = true;
+		
 	}
 
 }

@@ -1,5 +1,6 @@
 package genlab.gui.views;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.IContainerTask;
 import genlab.core.exec.IRunner;
 import genlab.core.exec.ITask;
@@ -12,6 +13,8 @@ import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
 import genlab.gui.actions.ClearProgressAction;
+import genlab.quality.TestResponsivity;
+import genlab.quality.Timers;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,6 +22,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TreeEditor;
 import org.eclipse.swt.events.MenuEvent;
@@ -53,46 +57,65 @@ import org.eclipse.ui.part.ViewPart;
  * @author Samuel Thiriot
  *
  */
-public class TasksProgressView 
+public final class TasksProgressView 
 					extends ViewPart 
 					implements ITaskManagerListener, ITaskLifecycleListener
 					{
 
-	public final static long REFRESH_PERIOD = 100;
+	private static final String SWT_THREAD_USER_ID = TasksProgressView.class.getCanonicalName()+":refresh";
+
+	public final static long REFRESH_PERIOD = 200;
 
 	private Display display = null;
 	private Tree treeWidget = null;
 	
 	public final static String VIEW_ID = "genlab.gui.views.ProgressView";
 	
+	public static final boolean DEBUG_DURATIONS = false;
+	public static final String DEBUG_KEY_UPDATE_DATA = "ViewAlgogRadarTable:update data";
+
+	/**
+	 * External events submit tasks which require attention.
+	 * They will be taken into account on refresh.
+	 */
+	private Set<ITask> _program_tasksToUpdate = new HashSet<ITask>(1000);
+	
+
 	/**
 	 * Associates each task with its counterpart in the table/tree
 	 */
-	private Map<ITask,TreeItem> task2item = new HashMap<ITask,TreeItem>(200);
+	private Map<ITask,TreeItem> _ui_task2item = new HashMap<ITask,TreeItem>(1000);
 	
-	private Set<ITask> tasksDisplayedNotStopped = new HashSet<ITask>(100);
+	/**
+	 * The set of tasks which are not only displayed, but also require update.
+	 */
+	private Set<ITask> _ui_tasksDisplayedNotStopped = new HashSet<ITask>(1000);
 
 	/**
 	 * Contains the tasks which require an update during the next update cycle.
 	 * Typically, it contains these tasks for tasks detected through event (like: a novel task was added).
 	 */
-	private Set<ITask> tasksToUpdate = new HashSet<ITask>(100);
+	private Set<ITask> _ui_tasksToUpdate = new HashSet<ITask>(1000);
 	
 	/**
 	 * Contains the task to remove
 	 */
-	private Set<ITask> tasksToRemove = new HashSet<ITask>(100);
+	private Set<ITask> _ui_tasksToRemove = new HashSet<ITask>(1000);
 
 	
-	private Map<ITask, ProgressBar> task2progress = new HashMap<ITask, ProgressBar>(100);
-	private Map<ITask, TreeEditor> task2editor = new HashMap<ITask, TreeEditor>(100);
+	private Map<ITask, ProgressBar> _ui_task2progress = new HashMap<ITask, ProgressBar>(1000);
+	private Map<ITask, TreeEditor> _ui_task2editor = new HashMap<ITask, TreeEditor>(1000);
 
 	/**
-	 * A temporary variable used only inside {@link #updateWidgets()}, but put here to avoid
+	 * A temporary variable used only inside {@link #_ui_updateWidgets()}, but put here to avoid
 	 * the frequent creation of a set.
 	 */
-	private Set<ITask> tasksUpdating = new HashSet<ITask>(100);
-	
+	private Set<ITask> tasksUpdating = new HashSet<ITask>(1000);
+
+	protected Rectangle treeBounds = new Rectangle(0, 0, 0, 0);
+
+	private Map<IAlgo,Image> _ui_algo2image = new HashMap<IAlgo, Image>(100);
+
 	
 	/**
 	 * Refresh the progress view
@@ -127,12 +150,22 @@ public class TasksProgressView
 		@Override
 		public void run() {
 			
+			/**
+			 * The runnable used to actually refresh the widgets
+			 */
 			final Runnable updateRunnable = new Runnable() {
 				
 				@Override
 				public void run() {
-					view.updateWidgets();
+					if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+						TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID);
+	
+					view._ui_updateWidgets();
 					updatePending = false;
+					
+					if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+						TestResponsivity.singleton.notifySWTThreadUserEndsRunnable(SWT_THREAD_USER_ID);
+	
 				}
 			};
 			
@@ -141,7 +174,9 @@ public class TasksProgressView
 				if (!updatePending && view.hasSomethingToUpdate()) {
 					//GLLogger.traceTech("refresh !.", getClass());
 					updatePending = true;
-					view.getDisplay().syncExec(updateRunnable);
+					if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+						TestResponsivity.singleton.notifySWTThreadUserSubmitsRunnable(SWT_THREAD_USER_ID);
+					view.getDisplay().asyncExec(updateRunnable);
 				}
 
 				try {
@@ -178,30 +213,30 @@ public class TasksProgressView
 		
 		
 		// dispose the images
-		for (Image img : algo2image.values()) {
+		for (Image img : _ui_algo2image.values()) {
 			try {
 				img.dispose();
 			} catch (RuntimeException e) {
 			}		
 		}
-		algo2image.clear();
+		_ui_algo2image.clear();
 		
 		// dispose task widgets
-		for (TreeEditor editor: task2editor.values()) {
+		for (TreeEditor editor: _ui_task2editor.values()) {
 			try {
 				editor.dispose();
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
 		}
-		for (ProgressBar bar: task2progress.values()) {
+		for (ProgressBar bar: _ui_task2progress.values()) {
 			try {
 				bar.dispose();
 			} catch (RuntimeException e) {
 				e.printStackTrace();
 			}
 		}
-		for (TreeItem item: task2item.values()) {
+		for (TreeItem item: _ui_task2item.values()) {
 			try {
 				item.dispose();
 			} catch (RuntimeException e) {
@@ -327,9 +362,10 @@ public class TasksProgressView
 	}
 	
 
+	// TODO find position based on ranking ?
 	private int findPositionForTask(ITask t) {
 		
-		if (task2item.isEmpty())
+		if (_ui_task2item.isEmpty())
 			return 0;
 		
 		GLLogger.debugTech("displaying task "+t+" "+t.getProgress().getTimestampCreation(), getClass());
@@ -343,7 +379,7 @@ public class TasksProgressView
 		if (t.getParent() == null)
 			items = treeWidget.getItems();
 		else 
-			items = task2item.get(t.getParent()).getItems();
+			items = _ui_task2item.get(t.getParent()).getItems();
 		
 		if (items.length == 0)
 			return 0; // quick solution
@@ -365,36 +401,59 @@ public class TasksProgressView
 			
 	}
 	
-	private Map<IAlgo,Image> algo2image = new HashMap<IAlgo, Image>(50);
 	
+	/**
+	 * returns the TreeItem corresponding to this task, or null in case of problem.
+	 * @param t
+	 * @return
+	 */
 	private TreeItem getOrCreateItemForTask(ITask t) {
 		
+		if (t == null) {
+			GLLogger.warnTech("asked to display a null item...", getClass());
+			return null;
+		}
 		
-		TreeItem item = task2item.get(t);
-		
+		TreeItem item = _ui_task2item.get(t);
+	
 		if (item == null) {
 			
 			// TODO task
-			System.err.println("display task "+t+", rank "+t.getRank());
+			// TODO System.err.println("display task "+t+", rank "+t.getRank());
 			
 			// create the item !
-			if (t.getParent() == null)
-				item = new TreeItem(
-						treeWidget, 
-						SWT.NONE, 
-						findPositionForTask(t)
-						);
-			else 
-				item = new TreeItem(
-						getOrCreateItemForTask(t.getParent()), 
-						SWT.NONE, 
-						findPositionForTask(t)
-						);
+			final IContainerTask parent = t.getParent(); 
+			
+			// create item
+			try {
+					
+				if (parent == null) {
+					item = new TreeItem(
+							treeWidget, 
+							SWT.NONE, 
+							findPositionForTask(t)
+							);
+				} else {
+					final TreeItem parentItem = getOrCreateItemForTask(parent);
+					if (parentItem == null) {
+						GLLogger.warnTech("unable to construct the parent item for task "+t+"; let's ignore it now", getClass());
+						return null;
+					}
+					item = new TreeItem(
+							parentItem,
+							SWT.NONE, 
+							findPositionForTask(t)
+							);
+				}
+			} catch (IllegalArgumentException e) {
+				GLLogger.warnTech("illegal argument when creating a tree item for task "+t, getClass(), e);
+				return null;
+			}
 			item.setText(0, t.getName());
 			item.setData(t);
 			
-			task2item.put(t, item);	
-			tasksDisplayedNotStopped.add(t);
+			_ui_task2item.put(t, item);	
+			_ui_tasksDisplayedNotStopped.add(t);
 			
 			// configure the item
 			
@@ -405,13 +464,13 @@ public class TasksProgressView
 				try {
 					IAlgo algo = ae.getAlgoInstance().getAlgo();
 					String imagePath = algo.getImagePath16X16();
-					Image img = algo2image.get(algo);
+					Image img = _ui_algo2image.get(algo);
 					if (imagePath != null && img == null) {
 					
 						try {
 							// TODO avoid to reload this image each time
 							img = new Image(display, algo.getClass().getClassLoader().getResourceAsStream(imagePath));
-							algo2image.put(algo, img);
+							_ui_algo2image.put(algo, img);
 						} catch (RuntimeException e) {
 							GLLogger.warnTech("unable to find image "+imagePath, getClass());
 						}
@@ -431,7 +490,9 @@ public class TasksProgressView
 			item.setExpanded(t instanceof IContainerTask);
 
 			
-		} 
+		}
+		
+		
 		
 		return item;
 		
@@ -441,35 +502,50 @@ public class TasksProgressView
 	 * to be called from the swt thread.
 	 * @param t
 	 */
-	private void updateWidget(ITask t) {
+	private void _ui_updateWidget(ITask t) {
+		
+		if (DEBUG_DURATIONS)
+			Timers.SINGLETON.startTask("update progress for task "+t.getName());
 		
 		//GLLogger.debugTech("updating for task "+t, getClass());
 		
 		// create (or get) it ?
 		TreeItem item = getOrCreateItemForTask(t);
 		
+		if (item == null)
+			return;
+		
+		if (item.isDisposed()) {
+			// remove the task ! Why is it still there in the first place ?
+			_ui_tasksToRemove.add(t);
+			_ui_tasksToUpdate.remove(t);
+			return;
+		}
+		
+		if (t.getProgress() == null || t.getProgress().getComputationState() == null) {
+			// no progress... ?
+			// probably means the task was cleaned. 
+			System.err.println("NO PROGRESS for task "+t);
+			_ui_tasksToUpdate.remove(t);
+			_ui_tasksToRemove.add(t);
+			return;
+		}
+		
+		
+		final boolean itemIsVisible = isItemVisible(item);
+				
+
 		// also create its children ? 
-		if (t instanceof IContainerTask) {
+		if ((itemIsVisible) && (t instanceof IContainerTask)) {
 			IContainerTask cont = (IContainerTask)t;
 			
 			for (ITask sub : cont.getTasks()) {
 				getOrCreateItemForTask(sub);
 			}
 		}
-		
-		if (item.isDisposed()) {
-			task2item.remove(t);
-			tasksDisplayedNotStopped.remove(t);
-			return;
-		}
-		
 		// update its state ? 
+		
 		final ComputationState state = t.getProgress().getComputationState();
-		if (state == null) {
-			tasksDisplayedNotStopped.remove(t);
-			clear(t);
-			return; // this should never happen. In practice, sometimes a task was removed but this is not yet obvious.
-		}
 		
 		String txt = null;
 		switch (state) {
@@ -479,16 +555,25 @@ public class TasksProgressView
 			if (t.getProgress() != null)
 				sb.append("(").append(UserMachineInteractionUtils.getHumanReadableTimeRepresentation(t.getProgress().getDurationMs())).append(")");
 			txt = sb.toString();
-			tasksDisplayedNotStopped.remove(t);
+			_ui_tasksDisplayedNotStopped.remove(t);
 		} break;
 		case FINISHED_CANCEL:
+			txt = "cancelled";
+			_ui_tasksDisplayedNotStopped.remove(t);
+			break;
 		case FINISHED_FAILURE:
-			tasksDisplayedNotStopped.remove(t);
+			txt = "failed";
+			_ui_tasksDisplayedNotStopped.remove(t);
 			break;
 		case SENDING_CONTINOUS:
 		case STARTED: { 
 			StringBuffer sb = new StringBuffer();
-			sb.append("running (").append(t.getProgress().getProgressDone()).append("/").append(t.getProgress().getProgressTotalToDo()).append(")");
+			sb.append("running");
+			try {
+				sb.append(" (").append(t.getProgress().getProgressDone()).append("/").append(t.getProgress().getProgressTotalToDo()).append(")");
+			} catch (RuntimeException e) {
+				// not a pb;
+			}
 			txt = sb.toString();
 		} break;
 		case READY: {
@@ -503,28 +588,32 @@ public class TasksProgressView
 		}
 		if (txt == null)
 			return; // was cleaned during this process
+		
 		item.setText(1, txt);
 		
 		// progress bar :-)
-		ProgressBar pb = task2progress.get(t);
+		ProgressBar pb = _ui_task2progress.get(t);
 		if (state == ComputationState.STARTED) {
-			if (isItemVisible(item)) {
+			if (itemIsVisible) {
 				if (pb == null) {
 					// create the progress bar !
 					TreeEditor editor = new TreeEditor(treeWidget);
 					pb = new ProgressBar(treeWidget, SWT.SMOOTH);
 					editor.grabHorizontal = true;
 					editor.setEditor(pb, item, 1);
-					task2progress.put(t, pb);
-					task2editor.put(t, editor);
+					_ui_task2progress.put(t, pb);
+					_ui_task2editor.put(t, editor);
 					pb.setState(SWT.NORMAL);
 				}
 				pb.setVisible(true);
 				try {
-					pb.setSelection((int)Math.floor(t.getProgress().getProgressPercent()));
+					final Double progressPercent = t.getProgress().getProgressPercent();
+					if (progressPercent != null)
+						pb.setSelection((int)Math.floor(progressPercent));
 				} catch (NullPointerException e) {
 					// ignore it
-					clear(t);
+					// TODO remove ? clear(t);
+					GLLogger.warnTech("null on the progress of task "+t, getClass(), e);
 				}
 			} else if (pb != null) {
 				pb.setVisible(false);
@@ -532,32 +621,36 @@ public class TasksProgressView
 		} else if (pb != null) {
 			// should remove this progress bar !
 			pb.dispose();
-			task2editor.get(t).dispose();
-			task2progress.remove(t);
-			task2editor.remove(t);
+			_ui_task2editor.remove(t).dispose();
+			_ui_task2progress.remove(t);
 		}
-		// TODO hide ?
 		
-		
+
+		if (DEBUG_DURATIONS)
+			Timers.SINGLETON.endTask("update progress for task "+t.getName(), 10);
 		
 	}
 	
 	protected boolean hasSomethingToUpdate() {
 		
-		if (!tasksDisplayedNotStopped.isEmpty())
+		if (!_ui_tasksDisplayedNotStopped.isEmpty())
 			return true;
 		
-		synchronized (tasksToUpdate) {
-			if (!tasksToUpdate.isEmpty())
+		if (!_ui_tasksToUpdate.isEmpty())
+			return true;
+		
+		if (!_ui_tasksToRemove.isEmpty())
+			return true;
+		
+		synchronized (_program_tasksToUpdate) {
+			if (!_program_tasksToUpdate.isEmpty())
 				return true;
+			
 		}
 		
-		synchronized (tasksToRemove) {
-			return !tasksToRemove.isEmpty();
-		}
+		return false;
 	}
 	
-	protected Rectangle treeBounds = new Rectangle(0, 0, 0, 0);
 	
 	/**
 	 * Inits the internal state to compute widgets visibility.
@@ -590,9 +683,10 @@ public class TasksProgressView
 	}
 	
 	/**
-	 * SHould be called from the SWT thread
+	 * SHould be called from the SWT thread.
+	 * Entry point to display all the tasks !
 	 */
-	protected void updateWidgets() {
+	protected void _ui_updateWidgets() {
 				
 		//long timeStart = System.currentTimeMillis();
 		
@@ -601,31 +695,32 @@ public class TasksProgressView
 			return;
 		}
 		
+		// transfer elements from program events to ui events
+		synchronized (_program_tasksToUpdate) {
+			_ui_tasksToUpdate.addAll(_program_tasksToUpdate);
+			_program_tasksToUpdate.clear();
+		}		
+		
 		treeWidget.setRedraw(false);
 		
 		// first remove the tasks to remove
-		processRemoveTasks();
+		_ui_processRemoveTasks();
 		
 		// first copy the collection of tasks updates to avoid concurrent modifications
-		synchronized (task2item) {
-			tasksUpdating.addAll(tasksDisplayedNotStopped);		// don't update the tasks which are displayed, but no more running
-		}
-		synchronized (tasksToUpdate) {
-			tasksUpdating.addAll(tasksToUpdate);
-			tasksToUpdate.clear();
-		}
-		
-				
+		tasksUpdating.addAll(_ui_tasksDisplayedNotStopped);		// don't update the tasks which are displayed, but no more running
+		tasksUpdating.addAll(_ui_tasksToUpdate);
+		_ui_tasksToUpdate.clear();
+						
 		// now update each task / widget
 		initItemsVisibility();
 		
-		//System.err.println("update tasks: "+tasksUpdating.size());
 		for (ITask t : tasksUpdating) {
 			try {
-				updateWidget(t);
+				_ui_updateWidget(t);
 			} catch (RuntimeException e) {
 				// log ? 
 				GLLogger.warnTech("catched an error while updating a progress: "+e.getMessage()+" for task "+t, getClass(), e);
+				e.printStackTrace();
 				/*synchronized (tasksToUpdate) {
 					tasksToUpdate.remove(t);
 				}*/
@@ -643,30 +738,28 @@ public class TasksProgressView
 	}
 
 	private void addTaskToManage(ITask task) {
+		
 		//GLLogger.debugTech("a task was added: "+task, getClass());
-		synchronized (tasksToUpdate) {
-			tasksToUpdate.add(task);	
+		synchronized (_program_tasksToUpdate) {
+			_program_tasksToUpdate.add(task);	
 			
-			if (task instanceof IContainerTask) {
-				IContainerTask ct = (IContainerTask)task;
+			/* TODO je pense que c'est inutile
+			 if (task instanceof IContainerTask) {
+			 	IContainerTask ct = (IContainerTask)task;
 				for (ITask subTask : ct.getTasks()) {
-					tasksToUpdate.add(subTask);
+					_program_tasksToUpdate.add(subTask);
 				}
 			}
+			*/
 		}
 		//thread.interrupt();
 				
-	}
-	
-	private void manageTaskChanged(ITask task) {
-
-		addTaskToManage(task);
 	}
 
 	@Override
 	public void notifyTaskAdded(ITask task) {
 		
-		manageTaskChanged(task);
+		addTaskToManage(task);
 		//task.getProgress().addListener(this);
 		
 	}
@@ -674,7 +767,7 @@ public class TasksProgressView
 	@Override
 	public void notifyTaskRemoved(ITask task) {
 		
-		GLLogger.debugTech("a task was removed: "+task, getClass());
+		//GLLogger.debugTech("a task was removed: "+task, getClass());
 		
 		//task.getProgress().removeListener(this);
 		
@@ -689,78 +782,80 @@ public class TasksProgressView
 	}
 	*/
 	
-	protected void clear(ITask task) {
+	/**
+	 * Actual clearing of the task (removes the widgets, etc.)
+	 * @param task
+	 */
+	protected void _ui_clear(ITask task) {
 		
-		synchronized (task2item) {
-			
-			TreeItem item = task2item.remove(task);
-			if (item != null)
-				item.dispose();
-			
-			tasksDisplayedNotStopped.remove(task);
-			
-			TreeEditor editor = task2editor.remove(task);
-			if (editor != null)
-				editor.dispose();
-			
-			ProgressBar bar = task2progress.remove(task);
-			if (bar != null)
-				bar.dispose();
-			
+		// TODO ??? System.err.println("WARN clearing item for task "+task);
+		TreeEditor editor = _ui_task2editor.remove(task);
+		if (editor != null)
+			editor.dispose();
+		
+		ProgressBar bar = _ui_task2progress.remove(task);
+		if (bar != null)
+			bar.dispose();
 	
-		}
+		TreeItem item = _ui_task2item.remove(task);
+		if (item != null)
+			item.dispose();
 		
-		synchronized (tasksToUpdate) {
-			
-			tasksToUpdate.remove(task);
-
-		}
+		_ui_tasksDisplayedNotStopped.remove(task);
+		
+		_ui_tasksToUpdate.remove(task);
+	
 		
 	}
 	
+	/**
+	 * Called from the program. 
+	 * Will clear all the finished tasks.
+	 * In practice, takes each finished task, and adds it to the list 
+	 * of the tasks which should be removed
+	 */
 	public void clearFinished() {
 		
-		Set<ITask> toRemove = new HashSet<ITask>(task2item.size());
+		Set<ITask> toRemove = new HashSet<ITask>(_ui_task2item.size());
 		
-		synchronized (task2item) {
+		Set<ITask> existingTasks = new HashSet<ITask>(_ui_task2item.keySet());
+		
+		// detect parent tasks to remove
+		for (ITask task: existingTasks) {
 			
-			// detect parent tasks to remove
-			for (ITask task: task2item.keySet()) {
-				
-				// do not clean
-				if (
-						// subtasks
-						(task.getParent() != null 
-						|| 
-						// or running or queued tasks
-						!task.getProgress().getComputationState().isFinished()))
-					continue;
-				
+			// do not clean
+			if (
+					// subtasks
+					(task.getParent() != null 
+					|| 
+					// or running or queued tasks
+					(task.getProgress() != null && task.getProgress().getComputationState() != null && !task.getProgress().getComputationState().isFinished())))
+				continue;
+			
+			toRemove.add(task);
+		}
+		
+		// detect children to remove
+		for (ITask task: existingTasks) {
+			
+			// do not clean
+			if (
+					// subtasks
+					(task.getParent() == null 
+					|| 
+					// or running or queued tasks
+					!task.getProgress().getComputationState().isFinished()))
+				continue;
+			
+			if (toRemove.contains(task.getTopParent()))
 				toRemove.add(task);
-			}
-			
-			// detect children to remove
-			for (ITask task: task2item.keySet()) {
-				
-				// do not clean
-				if (
-						// subtasks
-						(task.getParent() == null 
-						|| 
-						// or running or queued tasks
-						!task.getProgress().getComputationState().isFinished()))
-					continue;
-				
-				if (toRemove.contains(task.getTopParent()))
-					toRemove.add(task);
-				
-			}
 			
 		}
 		
+	
 		// now remove all those listen
-		synchronized (tasksToRemove) {
-			tasksToRemove.addAll(toRemove);
+		synchronized (_program_tasksToUpdate) {
+			_program_tasksToUpdate.addAll(toRemove);
 		}
 		
 	}
@@ -768,32 +863,24 @@ public class TasksProgressView
 	/**
 	 * Called from the SWT thread to clear the items of removed tasks
 	 */
-	protected void processRemoveTasks() {
-
-		synchronized (tasksToRemove) {
-			
-			
-			for (ITask task: tasksToRemove) {
-		
-				clear(task);
-				tasksDisplayedNotStopped.remove(task);
-				tasksToUpdate.remove(task);
+	protected void _ui_processRemoveTasks() {
 				
-			}
+		for (ITask task: _ui_tasksToRemove) {
+	
+			_ui_clear(task);
 			
-			tasksToRemove.clear();
-						
 		}
 		
+		_ui_tasksToRemove.clear();
+
 	}
 	
 	@Override
 	public void taskCleaning(ITask task) {
 
-		synchronized (tasksToRemove) {
-			tasksToRemove.add(task);
-		}
-		
+		// TODO do we care ??? 
+		// _program_tasksToRemove.add(task);
+			
 		
 	}
 

@@ -3,6 +3,7 @@ package genlab.gui.views;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.part.ViewPart;
 
 public class WorkflowView extends ViewPart {
@@ -12,6 +13,7 @@ public class WorkflowView extends ViewPart {
 
 	public WorkflowView() {
 		// TODO Auto-generated constructor stub
+		
 	}
 
 	@Override

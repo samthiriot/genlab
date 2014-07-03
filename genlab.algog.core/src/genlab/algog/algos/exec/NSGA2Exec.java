@@ -4,7 +4,9 @@ import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
 import genlab.algog.algos.meta.AbstractGeneticExplorationAlgo;
 import genlab.algog.algos.meta.GeneticExplorationAlgo;
 import genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo;
+import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
+import genlab.algog.internal.ANumericGene;
 import genlab.algog.internal.AnIndividual;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ComputationResult;
@@ -29,6 +31,7 @@ import java.util.TreeMap;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 /**
+ * TODO elitism ? 
  * TODO changer taille offspring en paramètre
  * 
  * @author Samuel Thiriot
@@ -360,7 +363,7 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 	}
 	
 	@Override
-	protected Map<AGenome, Set<AnIndividual>> selectIndividuals(Map<AnIndividual, Double[]> indiv2fitness) {
+	protected INextGeneration selectIndividuals(Map<AnIndividual, Double[]> indiv2fitness) {
 
 		analyzeLastPopulation(indiv2fitness);
 		
@@ -368,16 +371,10 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		Set<AnIndividual> offsprings  = selectParents(indiv2fitness, indiv2fitness.size()/2);
 
 		// now sort the population by genome, as expected by the parent algo
-		HashMap<AGenome, Set<AnIndividual>> genome2individuals = new HashMap<AGenome, Set<AnIndividual>>();
+		NextGenerationWithElitism selectedIndividuals = new NextGenerationWithElitism(indiv2fitness.size());
 		for (AnIndividual offspring: offsprings) {
 			
-			Set<AnIndividual> individuals = genome2individuals.get(offspring.genome);
-			if (individuals == null) {
-				individuals = new HashSet<AnIndividual>(indiv2fitness.size());
-				genome2individuals.put(offspring.genome, individuals);
-			}
-			
-			individuals.add(offspring);
+			selectedIndividuals.addIndividual(offspring.genome, offspring);
 			
 		}
 		
@@ -386,7 +383,7 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		this.individual2rank = null;
 		this.indiv2fitness = null;
 		
-		return genome2individuals;
+		return selectedIndividuals;
 	}
 	
 	/**
@@ -407,63 +404,12 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		tab.declareColumn(titleParetoGenome);		
 		
 		// declare columns for each fitness
-		Map<AGenome,String[]> genome2fitnessColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
-		Map<String,Map<String,String>> tableMetadataGoals = new HashMap<String, Map<String,String>>();
-		for (AGenome currentGenome: genome2fitnessOutput.keySet()) {
-		
-			String[] names = new String[genome2fitnessOutput.get(currentGenome).size()*3];
-			int j=0;
-			for (IAlgoInstance goalAI: genome2fitnessOutput.get(currentGenome)) {
-			
-				Map<String,String> colMetadataForGenome = new HashMap<String, String>();
-				tableMetadataGoals.put(currentGenome.name+" / "+goalAI.getName(), colMetadataForGenome);
-				
-				names[j] = "value "+currentGenome.name+" / "+goalAI.getName();
-				tab.declareColumn(names[j]);
-				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_VALUE, names[j]);
-				
-				j++;
-				
-				names[j] = "target "+currentGenome.name+" / "+goalAI.getName();
-				tab.declareColumn(names[j]);
-				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_TARGET, names[j]);
-				
-				j++;
-				
-				names[j] = "fitness "+currentGenome.name+" / "+goalAI.getName();
-				tab.declareColumn(names[j]);
-				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_FITNESS, names[j]);
-				
-				j++;
-				
-				
-			}
-			
-			genome2fitnessColumns.put(currentGenome, names);
-			
-		}
-		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GOALS2COLS, tableMetadataGoals);
+		final Map<AGenome,String[]> genome2fitnessColumns = declareColumnsForGoals(tab);
 		
 		// declare columns for each possible gene
-		Map<AGenome,String[]> genome2geneColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
-		Map<String,String> tableMetadataGenes = new HashMap<String,String>();
-
-		for (AGenome currentGenome: genome2fitnessOutput.keySet()) {
-						
-			String[] names = new String[currentGenome.getGenes().length];
-			for (int j=0; j<names.length; j++) {
-			
-				names[j] = "genes "+currentGenome.name+" / "+currentGenome.getGenes()[j].name;
-				tab.declareColumn(names[j]);
-				tableMetadataGenes.put(currentGenome.name+" / "+currentGenome.getGenes()[j].name, names[j]);
-			}
-			
-			genome2geneColumns.put(currentGenome, names);
-			
-		}
-		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GENES2VALUES, tableMetadataGenes);
-
-		
+		final Map<AGenome,String[]> genome2geneColumns = declareColumnsForGenes(tab);
+				
+				
 		for (Integer iterationId : generation2paretoFront.keySet()) {
 			
 			// for each iteration
@@ -472,57 +418,12 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 			final Map<AnIndividual,Object[]> indiv2value = generation2values.get(iterationId);
 			final Map<AnIndividual,Object[]> indiv2target = generation2targets.get(iterationId);
 
-			for (AnIndividual indiv : individuals) {
-				
-				int rowId = tab.addRow();
-				final Double[] fitness = generationFitness.get(indiv);
-				final Object[] values = indiv2value.get(indiv);
-				final Object[] targets = indiv2target.get(indiv);
-
-				tab.setValue(rowId, titleIteration, iterationId);
-				tab.setValue(rowId, titleParetoGenome, indiv.genome.name);
-
-				// export fitness
-				String[] colnames = genome2fitnessColumns.get(indiv.genome);
-				for (int i=0; i<colnames.length/3; i++) {
-					
-					int I = i*3;
-
-					tab.setValue(
-							rowId, 
-							colnames[I], 
-							values[i]
-							);
-					
-					
-					I=I+1;
-					tab.setValue(
-							rowId, 
-							colnames[I], 
-							targets[i]
-							);
-					
-					I=I+1;
-
-					tab.setValue(
-							rowId, 
-							colnames[I], 
-							fitness[i]
-							);
-					
-				}
-				
-				// export genes
-				String[] genesNames = genome2geneColumns.get(indiv.genome);
-				for (int i=0; i<genesNames.length; i++) {
-				
-					tab.setValue(
-							rowId, 
-							genesNames[i], 
-							indiv.genes[i]
-							);
-				}
-			}
+			storeIndividualsData(
+					tab, 
+					titleIteration, iterationId, titleParetoGenome, 
+					genome2fitnessColumns, genome2geneColumns, 
+					individuals, generationFitness, indiv2value, indiv2target
+					);
 			
 		}
 		
