@@ -99,5 +99,20 @@
          </view>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="genlab.examples.extensions.example">
+      <example
+            class="genlab.graphstream.examples.WSExample1"
+            id="genlab.graphstream.ui.example1">
+      </example>
+      <example
+            class="genlab.graphstream.examples.BAExample1"
+            id="genlab.graphstream.ui.example2">
+      </example>
+      <example
+            class="genlab.graphstream.examples.StatsExample1"
+            id="genlab.graphstream.ui.example3">
+      </example>
+   </extension>
 
 </plugin>

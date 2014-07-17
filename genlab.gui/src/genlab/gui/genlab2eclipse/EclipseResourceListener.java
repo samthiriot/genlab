@@ -1,8 +1,11 @@
 package genlab.gui.genlab2eclipse;
 
+import java.io.File;
+
 import genlab.core.commons.FileUtils;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.persistence.GenlabPersistence;
+import genlab.core.projects.GenlabProject;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
@@ -12,6 +15,8 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.runtime.CoreException;
 
 /**
@@ -35,7 +40,7 @@ public class EclipseResourceListener implements IResourceChangeListener {
 		
 		// before loading a project, we need to detect all the possible algo instances provided by plugins
         ExistingAlgos.getExistingAlgos();
-        // (if already loaded, it will not load them again)
+        // (if already loaded, it will not load them again, so no useless cost there)
         
 		// read the genlab project 
         IGenlabProject genlabProject = GenlabPersistence.getPersistence().readProject(
@@ -63,9 +68,46 @@ public class EclipseResourceListener implements IResourceChangeListener {
 		 try {
 			event.getDelta().accept(new IResourceDeltaVisitor() {
 				
+				/*
+				   public boolean visit(IResourceDelta delta) throws CoreException {
+			
+					System.err.println("visiting delta: "+delta+" ("+delta.getKind()+")");
+
+			    	final IResource resource = delta.getResource();
+			        
+			    	// stay there if the filename project is added (that means: project creation)
+			    	if (
+			    			(
+			    					// when created
+			    					(delta.getKind() == IResourceDelta.ADDED) 
+			    					|| 
+			    					// when project loaded during workspace resume
+			    					(delta.getKind() == IResourceDelta.CHANGED))
+			    			&&
+			    			(resource.getType() == IResource.FILE)
+			    			&&
+			    			(resource.getName().equals(GenlabPersistence.FILENAME_PROJECT))
+			    			) {
+			    		
+			    		GLLogger.debugTech("a project file was added; attempting to load the corresponding project...", getClass());
+						   
+			    		openProjectFromDirectory(
+			    				resource.getProject(),
+			    				FileUtils.extractPath(resource.getLocation().toOSString())
+			    				);
+			    		
+			    		return false;
+			    	}
+			    	
+			    	
+			    	
+			        return true;
+			    }
+			 });
+				 */
 			    public boolean visit(IResourceDelta delta) throws CoreException {
 			
-					System.err.println("visiting delta: "+delta);
+					System.err.println("visiting delta: "+delta+" ("+delta.getKind()+")");
 
 			    	final IResource resource = delta.getResource();
 			        
@@ -94,7 +136,6 @@ public class EclipseResourceListener implements IResourceChangeListener {
 			    	}
 			    	
 			    	// also stay there if the root changes (typically, restoration of an eclipse project)
-			    	/*
 			    	if (
 			    			(delta.getKind() == IResourceDelta.CHANGED)
 			    			&&
@@ -102,11 +143,31 @@ public class EclipseResourceListener implements IResourceChangeListener {
 			    			) {
 			    		GLLogger.debugTech("a workspace root was added; attempting to load the corresponding project...", getClass());
 
-			    		return false;
+			    		IWorkspace eclipseWorkspace = resource.getWorkspace();
+			    		
+			            IWorkspaceRoot eclipseRoot = eclipseWorkspace.getRoot(); 
+			            IProject[] eclipseProjects = eclipseRoot.getProjects();
+			            
+			            // for each project...
+			            for (IProject currentEclipseProject: eclipseProjects) {
+			            
+			            	// we only focus on projects having the right nature
+			            	if (!currentEclipseProject.hasNature(GenLabWorkflowProjectNature.NATURE_ID)) 
+			            		continue;
+			            	
+			            	
+			            	// okay; please load this one
+			            	openProjectFromDirectory(
+				    				currentEclipseProject,
+				    				currentEclipseProject.getLocation().toOSString()
+				    				);
+				    		
+			            	
+			            }
+			            
+			            return false;
 			    	}
-			    	*/
 			    	
-			        
 			        return true;
 			    }
 			 });

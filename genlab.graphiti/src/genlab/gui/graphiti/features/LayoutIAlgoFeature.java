@@ -21,6 +21,7 @@ import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
+import org.eclipse.graphiti.ui.services.GraphitiUi;
 
 /**
  * Manages the resizing of standard algo boxes
@@ -187,15 +188,33 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
         
         // ensure min height and width are ok for invisible rectangle
         
+        // determine minimal height
+        int minHeight = MIN_HEIGHT;
+        for (Anchor anchor: containerShape.getAnchors()) {
+        	
+        	try {
+	        	FixPointAnchor fixedAnchor = (FixPointAnchor)anchor;
+	        	
+	        	int heightOfAnchor = fixedAnchor.getLocation().getY()+ANCHOR_WIDTH*2;
+	        	if (heightOfAnchor > minHeight)
+	        		minHeight = heightOfAnchor;
+	            	
+        	} catch (ClassCastException e) {
+        		// do nothing 
+        	}
+        }
+        
+        int minWidth = MIN_WIDTH;
+                
         // height
-        if (containerGa.getHeight() < MIN_HEIGHT) {
-            containerGa.setHeight(MIN_HEIGHT);
+        if (containerGa.getHeight() < minHeight) {
+            containerGa.setHeight(minHeight);
             anythingChanged = true;
         }
  
         // width
-        if (containerGa.getWidth() < MIN_WIDTH) {
-            containerGa.setWidth(MIN_WIDTH);
+        if (containerGa.getWidth() < minWidth) {
+            containerGa.setWidth(minWidth);
             anythingChanged = true;
         }        
         
@@ -229,7 +248,11 @@ public class LayoutIAlgoFeature extends AbstractLayoutFeature {
         
         for (Anchor anchor: containerShape.getAnchors()) {
         	
-        	anythingChanged = manageResizing(containerShape.getGraphicsAlgorithm().getWidth(), (FixPointAnchor)anchor) || anythingChanged;
+        	anythingChanged = manageResizing(
+        			containerShape.getGraphicsAlgorithm().getWidth(), 
+        			(FixPointAnchor)anchor
+        			) 
+        			|| anythingChanged;
             	
         }
         

@@ -1,5 +1,6 @@
 package genlab.gui.graphiti.genlab2graphiti;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
 
@@ -15,7 +16,11 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 
-// TODO to delete
+/**
+ * Used to create an empty graphiti diagram. 
+ * 
+ * @author Samuel Thiriot
+ */
 public class AddAllClassesCommand extends RecordingCommand {
 
 	private IProject project;
@@ -26,6 +31,10 @@ public class AddAllClassesCommand extends RecordingCommand {
 
 	public AddAllClassesCommand(IProject project, TransactionalEditingDomain editingDomain, IGenlabWorkflowInstance workflow) {
 		super(editingDomain);
+		
+		if (project == null)
+			throw new ProgramException("no project provided; cannot create the workflow");
+		
 		this.project = project;
 		this.editingDomain = editingDomain;
 		this.workflow = workflow;

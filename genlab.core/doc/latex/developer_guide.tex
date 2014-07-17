@@ -29,6 +29,16 @@ A view should:
 \item 
 \end{itemize}
 
+
+\section{propose example}
+
+To provide an example to a user:
+\begin{itemize}
+\item in your algorithm plugin (i.e. the corresponding eclipse project), create a YOURPLUGINPACKAGES.examples (just a convention to make things more clear)
+\item create a different class for every example which implements IGenlabExample
+\item in the plugin.xml, section ``extensions'', add an extension point genlab.examples.extensions.example; then inside it register each class providing an example
+\end{itemize}
+
  
  
 

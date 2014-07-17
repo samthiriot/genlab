@@ -16,6 +16,8 @@ import genlab.gui.graphiti.features.AddIAlgoContainerFeature;
 import genlab.gui.graphiti.features.AddIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.AlgoDirectEditingFeature;
 import genlab.gui.graphiti.features.AlgoUpdateFeature;
+import genlab.gui.graphiti.features.BasicLayoutDiagramFeature;
+import genlab.gui.graphiti.features.BeautifyDiagramFeature;
 import genlab.gui.graphiti.features.ConstDirectEditingFeature;
 import genlab.gui.graphiti.features.ConstUpdateFeature;
 import genlab.gui.graphiti.features.CopyFeature;
@@ -110,6 +112,9 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 	protected OpenParametersFeature customOpenParam = new OpenParametersFeature(this);
 	protected SeeInfoFeature customViewInfo = new SeeInfoFeature(this);
 
+	protected BasicLayoutDiagramFeature customBasicLayoutFeature = new BasicLayoutDiagramFeature(this);
+	protected BeautifyDiagramFeature customBeautifyFeature = new BeautifyDiagramFeature(this);
+	
 	public static GraphitiFeatureProvider getOrCreateFor(IDiagramTypeProvider dtp) {
 		GraphitiFeatureProvider res = type2provider.get(dtp);
 		if (res == null) {
@@ -214,6 +219,8 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		// add mine
 		retList.add(customOpenParam);
 		retList.add(customViewInfo);
+		retList.add(customBasicLayoutFeature);
+		retList.add(customBeautifyFeature);
 		
 		return retList.toArray(new ICustomFeature[retList.size()]);
 	}

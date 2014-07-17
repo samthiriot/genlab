@@ -14,3 +14,6 @@ Require-Bundle: org.eclipse.core.runtime,
  genlab.gui.jfreechart;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Export-Package: genlab.algog.gui.jfreechart.algos,
+ genlab.algog.gui.jfreechart.exec,
+ genlab.algog.gui.jfreechart.instance

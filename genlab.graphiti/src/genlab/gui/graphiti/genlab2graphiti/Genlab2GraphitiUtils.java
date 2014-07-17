@@ -1,5 +1,6 @@
 package genlab.gui.graphiti.genlab2graphiti;
 
+import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
@@ -19,9 +20,15 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
+import org.eclipse.graphiti.dt.IDiagramTypeProvider;
+import org.eclipse.graphiti.features.IAddFeature;
+import org.eclipse.graphiti.features.context.impl.AddContext;
+import org.eclipse.graphiti.features.context.impl.AreaContext;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -136,6 +143,38 @@ public class Genlab2GraphitiUtils {
         
 	}
 	
+	public static void fillGraphitiFromGenlab(
+			IGenlabWorkflowInstance workflow, 
+			Diagram diagram, 
+			GraphitiFeatureProvider gfp) {
+		
+		for (IAlgoInstance ai: workflow.getAlgoInstances()) {
+		
+			// search for its diagram counterpart
+			PictogramElement pe = gfp.getPictogramElementForBusinessObject(ai);
+			if (pe == null) {
+				// TODO change info => debug
+				GLLogger.infoTech("no pictogram for element "+ai+"; will add it to the diagram", Genlab2GraphitiUtils.class);
+			
+				AreaContext area = new AreaContext();
+				AddContext ctxt = new AddContext(area, ai);
+				IAddFeature addFeature = gfp.getAddFeature(ctxt);
+				if (addFeature == null) {
+					GLLogger.warnTech("no add feature for element "+ai+"; will NOT add it to the diagram: :-(", Genlab2GraphitiUtils.class);
+					continue;
+				}
+				PictogramElement peCreated = addFeature.add(ctxt);
+				
+			}
+			
+			
+			
+		}
+		
+		
+		
+	}
+	
 	// TODO remove old code for errors
 	public static void createDiagram(IGenlabWorkflowInstance workflow, IProject project) {
 		
@@ -181,8 +220,9 @@ public class Genlab2GraphitiUtils {
 		String platformString = operation.getCreatedResource().getURI().toPlatformString(true);
 		IFile file = project.getParent().getFile(new Path(platformString));
 		IFileEditorInput input = new FileEditorInput(file);
+		IEditorPart part = null;
 		try {
-			PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(
+			part  = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().openEditor(
 					input, 
 					GenlabDiagramEditor.EDITOR_ID
 					);
@@ -193,6 +233,10 @@ public class Genlab2GraphitiUtils {
 			ErrorDialog.openError(Display.getCurrent().getActiveShell(), "oops", e.getMessage(), status);
 		}
 		
+		// TODO open only if asked by the user (not for users)
+		// TODO layout of this diagram ? 
+		
+		// now populate everything !
 		
 		
 	}

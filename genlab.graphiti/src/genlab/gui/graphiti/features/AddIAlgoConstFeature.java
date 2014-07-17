@@ -48,7 +48,7 @@ public class AddIAlgoConstFeature extends AbstractAddFeature {
 	public static final int WIDTH = 80;
 	public static final int HEIGHT = 80;
 	
-	public static final int FONT_SIZE = 20;
+	public static final int FONT_SIZE = 14;
 	public static final String FONT_NAME = "Arial";
 	
 	public static final int MARGIN_WIDTH = 5;

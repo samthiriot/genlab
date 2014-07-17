@@ -105,6 +105,13 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 		
 		workflow.addListener(WorkflowListener.lastInstance);
 		
+		// TODO check consistency ???
+		Genlab2GraphitiUtils.fillGraphitiFromGenlab(
+				workflow, 
+				diagram, 
+				(GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider()
+				);
+		
 	}
 	
 	/**
@@ -195,6 +202,14 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 	public IGenlabWorkflowInstance getEditedWorkflow() {
 		return workflow;
 	}
+
+	@Override
+	public boolean isDirty() {
+		// TODO Auto-generated method stub
+		return super.isDirty();
+	}
+	
+	
 	
 	
 	

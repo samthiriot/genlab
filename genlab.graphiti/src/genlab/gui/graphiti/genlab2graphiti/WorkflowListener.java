@@ -292,7 +292,14 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 				
 				AddContext ctxt = new AddContext();
 				
-				ctxt.setTargetContainer(diagram);
+				if (instance.getContainer() == null) {
+					// direct diagram child
+					ctxt.setTargetContainer(diagram);
+				} else {	
+					// inside another container ?
+					PictogramElement containerPE = dfp.getPictogramElementForBusinessObject(instance.getContainer());
+					ctxt.setTargetContainer((ContainerShape) containerPE);
+				}
 				
 				UIInfos uiInfos = objectCreated2infos.get(instance);
 				ctxt.setNewObject(instance);

@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: AlgoG examples
+Bundle-SymbolicName: genlab.algog.gui.examples;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: genlab.algog.gui.examples.Activator
+Bundle-Vendor: Samuel Thiriot
+Require-Bundle: org.eclipse.core.runtime,
+ genlab.core;bundle-version="0.0.1",
+ genlab.examples;bundle-version="1.0.0",
+ genlab.graphstream;bundle-version="0.0.1",
+ genlab.algog.core;bundle-version="1.0.0",
+ genlab.gui.jfreechart;bundle-version="1.0.0",
+ genlab.algog.gui.jfreechart;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

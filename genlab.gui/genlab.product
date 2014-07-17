@@ -33,9 +33,11 @@
    <plugins>
       <plugin id="com.ibm.icu"/>
       <plugin id="genlab.algog.core"/>
+      <plugin id="genlab.algog.gui.examples"/>
       <plugin id="genlab.algog.gui.jfreechart"/>
       <plugin id="genlab.core"/>
       <plugin id="genlab.cytoscape"/>
+      <plugin id="genlab.examples"/>
       <plugin id="genlab.gephi"/>
       <plugin id="genlab.gnuplot"/>
       <plugin id="genlab.graphiti"/>

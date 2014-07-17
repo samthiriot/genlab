@@ -34,6 +34,7 @@ import org.eclipse.graphiti.util.IColorConstant;
  * From an algo instance, displays it.
  * 
  * TODO manage color constants
+ * TODO update to adapt to the number of inputs / outputs
  * 
  * @see http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.graphiti.doc%2Fresources%2Fdocu%2Fgfw%2Fselection-behavior.htm
  * 
