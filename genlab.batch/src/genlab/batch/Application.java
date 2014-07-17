@@ -3,15 +3,18 @@ package genlab.batch;
 import genlab.core.GenLab;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.GenlabExecution;
+import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
+import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
 
 import java.io.File;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.Platform;
@@ -49,7 +52,20 @@ public class Application implements IApplication {
 			
 			IGenlabWorkflowInstance workflow = GenlabPersistence.getPersistence().readWorkflow(project, relativeWorkflowFile);
 			
-			IComputationProgress progress = GenlabExecution.runBlocking(workflow, true);
+			IAlgoExecution execution = GenlabExecution.runBackground(workflow, true);
+			
+			IComputationProgress progress = execution.getProgress();
+			
+			while (!progress.getComputationState().isFinished()) {
+				System.out.println(progress.getProgressPercent()+" %");
+				try {
+					Thread.sleep(200);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
 			switch (progress.getComputationState()) {
 				case FINISHED_CANCEL:
 					System.out.println("computation was canceled");
@@ -89,10 +105,12 @@ public class Application implements IApplication {
 		System.out.println("initialization of genlab...");
 		GenLab.getVersionString();
 		System.out.println();
-		
+				
 		GenlabPersistence.getPersistence().autoloadAllWorkflows = false;
 		ListOfMessages.DEFAULT_RELAY_TO_LOG4J = true;
+		BasicConfigurator.configure();
 		Logger.getRoot().setLevel(Level.INFO);
+	    
 		
 		System.out.print("Genlab ");
 		System.out.print(GenLab.getVersionString());

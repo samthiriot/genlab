@@ -1,21 +1,18 @@
 package genlab.core.exec;
 
-import genlab.core.model.exec.ExecutionHooks;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.instance.WorkflowCheckResult;
-import genlab.core.usermachineinteraction.GLLogger;
-import genlab.core.usermachineinteraction.ListsOfMessages;
-import genlab.core.usermachineinteraction.MessageLevel;
 
 public class GenlabExecution {
 
-	public static void runBackground(final IGenlabWorkflowInstance workflow) {
-		runBackground(workflow, false);
+	public static IAlgoExecution runBackground(IGenlabWorkflowInstance workflow) {
+		return runBackground(workflow, false);
 	}
 
-	public static void runBackground(final IGenlabWorkflowInstance workflow, final boolean forceExec) {
+	public static IAlgoExecution runBackground(IGenlabWorkflowInstance workflow, boolean forceExec) {
 
+		AsynchronousWorkflowRunner runnable = new AsynchronousWorkflowRunner(workflow, forceExec);
+		/*
 		Runnable runnable = new Runnable() {
 			
 			@Override
@@ -61,9 +58,11 @@ public class GenlabExecution {
 				
 			}
 		};
+		*/
 	
 		(new Thread(runnable)).start();
 		
+		return runnable.getAlgoExecutionBlocking();
 	}
 	
 	
