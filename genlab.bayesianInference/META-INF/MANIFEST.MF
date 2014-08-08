@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: BayesianInference
+Bundle-SymbolicName: genlab.bayesianInference;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: genlab.bayesianinference.Activator
+Bundle-Vendor: Samuel Thiriot
+Require-Bundle: org.eclipse.core.runtime,
+ genlab.core;bundle-version="0.0.1",
+ org.junit;bundle-version="4.11.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Export-Package: genlab.bayesianInference,
+ genlab.bayesianinference,
+ genlab.bayesianinference.meta
+Bundle-ClassPath: .

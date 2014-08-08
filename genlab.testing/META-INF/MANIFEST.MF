@@ -14,7 +14,12 @@ Require-Bundle: genlab.core;bundle-version="0.0.1",
  org.junit,
  genlab.igraph;bundle-version="1.0.0",
  genlab.neo4j;bundle-version="1.0.0",
- genlab.algog.core;bundle-version="1.0.0"
+ genlab.algog.core;bundle-version="1.0.0",
+ genlab.bayesianInference;bundle-version="1.0.0",
+ genlab.bayesianInference.inflib;bundle-version="1.0.0",
+ genlab.bayesianInference.smile;bundle-version="1.0.0",
+ genlab.populations;bundle-version="1.0.0",
+ genlab.population.yang;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: ext/native/linux/x86/,

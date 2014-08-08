@@ -36,7 +36,6 @@ public abstract class AbstractGraphStreamGraphParser extends GraphStreamAlgo {
 		super(name, desc, ExistingAlgoCategories.PARSER_GRAPH);
 		inputs.add(PARAM_FILE);
 		outputs.add(OUTPUT_GRAPH);
-		
 	}
 	
 	

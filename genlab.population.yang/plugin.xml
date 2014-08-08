@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.population.yang.algos.CreatePopulationFromBNAlgo"
+            id="genlab.population.yang.algos.CreatePopulationFromBNAlgo">
+      </algo>
+      <algo
+            class="genlab.population.yang.algos.SetRandomAttributeUniformAlgo"
+            id="genlab.population.yang.algo6">
+      </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <docalgo
+            algo_id="genlab.population.yang.algos.CreatePopulationFromBNAlgo"
+            description="Add individuals in a population by generating them from a Bayesian network"
+            library_id="genlab.core.doc.library.core">
+      </docalgo>
+   </extension>
+
+</plugin>

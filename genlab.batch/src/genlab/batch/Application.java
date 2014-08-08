@@ -8,7 +8,6 @@ import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
-import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
 
@@ -22,7 +21,10 @@ import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 
 /**
- * This class controls all aspects of the application's execution
+ * This class controls all aspects of the application's execution.
+ * 
+ * TODO deactivate the algos not available in batch mode (command line parameter, 
+ * deactivated state for algo or remove them directly).
  */
 public class Application implements IApplication {
 

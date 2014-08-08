@@ -25,7 +25,7 @@ public class ExamplesCreation {
 	
 	public static IGenlabProject getOrCreateExamplesProject() {
 		
-		// search for a project with this name TODO
+		// search for a project with this name 
 		IProject eclipseProject = null;
 		
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();

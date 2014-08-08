@@ -118,11 +118,11 @@ public class TestReadWriteChain {
 		// ... link to the writing 
 		IConnection c = workflow.connect(
 				analysisComponent.getOutputInstanceForOutput(detectConnectedComponents.OUTPUT_GRAPH),
-				writerInstance.getInputInstanceForInput(writerDGs.PARAM_GRAPH)
+				writerInstance.getInputInstanceForInput(writerDGs.INPUT_GRAPH)
 				);
 		IConnection c2 = workflow.connect(
 				analysisComponent.getOutputInstanceForOutput(detectConnectedComponents.OUTPUT_GRAPH),
-				writerInstance2.getInputInstanceForInput(writerGML.PARAM_GRAPH)
+				writerInstance2.getInputInstanceForInput(writerGML.INPUT_GRAPH)
 				);
 	
 		

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.populations.algos.CreateEmptyPopulationAlgo"
+            id="genlab.populations.algos.CreateEmptyPopulationAlgo">
+      </algo>
+      <algo
+            class="genlab.populations.algos.LoadPopulationDescriptionFromFileAlgo"
+            id="genlab.populations.algos.LoadPopulationDescriptionFromFileAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <docalgo
+            algo_id="genlab.populations.algos.CreateEmptyPopulationAlgo"
+            description="Initializes an empty population"
+            library_id="genlab.core.doc.library.core"
+            memory_complexity="O(N)"
+            time_complexity="O(N)"
+            time_complexity_best="O(N)"
+            time_complexity_worst="O(N)">
+      </docalgo>
+      <docalgo
+            algo_id="genlab.populations.algos.LoadPopulationDescriptionFromFileAlgo"
+            description="Load a population description from file"
+            library_id="genlab.core.doc.library.core">
+      </docalgo>
+   </extension>
+
+</plugin>

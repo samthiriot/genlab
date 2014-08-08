@@ -36,6 +36,13 @@ public class ExistingAlgoCategories {
 			"graphs"
 			);
 	
+	public static final AlgoCategory PARSER_POPULATION = new AlgoCategory(
+			PARSER, 
+			"population", 
+			"parse population from files", 
+			"populations"
+			);
+	
 	public static final AlgoCategory WRITER = new AlgoCategory(
 			null, 
 			"writers", 
@@ -57,11 +64,26 @@ public class ExistingAlgoCategories {
 			"tables"
 			);
 	
+	public static final AlgoCategory WRITER_POPULATION = new AlgoCategory(
+			WRITER, 
+			"populations", 
+			"write populations to files", 
+			"populations"
+			);
+	
 	public static final AlgoCategory GENERATORS = new AlgoCategory(
 			null, 
 			"generators", 
 			"generate things", 
 			"generators" 
+			);
+	
+
+	public static final AlgoCategory GENERATORS_POPULATIONS = new AlgoCategory(
+			GENERATORS, 
+			"populations", 
+			"generate populations", 
+			"populations" 
 			);
 	
 	public static final AlgoCategory GENERATORS_TABLES = new AlgoCategory(
@@ -219,13 +241,16 @@ public class ExistingAlgoCategories {
 
 	private ExistingAlgoCategories() {
 		declareCategory(PARSER);
+		declareCategory(PARSER_POPULATION);
 		declareCategory(PARSER_GRAPH);
 		declareCategory(GENERATORS);
+		declareCategory(GENERATORS_POPULATIONS);
 		declareCategory(GENERATORS_TABLES);
 		declareCategory(GENERATORS_GRAPHS);
 		declareCategory(STATIC_GRAPHS_LCF);
 		
 		declareCategory(WRITER);
+		declareCategory(WRITER_POPULATION);
 		declareCategory(WRITER_GRAPH);
 		declareCategory(WRITER_TABLE);
 		declareCategory(ANALYSIS);

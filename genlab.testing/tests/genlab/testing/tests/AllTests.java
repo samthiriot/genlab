@@ -19,7 +19,24 @@ import org.junit.runners.Suite.SuiteClasses;
 			// genetic algos
 			genlab.algog.testing.TestAlgoGNetwork.class,
 
+			// Bayesian inference
+			
+			// ... inflib implementation
+			genlab.bayesianinference.implementations.inflib.TestBasicsInflib.class,
+			genlab.bayesianinference.implementations.inflib.TestEvidencePropagation.class,
+			
+			// ... smile implementation
+			genlab.bayesianInference.smile.TestInference.class,
+			genlab.bayesianInference.smile.TestSmileNetworks.class,
+			
+			// Populations
+			genlab.population.yang.TestYangAlgos.class,
+			genlab.populations.persistence.TestPopulationDescriptionPersistence.class
+			
+			
+			
 			// genlab.igraph.AllTests.class,
+			
 			
 			
 			}

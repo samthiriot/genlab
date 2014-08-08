@@ -5,8 +5,14 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
-import org.eclipse.ui.forms.widgets.FormToolkit;
 
+/**
+ * The page displayed as an intro for the workflow perspective. 
+ * It will remain open all the time (so that's not the true concept of intro page from eclipse).
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class WorkflowPerspectiveIntroView extends AsbtractStaticMessageView {
 
 	public static final String ID = "genlab.gui.views.WorkflowPerspectiveIntroView";
@@ -35,6 +41,7 @@ public class WorkflowPerspectiveIntroView extends AsbtractStaticMessageView {
 		
 		hostPlugins.setLayout(new RowLayout(SWT.VERTICAL));
 		
+	
 		toolkit.createLabel(hostPlugins, "todo");
 		
 		hostPlugins.layout(true);

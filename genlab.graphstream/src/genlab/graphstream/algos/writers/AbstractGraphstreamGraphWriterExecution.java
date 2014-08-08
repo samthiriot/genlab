@@ -37,9 +37,9 @@ public class AbstractGraphstreamGraphWriterExecution extends
 		try {
 		
 			// retrieve the graph
-			inputGraph = AbstractGraphStreamGraphWriter.PARAM_GRAPH.decodeFromParameters(
+			inputGraph = AbstractGraphStreamGraphWriter.INPUT_GRAPH.decodeFromParameters(
 					getInputValueForInput(
-							AbstractGraphStreamGraphWriter.PARAM_GRAPH
+							AbstractGraphStreamGraphWriter.INPUT_GRAPH
 							)
 					);
 			if (inputGraph == null)

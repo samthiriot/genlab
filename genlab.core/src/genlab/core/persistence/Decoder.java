@@ -18,7 +18,6 @@ public class Decoder {
 		
 	}
 	
-	
 	protected  Map<String,Object> analyze(
 			HierarchicalStreamReader reader,
 			UnmarshallingContext ctxt,

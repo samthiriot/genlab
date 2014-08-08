@@ -13,6 +13,12 @@ public class TableFlowType extends AbstractFlowType<IGenlabTable> {
 		
 	}
 	
+	/**
+	 * Provided for inheritance only
+	 * @param name
+	 * @param desc
+	 * @param desc2
+	 */
 	public TableFlowType(String name, String desc, String desc2) {
 		super(
 				"core.types.table", 

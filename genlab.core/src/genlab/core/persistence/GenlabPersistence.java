@@ -28,7 +28,7 @@ import javax.swing.text.html.HTMLDocument.RunElement;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
-public class GenlabPersistence {
+public class GenlabPersistence extends AbstractPersistence {
 
 	public static final String EXTENSION_PROJECT = ".glp"; // GenLabProject
 	public static final String EXTENSION_WORKFLOW = ".glw"; // GenLabWorkflow
@@ -43,7 +43,6 @@ public class GenlabPersistence {
 	public static final String XMLTAG_CONNECTIONINSTANCE = "connection"; 
 
 	private static GenlabPersistence singleton = new GenlabPersistence();
-
 	
 	public static GenlabPersistence getPersistence() {
 		return singleton;
@@ -51,8 +50,6 @@ public class GenlabPersistence {
 	
 	private static Map<String, IGenlabWorkflowInstance> filename2workflow = new HashMap<String, IGenlabWorkflowInstance>();
 	private static Map<String,GenlabProject> filename2project = new HashMap<String, GenlabProject>();
-
-	private XStream xstream; 
 
 	/**
 	 * Stores the project currently saved or restored.
@@ -130,10 +127,11 @@ public class GenlabPersistence {
 	
 	private GenlabPersistence() {
 		
+		super();
+		
 		// init xtream
 		GLLogger.debugTech("initializing xstream for persistence...", getClass());
 		try {
-			xstream = new XStream(new StaxDriver());
 	
 			xstream.alias(XMLTAG_PROJECT, GenlabProject.class);
 			
@@ -402,32 +400,6 @@ public class GenlabPersistence {
 		
 	}
 	
-	public void persistAsXml(Object myObject, String absoluteFilename) {
-		
-		GLLogger.debugTech("saving an object "+myObject.getClass().getCanonicalName()+" as XML to "+absoluteFilename, getClass());
-		try {
-			xstream.toXML(
-					myObject,
-					new PrintStream(absoluteFilename)
-					);
-		} catch (FileNotFoundException e) {
-			GLLogger.errorTech("error while saving the object "+myObject.getClass().getCanonicalName()+" as XML to "+absoluteFilename, getClass(), e);
-
-		}
-	}
-	
-	public Object loadAsXml(String absoluteFilename) {
-		
-		GLLogger.debugTech("reading an object from XML: "+absoluteFilename, getClass());
-		try {
-			Object myObject = xstream.fromXML(new File(absoluteFilename));
-			return myObject;
-		} catch (com.thoughtworks.xstream.io.StreamException e) {
-			GLLogger.warnTech("was unable to load a persisted element from xml: "+absoluteFilename, getClass(), e);
-			return null;
-		}
-	}
-
 	public void addCurrentAlgoInstance(IAlgoInstance algoInstance) {
 		for (IInputOutputInstance input: algoInstance.getInputInstances()) {
 			addCurrentIOInstance(input);

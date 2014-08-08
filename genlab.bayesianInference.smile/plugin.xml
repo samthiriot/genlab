@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.bayesianinference.smile.algos.LoadBayesianNetworkAlgo"
+            id="genlab.bayesianinference.smile.algos.LoadBayesianNetworkAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <author
+            id="genlab.bayesianInference.smile.authors.DSL"
+            name="Decision Systems Laboratory, University of Pittsburgh"
+            url="http://dsl.sis.pitt.edu/">
+      </author>
+      <library
+            description="SMILE (Structural Modeling, Inference, and Learning Engine) is a fully platform independent library of C++ classes implementing graphical probabilistic and decision-theoretic models, such as Bayesian networks, influence diagrams, and structural equation models."
+            id="genlab.bayesianInference.smile.library"
+            licence_name="SMILE license"
+            licence_url="http://genie.sis.pitt.edu/index.php/license"
+            name="SMILE"
+            url="http://genie.sis.pitt.edu/index.php/about">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.bayesianInference.smile.authors.DSL">
+         </original_author_id>
+      </library>
+      <docalgo
+            algo_id="genlab.bayesianinference.smile.algos.LoadBayesianNetworkAlgo"
+            library_id="genlab.bayesianInference.smile.library"
+            time_complexity="0">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <more_info
+               content="official SMILE manual: file formats "
+               url="http://genie.sis.pitt.edu/wiki/Application_Programmers_Manual:_Reading_%26_Writing_File_Formats">
+         </more_info>
+      </docalgo>
+   </extension>
+
+</plugin>

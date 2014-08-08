@@ -1,0 +1,64 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SMILE
+Bundle-SymbolicName: genlab.bayesianInference.smile;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: genlab.bayesianinference.smile.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ genlab.core;bundle-version="0.0.1",
+ genlab.bayesianInference;bundle-version="1.0.0",
+ org.junit;bundle-version="4.11.0",
+ genlab.core.random;bundle-version="1.0.0",
+ genlab.random.colt;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Export-Package: genlab.bayesianInference.smile,
+ genlab.bayesianinference.smile,
+ genlab.bayesianinference.smile.algos,
+ genlab.bayesianinference.smile.exec,
+ smile,
+ smile.learning
+Bundle-NativeCode: ext/native/linux/x86/libjsmile.so ; 
+ osname=Linux ;
+ processor=x86 , 
+ ext/native/linux/x86_64/libjsmile.so ; 
+ osname=Linux ; 
+ processor=x86-64,
+ ext/native/windows/x86/jsmile.dll ; 
+ osname=Windows95 ; 
+ osname=Windows98 ;
+ osname=WindowsNT ;
+ osname=WindowsCE ;
+ osname=Windows2000 ;
+ osname=WindowsXP ;
+ osname=Windows2003 ;
+ osname=WindowsVista ;
+ osname=Windows7 ;
+ osname=Windows8 ;
+ osname=WindowsServer2008 ;
+ osname=WindowsServer2012 ;
+ processor=x86,
+ ext/native/windows/x86_64/jsmile.dll ; 
+ osname=Windows95 ; 
+ osname=Windows98 ;
+ osname=WindowsNT ;
+ osname=WindowsCE ;
+ osname=Windows2000 ;
+ osname=WindowsXP ;
+ osname=Windows2003 ;
+ osname=WindowsVista ;
+ osname=Windows7 ;
+ osname=Windows8 ;
+ osname=WindowsServer2008 ;
+ osname=WindowsServer2012 ;
+ processor=x86-64,
+ ext/native/macosx/jsmile.jnilib ; 
+ osname=MacOSX ; 
+ osname=MacOS ; 
+ processor=x86 ;
+ processor=x86-64 ;
+ processor=PowerPC
+Bundle-ClassPath: ext/smile.jar,
+ ext/native/,
+ .
+Bundle-Vendor: Samuel Thiriot

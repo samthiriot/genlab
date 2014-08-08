@@ -43,4 +43,5 @@ Export-Package: EDU.oswego.cs.dl.util.concurrent,
  hep.aida.ref
 Import-Package: cern.jet.random,
  cern.jet.random.engine,
- cern.jet.random.sampling
+ cern.jet.random.sampling,
+ genlab.core.random

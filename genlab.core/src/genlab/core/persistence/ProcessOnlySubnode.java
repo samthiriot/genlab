@@ -6,6 +6,12 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 
+/**
+ * Chunk of XML parser accepting only subnodes
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public abstract class ProcessOnlySubnode implements IEventBasedXmlParser {
 
 	final String nodeName;

@@ -20,7 +20,7 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
 		
-		GLLogger.infoTech("initializing the Random/Colt plugin...", getClass());
+		GLLogger.infoTech("initializing the Genlab/random/Colt plugin...", getClass());
 	}
 
 	/*

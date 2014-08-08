@@ -23,6 +23,12 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * FIrst tab of the launch configuration wizard for a workflow.
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class GenlabWorkflowLaunchConfigurationTabFirst 
 								extends AbstractLaunchConfigurationTab 
 								implements ILaunchConfigurationTab {

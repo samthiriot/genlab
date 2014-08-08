@@ -19,10 +19,15 @@ import java.util.Map;
 
 import org.graphstream.stream.file.FileSink;
 
+/**
+ * TODO add the file as a parameter
+ * @author B12772
+ *
+ */
 public abstract class AbstractGraphStreamGraphWriter extends GraphStreamAlgo {
 
 	
-	public static final InputOutput<IGenlabGraph> PARAM_GRAPH = new InputOutput<IGenlabGraph>(
+	public static final InputOutput<IGenlabGraph> INPUT_GRAPH = new InputOutput<IGenlabGraph>(
 			SimpleGraphFlowType.SINGLETON, 
 			"param_graph", 
 			"graph", 
@@ -39,7 +44,7 @@ public abstract class AbstractGraphStreamGraphWriter extends GraphStreamAlgo {
 	public AbstractGraphStreamGraphWriter(String name, String description) {
 		super(name, description, ExistingAlgoCategories.WRITER_GRAPH);
 
-		inputs.add(PARAM_GRAPH);
+		inputs.add(INPUT_GRAPH);
 		outputs.add(OUTPUT_FILE);
 		
 	}

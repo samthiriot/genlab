@@ -59,14 +59,12 @@ public class OpenFileAlgo extends BasicAlgo {
 			
 			@Override
 			public void kill() {
-				// TODO Auto-generated method stub
-				
+				progress.setComputationState(ComputationState.FINISHED_CANCEL);
 			}
 			
 			@Override
 			public void cancel() {
-				// TODO Auto-generated method stub
-				
+				progress.setComputationState(ComputationState.FINISHED_CANCEL);
 			}
 			
 			@Override
