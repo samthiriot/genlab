@@ -17,20 +17,23 @@ public class WattsStrogatzAlgo extends GraphStreamGeneratorAlgo {
 			IntegerFlowType.SINGLETON,
 			"N", 
 			"N", 
-			"number of vertices in the generated graph"
+			"number of vertices in the generated graph",
+			200
 	);
 	
 	public static final InputOutput<Integer> INPUT_K = new InputOutput<Integer>(
 			IntegerFlowType.SINGLETON,
 			"K", 
 			"K", 
-			"neighboors (should be even)"
+			"neighboors (should be even)",
+			4
 	);
 	public static final InputOutput<Double> INPUT_P =  new InputOutput<Double>(
 			DoubleFlowType.SINGLETON,
 			"p", 
 			"p", 
-			"rewiring probability"
+			"rewiring probability",
+			0.05
 	);
 
 	public WattsStrogatzAlgo() {

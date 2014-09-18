@@ -1,5 +1,6 @@
 package genlab.populations.implementations.basic;
 
+import genlab.core.commons.WrongParametersException;
 import genlab.populations.bo.Attribute;
 import genlab.populations.bo.IAgent;
 import genlab.populations.bo.IAgentType;
@@ -72,6 +73,29 @@ public class Population implements IPopulation {
 	}
 
 	@Override
+	public IAgent createAgent(IAgentType type) {
+		
+		//System.err.println("adding agent "+type+" "+Arrays.toString(values));
+		
+		Object[] values = new Object[type.getAttributesCount()];
+		
+		IAgent agent ;
+		synchronized (lockerPopulation) {
+			
+			Integer id = id2agent.size();
+			
+			agent = new Agent(id, type, values);
+			
+			// add it to the population
+			id2agent.put(id, agent);
+			type2agents.get(type).add(agent);
+				
+		}
+		
+		return agent;
+	}
+
+	@Override
 	public IAgent createAgent(IAgentType type, Map<Attribute, Object> values) {
 		
 		Object[] aValues = new Object[type.getAttributesCount()];
@@ -80,12 +104,34 @@ public class Population implements IPopulation {
 		}
 		return createAgent(type, aValues);
 	}
+	
+	protected void addAgent(Agent agent) {
+		
+		synchronized (lockerPopulation) {
+			
+			if (id2agent.containsKey(agent.id))
+				throw new WrongParametersException("an agent already exists with id "+agent.id);
+			
+			// add it to the population
+			id2agent.put(agent.id, agent);
+			type2agents.get(agent.agentType).add(agent);
+				
+		}
+	}
 
 	@Override
 	public String toString() {
 
 		StringBuffer sb = new StringBuffer();
-		sb.append("population with types ").append(popDesc.getAgentTypes()).append(" and ").append(id2agent.size()).append(" individuals");
+		sb.append("population containing ").append(id2agent.size()).append(" individuals: ");
+		boolean comma = false;
+		for (IAgentType t: popDesc.getAgentTypes()) {
+			if (comma)
+				sb.append(", ");
+			else
+				comma = true;
+			sb.append(t.getName()).append(": ").append(type2agents.get(t).size());	
+		}
 		return sb.toString();
 	}
 
@@ -117,6 +163,24 @@ public class Population implements IPopulation {
 	@Override
 	public int getAgentsCount(IAgentType type) {
 		return type2agents.get(type).size();
+	}
+
+	@Override
+	public IPopulation clonePopulation() {
+
+		Population clone = new Population(popDesc);
+		
+		// assumes the population description is never going to be changed in the clone
+		// nor original
+		
+		synchronized (lockerPopulation) {
+			for (Object id: id2agent.keySet()) {
+				Agent originalAgent = (Agent)id2agent.get(id);
+				clone.addAgent((Agent)originalAgent.cloneAgent());
+			}
+		}
+		
+		return clone;
 	}
 
 	

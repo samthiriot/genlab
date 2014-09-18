@@ -116,6 +116,16 @@ public class WorkflowHooks {
 		}
 	}
 	
+	public void notifyWorkflowAutomaticallyDone(IGenlabWorkflowInstance wf) {
+		for (IWorkflowListener l : listeners) {
+			try {
+				l.workflowAutomaticallyCreatedAndFinished(wf);
+			} catch (RuntimeException e) {
+				GLLogger.warnTech("in the workflow listener, catched an exception: "+e.getMessage(), getClass(), e);
+			}
+		}
+	}
+	
 	public void notifyProjectSaved(IGenlabProject project) {
 		for (IWorkflowListener l : listeners) {
 			try {

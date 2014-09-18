@@ -45,4 +45,10 @@ public final class ColtRandomGenerator implements IRandomNumberGenerator {
 		return uniform.nextIntFromTo(min, max);
 	}
 
+
+	@Override
+	public double nextDoubleUniform(double min, double max) {
+		return uniform.nextDoubleFromTo(min, max);
+	}
+
 }

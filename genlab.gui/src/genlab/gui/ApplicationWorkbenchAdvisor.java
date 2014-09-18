@@ -1,5 +1,8 @@
 package genlab.gui;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import genlab.gui.perspectives.WorkflowPerspective;
 import genlab.gui.preferences.Genlab2eclipsePreferences;
 
@@ -46,6 +49,11 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		PlatformUI.getPreferenceStore().setValue(ResourcesPlugin.PREF_DISABLE_LINKING, true); 
 		PlatformUI.getPreferenceStore().setValue(ResourcesPlugin.PREF_AUTO_REFRESH, true);
 
+		// TODO hide the useless menus, categories, features...
+		//Set<String> activatedActivityIds = new HashSet()<String>();
+		//activatedActivityIds.add(arg0)
+		//PlatformUI.getWorkbench().getActivitySupport().setEnabledActivityIds(activatedActivityIds);
+		
 	}
 
 	@Override

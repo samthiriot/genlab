@@ -10,8 +10,8 @@ import cytoscape.randomnetwork.RandomNetworkModel;
 
 public class ERGNPAlgo extends RandomNetworkGeneratorAlgo {
 
-	public static IntegerInOut INPUT_N = new IntegerInOut("in_N", "N", "number of vertices to create");
-	public static DoubleInOut INPUT_P = new DoubleInOut("in_p", "p", "probability to create edges");
+	public static IntegerInOut INPUT_N = new IntegerInOut("in_N", "N", "number of vertices to create", 200);
+	public static DoubleInOut INPUT_P = new DoubleInOut("in_p", "p", "probability to create edges", 0.15);
 	
 
 	public ERGNPAlgo() {

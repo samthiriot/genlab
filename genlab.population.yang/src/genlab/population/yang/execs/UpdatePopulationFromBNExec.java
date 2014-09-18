@@ -8,8 +8,8 @@ import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.population.yang.YANGAlgos;
-import genlab.population.yang.algos.CreatePopulationFromBNAlgo;
+import genlab.population.yang.YANGAlgosIndividuals;
+import genlab.population.yang.algos.UpdateAttributesFromBNAlgo;
 import genlab.populations.bo.IAgentType;
 import genlab.populations.bo.IPopulation;
 
@@ -44,31 +44,41 @@ public class UpdatePopulationFromBNExec extends AbstractAlgoExecutionOneshot {
 		setResult(result);
 		
 		// retrieve inputs
-		// ... input count
-		final Integer inputCount = (Integer)getInputValueForInput(CreatePopulationFromBNAlgo.INPUT_COUNT);
-		if (inputCount == null)
-			 throw new WrongParametersException("input count expected");
-		progress.setProgressTotal(inputCount);
-		// ... bayesian network
-		final IBayesianNetwork inputBN = (IBayesianNetwork)getInputValueForInput(CreatePopulationFromBNAlgo.INPUT_BAYESIAN_NETWORK);
-		// ... population to fill
-		final IPopulation inputPopulation = (IPopulation)getInputValueForInput(CreatePopulationFromBNAlgo.INPUT_POPULATION);
-
+		// ... population to update
+		final IPopulation inputPopulation = (IPopulation)getInputValueForInput(UpdateAttributesFromBNAlgo.INPUT_POPULATION);
 		// ... agent type
-		final IAgentType inputAgentType = inputPopulation.getPopulationDescription().getAgentTypes().iterator().next();
-				
+		final String typename = (String)getInputValueForInput(UpdateAttributesFromBNAlgo.INPUT_TYPENAME);
+		// ... bayesian network
+		final IBayesianNetwork inputBN = (IBayesianNetwork)getInputValueForInput(UpdateAttributesFromBNAlgo.INPUT_BAYESIAN_NETWORK);
 		
+				
+		// post processing
+		// ... clone pop
+		final IPopulation outputPopulation = inputPopulation.clonePopulation();
+		// ... retrieve the agent type from its name
+		final IAgentType inputAgentType = outputPopulation.getPopulationDescription().getAgentTypeForName(typename);
+		if (inputAgentType == null) {
+			messages.errorUser("no agent type named \""+typename+"\" is defined in the population description", getClass());
+			progress.setComputationState(ComputationState.FINISHED_FAILURE);
+			return;
+		}
+
 		// then start the generation
-		YANGAlgos.fillPopulationFromBN(
+		try {
+			YANGAlgosIndividuals.updatePopulationFromBN(
 				(ComputationProgressWithSteps) progress, 
-				inputPopulation, 
+				outputPopulation, 
 				inputAgentType, 
 				messages, 
-				inputBN, 
-				inputCount
+				inputBN
 				);
+		} catch (WrongParametersException e) {
+			progress.setComputationState(ComputationState.FINISHED_FAILURE);
+			progress.setException(e);
+			throw e;
+		}
 		
-		result.setResult(CreatePopulationFromBNAlgo.OUTPUT_POPULATION, inputPopulation);
+		result.setResult(UpdateAttributesFromBNAlgo.OUTPUT_POPULATION, outputPopulation);
 		
 		progress.setComputationState(ComputationState.FINISHED_OK);
 
@@ -76,14 +86,12 @@ public class UpdatePopulationFromBNExec extends AbstractAlgoExecutionOneshot {
 
 	@Override
 	public void cancel() {
-		// TODO Auto-generated method stub
-
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
 	}
 
 	@Override
 	public void kill() {
-		// TODO Auto-generated method stub
-
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
 	}
 
 }

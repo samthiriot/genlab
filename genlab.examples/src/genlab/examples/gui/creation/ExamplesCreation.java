@@ -1,7 +1,10 @@
 package genlab.examples.gui.creation;
 
+import java.io.File;
+
 import genlab.core.model.instance.GenlabFactory;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.WorkflowHooks;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -69,6 +72,15 @@ public class ExamplesCreation {
 		return sb.toString();
 	}
 	
+
+	private static String getPathForExampleResources(IGenlabExample example) {
+		StringBuffer sb = new StringBuffer();
+		
+		sb.append("/data/").append(example.getFileName()).append(File.separator);
+		
+		return sb.toString();
+	}
+	
 	public static IGenlabWorkflowInstance createWorkflow(IGenlabExample example, IGenlabProject glProject) {
 
 		
@@ -79,7 +91,14 @@ public class ExamplesCreation {
 				getPathForExample(example)
 				);
 		
+		File dirData = new File(glProject.getBaseDirectory()+""+File.separator+getPathForExampleResources(example));
+		dirData.mkdirs();
+		
+		example.createFiles(dirData);
+		
 		example.fillInstance(workflow);
+		
+		WorkflowHooks.getWorkflowHooks().notifyWorkflowAutomaticallyDone(workflow);
 		
 		GenlabPersistence.getPersistence().saveWorkflow(workflow);
 		

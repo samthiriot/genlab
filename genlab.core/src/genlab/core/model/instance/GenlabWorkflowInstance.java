@@ -708,6 +708,17 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		setValueForParameter(parameter.getId(), value);
 	}
 
+	@Override
+	public String getNextId(String basedId) {
+		String currentKey = basedId;
+		int currentPostFix = 0;
+		while (id2algoInstance.containsKey(currentKey)) {
+			currentKey = basedId+"_"+(currentPostFix++);
+		}
+		
+		return currentKey;
+	}
+
 
 	
 }

@@ -11,6 +11,6 @@ public interface IAttributesHolder {
 	public void addAttribute(Attribute a);
 
 	public Attribute getAttributeForId(String id);
-	
-	
+
+
 }

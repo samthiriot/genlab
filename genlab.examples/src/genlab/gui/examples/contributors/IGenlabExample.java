@@ -1,5 +1,7 @@
 package genlab.gui.examples.contributors;
 
+import java.io.File;
+
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.projects.IGenlabProject;
 
@@ -17,5 +19,12 @@ public interface IGenlabExample {
 	public String getName();
 	
 	public String getDescription();
+	
+	/**
+	 * Creates the files required for this example.
+	 * @param resourcesDirectory
+	 */
+	public void createFiles(File resourcesDirectory);
+	
 	
 }

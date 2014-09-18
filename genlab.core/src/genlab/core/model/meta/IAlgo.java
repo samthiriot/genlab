@@ -95,5 +95,21 @@ public interface IAlgo extends IGenlabResource {
 	 * @return
 	 */
 	public boolean canBeContainedInto(IAlgoInstance algoInstance);
+
+	/**
+	 * Returns true if an algo of this type may be contained into the type of algo container passed as parameter
+	 * @param algoContainer
+	 * @return
+	 */
+	public boolean canBeContainedInto(IAlgoContainer algoContainer);
+
+
+	/**
+	 * Returns the priority for a constant for intuitive creation, wathever
+	 * the context (the container). SHould be a number between 0 and 99, the higher
+	 * the more powerfull.
+	 * @return
+	 */
+	public Integer getPriorityForIntuitiveCreation();
 	
 }

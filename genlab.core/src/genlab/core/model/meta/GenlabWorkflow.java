@@ -148,6 +148,18 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 		return Collections.EMPTY_MAP;
 	}
 
+	@Override
+	public boolean canBeContainedInto(IAlgoContainer algoContainer) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Integer getPriorityForIntuitiveCreation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 	
 

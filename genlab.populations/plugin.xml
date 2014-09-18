@@ -11,6 +11,26 @@
             class="genlab.populations.algos.LoadPopulationDescriptionFromFileAlgo"
             id="genlab.populations.algos.LoadPopulationDescriptionFromFileAlgo">
       </algo>
+      <algo
+            class="genlab.populations.algos.AddEmptyAgentsAlgo"
+            id="genlab.populations.algos.AddEmptyAgentsAlgo">
+      </algo>
+      <algo
+            class="genlab.populations.algos.SetAttributeRandomDoubleAlgo"
+            id="genlab.populations.algos.SetAttributeRandomDoubleAlgo">
+      </algo>
+      <algo
+            class="genlab.populations.algos.SetAttributeRandomIntegerAlgo"
+            id="genlab.populations.algos.SetAttributeRandomIntegerAlgo">
+      </algo>
+      <algo
+            class="genlab.populations.algos.SetAttributeArithmeticsAlgo"
+            id="genlab.populations.algos.SetAttributeArithmeticsAlgo">
+      </algo>
+      <algo
+            class="genlab.populations.algos.SetAttributeConstantAlgo"
+            id="genlab.populations.algos.SetAttributeConstantAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -28,6 +48,19 @@
             description="Load a population description from file"
             library_id="genlab.core.doc.library.core">
       </docalgo>
+      <docalgo
+            algo_id="genlab.populations.algos.AddEmptyAgentsAlgo"
+            library_id="genlab.core.doc.library.core"
+            memory_complexity="O(N)"
+            time_complexity="O(N)">
+      </docalgo>
+   </extension>
+   <extension
+         point="genlab.examples.extensions.example">
+      <example
+            class="genlab.populations.examples.ExampleSimple1"
+            id="genlab.populations.examples.ExampleSimple1">
+      </example>
    </extension>
 
 </plugin>

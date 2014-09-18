@@ -8,8 +8,8 @@
             id="genlab.population.yang.algos.CreatePopulationFromBNAlgo">
       </algo>
       <algo
-            class="genlab.population.yang.algos.SetRandomAttributeUniformAlgo"
-            id="genlab.population.yang.algo6">
+            class="genlab.population.yang.algos.UpdateAttributesFromBNAlgo"
+            id="genlab.population.yang.algos.UpdateAttributesFromBNAlgo">
       </algo>
    </extension>
    <extension

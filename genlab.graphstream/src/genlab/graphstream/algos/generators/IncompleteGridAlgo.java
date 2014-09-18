@@ -33,7 +33,8 @@ public class IncompleteGridAlgo extends GraphStreamGeneratorAlgo {
 			IntegerFlowType.SINGLETON,
 			"X", 
 			"X", 
-			"number of rows and columns"
+			"number of rows and columns",
+			12
 	);
 		
 	public IncompleteGridAlgo() {

@@ -13,7 +13,8 @@ public class LCFGenerator extends AbstractIGraphGenerator {
 	public static final IntegerInOut INPUT_VERTICES = new IntegerInOut(
 			"in_vertices", 
 			"N", 
-			"number of vertices to create"
+			"number of vertices to create",
+			200
 			);
 	
 	public static final LCFParameter PARAM_LCF = new LCFParameter(

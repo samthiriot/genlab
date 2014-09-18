@@ -10,10 +10,14 @@ import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
 import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
+import genlab.gui.graphiti.features.BasicLayoutDiagramFeature;
+import genlab.gui.graphiti.features.BeautifyDiagramFeature;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.emf.common.command.Command;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
@@ -370,6 +374,26 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 				GLLogger.errorTech("unable to update the graphical representation for algo instance: "+ai+"; the graphical representation is no more consistant with the actual data", getClass(), e2);
 			}
 		}
+	}
+
+	@Override
+	public void workflowAutomaticallyCreatedAndFinished(
+			IGenlabWorkflowInstance instance) {
+
+		GLLogger.debugTech("a diagram was automatically created; let's layout it.", getClass());
+		
+		final GraphitiFeatureProvider dfp = GraphitiFeatureProvider.getFeatureProviderForWorkflow(instance);
+		final Diagram diagram = (Diagram) dfp.getPictogramElementForBusinessObject(instance);
+		
+		// layout diagram
+		BasicLayoutDiagramFeature bldf = new BasicLayoutDiagramFeature(dfp);
+		Genlab2GraphitiUtils.ExecuteInTransaction(bldf, null, diagram);
+		
+		// beautifize it
+		BeautifyDiagramFeature bdf = new BeautifyDiagramFeature(dfp);
+		Genlab2GraphitiUtils.ExecuteInTransaction(bdf, null, diagram);
+		
+		
 	}
 
 }

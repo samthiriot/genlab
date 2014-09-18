@@ -17,7 +17,8 @@ public class FlowerSnarkAlgo extends GraphStreamGeneratorAlgo {
 			IntegerFlowType.SINGLETON,
 			"N", 
 			"N", 
-			"number of vertices in the generated graph"
+			"number of vertices in the generated graph",
+			200
 	);
 	
 	public FlowerSnarkAlgo() {

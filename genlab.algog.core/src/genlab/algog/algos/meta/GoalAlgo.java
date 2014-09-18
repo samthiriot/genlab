@@ -6,6 +6,7 @@ import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.NumberFlowType;
 
@@ -24,7 +25,8 @@ public class GoalAlgo extends AbstractGeneticAlgo  {
 			NumberFlowType.SINGLETON, 
 			"in_target_value", 
 			"target",
-			"the target to be reached"
+			"the target to be reached",
+			10
 			);
 	
 
@@ -55,5 +57,12 @@ public class GoalAlgo extends AbstractGeneticAlgo  {
 				);
 		
 	}
+	
+	@Override
+	public boolean canBeContainedInto(IAlgoContainer algoContainer) {
+		// genes can only be contained into genetic exploration algos
+		return (algoContainer instanceof AbstractGeneticExplorationAlgo);
+	}
+
 
 }

@@ -23,7 +23,8 @@ public class DorogovtsevMendevAlgo extends GraphStreamGeneratorAlgo {
 			IntegerFlowType.SINGLETON,
 			"N", 
 			"N", 
-			"number of vertices"
+			"number of vertices",
+			200
 	);
 		
 	public DorogovtsevMendevAlgo() {

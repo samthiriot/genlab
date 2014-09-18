@@ -26,7 +26,9 @@ public interface IPopulation {
 	 * @return
 	 */
 	public IAgent createAgent(IAgentType type, Object[] values);
-	public IAgent createAgent(IAgentType type, Map<Attribute,Object> values);
+	public IAgent createAgent(IAgentType type, Map<Attribute,Object> values);	
+	public IAgent createAgent(IAgentType type);
+
 	
 	public int getTotalAgentsCount();
 	public int getAgentsCount(IAgentType type);
@@ -38,5 +40,7 @@ public interface IPopulation {
 	public Collection<IAgent> getAgents(IAgentType type);
 
 	public Collection<IAgent> getAgents();
+
+	public IPopulation clonePopulation();
 
 }

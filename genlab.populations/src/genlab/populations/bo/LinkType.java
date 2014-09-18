@@ -6,4 +6,16 @@ public class LinkType extends AttributesHolder {
 		// TODO Auto-generated constructor stub
 	}
 
+	public IAgentType getAgentTypeFrom() {
+		
+	}
+
+	public IAgentType getAgentTypeTo() {
+		
+	}
+
+	public boolean isOriented() {
+		return null;
+	}
+	
 }

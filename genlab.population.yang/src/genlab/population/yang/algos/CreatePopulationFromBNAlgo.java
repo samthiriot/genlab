@@ -8,13 +8,11 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
-import genlab.core.model.meta.basics.flowtypes.FileFlowType;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
+import genlab.core.model.meta.basics.flowtypes.StringFlowType;
 import genlab.population.yang.execs.CreatePopulationFromBNExec;
 import genlab.populations.bo.IPopulation;
 import genlab.populations.flowtypes.PopulationFlowType;
-
-import java.io.File;
 
 public class CreatePopulationFromBNAlgo extends BasicAlgo {
 	
@@ -23,6 +21,13 @@ public class CreatePopulationFromBNAlgo extends BasicAlgo {
 			"in_pop", 
 			"population", 
 			"the population to fill"
+			);
+
+	public static final InputOutput<String> INPUT_TYPENAME = new InputOutput<String>(
+			StringFlowType.SINGLETON, 
+			"in_agenttype", 
+			"agent type", 
+			"type of agents to create"
 			);
 	
 	public static final InputOutput<IBayesianNetwork> INPUT_BAYESIAN_NETWORK = new InputOutput<IBayesianNetwork>(
@@ -36,7 +41,8 @@ public class CreatePopulationFromBNAlgo extends BasicAlgo {
 			IntegerFlowType.SINGLETON, 
 			"in_count", 
 			"count", 
-			"count of individuals to generate from this Bayesian network"
+			"count of individuals to generate from this Bayesian network",
+			200
 			);
 	
 	
@@ -47,6 +53,7 @@ public class CreatePopulationFromBNAlgo extends BasicAlgo {
 			"the population filled"
 			);
 	
+	
 	public CreatePopulationFromBNAlgo() {
 		super(
 				"create individuals from BN", 
@@ -56,10 +63,10 @@ public class CreatePopulationFromBNAlgo extends BasicAlgo {
 				null
 				);
 
-		
 		inputs.add(INPUT_POPULATION);
-		inputs.add(INPUT_BAYESIAN_NETWORK);
 		inputs.add(INPUT_COUNT);
+		inputs.add(INPUT_TYPENAME);
+		inputs.add(INPUT_BAYESIAN_NETWORK);
 		
 		outputs.add(OUTPUT_POPULATION);
 	}

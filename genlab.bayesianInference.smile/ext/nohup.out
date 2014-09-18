@@ -60,3 +60,11 @@ Avertissement du gestionnaire de fenêtres : Buggy client sent a _NET_ACTIVE_WI
 Avertissement du gestionnaire de fenêtres : meta_window_activate called by a pager with a 0 timestamp; the pager needs to be fixed.
 Avertissement du gestionnaire de fenêtres : Buggy client sent a _NET_ACTIVE_WINDOW message with a timestamp of 0 for 0x3c00197 (Genlab )
 Avertissement du gestionnaire de fenêtres : meta_window_activate called by a pager with a 0 timestamp; the pager needs to be fixed.
+Avertissement du gestionnaire de fenêtres : Buggy client sent a _NET_ACTIVE_WINDOW message with a timestamp of 0 for 0x3c00197 (Genlab )
+Avertissement du gestionnaire de fenêtres : meta_window_activate called by a pager with a 0 timestamp; the pager needs to be fixed.
+Avertissement du gestionnaire de fenêtres : Fenêtre WM_TRANSIENT_FOR 0x289 non valide indiquée pour 0x14276c7 ().
+Avertissement du gestionnaire de fenêtres : Buggy client sent a _NET_ACTIVE_WINDOW message with a timestamp of 0 for 0x2a00020 (KEYSAM1)
+Avertissement du gestionnaire de fenêtres : meta_window_activate called by a pager with a 0 timestamp; the pager needs to be fixed.
+Avertissement du gestionnaire de fenêtres : Fenêtre WM_TRANSIENT_FOR 0x6000309 non valide indiquée pour 0x60004ef (Erreur de ).
+Avertissement du gestionnaire de fenêtres : Treating resize request of legacy application 0x1c0003f (Sans titre) as a fullscreen request
+Avertissement du gestionnaire de fenêtres : Received a _NET_WM_MOVERESIZE message for 0x1c0003f (Sans titre); these messages lack timestamps and therefore suck.

@@ -9,6 +9,7 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.parameters.DoubleParameter;
@@ -64,9 +65,9 @@ public class AbstractGeneAlgo extends AbstractGeneticAlgo {
 	}
 
 	@Override
-	public boolean canBeContainedInto(IAlgoInstance algoInstance) {
+	public boolean canBeContainedInto(IAlgoContainer algoContainer) {
 		// genes can only be contained into genetic exploration algos
-		return (algoInstance.getAlgo() instanceof AbstractGeneticExplorationAlgo);
+		return (algoContainer instanceof AbstractGeneticExplorationAlgo);
 	}
 
 	@Override
@@ -79,7 +80,6 @@ public class AbstractGeneAlgo extends AbstractGeneticAlgo {
 			IGenlabWorkflowInstance workflow) {
 		return new GeneInstance(this, workflow, id);
 	}
-	
 
 	
 }

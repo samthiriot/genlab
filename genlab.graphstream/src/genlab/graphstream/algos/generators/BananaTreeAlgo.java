@@ -15,14 +15,16 @@ public class BananaTreeAlgo extends GraphStreamGeneratorAlgo {
 			IntegerFlowType.SINGLETON,
 			"N", 
 			"N", 
-			"number of vertices in the generated graph"
+			"number of vertices in the generated graph",
+			200
 	);
 	
 	public static final InputOutput<Integer> PARAM_K = new InputOutput<Integer>(
 			IntegerFlowType.SINGLETON,
 			"K", 
 			"K", 
-			"start size"
+			"start size",
+			20
 	);
 	
 		

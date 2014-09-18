@@ -687,5 +687,26 @@
             class="genlab.gui.preferences.RunnerPreferencesInitializer">
       </initializer>
    </extension>
+   <extension
+         point="org.eclipse.ui.activities">
+      <activity
+            description="hides the useless default elements and features from eclipse  "
+            id="genlab.gui.activities.hide"
+            name="hide">
+         <enabledWhen>
+            <with
+                  variable="activePartId">
+               <equals
+                     value="nonExistentPartIdSoItWillNeverActivate">
+               </equals>
+            </with>
+         </enabledWhen>
+      </activity>
+      <activityPatternBinding
+            activityId="genlab.gui.activities.hide"
+            isEqualityPattern="false"
+            pattern="org.apache.ant.*">
+      </activityPatternBinding>
+   </extension>
 
 </plugin>

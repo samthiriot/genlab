@@ -10,7 +10,7 @@ public class InputOutput<JavaType> implements IInputOutput<JavaType> {
 	private final String desc;
 	private final boolean acceptMultipleInputs;
 	private boolean isContinuousOutput = false;
-
+	protected JavaType defaultValue = null;
 	
 	public InputOutput(IFlowType<JavaType> type, String id, String name, String desc) {
 		super();
@@ -27,6 +27,27 @@ public class InputOutput<JavaType> implements IInputOutput<JavaType> {
 		this.id = id;
 		this.name = name;
 		this.desc = desc;
+		this.acceptMultipleInputs = acceptMultipleInputs;
+	}
+	
+
+	public InputOutput(IFlowType<JavaType> type, String id, String name, String desc, JavaType defaultValue) {
+		super();
+		this.type = type;
+		this.id = id;
+		this.name = name;
+		this.desc = desc;
+		this.defaultValue = defaultValue;
+		this.acceptMultipleInputs = false;
+	}
+	
+	public InputOutput(IFlowType<JavaType> type, String id, String name, String desc, JavaType defaultValue, boolean acceptMultipleInputs) {
+		super();
+		this.type = type;
+		this.id = id;
+		this.name = name;
+		this.desc = desc;
+		this.defaultValue = defaultValue;
 		this.acceptMultipleInputs = acceptMultipleInputs;
 	}
 	
@@ -76,6 +97,11 @@ public class InputOutput<JavaType> implements IInputOutput<JavaType> {
 	@Override
 	public String toString() {
 		return id;
+	}
+
+	@Override
+	public final JavaType getDefaultValue() {
+		return defaultValue;
 	}
 
 

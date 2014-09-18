@@ -38,7 +38,7 @@ public class TestPopulationDescriptionPersistence {
 		
 		AgentType type2 = new AgentType("type 2 à %", "");
 		type2.addAttribute(new Attribute("att1 à truc", AttributeType.STRING));
-		type2.addAttribute(new Attribute("b12%[", AttributeType.STRING));
+		type2.addAttribute(new Attribute("b12%[\"", AttributeType.STRING));
 		desc.addAgentType(type2);
 		
 		

@@ -14,13 +14,15 @@ public class RandomGeneratorAlgo extends GraphStreamGeneratorAlgo {
 			IntegerFlowType.SINGLETON,
 			"N", 
 			"N", 
-			"number of vertices in the generated graph"
+			"number of vertices in the generated graph",
+			200
 	);
 	
 	public final static DoubleInOut INPUT_k = new DoubleInOut(
 			"in_k", 
 			"k", 
-			"average degree in the generated graph"
+			"average degree in the generated graph",
+			2.0
 			);
 	
 	public RandomGeneratorAlgo() {

@@ -66,4 +66,10 @@ public class GraphicalConsoleAlgo extends BasicAlgo implements IDisplayAlgo, IRe
 	}
 	
 
+	@Override
+	public Integer getPriorityForIntuitiveCreation() {
+		return super.getPriorityForIntuitiveCreation()+5;
+	}
+	
+
 }

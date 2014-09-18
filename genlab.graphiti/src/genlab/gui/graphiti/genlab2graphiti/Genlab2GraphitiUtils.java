@@ -18,12 +18,17 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.edit.ui.action.CommandAction;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IAddFeature;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.AreaContext;
+import org.eclipse.graphiti.features.context.impl.CustomContext;
+import org.eclipse.graphiti.features.custom.ICustomFeature;
+import org.eclipse.graphiti.internal.command.FeatureCommand;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.jface.dialogs.ErrorDialog;
@@ -113,6 +118,146 @@ public class Genlab2GraphitiUtils {
 		
 	}
 	
+	private static class AddCommand implements Command {
+
+		private final IAlgoInstance ai;
+		private final GraphitiFeatureProvider gfp;
+		
+		public AddCommand(IAlgoInstance ai, GraphitiFeatureProvider gfp) {
+			this.ai = ai;
+			this.gfp = gfp;
+		}
+
+		@Override
+		public boolean canExecute() {
+			return true;
+		}
+
+		@Override
+		public void execute() {
+			GLLogger.infoTech("no pictogram for element "+ai+"; will add it to the diagram", Genlab2GraphitiUtils.class);
+			
+			AreaContext area = new AreaContext();
+			AddContext ctxt = new AddContext(area, ai);
+			IAddFeature addFeature = gfp.getAddFeature(ctxt);
+			if (addFeature == null) {
+				GLLogger.warnTech("no add feature for element "+ai+"; will NOT add it to the diagram: :-(", Genlab2GraphitiUtils.class);
+			}
+			PictogramElement peCreated = addFeature.add(ctxt);
+			
+		}
+
+		@Override
+		public boolean canUndo() {
+			return false;
+		}
+
+		@Override
+		public void undo() {
+		}
+
+		@Override
+		public void redo() {
+		}
+
+		@Override
+		public Collection<?> getResult() {
+			return null;
+		}
+
+		@Override
+		public Collection<?> getAffectedObjects() {
+			return null;
+		}
+
+		@Override
+		public String getLabel() {
+			return "internal add of pictogram";
+		}
+
+		@Override
+		public String getDescription() {
+			return null;
+		}
+
+		@Override
+		public void dispose() {
+		}
+
+		@Override
+		public Command chain(Command command) {
+			return null;
+		}
+		
+	}
+	
+
+	private static class FeatureCommand implements Command {
+
+		private final ICustomFeature f;
+		private final IContext ctxt;
+
+		public FeatureCommand(ICustomFeature f, IContext ctxt) {
+			this.f = f;
+			this.ctxt = ctxt;
+		}
+
+		@Override
+		public boolean canExecute() {
+			return true;
+		}
+
+		@Override
+		public void execute() {
+			GLLogger.infoTech("executing feature "+f, Genlab2GraphitiUtils.class);
+			
+			f.execute(ctxt);
+			
+		}
+
+		@Override
+		public boolean canUndo() {
+			return false;
+		}
+
+		@Override
+		public void undo() {
+		}
+
+		@Override
+		public void redo() {
+		}
+
+		@Override
+		public Collection<?> getResult() {
+			return null;
+		}
+
+		@Override
+		public Collection<?> getAffectedObjects() {
+			return null;
+		}
+
+		@Override
+		public String getLabel() {
+			return "internal exec of featrure";
+		}
+
+		@Override
+		public String getDescription() {
+			return null;
+		}
+
+		@Override
+		public void dispose() {
+		}
+
+		@Override
+		public Command chain(Command command) {
+			return null;
+		}
+		
+	}
 	/**
 	 * Applies the grapĥiti link() in the relevant context (that is, a transaction and bla bla bla)
 	 * @param dfp
@@ -143,6 +288,48 @@ public class Genlab2GraphitiUtils {
         
 	}
 	
+	protected static void addInTransaction(IAlgoInstance ai, GraphitiFeatureProvider gfp, Diagram diagram) {
+
+		
+		final Command cmd = new AddCommand(ai, gfp);
+		
+		final ResourceSet resourceSet = diagram.eResource().getResourceSet();
+
+        TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(resourceSet);
+        
+        if (editingDomain == null) {
+        	// Not yet existing, create one
+        	editingDomain = TransactionalEditingDomain.Factory.INSTANCE.createEditingDomain(resourceSet);
+        }
+        
+        editingDomain.getCommandStack().execute(
+				cmd
+				);
+			
+	}
+	
+
+	protected static void ExecuteInTransaction(ICustomFeature feature, IContext ctxt, Diagram diagram) {
+
+		
+		final ResourceSet resourceSet = diagram.eResource().getResourceSet();
+
+        TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(resourceSet);
+        
+        if (editingDomain == null) {
+        	// Not yet existing, create one
+        	editingDomain = TransactionalEditingDomain.Factory.INSTANCE.createEditingDomain(resourceSet);
+        }
+        
+        if (ctxt == null)
+        	ctxt = new CustomContext();
+        
+        FeatureCommand fc = new FeatureCommand(feature, ctxt);
+        
+        editingDomain.getCommandStack().execute(fc);
+			
+	}
+	
 	public static void fillGraphitiFromGenlab(
 			IGenlabWorkflowInstance workflow, 
 			Diagram diagram, 
@@ -156,15 +343,11 @@ public class Genlab2GraphitiUtils {
 				// TODO change info => debug
 				GLLogger.infoTech("no pictogram for element "+ai+"; will add it to the diagram", Genlab2GraphitiUtils.class);
 			
-				AreaContext area = new AreaContext();
-				AddContext ctxt = new AddContext(area, ai);
-				IAddFeature addFeature = gfp.getAddFeature(ctxt);
-				if (addFeature == null) {
-					GLLogger.warnTech("no add feature for element "+ai+"; will NOT add it to the diagram: :-(", Genlab2GraphitiUtils.class);
-					continue;
+				try {
+					addInTransaction(ai, gfp, diagram);
+				} catch (RuntimeException e) {
+					GLLogger.errorTech("error while adding a pictogram to element "+ai+"; the corresponding graphic representation will not be used.", Genlab2GraphitiUtils.class, e);
 				}
-				PictogramElement peCreated = addFeature.add(ctxt);
-				
 			}
 			
 			

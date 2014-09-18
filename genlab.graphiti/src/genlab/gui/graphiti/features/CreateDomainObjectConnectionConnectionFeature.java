@@ -6,6 +6,7 @@ import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.instance.InputInstance;
 import genlab.core.model.meta.IAlgoContainer;
+import genlab.core.model.meta.IConstantAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.Utils;
 import genlab.gui.graphiti.editors.IntuitiveObjectCreation;
@@ -18,6 +19,7 @@ import org.eclipse.graphiti.features.context.ICreateConnectionContext;
 import org.eclipse.graphiti.features.impl.AbstractCreateConnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 
 public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreateConnectionFeature
 		implements ICreateConnectionFeature {
@@ -98,6 +100,8 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 				to = (IInputOutputInstance)getBusinessObjectForPictogramElement(dest);
 			}
 			
+			boolean fromIsOutput = from.getAlgoInstance().getOutputInstances().contains(from);
+			
 			if (to != null) {
 				
 				// standard case: ensure the user attempts to really connect 
@@ -106,9 +110,8 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 				// correct wrong direction if necceary
 				IInputOutputInstance correctedFrom = null;
 				IInputOutputInstance correctedTo = null;
-				boolean fromIsOutput = from.getAlgoInstance().getOutputInstances().contains(from);
 				boolean destIsInput = to.getAlgoInstance().getInputInstances().contains(to);
-				
+
 				
 				if (fromIsOutput) {
 					if (destIsInput) {
@@ -138,20 +141,45 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 				// engage in a suggestion process: given the destination, what can we provide as an input ?
 				
 				// first retrieve the target container
-				if (context.getTargetPictogramElement() == null)
-					return false;
+				PictogramElement targetPictogramElement = context.getTargetPictogramElement(); 
 				
+				if (targetPictogramElement == null) {
+					// if no container is provided, it means the container is the diagram (graphiti obj) / workflow (in genlab world)
+					targetPictogramElement = getFeatureProvider().getPictogramElementForBusinessObject(from.getAlgoInstance().getWorkflow());
+				}
+				
+				//targetPictogramElement = targetPictogramElement.getGraphicsAlgorithm().getParentGraphicsAlgorithm().getPictogramElement();
+				
+				
+				/*
+				IInputOutputInstance ioi = null;
+				try {
+					ioi = (IInputOutputInstance) getBusinessObjectForPictogramElement(targetPictogramElement);
+				} catch (ClassCastException e) {
+					return false;
+				}
+				*/
 				IAlgoContainerInstance aci = null;
 				try {
-					aci = (IAlgoContainerInstance) getBusinessObjectForPictogramElement(context.getTargetPictogramElement());
+					aci = (IAlgoContainerInstance) getBusinessObjectForPictogramElement(targetPictogramElement);
 				} catch (ClassCastException e) {
 					return false;
 				}
 				
-				ProposalObjectCreation proposal = IntuitiveObjectCreation.getAutoInputForOutput(
-						(IAlgoContainer)aci.getAlgo(), 
-						from.getMeta()
-						);
+				ProposalObjectCreation proposal = null;
+				if (fromIsOutput) {
+					proposal = IntuitiveObjectCreation.getAutoInputForOutput(
+							(IAlgoContainer)aci.getAlgo(), 
+							from.getMeta()
+							);
+						
+				} else {
+					proposal = IntuitiveObjectCreation.getAutoOutputForInput(
+							(IAlgoContainer)aci.getAlgo(), 
+							from.getMeta()
+							);
+					
+				}
 				
 				// no proposal => can no create
 				return (proposal != null); 
@@ -182,12 +210,13 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 		
 		IInputOutputInstance correctedFrom = null;
 		IInputOutputInstance correctedTo = null;
-		
+
+		boolean fromIsOutput = from.getAlgoInstance().getOutputInstances().contains(from);
+
 		if (dest != null) {
 			// standard case
 		
 			// correct wrong direction if necceary
-			boolean fromIsOutput = from.getAlgoInstance().getOutputInstances().contains(from);
 			boolean destIsInput = to.getAlgoInstance().getInputInstances().contains(to);
 			
 			if (fromIsOutput) {
@@ -224,11 +253,18 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 			}
 			
 			// engage in a suggestion process: given the destination, what can we provide as an input ?
-			ProposalObjectCreation proposal = IntuitiveObjectCreation.getAutoInputForOutput(
+			ProposalObjectCreation proposal = null;
+			if (fromIsOutput) {
+				proposal = IntuitiveObjectCreation.getAutoInputForOutput(
 					(IAlgoContainer)aci.getAlgo(), 
 					from.getMeta()
 					);
-					
+			} else {
+				proposal = IntuitiveObjectCreation.getAutoOutputForInput(
+						(IAlgoContainer)aci.getAlgo(), 
+						from.getMeta()
+						);
+			}
 			
 			// no proposal => can no create
 			if (proposal == null) {
@@ -262,9 +298,25 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 				addInstance.setContainer(aci);
 				
 				// then create the connection
-				correctedFrom = addInstance.getOutputInstanceForOutput(proposal.ioToUse);
+				if (fromIsOutput) {
+					correctedFrom = from;
+					correctedTo = addInstance.getInputInstanceForInput(proposal.ioToUse);
+				} else {
+					correctedFrom = addInstance.getOutputInstanceForOutput(proposal.ioToUse);
+				}
 				
 				// this should create the corresponding graphical representation
+				
+				// if this is a constant, let's define the default value
+				if (correctedTo.getMeta().getDefaultValue() != null && addInstance.getAlgo() instanceof IConstantAlgo) {
+					IConstantAlgo c = (IConstantAlgo) addInstance.getAlgo();
+					addInstance.setValueForParameter(
+							c.getConstantParameter(), 
+							correctedTo.getMeta().getDefaultValue()
+							);
+				}
+				
+				// TODO lets' name the instance ? 
 			}
 			
 			
@@ -274,16 +326,13 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 				correctedFrom, 
 				correctedTo
 				);
+		
 
 		// the corresponding graphiti object will be craeted in reaction to the workflow event !
 				
-		//AddConnectionContext addContext = new AddConnectionContext(context.getSourceAnchor(), context.getTargetAnchor());
-		//addContext.setNewObject(genlabConnection);
+		// TODO name the constant based on the input name ? 
 		
-		//Connection c = (Connection) getFeatureProvider().addIfPossible(addContext);
-		
-
-		//link(c, genlabConnection);
+		// TODO display a menu if several possibilities
 		
 		return null;
 

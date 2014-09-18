@@ -17,19 +17,22 @@ public class WattsStrogatzGeneratorAlgo extends AbstractIGraphGenerator {
 	public static final IntegerInOut INPUT_N = new IntegerInOut(
 			"in_N", 
 			"N", 
-			"number of vertices to create"
+			"number of vertices to create",
+			200
 			);
 	
 	public static final IntegerInOut INPUT_NEI = new IntegerInOut(
 			"in_NEI", 
 			"nei", 
-			"size of the neighborhood for each vertex"
+			"size of the neighborhood for each vertex",
+			4
 			);
 	
 	public static final DoubleInOut INPUT_P = new DoubleInOut(
 			"in_p", 
 			"p", 
-			"rewiring probability"
+			"rewiring probability",
+			0.05
 			);
 	
 	public static final BooleanParameter PARAM_ALLOW_LOOPS = new BooleanParameter(

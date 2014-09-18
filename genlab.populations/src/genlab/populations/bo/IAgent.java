@@ -1,14 +1,10 @@
 package genlab.populations.bo;
 
-public interface IAgent {
+public interface IAgent extends IAttributesHolderInstance {
 
 	public Object getId();
 	
-	public Object getValueForAttribute(Attribute attribute);
+	public IAgentType getAgentType();
 	
-	public Object getValueForAttribute(int idx);
-
-	public void setValueForAttribute(Attribute attribute, Object value);
-	public void setValueForAttribute(int idx, Object value);
-	
+	public IAgent cloneAgent();
 }

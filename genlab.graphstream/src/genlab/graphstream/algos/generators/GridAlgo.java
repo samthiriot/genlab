@@ -33,7 +33,8 @@ public class GridAlgo extends GraphStreamGeneratorAlgo {
 			IntegerFlowType.SINGLETON,
 			"X", 
 			"X", 
-			"number of rows and columns"
+			"number of rows and columns",
+			12
 	);
 	
 	

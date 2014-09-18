@@ -22,6 +22,7 @@ public interface IRandomNumberGenerator {
 	public double nextDoubleUniform();
 	
 	public int nextIntBetween(int min, int max);
+	public double nextDoubleUniform(double min, double max);
 	
 	/**
 	 * Clears the random network generator 

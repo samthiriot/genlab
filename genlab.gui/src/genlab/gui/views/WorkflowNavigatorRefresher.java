@@ -62,6 +62,12 @@ public class WorkflowNavigatorRefresher implements IWorkflowGUIListener, IWorkfl
 	public void projectSaved(IGenlabProject project) {
 		
 	}
+
+	@Override
+	public void workflowAutomaticallyCreatedAndFinished(
+			IGenlabWorkflowInstance instance) {
+		
+	}
 	
 
 }

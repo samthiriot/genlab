@@ -30,9 +30,11 @@ import org.junit.runners.Suite.SuiteClasses;
 			genlab.bayesianInference.smile.TestSmileNetworks.class,
 			
 			// Populations
-			genlab.population.yang.TestYangAlgos.class,
-			genlab.populations.persistence.TestPopulationDescriptionPersistence.class
+			genlab.population.yang.TestYangAlgosDirect.class,
+			genlab.populations.persistence.TestPopulationDescriptionPersistence.class,
 			
+			// arithmetics
+			genlab.arithmetics.tests.bo.TestOperators.class
 			
 			
 			// genlab.igraph.AllTests.class,

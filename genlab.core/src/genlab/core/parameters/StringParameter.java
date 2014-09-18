@@ -11,7 +11,7 @@ public class StringParameter extends StringBasedParameter<String> {
 	}
 
 	@Override
-	public Map check(String something) {
+	public Map<String,Boolean> check(String something) {
 		return Collections.EMPTY_MAP;
 	}
 

@@ -15,13 +15,15 @@ public class ErdosRenyiGNPGeneratorAlgo extends AbstractIGraphGenerator {
 	public static final IntegerInOut INPUT_N = new IntegerInOut(
 			"in_N", 
 			"N", 
-			"Number of vertices to create"
+			"Number of vertices to create",
+			200
 			);
 	
 	public static final DoubleInOut INPUT_P = new DoubleInOut(
 			"in_P", 
 			"P", 
-			"The probability to create a link."
+			"The probability to create a link.",
+			0.2
 			);
 	
 	public static final BooleanParameter PARAM_DIRECTED = new BooleanParameter(

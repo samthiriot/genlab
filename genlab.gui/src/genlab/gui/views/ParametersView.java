@@ -10,6 +10,7 @@ import genlab.core.parameters.IntParameter;
 import genlab.core.parameters.ListParameter;
 import genlab.core.parameters.Parameter;
 import genlab.core.parameters.StringBasedParameter;
+import genlab.core.parameters.TextParameter;
 import genlab.core.projects.GenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
@@ -157,12 +158,14 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				value = param.getDefaultValue();
 			
 			//Label label = new Label(form.getBody(), SWT.NULL);
-			Label label = toolkit.createLabel(form.getBody(), param.getName()+":");
+			Text label = toolkit.createText(form.getBody(), param.getName()+":"+"\n"+param.getDesc(), SWT.READ_ONLY);
 
 			//label.setText(param.getName()+":");
 			//label.setBackground(form.getBackground());
 			
+			// condition should initialize the widget
 			Control createdWidget = null;
+			boolean updateWidgetLayout = true; // set later to false if you want a specific layout
 			
 			if (param instanceof ListParameter) {
 				
@@ -227,6 +230,23 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				toolkit.adapt(sp, true, true);
 				
 				sp.addSelectionListener(this);
+			} else if (param instanceof TextParameter) {
+				
+				updateWidgetLayout = false;
+				
+				TextParameter p = (TextParameter)param;
+				
+				Text txt = toolkit.createText(form.getBody(), value.toString());
+				
+				GridData gd = new GridData(SWT.FILL, SWT.TOP, true, true);
+				gd.heightHint = 40;
+				txt.setLayoutData(gd);
+				
+				//txt.setText(value.toString());
+								
+				createdWidget = txt;
+				txt.addModifyListener(this);
+				
 			} else if (param instanceof StringBasedParameter<?>) {
 				StringBasedParameter p = (StringBasedParameter)param;
 				
@@ -292,7 +312,9 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				
 			}
 			// set the layout of the component
-			createdWidget.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
+			
+			if (updateWidgetLayout)
+				createdWidget.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 			widget2param.put(createdWidget, param);
 		}
 		

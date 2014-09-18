@@ -111,4 +111,11 @@ public interface IGenlabWorkflowInstance extends IAlgoContainerInstance,
 
 	public void removeListener(IWorkflowContentListener l);
 
+	/**
+	 * returns a valid Id for this basis of ID (not multithread)
+	 * @param basedId
+	 * @return
+	 */
+	public String getNextId(String basedId);
+	
 }

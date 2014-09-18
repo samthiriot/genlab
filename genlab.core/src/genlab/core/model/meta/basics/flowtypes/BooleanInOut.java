@@ -10,6 +10,7 @@ import genlab.core.model.meta.InputOutput;
  */
 public class BooleanInOut extends InputOutput<Boolean> {
 
+
 	public BooleanInOut(String id, String name, String desc) {
 		super(BooleanFlowType.SINGLETON, id, name, desc);
 	}
@@ -17,6 +18,15 @@ public class BooleanInOut extends InputOutput<Boolean> {
 	public BooleanInOut(String id, String name, String desc,
 			boolean acceptMultipleInputs) {
 		super(BooleanFlowType.SINGLETON, id, name, desc, acceptMultipleInputs);
+	}
+	
+	public BooleanInOut(String id, String name, String desc, Boolean defaultValue) {
+		super(BooleanFlowType.SINGLETON, id, name, desc, defaultValue);
+	}
+
+	public BooleanInOut(String id, String name, String desc, Boolean defaultValue,
+			boolean acceptMultipleInputs) {
+		super(BooleanFlowType.SINGLETON, id, name, desc, defaultValue, acceptMultipleInputs);
 	}
 
 }

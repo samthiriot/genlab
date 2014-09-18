@@ -339,4 +339,26 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 				;
 		
 	}
+	
+	protected void dieExecutionWithMessage(String msg) {
+		
+		// display in the execution log
+		messages.errorUser(msg, this.getClass());
+		
+		// kill execution (will cancel subsequent computations)
+		progress.setComputationState(ComputationState.FINISHED_FAILURE);
+		
+	}
+	
+
+	protected void dieExecutionWithMessage(String msg, Throwable e) {
+		
+		// display in the execution log
+		messages.errorUser(msg, this.getClass(), e);
+		
+		// kill execution (will cancel subsequent computations)
+		progress.setComputationState(ComputationState.FINISHED_FAILURE);
+		progress.setException(e);
+		
+	}
 }

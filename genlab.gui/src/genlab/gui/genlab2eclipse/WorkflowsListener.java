@@ -75,4 +75,10 @@ public class WorkflowsListener implements IWorkflowListener {
 		}
 	}
 
+	@Override
+	public void workflowAutomaticallyCreatedAndFinished(
+			IGenlabWorkflowInstance instance) {
+		
+	}
+
 }

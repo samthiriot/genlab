@@ -36,4 +36,10 @@ public interface IInputOutput<JavaType> {
 	
 	// TODO ? public IInputOutputInstance createInstance(IAlgoInstance algoInstance);
 	
+	/**
+	 * Returns the default value (if any) or null. Especially relevant for constants.
+	 * @return
+	 */
+	public JavaType getDefaultValue();
+	
 }

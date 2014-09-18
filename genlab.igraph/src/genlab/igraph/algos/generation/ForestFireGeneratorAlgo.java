@@ -17,26 +17,30 @@ public class ForestFireGeneratorAlgo extends AbstractIGraphGenerator {
 	public static final IntegerInOut INPUT_N = new IntegerInOut(
 			"in_N", 
 			"N", 
-			"Number of vertices to create"
+			"Number of vertices to create",
+			200
 			);
 	
 	public static final DoubleInOut INPUT_fw_prob = new DoubleInOut(
 			"in_fw_prob", 
 			"fw_prob", 
-			"The forward burning probability."
+			"The forward burning probability.",
+			0.3
 			);
 	
 	public static final DoubleInOut INPUT_bw_factor = new DoubleInOut(
 			"in_bw_factor", 
 			"bw_factor", 
-			"The backward burning ratio. The backward burning probability is calculated as bw.factor*fw.prob ."
+			"The backward burning ratio. The backward burning probability is calculated as bw.factor*fw.prob .",
+			0.08
 			);
 	
 
 	public static final IntegerInOut INPUT_pambs = new IntegerInOut(
 			"in_pambs", 
 			"pambs", 
-			"The number of ambassador vertices."
+			"The number of ambassador vertices.",
+			2
 			);
 	
 	public static final BooleanParameter PARAM_DIRECTED = new BooleanParameter(

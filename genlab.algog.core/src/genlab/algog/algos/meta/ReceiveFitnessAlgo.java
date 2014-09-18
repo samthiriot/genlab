@@ -4,6 +4,7 @@ import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
 
@@ -41,13 +42,12 @@ public class ReceiveFitnessAlgo extends AbstractGeneticAlgo {
 		return null;
 	}
 
-	@Override
-	public boolean canBeContainedInto(IAlgoInstance algoInstance) {
-		// genes can only be contained into genetic exploration algos
-		return (algoInstance.getAlgo() instanceof GeneticExplorationAlgo);
-	}
-	
 
+	@Override
+	public boolean canBeContainedInto(IAlgoContainer algoContainer) {
+		// genes can only be contained into genetic exploration algos
+		return (algoContainer instanceof AbstractGeneticExplorationAlgo);
+	}
 
 	
 }

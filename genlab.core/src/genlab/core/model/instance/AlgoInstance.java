@@ -85,7 +85,7 @@ public class AlgoInstance implements IAlgoInstance {
 				(workflow==null?
 						algo.getId()+"."+System.currentTimeMillis()
 						:
-						workflow.getId()+".algos."+algo.getId()+"."+workflow.getAlgoInstances().size()
+						workflow.getNextId(workflow.getId()+".algos."+algo.getId())
 						)
 
 				);

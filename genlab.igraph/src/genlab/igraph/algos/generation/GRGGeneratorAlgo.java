@@ -15,13 +15,15 @@ public class GRGGeneratorAlgo extends AbstractIGraphGenerator {
 	public static final IntegerInOut INPUT_NODES = new IntegerInOut(
 			"in_nodes", 
 			"nodes", 
-			"number of vertices to create"
+			"number of vertices to create",
+			200
 			);
 	
 	public static final DoubleInOut INPUT_RADIUS = new DoubleInOut(
 			"in_radius", 
 			"radius", 
-			"The radius within which the vertices will be connected."
+			"The radius within which the vertices will be connected.",
+			0.1
 			);
 	
 	public static final BooleanParameter PARAM_TORUS = new BooleanParameter(

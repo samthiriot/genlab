@@ -16,13 +16,15 @@ public class EuclidianGraphGenerator extends GraphStreamGeneratorAlgo {
 			IntegerFlowType.SINGLETON,
 			"in_N", 
 			"N", 
-			"number of vertices in the generated graph"
+			"number of vertices in the generated graph",
+			200
 	);
 	
 	public static final DoubleInOut INPUT_THRESHOLD = new DoubleInOut(
 			"in_threshold", 
 			"threshold", 
-			"if the euclidian distance is lower than this threshold, a link will be created"
+			"if the euclidian distance is lower than this threshold, a link will be created",
+			0.1
 			);
 	
 	public EuclidianGraphGenerator() {

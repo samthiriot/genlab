@@ -14,26 +14,30 @@ public class SIIGeneratorAlgo extends AbstractIGraphGenerator {
 	public static final IntegerInOut INPUT_islands_n = new IntegerInOut(
 			"in_islands_n", 
 			"islands_n", 
-			"Number of islands to create"
+			"Number of islands to create",
+			5
 			);
 	
 	public static final IntegerInOut INPUT_islands_size = new IntegerInOut(
 			"in_islands_size", 
 			"islands_size", 
-			"The size of each island."
+			"The size of each island.",
+			20
 			);
 	
 	public static final DoubleInOut INPUT_islands_pin = new DoubleInOut(
 			"in_islands_pin", 
 			"islands_pin", 
-			"Probability to create links within islands."
+			"Probability to create links within islands.",
+			0.2
 			);
 	
 
 	public static final IntegerInOut INPUT_n_inter = new IntegerInOut(
 			"in_n_inter", 
 			"n_inter", 
-			"Number of links between islands."
+			"Number of links between islands.",
+			1
 			);
 	
 	

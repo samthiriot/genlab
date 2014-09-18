@@ -223,9 +223,23 @@ public abstract class BasicAlgo implements IAlgo {
 
 	@Override
 	public boolean canBeContainedInto(IAlgoInstance algoInstance) {
+		// by default, deducts that from generic type
+		return canBeContainedInto((IAlgoContainer)algoInstance.getAlgo());
+	}
+
+	@Override
+	public boolean canBeContainedInto(IAlgoContainer algoContainer) {
 		// by default, returns true
 		return true;
 	}
+	
+
+	@Override
+	public Integer getPriorityForIntuitiveCreation() {
+		// by default, will return a sum of inputs and outputs
+		return -1 - inputs.size() - outputs.size();
+	}
+
 
 
 

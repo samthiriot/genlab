@@ -7,6 +7,7 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
 
@@ -63,6 +64,12 @@ public class MeanSquaredErrorAlgo extends AbstractGeneticAlgo {
 		return new MeanSquaredErrorAlgoInstance(this, workflow, id);
 	}
 
-	
+
+	@Override
+	public boolean canBeContainedInto(IAlgoContainer algoContainer) {
+		// genes can only be contained into genetic exploration algos
+		return (algoContainer instanceof AbstractGeneticExplorationAlgo);
+	}
+
 
 }

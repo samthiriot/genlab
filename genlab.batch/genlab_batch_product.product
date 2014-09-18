@@ -3,7 +3,6 @@
 
 <product name="Genlab batch" uid="genlab.batch" id="genlab.batch.genlab_batch" application="genlab.batch" version="0.0.1" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -13,7 +12,6 @@
 
    <windowImages/>
 
-
    <launcher>
       <solaris/>
       <win useIco="false">
@@ -21,10 +19,8 @@
       </win>
    </launcher>
 
-
    <vm>
    </vm>
-
 
    <plugins>
       <plugin id="com.ibm.icu"/>
@@ -42,6 +38,9 @@
       <plugin id="genlab.jung"/>
       <plugin id="genlab.neo4j"/>
       <plugin id="genlab.os"/>
+      <plugin id="genlab.population.yang"/>
+      <plugin id="genlab.populations"/>
+      <plugin id="genlab.populations.random"/>
       <plugin id="genlab.random.colt"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>

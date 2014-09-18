@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Arithmetics
+Bundle-SymbolicName: genlab.arithmetics;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: genlab.arithmetics.Activator
+Bundle-Vendor: Samuel Thiriot
+Require-Bundle: org.eclipse.core.runtime,
+ genlab.core;bundle-version="0.0.1",
+ genlab.random.colt;bundle-version="1.0.0",
+ org.junit
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Export-Package: genlab.arithmetics,
+ genlab.arithmetics.javaScripting,
+ genlab.arithmetics.tests

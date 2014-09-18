@@ -19,4 +19,13 @@ public class DoubleInOut extends InputOutput<Double> {
 		super(DoubleFlowType.SINGLETON, id, name, desc, acceptMultipleInputs);
 	}
 
+	public DoubleInOut(String id, String name, String desc, Double defaultValue) {
+		super(DoubleFlowType.SINGLETON, id, name, desc, defaultValue);
+	}
+
+	public DoubleInOut(String id, String name, String desc, Double defaultValue,
+			boolean acceptMultipleInputs) {
+		super(DoubleFlowType.SINGLETON, id, name, desc, defaultValue, acceptMultipleInputs);
+	}
+
 }

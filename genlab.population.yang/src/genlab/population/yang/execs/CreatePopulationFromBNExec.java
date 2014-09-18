@@ -9,8 +9,9 @@ import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.population.yang.YANGAlgos;
+import genlab.population.yang.YANGAlgosIndividuals;
 import genlab.population.yang.algos.CreatePopulationFromBNAlgo;
+import genlab.populations.algos.AddEmptyAgentsAlgo;
 import genlab.populations.bo.IAgentType;
 import genlab.populations.bo.IPopulation;
 import genlab.populations.flowtypes.PopulationFlowType;
@@ -53,14 +54,23 @@ public class CreatePopulationFromBNExec extends AbstractAlgoExecutionOneshot {
 		// ... bayesian network
 		final IBayesianNetwork inputBN = (IBayesianNetwork)getInputValueForInput(CreatePopulationFromBNAlgo.INPUT_BAYESIAN_NETWORK);
 		// ... population to fill
-		final IPopulation inputPopulation = (IPopulation)getInputValueForInput(CreatePopulationFromBNAlgo.INPUT_POPULATION);
-
+		final IPopulation popOrig = (IPopulation)getInputValueForInput(CreatePopulationFromBNAlgo.INPUT_POPULATION);
 		// ... agent type
-		final IAgentType inputAgentType = inputPopulation.getPopulationDescription().getAgentTypes().iterator().next();
-				
-		
+		final String typename = (String)getInputValueForInput(CreatePopulationFromBNAlgo.INPUT_TYPENAME);
+
+		// post process inputs
+		// ... clone the population
+		final IPopulation inputPopulation = popOrig.clonePopulation();
+		// ... retrieve the agent type from its name
+		final IAgentType inputAgentType = popOrig.getPopulationDescription().getAgentTypeForName(typename);
+		if (inputAgentType == null) {
+			messages.errorUser("no agent type named \""+typename+"\" is defined in the population description", getClass());
+			progress.setComputationState(ComputationState.FINISHED_FAILURE);
+			return;
+		}
+					
 		// then start the generation
-		YANGAlgos.fillPopulationFromBN(
+		YANGAlgosIndividuals.fillPopulationFromBN(
 				(ComputationProgressWithSteps) progress, 
 				inputPopulation, 
 				inputAgentType, 
@@ -77,14 +87,13 @@ public class CreatePopulationFromBNExec extends AbstractAlgoExecutionOneshot {
 
 	@Override
 	public void cancel() {
-		// TODO Auto-generated method stub
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
 
 	}
 
 	@Override
 	public void kill() {
-		// TODO Auto-generated method stub
-
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
 	}
 
 }

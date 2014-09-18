@@ -49,7 +49,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	/**
 	 * If true, relays every message to a log4j logger.
 	 */
-	public static boolean DEFAULT_RELAY_TO_LOG4J = false;
+	public static boolean DEFAULT_RELAY_TO_LOG4J = true;
 
 	public int limitStartCleanup = DEFAULT_CLEANUP_TARGET_SIZE;
 	public int cleanupTarget = DEFAULT_CLEANUP_TARGET_SIZE;
@@ -62,7 +62,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 
 	public static final MessageLevel DEFAULT_LEVEL = MessageLevel.TRACE;
 
-	protected MessageLevel filterIgnoreBelow = MessageLevel.INFO;
+	protected MessageLevel filterIgnoreBelow = MessageLevel.TRACE;
 	
 	public MessageLevel getFilterIgnoreBelow() {
 		return filterIgnoreBelow;

@@ -21,6 +21,14 @@ public class GraphDisplayAlgo extends AbstractGraphDisplayAlgo {
 	protected String getViewId() {
 		return GraphView.VIEW_ID;
 	}
+	
+
+	@Override
+	public Integer getPriorityForIntuitiveCreation() {
+		// add a penalty, because the 2d display is less intuitive than the non-2d with auto layout
+		return super.getPriorityForIntuitiveCreation()+15;
+	}
+	
 
 	
 }

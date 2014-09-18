@@ -23,14 +23,16 @@ public class BarabasiAlbertAlgo extends GraphStreamGeneratorAlgo {
 			IntegerFlowType.SINGLETON,
 			"m", 
 			"m", 
-			"max links per step"
+			"max links per step",
+			1
 	);
 	
 	public static final InputOutput<Integer> PARAM_N = new InputOutput<Integer>(
 			IntegerFlowType.SINGLETON,
 			"N", 
 			"N", 
-			"number of vertices"
+			"number of vertices",
+			200
 	);
 	
 	public BarabasiAlbertAlgo() {

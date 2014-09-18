@@ -20,7 +20,8 @@ public class GraphRemoveRandomEdges extends AbstractBasicAlgoRandomEdges {
 	public static IntegerInOut INPUT_COUNT = new IntegerInOut(
 			"in_count", 
 			"count", 
-			"number of edges to remove"
+			"number of edges to remove",
+			10
 			);
 			
 	public GraphRemoveRandomEdges() {

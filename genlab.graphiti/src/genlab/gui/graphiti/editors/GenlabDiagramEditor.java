@@ -105,6 +105,17 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 		
 		workflow.addListener(WorkflowListener.lastInstance);
 		
+		if (diagram == null) {
+			diagram = (Diagram) dfp.getPictogramElementForBusinessObject(workflow);
+		}
+
+		if (diagram == null) {
+			
+			GLLogger.errorTech("Unable to find the diagram; will not be created.", getClass());
+			return;
+		}
+		
+		
 		// TODO check consistency ???
 		Genlab2GraphitiUtils.fillGraphitiFromGenlab(
 				workflow, 

@@ -22,4 +22,10 @@ public interface IWorkflowListener {
 
 	public void projectSaved(IGenlabProject project);
 
+	/**
+	 * Sent when a workflow was automatically created (thus, by a program, like for examples).
+	 * So listeners could for instance layout the diagram or any other relevant task.
+	 * @param instance
+	 */
+	public void workflowAutomaticallyCreatedAndFinished(IGenlabWorkflowInstance instance);
 }

@@ -58,6 +58,10 @@
             class="genlab.core.model.meta.basics.algos.ConvertBooleanToInteger"
             id="genlab.core.model.meta.basics.algos.ConvertBooleanToInteger">
       </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.ConstantValueString"
+            id="genlab.core.model.meta.basics.algos.ConstantValueString">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
