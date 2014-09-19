@@ -6,6 +6,7 @@ import java.io.ObjectInputStream.GetField;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.basics.algos.ConstantValueString;
+import genlab.examples.gui.creation.ExamplesCreation;
 import genlab.gui.examples.contributors.AbstractBasicExample;
 import genlab.gui.examples.contributors.IGenlabExample;
 import genlab.populations.algos.CreateEmptyPopulationAlgo;
@@ -35,7 +36,7 @@ public class ExampleSimple1 extends AbstractBasicExample {
 		loadPopDescInstance.setName("load popdesc");
 		loadPopDescInstance.setValueForParameter(
 				LoadPopulationDescriptionFromFileAlgo.PARAMETER_FILE, 
-				new File(FILENAME_RESOURCE_POP_DESC)
+				new File(ExamplesCreation.getPathForExampleResources(this)+File.separator+FILENAME_RESOURCE_POP_DESC)
 				);
 		
 		IAlgoInstance createEmptyInstance = (new CreateEmptyPopulationAlgo()).createInstance(workflow);

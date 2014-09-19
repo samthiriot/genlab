@@ -73,10 +73,10 @@ public class ExamplesCreation {
 	}
 	
 
-	private static String getPathForExampleResources(IGenlabExample example) {
+	public static String getPathForExampleResources(IGenlabExample example) {
 		StringBuffer sb = new StringBuffer();
 		
-		sb.append("/data/").append(example.getFileName()).append(File.separator);
+		sb.append("data/").append(example.getFileName()).append(File.separator);
 		
 		return sb.toString();
 	}
@@ -91,7 +91,7 @@ public class ExamplesCreation {
 				getPathForExample(example)
 				);
 		
-		File dirData = new File(glProject.getBaseDirectory()+""+File.separator+getPathForExampleResources(example));
+		File dirData = new File(glProject.getBaseDirectory()+File.separator+getPathForExampleResources(example));
 		dirData.mkdirs();
 		
 		example.createFiles(dirData);

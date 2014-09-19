@@ -1,5 +1,6 @@
 package genlab.populations.execs;
 
+import genlab.core.commons.FileUtils;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
@@ -37,6 +38,13 @@ public class LoadPopulationDescriptionFromFileExec extends
 		try {
 			File paramFile = (File)algoInst.getValueForParameter(LoadPopulationDescriptionFromFileAlgo.PARAMETER_FILE);
 		
+			if (!paramFile.isAbsolute()) {
+				paramFile = new File(
+						getAlgoInstance().getWorkflow().getProject().getBaseDirectory()
+						+File.separator
+						+paramFile.getPath()
+						);
+			}
 			PopulationDescription desc = PopulationDescriptionPersistence.singleton.readFromFile(paramFile);
 			
 			result.setResult(LoadPopulationDescriptionFromFileAlgo.OUTPUT_POPULATION_DESCRIPTION, desc);
