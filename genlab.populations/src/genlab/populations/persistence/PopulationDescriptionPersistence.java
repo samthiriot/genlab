@@ -9,11 +9,14 @@ import genlab.populations.bo.PopulationDescription;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintStream;
 
 import org.eclipse.core.runtime.Platform;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 /**
@@ -67,11 +70,16 @@ public final class PopulationDescriptionPersistence extends AbstractPersistence 
 		
 		GLLogger.debugTech("saving population description as XML to "+f, getClass());
 		try {
-			xstream.toXML(
-					popDesc,
-					new PrintStream(f)
+
+			xstream.marshal(
+					popDesc, 
+					new PrettyPrintWriter(new FileWriter(f))
 					);
+			
 		} catch (FileNotFoundException e) {
+			GLLogger.errorTech("error while saving the population description as XML to "+f, getClass(), e);
+
+		} catch (IOException e) {
 			GLLogger.errorTech("error while saving the population description as XML to "+f, getClass(), e);
 
 		}

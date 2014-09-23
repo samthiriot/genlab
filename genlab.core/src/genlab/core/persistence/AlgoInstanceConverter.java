@@ -73,6 +73,12 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 		if (algo.hasParameters()) {
 			writer.startNode("parameters");
 	        for (Map.Entry<String, Object> entry : algo._getParametersAndValues().entrySet()) {
+	        	
+	        	Parameter<?> param = algo.getParameter(entry.getKey());
+	        	
+	        	if (param==null || !param.shouldSave())
+	        		continue;
+	        	
 	        	writer.startNode("entry");
 	        	writer.startNode("key");
 	        	writer.setValue(entry.getKey().toString());

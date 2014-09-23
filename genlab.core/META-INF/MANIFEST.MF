@@ -37,6 +37,7 @@ Export-Package: com.thoughtworks.xstream,
  genlab.core;uses:="org.osgi.framework",
  genlab.core.commons,
  genlab.core.exec;uses:="genlab.core.model.exec,genlab.core.model.instance,genlab.core.usermachineinteraction",
+ genlab.core.exporters,
  genlab.core.model,
  genlab.core.model.doc;uses:="genlab.core.model.meta",
  genlab.core.model.exec;

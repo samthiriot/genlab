@@ -5,6 +5,7 @@ import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
+import genlab.core.parameters.InstanceNameParameter;
 import genlab.core.parameters.Parameter;
 import genlab.core.usermachineinteraction.MessageLevel;
 
@@ -14,6 +15,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,11 +48,44 @@ public class AlgoInstance implements IAlgoInstance {
 	
 	private IAlgoContainerInstance container = null;
 	
+	protected transient InstanceNameParameter paramChangeName;
+	
+	/**
+	 * Local parameters
+	 */
+	protected transient List<Parameter<?>> localParameters;
+	protected transient Map<String, Parameter<?>> localParameterId2param;
+	
+	@Override
+	public void _initializeParamChangeName() {
+		
+		this.localParameters = new LinkedList<Parameter<?>>();
+		this.localParameterId2param = new HashMap<String, Parameter<?>>();
+
+		this.paramChangeName = new InstanceNameParameter(
+				this, 
+				this.getId()+"._name", 
+				"name", 
+				"the name of this algorithm", 
+				this.name
+				);
+		
+		declareParameter(paramChangeName, this.name);
+		/*
+		for (Parameter<?> p : algo.getParameters()) {
+			declareParameter(p);
+		}
+		*/
+	}
+	
 	public AlgoInstance(IAlgo algo, IGenlabWorkflowInstance workflow, String id) {
 
 		this.id = id;
 		this.algo = algo;
 		this.name = algo.getName() + " " + (workflow==null?"":workflow.getCountOfAlgo(algo)+1); 
+		
+		this._initializeParamChangeName();
+		
 		
 		// init in and outs
 		for (IInputOutput<?> input : algo.getInputs()) {
@@ -91,7 +126,18 @@ public class AlgoInstance implements IAlgoInstance {
 				);
 	}
 
-	
+	protected void declareParameter(Parameter<?> p) {
+		if (!localParameters.contains(p))
+			localParameters.add(p);
+	}
+
+
+	protected void declareParameter(Parameter<?> p, Object value) {
+		if (!localParameters.contains(p))
+			localParameters.add(p);
+		parametersKey2value.put(p.getId(), value);
+	}
+
 	@Override
 	public final String getId() {
 		return id;
@@ -152,6 +198,16 @@ public class AlgoInstance implements IAlgoInstance {
 	}
 
 
+
+	@Override
+	public IInputOutputInstance getInputInstanceForInput(String inputId) {
+		return inputs2inputInstances.get(algo.getInputInstanceForId(inputId));
+	}
+
+	@Override
+	public IInputOutputInstance getOutputInstanceForOutput(String outputId) {
+		return outputs2outputInstances.get(algo.getOutputInstanceForId(outputId));
+	}
 	@Override
 	public IInputOutputInstance getOutputInstanceForOutput(IInputOutput<?> meta) {
 		return outputs2outputInstances.get(meta);
@@ -194,6 +250,13 @@ public class AlgoInstance implements IAlgoInstance {
 		
 		if (!hasParameter(name))
 			throw new WrongParametersException("wrong parameter "+name+": no parameter found with this name");
+	
+		if (name.equals(paramChangeName.getId())) {
+			// specific case: rename !
+			setName((String)value);
+			return;
+		}
+		
 		final Object previousValue = parametersKey2value.get(name); 
 		
 		if ((previousValue == null) || (!previousValue.equals(value))) {
@@ -218,8 +281,6 @@ public class AlgoInstance implements IAlgoInstance {
 	public void setValueForParameter(Parameter<?> parameter, Object value) {
 		setValueForParameter(parameter.getId(), value);
 	}
-	
-
 
 	public void clearValueForParameter(String name) {
 		
@@ -233,10 +294,14 @@ public class AlgoInstance implements IAlgoInstance {
 	public void checkForRun(WorkflowCheckResult res) {
 		
 		// ensure that inputs are connected
-		for (IInputOutputInstance in : inputs2inputInstances.values()) {
+		for (IInputOutput<?> input: inputs2inputInstances.keySet()) {
+			
+			IInputOutputInstance in = inputs2inputInstances.get(input);
+			
 			Collection<IConnection> inputConnections = in.getConnections();
 			
-			if (inputConnections.isEmpty())
+			// ensure the input is connected (if necessary)
+			if (inputConnections.isEmpty() && !in.getMeta().isFacultative())
 				res.messages.add(new TextMessageFromAlgoInstance(
 						this, 
 						MessageLevel.ERROR, 
@@ -248,7 +313,7 @@ public class AlgoInstance implements IAlgoInstance {
 			
 		}
 		
-		// ensure that inputs are connected
+		// ensure that outputs are connected
 		for (IInputOutputInstance out : outputs2outputInstances.values()) {
 			Collection<IConnection> inputConnections = out.getConnections();
 			
@@ -345,18 +410,27 @@ public class AlgoInstance implements IAlgoInstance {
 
 	@Override
 	public Collection<Parameter<?>> getParameters() {
-		// by default, returns the algo's parameters
-		return algo.getParameters();
+		// TODO optimiser
+		LinkedList<Parameter<?>> res = new LinkedList<Parameter<?>>();
+		for (Parameter<?> p: localParameters) {
+			res.add(p);
+		}
+		res.addAll(algo.getParameters());
+		return res;
 	}
 
 	@Override
 	public boolean hasParameter(String id) {
-		return algo.hasParameter(id);
+		return localParameterId2param.containsKey(id) || algo.hasParameter(id);
 	}
 	
 	@Override
 	public Parameter<?> getParameter(String id) {
-		return algo.getParameter(id);
+		Parameter<?> res = localParameterId2param.get(id);
+		if (res != null)
+			return res;
+		else
+			return algo.getParameter(id);
 	}
 
 	@Override
@@ -396,6 +470,7 @@ public class AlgoInstance implements IAlgoInstance {
 		parametersListener.remove(list);
 		
 	}
+
 
 
 }

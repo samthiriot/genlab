@@ -10,6 +10,11 @@ public abstract class Parameter<Type extends Object> {
 	protected boolean required = true;
 	protected Type defaultValue = null;
 	
+	/**
+	 * if false, the value of this parameter will NOT be saved. Only for very specific cases 
+	 */
+	protected boolean shouldSave = true;
+	
 	public Parameter(String id, String name, String desc, Type defaultValue) {
 		this.id = id; // TODO ensure unicity !
 		this.name = name;
@@ -47,6 +52,14 @@ public abstract class Parameter<Type extends Object> {
 	public abstract Map<String,Boolean> check(Type value);
 	
 	public abstract Type parseFromString(String value);
+
+	public boolean shouldSave() {
+		return shouldSave;
+	}
+
+	public void setShouldSave(boolean shouldSave) {
+		this.shouldSave = shouldSave;
+	}
 		
 
 }

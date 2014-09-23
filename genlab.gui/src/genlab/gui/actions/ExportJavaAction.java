@@ -1,6 +1,7 @@
 package genlab.gui.actions;
 
 import genlab.core.exec.GenlabExecution;
+import genlab.core.exporters.Genlab2JavaExporter;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.Utils;
@@ -13,13 +14,13 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 
-public class RunAction extends Action implements IWorkbenchAction {
+public class ExportJavaAction extends Action implements IWorkbenchAction {
 
-	private static final String ID = "genlab.gui.actions.run";  
+	private static final String ID = "genlab.gui.actions.export.java";  
 	
-	public RunAction() {
+	public ExportJavaAction() {
 		setId(ID);
-		setText("run workflow");
+		setText("export as Java");
 	}
 	
 	
@@ -29,20 +30,11 @@ public class RunAction extends Action implements IWorkbenchAction {
 		if (workflow == null)
 			return;
 		
-		// change perspective
-		// TODO propose user ?
-		try {
-		   PlatformUI.getWorkbench().showPerspective(
-				   RunPerspective.ID,       
-				   PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-				   );
-		} catch (WorkbenchException e) {
-		   e.printStackTrace();
-		}
-	
-		// run the workflow
-		GenlabExecution.runBackground(workflow);
-
+		System.out.println(Genlab2JavaExporter.generateJavaForWorkflowCreation(workflow));
+		
+		GLLogger.infoUser("the java code for the instantiation of this workflow has been printed in the standard output", getClass());
+		
+		
 	}  
 	
 	

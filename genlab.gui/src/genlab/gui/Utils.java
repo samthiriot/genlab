@@ -1,6 +1,8 @@
 package genlab.gui;
 
+import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.editors.IWorkflowEditor;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 
 import org.eclipse.core.internal.resources.File;
@@ -14,6 +16,7 @@ import org.eclipse.jface.viewers.ContentViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
@@ -224,6 +227,40 @@ public class Utils {
 		//else {
 		//	return null;
 		//}
+	}
+	
+	/**
+	 * Returns the workflow displayed / selected in the current display
+	 * @return
+	 */
+	public static IGenlabWorkflowInstance getSelectedWorflow() {
+		// retrieve the workflow to run
+		IEditorPart part = null;
+		try {
+			part = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		} catch (NullPointerException e) {
+			GLLogger.errorTech("unable to find an active window, view or editor; unable to run a workflow", Utils.class);
+			return null;
+		}
+		   		
+		if (part == null) {
+			GLLogger.errorTech("unable to find an active editor; unable to run a workflow", Utils.class);
+			return null;
+		}
+		
+		IGenlabWorkflowInstance workflow = null;
+		if (part instanceof IWorkflowEditor) {
+		
+			workflow = ((IWorkflowEditor)part).getEditedWorkflow();
+			if (workflow == null) {
+				GLLogger.errorTech("no workflow associated with this editor; unable to run the workflow", Utils.class);
+				return null;
+			}
+					// ;GenlabWorkflowInstance.currentTODO;
+			
+		}
+		
+		return workflow;
 	}
 	
 	private Utils() {

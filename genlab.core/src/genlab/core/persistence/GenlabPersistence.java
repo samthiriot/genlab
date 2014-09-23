@@ -15,8 +15,11 @@ import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -26,6 +29,7 @@ import java.util.Map;
 import javax.swing.text.html.HTMLDocument.RunElement;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 public class GenlabPersistence extends AbstractPersistence {
@@ -214,13 +218,22 @@ public class GenlabPersistence extends AbstractPersistence {
 		// save project
 		GLLogger.debugTech("saving project as XML to "+filename, getClass());
 		try {
+			/*
 			xstream.toXML(
 					project,
 					new PrintStream(filename)
 					);
+			*/
+			xstream.marshal(
+					project, 
+					new PrettyPrintWriter(new FileWriter(filename))
+					);
+
 		} catch (FileNotFoundException e) {
 			GLLogger.errorTech("error while saving the workflow "+project+" as XML to "+filename, getClass(), e);
 
+		} catch (IOException e) {
+			GLLogger.errorTech("error while saving the workflow "+project+" as XML to "+filename, getClass(), e);
 		}
 		
 		this.currentProject = null;
@@ -338,11 +351,14 @@ public class GenlabPersistence extends AbstractPersistence {
 		
 		GLLogger.debugTech("saving workflow as XML to "+filename, getClass());
 		try {
-			xstream.toXML(
-					workflow,
-					new PrintStream(filename)
+			xstream.marshal(
+					workflow, 
+					new PrettyPrintWriter(new FileWriter(filename))
 					);
 		} catch (FileNotFoundException e) {
+			GLLogger.errorTech("error while saving the workflow "+workflow+" as XML to "+filename, getClass(), e);
+
+		} catch (IOException e) {
 			GLLogger.errorTech("error while saving the workflow "+workflow+" as XML to "+filename, getClass(), e);
 
 		}

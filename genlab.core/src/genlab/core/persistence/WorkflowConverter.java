@@ -221,6 +221,7 @@ public class WorkflowConverter extends Decoder implements Converter {
 		Collection<IAlgoInstance> algos = (Collection<IAlgoInstance>) readen.get("subalgos");
 		for (IAlgoInstance a: algos) {
 			a._setWorkflowInstance(workflow);
+			a._initializeParamChangeName();
 			workflow.addAlgoInstance(a);
 		}
 		

@@ -13,5 +13,7 @@ public interface IExpressionsParser {
 	 * @return
 	 */
 	public String getAllPossibleSyntaxesShort();
+
+	Object evaluate(String expr, ListOfMessages messages);
 	
 }

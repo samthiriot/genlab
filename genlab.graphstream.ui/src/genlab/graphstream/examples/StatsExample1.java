@@ -1,5 +1,7 @@
 package genlab.graphstream.examples;
 
+import java.io.File;
+
 import genlab.core.commons.UniqueTimestamp;
 import genlab.core.model.instance.GenlabFactory;
 import genlab.core.model.instance.IAlgoInstance;
@@ -123,6 +125,12 @@ public final class StatsExample1 implements IGenlabExample {
 					GraphicalConsoleAlgo.INPUT
 					);
 		}
+		
+	}
+
+
+	@Override
+	public void createFiles(File resourcesDirectory) {
 		
 	}
 

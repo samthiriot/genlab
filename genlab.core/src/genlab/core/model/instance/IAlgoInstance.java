@@ -54,9 +54,12 @@ public interface IAlgoInstance extends IGenlabResource {
 	 */
 	public Collection<IInputOutputInstance> getOutputInstances();
 
+	public IInputOutputInstance getInputInstanceForInput(String inputId);
+
 	public IInputOutputInstance getInputInstanceForInput(IInputOutput<?> meta);
 	
 	public IInputOutputInstance getOutputInstanceForOutput(IInputOutput<?> meta);
+	public IInputOutputInstance getOutputInstanceForOutput(String inputId);
 	
 	/**
 	 * removes this algo instance (removes for related elements as well, 
@@ -102,6 +105,8 @@ public interface IAlgoInstance extends IGenlabResource {
 	public Parameter<?> getParameter(String id);
 	
 	public boolean isContainedInto(IAlgoContainerInstance otherInstance);
+
+	public void _initializeParamChangeName();
 	
 	
 	

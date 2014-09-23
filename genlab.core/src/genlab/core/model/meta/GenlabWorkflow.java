@@ -160,6 +160,16 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 		return null;
 	}
 
+	@Override
+	public IInputOutput<?> getInputInstanceForId(String inputId) {
+		return null;
+	}
+
+	@Override
+	public IInputOutput<?> getOutputInstanceForId(String outputId) {
+		return null;
+	}
+
 	
 	
 

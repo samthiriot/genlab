@@ -34,6 +34,12 @@ public interface IAlgo extends IGenlabResource {
 	
 	public Set<IInputOutput> getOuputs();
 	
+
+	public IInputOutput<?> getInputInstanceForId(String inputId);
+
+	public IInputOutput<?> getOutputInstanceForId(String outputId);
+	
+	
 	/**
 	 * Creates an instance into the workflow instance passed as parameter. 
 	 * Note that caller still have to add the instance to this workflow.
@@ -111,5 +117,5 @@ public interface IAlgo extends IGenlabResource {
 	 * @return
 	 */
 	public Integer getPriorityForIntuitiveCreation();
-	
+
 }

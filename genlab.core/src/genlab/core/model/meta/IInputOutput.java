@@ -21,6 +21,15 @@ public interface IInputOutput<JavaType> {
 	
 	public boolean acceptsMultipleInputs();
 	
+
+	/**
+	 * Returns true if the input is facultative (i.e. it does not have to be connected)
+	 * @return
+	 */
+	public boolean isFacultative();
+	
+	
+	
 	/**
 	 * Returns true if this is an output able to export successive updates of the same value.
 	 * @return

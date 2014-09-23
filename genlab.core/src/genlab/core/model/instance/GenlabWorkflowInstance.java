@@ -719,6 +719,21 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		return currentKey;
 	}
 
+	@Override
+	public IInputOutputInstance getInputInstanceForInput(String inputId) {
+		return null;
+	}
+
+	@Override
+	public IInputOutputInstance getOutputInstanceForOutput(String inputId) {
+		return null;
+	}
+
+	@Override
+	public void _initializeParamChangeName() {
+		// nothing
+	}
+
 
 	
 }

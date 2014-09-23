@@ -1,6 +1,9 @@
 package genlab.populations.implementations.basic;
 
+import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.WrongParametersException;
+import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
+import genlab.populations.bo.AccessAgentsCollectionAsTable;
 import genlab.populations.bo.Attribute;
 import genlab.populations.bo.IAgent;
 import genlab.populations.bo.IAgentType;
@@ -12,6 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class Population implements IPopulation {
@@ -21,7 +25,7 @@ public class Population implements IPopulation {
 	
 	protected final Object lockerPopulation = new Object();
 	protected final Map<Object,IAgent> id2agent = new HashMap<Object, IAgent>();
-	protected final Map<IAgentType,Collection<IAgent>> type2agents = new HashMap<IAgentType, Collection<IAgent>>();
+	protected final Map<IAgentType,List<IAgent>> type2agents = new HashMap<IAgentType, List<IAgent>>();
 	
 	
 	public Population(PopulationDescription popDesc) {
@@ -181,6 +185,46 @@ public class Population implements IPopulation {
 		}
 		
 		return clone;
+	}
+
+	/**
+	 * Provides an iterator over a Population which actually iterates accross 
+	 * the agent collections of each agent type.
+	 * 
+	 * @author Samuel Thiriot
+	 *
+	 */
+	private final class AgentTypesAsTablesIterator implements Iterator<IGenlabTable> {
+
+		private Iterator<IAgentType> itAgentTypes;
+		
+		public AgentTypesAsTablesIterator() {
+			itAgentTypes = type2agents.keySet().iterator();
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return itAgentTypes.hasNext();
+		}
+
+		@Override
+		public IGenlabTable next() {
+			
+			IAgentType type = itAgentTypes.next();
+			return new AccessAgentsCollectionAsTable(type, type2agents.get(type));
+		}
+
+		@Override
+		public void remove() {
+			// TODO provide remove features for tables
+			throw new NotImplementedException();
+		}
+		
+	}
+	
+	@Override
+	public final Iterator<IGenlabTable> iterator() {
+		return new AgentTypesAsTablesIterator();
 	}
 
 	

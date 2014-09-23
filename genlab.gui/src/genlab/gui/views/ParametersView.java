@@ -230,13 +230,14 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				toolkit.adapt(sp, true, true);
 				
 				sp.addSelectionListener(this);
+				
 			} else if (param instanceof TextParameter) {
 				
 				updateWidgetLayout = false;
 				
 				TextParameter p = (TextParameter)param;
 				
-				Text txt = toolkit.createText(form.getBody(), value.toString());
+				Text txt = toolkit.createText(form.getBody(), value.toString(), SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
 				
 				GridData gd = new GridData(SWT.FILL, SWT.TOP, true, true);
 				gd.heightHint = 40;

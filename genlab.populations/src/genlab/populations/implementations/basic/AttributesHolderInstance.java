@@ -5,6 +5,10 @@ import genlab.populations.bo.Attribute;
 import genlab.populations.bo.IAttributesHolder;
 import genlab.populations.bo.IAttributesHolderInstance;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class AttributesHolderInstance implements IAttributesHolderInstance {
 
 	protected final Object[] attributeValues;
@@ -64,6 +68,26 @@ public class AttributesHolderInstance implements IAttributesHolderInstance {
 			new ProgramException("no attribute named "+attributeName);
 		attributeValues[attributesHolder.getAllAttributes().indexOf(attribute)] = value;
 
+	}
+
+	@Override
+	public Object[] getValuesOfAttributesAsArray() {
+		return attributeValues;
+	}
+
+	@Override
+	public Map<String, Object> getValuesOfAttributesAsMap() {
+		Map<String,Object> res = new HashMap<String, Object>(attributeValues.length);
+		
+		List<Attribute> attributes = attributesHolder.getAllAttributes(); 
+		for (int i=0; i<attributeValues.length; i++) {
+
+			res.put(
+					attributes.get(i).getID(), 
+					attributeValues[i]
+					);
+		}
+		return res;
 	}
 
 }

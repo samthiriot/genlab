@@ -11,6 +11,13 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+/**
+ * Parses javascript expressions and returns the corresponding value.
+ * Relies on the javascript scripting engine installed on the JRE.
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class JavaScriptingExpressionParser implements IExpressionsParser {
 
 	public static final String DEFAULT_SCRIPTING_ENGINE = "js";
@@ -69,6 +76,15 @@ public class JavaScriptingExpressionParser implements IExpressionsParser {
 	@Override
 	public Object evaluate(
 			String expr, 
+			ListOfMessages messages
+			) {
+		
+		return evaluate(expr, messages, null);
+	}
+	
+	@Override
+	public Object evaluate(
+			String expr, 
 			ListOfMessages messages,
 			Map<String, Object> variables
 			) {
@@ -80,8 +96,10 @@ public class JavaScriptingExpressionParser implements IExpressionsParser {
 		
 		
 		// add all the variables
-		for (String key: variables.keySet()) {
-			engine.put(key, variables.get(key));
+		if (variables != null) {
+			for (String key: variables.keySet()) {
+				engine.put(key, variables.get(key));
+			}
 		}
 		
 		// add required functions

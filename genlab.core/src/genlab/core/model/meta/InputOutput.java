@@ -9,6 +9,7 @@ public class InputOutput<JavaType> implements IInputOutput<JavaType> {
 	private final String name;
 	private final String desc;
 	private final boolean acceptMultipleInputs;
+	private final boolean facultative;
 	private boolean isContinuousOutput = false;
 	protected JavaType defaultValue = null;
 	
@@ -19,6 +20,7 @@ public class InputOutput<JavaType> implements IInputOutput<JavaType> {
 		this.name = name;
 		this.desc = desc;
 		this.acceptMultipleInputs = false;
+		this.facultative = false;
 	}
 	
 	public InputOutput(IFlowType<JavaType> type, String id, String name, String desc, boolean acceptMultipleInputs) {
@@ -28,8 +30,19 @@ public class InputOutput<JavaType> implements IInputOutput<JavaType> {
 		this.name = name;
 		this.desc = desc;
 		this.acceptMultipleInputs = acceptMultipleInputs;
+		this.facultative = false;
 	}
 	
+
+	public InputOutput(IFlowType<JavaType> type, String id, String name, String desc, boolean acceptMultipleInputs, boolean facultative) {
+		super();
+		this.type = type;
+		this.id = id;
+		this.name = name;
+		this.desc = desc;
+		this.acceptMultipleInputs = acceptMultipleInputs;
+		this.facultative = facultative;
+	}
 
 	public InputOutput(IFlowType<JavaType> type, String id, String name, String desc, JavaType defaultValue) {
 		super();
@@ -39,6 +52,8 @@ public class InputOutput<JavaType> implements IInputOutput<JavaType> {
 		this.desc = desc;
 		this.defaultValue = defaultValue;
 		this.acceptMultipleInputs = false;
+		this.facultative = false;
+
 	}
 	
 	public InputOutput(IFlowType<JavaType> type, String id, String name, String desc, JavaType defaultValue, boolean acceptMultipleInputs) {
@@ -49,6 +64,19 @@ public class InputOutput<JavaType> implements IInputOutput<JavaType> {
 		this.desc = desc;
 		this.defaultValue = defaultValue;
 		this.acceptMultipleInputs = acceptMultipleInputs;
+		this.facultative = false;
+	}
+	
+
+	public InputOutput(IFlowType<JavaType> type, String id, String name, String desc, JavaType defaultValue, boolean acceptMultipleInputs, boolean facultative) {
+		super();
+		this.type = type;
+		this.id = id;
+		this.name = name;
+		this.desc = desc;
+		this.defaultValue = defaultValue;
+		this.acceptMultipleInputs = acceptMultipleInputs;
+		this.facultative = facultative;
 	}
 	
 	
@@ -102,6 +130,11 @@ public class InputOutput<JavaType> implements IInputOutput<JavaType> {
 	@Override
 	public final JavaType getDefaultValue() {
 		return defaultValue;
+	}
+
+	@Override
+	public boolean isFacultative() {
+		return facultative;
 	}
 
 

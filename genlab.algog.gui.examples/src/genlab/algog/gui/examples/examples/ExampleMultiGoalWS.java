@@ -1,5 +1,7 @@
 package genlab.algog.gui.examples.examples;
 
+import java.io.File;
+
 import genlab.algog.algos.meta.DoubleGeneAlgo;
 import genlab.algog.algos.meta.GenomeAlgo;
 import genlab.algog.algos.meta.GoalAlgo;
@@ -240,6 +242,11 @@ public class ExampleMultiGoalWS implements IGenlabExample {
 	@Override
 	public String getDescription() {
 		return "A genetic algorithm optimizing a Watts Strogatz network generator";
+	}
+
+	@Override
+	public void createFiles(File resourcesDirectory) {
+		
 	}
 
 }

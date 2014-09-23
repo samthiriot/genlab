@@ -240,6 +240,23 @@ public abstract class BasicAlgo implements IAlgo {
 		return -1 - inputs.size() - outputs.size();
 	}
 
+	@Override
+	public IInputOutput<?> getInputInstanceForId(String inputId) {
+		for (IInputOutput<?> io: inputs) {
+			if (io.getId().equals(inputId))
+				return io;
+		}
+		return null;
+	}
+
+	@Override
+	public IInputOutput<?> getOutputInstanceForId(String outputId) {
+		for (IInputOutput<?> io: outputs) {
+			if (io.getId().equals(outputId))
+				return io;
+		}
+		return null;
+	}
 
 
 

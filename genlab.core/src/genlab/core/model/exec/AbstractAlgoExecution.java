@@ -183,11 +183,18 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	protected Map<IConnection,Object> getInputValuesForInput(IInputOutputInstance input) {
 		
 		Collection<IConnectionExecution> cs = input2connection.get(input);
-		if (cs == null)
-			throw new ProgramException("unable to find the executable connection for this input: "+input);
-		
-		if (cs.isEmpty())
-			throw new ProgramException("unable to find the executable connection for this input: "+input);
+		if (cs == null) {
+			if (input.getMeta().isFacultative())
+				return Collections.EMPTY_MAP;
+			else
+				throw new ProgramException("unable to find the executable connection for this input: "+input);
+		}
+		if (cs.isEmpty()) {
+			if (input.getMeta().isFacultative())
+				return Collections.EMPTY_MAP;
+			else
+				throw new ProgramException("unable to find the executable connection for this input: "+input);
+		}
 		
 		Map<IConnection,Object> map = new HashMap<IConnection, Object>();
 		for (IConnectionExecution ce : cs) {

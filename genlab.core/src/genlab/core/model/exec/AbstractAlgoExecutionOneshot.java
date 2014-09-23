@@ -21,7 +21,11 @@ public abstract class AbstractAlgoExecutionOneshot
 		
 
 		// at the very beginning, all the inputs are waiting for data
-		inputsNotAvailable = new HashSet<IInputOutputInstance>(algoInst.getInputInstances());
+		inputsNotAvailable = new HashSet<IInputOutputInstance>(algoInst.getInputInstances().size());
+		for (IInputOutputInstance inputInstance : algoInst.getInputInstances()) {
+			if (!inputInstance.getConnections().isEmpty())
+				inputsNotAvailable.add(inputInstance);
+		}
 		
 		initComputationState();
 		

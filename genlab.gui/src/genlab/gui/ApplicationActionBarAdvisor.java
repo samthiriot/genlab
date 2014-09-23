@@ -1,6 +1,7 @@
 package genlab.gui;
 
 
+import genlab.gui.actions.ExportJavaAction;
 import genlab.gui.actions.RunAction;
 
 import org.eclipse.jface.action.GroupMarker;
@@ -38,6 +39,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     private IWorkbenchAction exportAction;
     private IWorkbenchAction saveAction;
     private IWorkbenchAction saveAllAction;
+    private ExportJavaAction exportJavaAction;
     private IWorkbenchAction switchWorkspace;
     private IWorkbenchAction exitAction;
     
@@ -81,6 +83,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         
         saveAction = ActionFactory.SAVE.create(window);
         register(saveAction);
+        
+        exportJavaAction = new ExportJavaAction();
+        register(exportAction);
         
         saveAllAction = ActionFactory.SAVE_ALL.create(window);
         register(saveAllAction);
@@ -137,6 +142,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         fileMenu.add(saveAction);
         fileMenu.add(saveAllAction);
         fileMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        fileMenu.add(exportJavaAction);
+        fileMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         fileMenu.add(switchWorkspace);
         windowMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         fileMenu.add(new Separator());
@@ -150,8 +157,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         editMenu.add(new Separator());
         editMenu.add(selectAllAction);
         editMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+        // required to avoid bug "can't find IDfind.ext"
+        editMenu.add(new GroupMarker(IWorkbenchActionConstants.FIND_EXT)); 
 
-        
         // Windows
         windowMenu.add(viewListItem);
         windowMenu.add(viewShortListItem);

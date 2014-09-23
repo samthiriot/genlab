@@ -28,6 +28,5 @@ public interface IInputOutputInstance extends IGenlabResource {
 	
 	public boolean acceptsConnectionFrom(IInputOutputInstance from);
 	public boolean acceptsConnectionTo(IInputOutputInstance to);
-	
-	
+
 }

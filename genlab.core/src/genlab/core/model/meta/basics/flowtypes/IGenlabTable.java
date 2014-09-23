@@ -1,5 +1,7 @@
 package genlab.core.model.meta.basics.flowtypes;
 
+import genlab.core.commons.NotImplementedException;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -9,8 +11,16 @@ public interface IGenlabTable {
 	
 
 	public int getColumnsCount();
-	public Collection<Integer> declareColumns(Collection<String> ids);
-	public int declareColumn(String id);
+	
+	/**
+	 * Declares a set of column.
+	 * Might raise a {@link NotImplementedException} if the table is readonly.
+	 * @param ids
+	 * @return
+	 */
+	public Collection<Integer> declareColumns(Collection<String> ids) throws NotImplementedException;
+	
+	public int declareColumn(String id) throws NotImplementedException;
 	public boolean containsColumn(String id);
 	
 	/**
@@ -26,12 +36,12 @@ public interface IGenlabTable {
 	 * adds a line and returns it id
 	 * @return
 	 */
-	public int addRow();
+	public int addRow() throws NotImplementedException;
 	public int getRowsCount();
-	public void setValue(int rowId, String columnId, Object value);
-	public void setValue(int rowId, int columnIdx, Object value);
-	public void setValues(int rowId, Object[] values);
-	public void fillColumn(int colIndex, Object value);
+	public void setValue(int rowId, String columnId, Object value) throws NotImplementedException;
+	public void setValue(int rowId, int columnIdx, Object value)  throws NotImplementedException;
+	public void setValues(int rowId, Object[] values) throws NotImplementedException;
+	public void fillColumn(int colIndex, Object value) throws NotImplementedException;
 
 	public Object getValue(int rowId, int columnIdx);
 	public Object getValue(int rowId, String columnId);

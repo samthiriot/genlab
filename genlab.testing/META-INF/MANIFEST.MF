@@ -20,7 +20,9 @@ Require-Bundle: genlab.core;bundle-version="0.0.1",
  genlab.bayesianInference.smile;bundle-version="1.0.0",
  genlab.populations;bundle-version="1.0.0",
  genlab.population.yang;bundle-version="1.0.0",
- genlab.arithmetics;bundle-version="1.0.0"
+ genlab.arithmetics;bundle-version="1.0.0",
+ genlab.algog.gui.jfreechart;bundle-version="1.0.0",
+ genlab.gui.jfreechart;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: ext/native/linux/x86/,

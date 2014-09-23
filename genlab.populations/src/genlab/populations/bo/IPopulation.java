@@ -1,10 +1,23 @@
 package genlab.populations.bo;
 
+import genlab.core.model.meta.basics.flowtypes.IGenlabTablesContainer;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-public interface IPopulation {
+/**
+ * A population is created for one population description, which describes what
+ * can be stored inside the population. The population description is supposed to be 
+ * unmutable during the use of one instance of IPopulation. 
+ * 
+ * A population can be seen as a IGenlabTablesContainer, each table being the table 
+ * of attributes of one agent type. 
+ * 
+ * @author Samuel Thiriot
+ *
+ */
+public interface IPopulation extends IGenlabTablesContainer {
 
 	/**
 	 * Returns the meta model for this population
