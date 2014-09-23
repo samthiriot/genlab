@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="edf.simdiasca.algos.WritePopulationForSimdiascaAlgo"
+            id="edf.simdiasca.algos.WritePopulationForSimdiascaAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <library
+            description="Wraps Simdisca with genlab"
+            id="edf.simdiasca.library"
+            licence_name="Private property of EDF "
+            name="SimDiasca wrapping">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </original_author_id>
+      </library>
+      <docalgo
+            algo_id="edf.simdiasca.algos.WritePopulationForSimdiascaAlgo"
+            description="Write a population as SimDiasca constructors"
+            library_id="edf.simdiasca.library"
+            memory_complexity="O(n)"
+            time_complexity="O(n)">
+      </docalgo>
+   </extension>
+
+</plugin>
