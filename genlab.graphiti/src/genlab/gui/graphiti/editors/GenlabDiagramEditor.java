@@ -123,10 +123,11 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 				(GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider()
 				);
 		
+		
 	}
 	
 	/**
-	 * Supposed to received a .glworkflow file.
+	 * Supposed to received a .glw workflow file.
 	 * Will first ask genlab to open this workflow.
 	 * Then will ask genlab to open its own diagram.
 	 * 

@@ -32,9 +32,11 @@ import org.junit.runners.Suite.SuiteClasses;
 			// Populations
 			genlab.population.yang.TestYangAlgosDirect.class,
 			genlab.populations.persistence.TestPopulationDescriptionPersistence.class,
+			genlab.populations.bo.TestInheritance.class,
+			
 			
 			// arithmetics
-			genlab.arithmetics.tests.bo.TestOperators.class
+			genlab.arithmetics.tests.TestJavaScripting.class
 			
 			
 			// genlab.igraph.AllTests.class,

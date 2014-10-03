@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWindowListener;
+import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
@@ -104,6 +105,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         // in this case, it will work in the post event
 		VisualResources.initVisualResource(Display.getCurrent().getActiveShell());
 
+		// opens the intro (sic)
+		PlatformUI.getPreferenceStore().setValue(IWorkbenchPreferenceConstants.SHOW_INTRO, true);
+		
+		openIntro();
 		
 		TestResponsivity.startTestResponsivity();
 		 

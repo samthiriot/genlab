@@ -2,6 +2,7 @@ package genlab.populations.bo;
 
 import genlab.core.commons.WrongParametersException;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -35,8 +36,24 @@ public class PopulationDescription {
 	}
 	
 	
-	public List<IAgentType> getAgentTypes() {
+	/**
+	 * Returns all the types: both abstract and final
+	 * @return
+	 */
+	public List<IAgentType> getAllAgentTypes() {
 		return agentTypes;
+	}
+	
+	/**
+	 * returns only the non abstract agent types
+	 */
+	public List<IAgentType> getNonAbstractAgentTypes() {
+		List<IAgentType> res = new LinkedList<IAgentType>();
+		for (IAgentType t: agentTypes) {
+			if (!hasInheritanceChildren(t))
+				res.add(t);
+		}
+		return res;
 	}
 	
 	public IAgentType getAgentTypeForName(String name) {
@@ -60,5 +77,31 @@ public class PopulationDescription {
 		return Collections.unmodifiableSet(linksTypes);
 	}
 	
+	public boolean hasInheritanceChildren(IAgentType type) {
+		for (IAgentType t: agentTypes) {
+			
+			if (t == type)
+				continue;
+			
+			if (t.getInheritedTypes().contains(type))
+				return true;
+		}
+		return false;
+	}
+	
+
+	public Collection<IAgentType> getInheritedTypes(IAgentType type) {
+		
+		Collection<IAgentType> res = new LinkedList<IAgentType>();
+		
+		for (IAgentType t: agentTypes) {
+			
+			if (t == type)
+				continue;
+			
+			res.addAll(t.getInheritedTypes());
+		}
+		return res;
+	}
 	
 }

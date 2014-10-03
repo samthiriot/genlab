@@ -52,8 +52,8 @@ public class SetAttributeRandomIntegerExec extends AbstractAlgoExecutionOneshot 
 		// ... attribute name
 		final String attributeName = (String)getInputValueForInput(SetAttributeRandomIntegerAlgo.INPUT_ATTRIBUTENAME);		
 		// ... min/max
-		final Integer minValue = (Integer)algoInst.getValueForParameter(SetAttributeRandomIntegerAlgo.PARAM_MIN);
-		final Integer maxValue = (Integer)algoInst.getValueForParameter(SetAttributeRandomIntegerAlgo.PARAM_MAX);
+		final Integer minValue = (Integer)getInputValueForInput(SetAttributeRandomIntegerAlgo.INPUT_MIN);
+		final Integer maxValue = (Integer)getInputValueForInput(SetAttributeRandomIntegerAlgo.INPUT_MAX);
 		
 		// post processing of inputs
 		if (minValue >= maxValue) {

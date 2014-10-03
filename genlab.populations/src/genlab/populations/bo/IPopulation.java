@@ -1,6 +1,7 @@
 package genlab.populations.bo;
 
 import genlab.core.model.meta.basics.flowtypes.IGenlabTablesContainer;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,7 +18,7 @@ import java.util.Map;
  * @author Samuel Thiriot
  *
  */
-public interface IPopulation extends IGenlabTablesContainer {
+public interface IPopulation extends IGenlabTablesContainer, IGenlabGraph {
 
 	/**
 	 * Returns the meta model for this population

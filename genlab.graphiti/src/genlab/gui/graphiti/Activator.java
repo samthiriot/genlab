@@ -1,5 +1,6 @@
 package genlab.gui.graphiti;
 
+import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
 import genlab.gui.graphiti.genlab2graphiti.EclipseResourceListener;
@@ -15,7 +16,7 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends AbstractUIPlugin implements IGenlabPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "genlab.graphiti"; //$NON-NLS-1$
@@ -105,5 +106,14 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
+	
+
+	public static final String getName() {
+		return "GenLab / GUI / Graphiti";
+	}
+
+	public static final String getDescription() {
+		return "Adds to the graphical user interface a Workflow editor based on the Graphiti engine";
 	}
 }

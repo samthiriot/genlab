@@ -1,12 +1,13 @@
 package genlab.neo4j;
 
+import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public class Activator extends Plugin implements BundleActivator {
+public class Activator extends Plugin implements BundleActivator, IGenlabPlugin {
 
 	private static BundleContext context;
 
@@ -42,6 +43,15 @@ public class Activator extends Plugin implements BundleActivator {
 	
 	public static Activator getDefault() {
 		return plugin;
+	}
+	
+
+	public static final String getName() {
+		return "GenLab / Neo4j";
+	}
+
+	public static final String getDescription() {
+		return "integrates exportation to the database network format";
 	}
 
 }

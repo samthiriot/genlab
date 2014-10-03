@@ -9,6 +9,7 @@ import java.util.Map;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.ui.internal.wizards.NewWizardRegistry;
 
 /**
  * Detects and publishes the list of available examples. Loads them from extensions.
@@ -36,7 +37,6 @@ public final class ExistingExamples {
 		if (previous != null) {
 			GLLogger.warnTech("an example was declared twice with id "+id, getClass());
 		}
-		
 	}
 	
 	/**

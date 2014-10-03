@@ -41,6 +41,7 @@ public class TestPopulationDescriptionPersistence {
 		type2.addAttribute(new Attribute("b12%[\"", AttributeType.STRING));
 		desc.addAgentType(type2);
 		
+		type2.addInheritedTypes(type1);
 		
 		// try save
 		PopulationDescriptionPersistence.singleton.writeToFile(desc, f);
@@ -49,16 +50,17 @@ public class TestPopulationDescriptionPersistence {
 		PopulationDescription loaded = PopulationDescriptionPersistence.singleton.readFromFile(f);
 			
 		// ensure they have the same content
-		assertEquals(desc.getAgentTypes().size(), loaded.getAgentTypes().size());
+		assertEquals(desc.getAllAgentTypes().size(), loaded.getAllAgentTypes().size());
 		
-		Iterator<IAgentType> it1 = desc.getAgentTypes().iterator();
-		Iterator<IAgentType> it2 = loaded.getAgentTypes().iterator();
+		Iterator<IAgentType> it1 = desc.getAllAgentTypes().iterator();
+		Iterator<IAgentType> it2 = loaded.getAllAgentTypes().iterator();
 		while (it1.hasNext()) {
 			IAgentType typeOrigin = it1.next();
 			IAgentType typeLoaded = it2.next();
 			assertEquals(typeOrigin.getName(), typeLoaded.getName());
-			assertEquals(typeOrigin.getAttributesCount(), typeLoaded.getAttributesCount());
-			
+			assertEquals(typeOrigin.getAllAttributesCount(), typeLoaded.getAllAttributesCount());
+			assertEquals(typeOrigin.getLocalAttributesCount(), typeLoaded.getLocalAttributesCount());
+			assertEquals(typeOrigin.getInheritedTypes().size(), typeLoaded.getInheritedTypes().size());
 		}
 		
 	}

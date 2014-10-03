@@ -19,6 +19,8 @@ public class GraphView2D extends AbstractGraphView {
 		
 		super.configureGraph(gsGraph);
 		
+		// specific case of 2D; if there are attributes x and y, but no xy, then define the xy
+		
 	}
 	
 	@Override

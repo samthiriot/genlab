@@ -27,6 +27,7 @@ public class WorkflowPerspective implements IPerspectiveFactory {
 
 		// add a messages (console) view in the very bottom
 
+		// TODO inspired by http://grepcode.com/file/repository.grepcode.com/java/eclipse.org/3.6.1/org.eclipse.jdt/ui/3.6.1/org/eclipse/jdt/internal/ui/JavaPerspectiveFactory.java
 		
 		// add a folder at bottom...
 		IFolderLayout folderBottom = layout.createFolder(FOLDER_BOTTOM_ID, IPageLayout.BOTTOM, 0.85f, editorArea);
@@ -50,6 +51,9 @@ public class WorkflowPerspective implements IPerspectiveFactory {
 		//folderRight.addView(TasksProgressView.VIEW_ID);
 		
 		//layout.getViewLayout("genlab.gui.views.projectexplorer").
+		
+		
+		//layout.addNewWizardShortcut(
 		
 	}
 	

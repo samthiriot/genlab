@@ -5,7 +5,8 @@ Bundle-SymbolicName: genlab.gui;singleton:=true
 Bundle-Version: 0.0.1
 Bundle-Activator: genlab.gui.Activator
 Bundle-Vendor: Samuel Thiriot
-Require-Bundle: org.eclipse.ui,
+Require-Bundle: genlab.core,
+ org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.filesystem,
  org.eclipse.core.resources;bundle-version="3.8.1",
@@ -18,8 +19,7 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.debug.core;bundle-version="3.8.0",
  org.eclipse.debug.ui;bundle-version="3.9.0",
  org.eclipse.ui.externaltools;bundle-version="3.2.200",
- org.eclipse.e4.ui.model.workbench;bundle-version="1.0.1",
- genlab.core
+ org.eclipse.e4.ui.model.workbench;bundle-version="1.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: genlab.gui,
@@ -27,6 +27,8 @@ Export-Package: genlab.gui,
  genlab.gui.algos,
  genlab.gui.editors,
  genlab.gui.genlab2eclipse,
+ genlab.gui.intro,
  genlab.gui.listeners,
  genlab.gui.views,
+ genlab.gui.wizards,
  genlab.quality

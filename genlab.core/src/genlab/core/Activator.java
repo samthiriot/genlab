@@ -11,7 +11,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 
-public class Activator extends Plugin implements BundleActivator {
+public class Activator extends Plugin implements BundleActivator, IGenlabPlugin {
 
 	public static BundleContext context;
 
@@ -79,6 +79,14 @@ public class Activator extends Plugin implements BundleActivator {
 		Activator.context = null;
 		plugin = null;
 
+	}
+
+	public static final String getName() {
+		return "GenLab core";
+	}
+
+	public static final String getDescription() {
+		return "provides the skeleton of GenLab: meta-model, execution framework, basic types and algorithms";
 	}
 
 }

@@ -1,11 +1,12 @@
 package genlab.arithmetics;
 
+import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public class Activator implements BundleActivator {
+public class Activator implements BundleActivator, IGenlabPlugin {
 
 	private static BundleContext context;
 
@@ -28,6 +29,15 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
+	}
+	
+
+	public static final String getName() {
+		return "GenLab / Arithmetics";
+	}
+
+	public static final String getDescription() {
+		return "facilitates the use of scripting (as Javascript) to conduct simple arithmetic computations";
 	}
 
 }

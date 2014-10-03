@@ -133,7 +133,7 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 					}
 				}
 				
-				return correctedFrom.acceptsConnectionTo(correctedTo) || correctedTo.acceptsConnectionFrom(correctedTo);
+				return correctedFrom.acceptsConnectionTo(correctedTo) || correctedTo.acceptsConnectionFrom(correctedFrom);
 				
 			} else {
 				

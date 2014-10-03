@@ -25,6 +25,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.osgi.util.NLS;
+import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
@@ -36,7 +37,7 @@ import org.eclipse.ui.internal.wizards.newresource.ResourceMessages;
 import org.eclipse.ui.statushandlers.StatusAdapter;
 import org.eclipse.ui.statushandlers.StatusManager;
 
-public class NewGenlabProjectWizard extends Wizard implements IWorkbenchWizard {
+public class NewGenlabProjectWizard extends Wizard implements IWorkbenchWizard, INewWizard {
 
 	protected WizardNewProjectCreationPage page1 = null;
 	
@@ -62,29 +63,14 @@ public class NewGenlabProjectWizard extends Wizard implements IWorkbenchWizard {
 		if (!page1.useDefaults()) {
 			location = page1.getLocationURI();
 		}
-		final URI location2 = location;
 		
-		//ResourcesPlugin.getWorkspace().getRoot().getProject(getProjectName());
-		
-		IProject result = null;
-		
-		SyncExecWithResult<IProject> runnable = new SyncExecWithResult<IProject>() {
-			
-			protected IProject retrieveResult() {
-				return GenLab2eclipseUtils.createEclipseAndGenlabProject(
-						page1.getProjectName(), 
-						getContainer(),
-						location2
-						);
+		return Utils.createEclipseAndGenlabProject(
+				page1.getProjectName(), 
+				getContainer(),
+				location,
+				getShell().getDisplay()
+				);
 				
-			}
-
-		};
-		
-		getShell().getDisplay().syncExec(runnable);
-		
-		return runnable.getResult();
-		
 
 	}
 

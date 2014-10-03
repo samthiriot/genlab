@@ -1,11 +1,12 @@
 package genlab.population.yang;
 
+import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public class Activator implements BundleActivator {
+public class Activator implements BundleActivator, IGenlabPlugin {
 
 	private static BundleContext context;
 
@@ -33,4 +34,12 @@ public class Activator implements BundleActivator {
 		Activator.context = null;
 	}
 
+
+	public static final String getName() {
+		return "GenLab / populations / YANG";
+	}
+
+	public static final String getDescription() {
+		return "Integrates the YANG approach for the generation of synthetic populations, notably the use of Bayesian networks";
+	}
 }

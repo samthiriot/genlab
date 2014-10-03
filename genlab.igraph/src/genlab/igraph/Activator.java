@@ -1,5 +1,6 @@
 package genlab.igraph;
 
+import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.igraph.algos.generation.lcffamous.FamousLCFGraphs;
 import genlab.igraph.natjna.IGraphLibrary;
@@ -12,7 +13,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 
 
-public class Activator extends Plugin implements BundleActivator {
+public class Activator extends Plugin implements BundleActivator, IGenlabPlugin {
 
 	private static BundleContext context;
 
@@ -83,6 +84,15 @@ public class Activator extends Plugin implements BundleActivator {
 	 */
 	public static Activator getDefault() {
 		return plugin;
+	}
+	
+
+	public static final String getName() {
+		return "GenLab / igraph";
+	}
+
+	public static final String getDescription() {
+		return "integrates the igraph reference library for the analysis of networks";
 	}
 
 }

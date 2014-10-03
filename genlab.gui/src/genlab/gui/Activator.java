@@ -1,5 +1,6 @@
 package genlab.gui;
 
+import genlab.core.IGenlabPlugin;
 import genlab.core.exec.TaskManagers;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.genlab2eclipse.EclipseResourceListener;
@@ -17,7 +18,7 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends AbstractUIPlugin implements IGenlabPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "genlab.gui"; //$NON-NLS-1$
@@ -108,6 +109,14 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
+	}
+
+	public static final String getName() {
+		return "GenLab / GUI";
+	}
+
+	public static final String getDescription() {
+		return "provides a Graphical User Interface based on the eclipse framework";
 	}
 
 }

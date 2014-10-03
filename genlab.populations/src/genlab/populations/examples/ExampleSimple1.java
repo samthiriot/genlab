@@ -7,6 +7,7 @@ import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.gui.examples.contributors.AbstractBasicExample;
+import genlab.gui.examples.contributors.GenlabExampleDifficulty;
 import genlab.core.model.meta.basics.algos.ConstantValueString;
 import genlab.core.model.meta.basics.algos.ConstantValueInteger;
 import genlab.populations.algos.AddEmptyAgentsAlgo;
@@ -196,6 +197,11 @@ public class ExampleSimple1 extends AbstractBasicExample {
 		
 		PopulationDescriptionPersistence.singleton.writeToFile(pd, fPopDesc);
 		
+	}
+
+	@Override
+	public GenlabExampleDifficulty getDifficulty() {
+		return GenlabExampleDifficulty.EASY;
 	}
 
 }

@@ -1,5 +1,6 @@
 package genlab.gui.examples;
 
+import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.examples.gui.creation.ExamplesCreation;
 
@@ -9,7 +10,7 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends AbstractUIPlugin implements IGenlabPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "genlab.gui.examples"; //$NON-NLS-1$
@@ -53,4 +54,13 @@ public class Activator extends AbstractUIPlugin {
 		return plugin;
 	}
 
+
+	public static final String getName() {
+		return "GenLab / examples";
+	}
+
+	public static final String getDescription() {
+		return "References the examples provided by plugins and publish them with graphical user interfaces";
+	}
+	
 }

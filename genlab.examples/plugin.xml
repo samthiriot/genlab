@@ -3,10 +3,26 @@
 <plugin>
    <extension-point id="genlab.examples.extensions.example" name="genlab.example" schema="schema/genlab.examples.example.exsd"/>
    <extension
-         point="org.eclipse.ui.startup">
-      <startup
-            class="genlab.gui.examples.StartupActivator">
-      </startup>
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="genlab.examples.wizards.category"
+            name="GenLab Example(s)"
+            parentCategory="org.eclipse.ui.Examples">
+      </category>
+      <wizard
+            canFinishEarly="false"
+            category="org.eclipse.ui.Examples/genlab.examples.wizards.category"
+            class="genlab.examples.gui.wizards.CreateExampleWizard"
+            finalPerspective="genlab.gui.perspectives.WorkflowPerspective"
+            id="genlab.examples.wizard.examples"
+            name="Create GenLab example(s)">
+      </wizard>
+   </extension>
+   <extension
+         point="genlab.gui.intro.contributors">
+      <contributor
+            class="genlab.gui.intro.IntroExamplesContributor">
+      </contributor>
    </extension>
 
 </plugin>

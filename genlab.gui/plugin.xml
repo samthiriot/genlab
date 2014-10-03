@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.3"?>
 <plugin>
+   <extension-point id="genlab.gui.intro.contributors" name="introcontributors" schema="schema/genlab.gui.intro.contributors.exsd"/>
 
    <extension
          id="application"
@@ -181,6 +182,13 @@
             id="genlab.gui.messagesview.clearview"
             name="clear">
       </command>
+      <command
+            categoryId="genlab.gui.category"
+            defaultHandler="genlab.gui.handlers.CreateWorflowHandler"
+            description="creates an empty workflow"
+            id="genlab.gui.commands.createWorkflow"
+            name="create workflow">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.bindings">
@@ -212,6 +220,33 @@
                label="clear"
                style="push"
                tooltip="clear messages">
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:common.new.menu?after=new">
+         <command
+               commandId="genlab.gui.commands.createWorkflow"
+               label="Workflow"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <with
+                     variable="selection">
+                  <iterate
+                        ifEmpty="false"
+                        operator="or">
+                     <or>
+                        <instanceof
+                              value="org.eclipse.core.resources.IFolder">
+                        </instanceof>
+                        <instanceof
+                              value="org.eclipse.core.resources.IProject">
+                        </instanceof>
+                     </or>
+                  </iterate>
+               </with>
+            </visibleWhen>
          </command>
       </menuContribution>
    </extension>
@@ -707,6 +742,30 @@
             isEqualityPattern="false"
             pattern="org.apache.ant.*">
       </activityPatternBinding>
+   </extension>
+   <extension
+         point="org.eclipse.core.contenttype.contentTypes">
+      <content-type
+            base-type="org.eclipse.core.runtime.xml"
+            default-charset="UTF-8"
+            describer="org.eclipse.core.runtime.content.XMLContentDescriber"
+            file-extensions="glw"
+            id="genlab.gui.contenttypes.workflow"
+            name="GenLab Workflow"
+            priority="high">
+      </content-type>
+   </extension>
+   <extension
+         point="org.eclipse.ui.intro">
+      <intro
+            class="genlab.gui.intro.MainContributedIntro"
+            contentDetector="genlab.gui.intro.MainContentDetector"
+            id="genlab.gui.intro.main">
+      </intro>
+      <introProductBinding
+            introId="genlab.gui.intro.main"
+            productId="genlab.gui.product">
+      </introProductBinding>
    </extension>
 
 </plugin>

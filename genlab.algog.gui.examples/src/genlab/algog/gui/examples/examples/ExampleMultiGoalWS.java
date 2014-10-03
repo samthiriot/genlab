@@ -16,6 +16,7 @@ import genlab.core.model.meta.basics.algos.ConstantValueDouble;
 import genlab.core.model.meta.basics.algos.GraphBasicPropertiesAlgo;
 import genlab.graphstream.algos.generators.WattsStrogatzAlgo;
 import genlab.graphstream.algos.measure.GraphStreamAverageClustering;
+import genlab.gui.examples.contributors.GenlabExampleDifficulty;
 import genlab.gui.examples.contributors.IGenlabExample;
 
 public class ExampleMultiGoalWS implements IGenlabExample {
@@ -247,6 +248,11 @@ public class ExampleMultiGoalWS implements IGenlabExample {
 	@Override
 	public void createFiles(File resourcesDirectory) {
 		
+	}
+
+	@Override
+	public GenlabExampleDifficulty getDifficulty() {
+		return GenlabExampleDifficulty.ADVANCED;
 	}
 
 }

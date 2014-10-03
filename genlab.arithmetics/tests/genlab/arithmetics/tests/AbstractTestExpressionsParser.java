@@ -278,9 +278,7 @@ public class AbstractTestExpressionsParser {
 	@Test
 	public void testSwitch() {
 		
-		testShouldWork("switch (12) { case 12: return true; break; } ", Math.PI);
-		testShouldWork("e", Math.E);
-		
+		testShouldWork("switch (12) { case 12: true; break; } ", Boolean.TRUE);
 		
 	}
 

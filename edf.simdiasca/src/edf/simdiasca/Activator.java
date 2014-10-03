@@ -1,11 +1,12 @@
 package edf.simdiasca;
 
+import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public class Activator implements BundleActivator {
+public class Activator implements BundleActivator, IGenlabPlugin {
 
 	private static BundleContext context;
 
@@ -29,6 +30,15 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
+	}
+	
+
+	public static final String getName() {
+		return "SimDiasca";
+	}
+
+	public static final String getDescription() {
+		return "provides utilities to export populations to the SimDiasca simulation engine and start simulations";
 	}
 
 }

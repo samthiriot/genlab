@@ -1,5 +1,6 @@
 package genlab.graphstream.ui;
 
+import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.graphstream.ui.views.AbstractGraphView;
 
@@ -9,7 +10,7 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends AbstractUIPlugin {
+public class Activator extends AbstractUIPlugin implements IGenlabPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "genlab.graphstream.ui"; //$NON-NLS-1$
@@ -59,6 +60,15 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public static Activator getDefault() {
 		return plugin;
+	}
+	
+
+	public static final String getName() {
+		return "GenLab / GUI / Graphstream";
+	}
+
+	public static final String getDescription() {
+		return "adds to GUI the network visualization facilities provided by the graphstream library";
 	}
 
 }

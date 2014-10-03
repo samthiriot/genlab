@@ -83,6 +83,7 @@ public class GraphstreamConvertors {
 
 		@Override
 		public void edgeAttributeAdded(String sourceId, long timeId, String edgeId, String attribute, Object value) {
+			
 			if (ignoredAttributesEdge.contains(attribute.toLowerCase()))
 				return;
 

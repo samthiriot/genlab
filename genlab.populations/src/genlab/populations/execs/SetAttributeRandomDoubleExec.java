@@ -52,8 +52,8 @@ public class SetAttributeRandomDoubleExec extends AbstractAlgoExecutionOneshot {
 		// ... attribute name
 		final String attributeName = (String)getInputValueForInput(SetAttributeRandomDoubleAlgo.INPUT_ATTRIBUTENAME);		
 		// ... min/max
-		final Double minValue = (Double)algoInst.getValueForParameter(SetAttributeRandomDoubleAlgo.PARAM_MIN);
-		final Double maxValue = (Double)algoInst.getValueForParameter(SetAttributeRandomDoubleAlgo.PARAM_MAX);
+		final Double minValue = (Double)getInputValueForInput(SetAttributeRandomDoubleAlgo.INPUT_MIN);
+		final Double maxValue = (Double)getInputValueForInput(SetAttributeRandomDoubleAlgo.INPUT_MAX);
 		
 		// post processing of inputs
 		if (minValue >= maxValue) {

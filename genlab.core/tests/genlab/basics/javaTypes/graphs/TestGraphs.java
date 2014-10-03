@@ -100,7 +100,11 @@ public class TestGraphs {
 	@Test
 	public void testDirectionalitySimpleDirected() {
 		
-		IGenlabGraph graph = GraphFactory.createGraph("testA", GraphDirectionality.DIRECTED, false);
+		IGenlabGraph graph = GraphFactory.createGraph(
+				"testA", 
+				GraphDirectionality.DIRECTED, 
+				false
+				);
 		
 		// basic properties
 		graph.addVertex("a");

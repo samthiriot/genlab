@@ -26,6 +26,11 @@ public abstract class Parameter<Type extends Object> {
 		return this.defaultValue;
 	}
 	
+
+	public void setDefaultValue(Type v) {
+		this.defaultValue = v;
+	}
+	
 	public boolean isRequired() {
 		return required;
 	}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            default="true"
+            extensions=".hugin, .net, .xml"
+            id="genlab.bayesianInference.ui.bnj.editors.BNJEditor"
+            launcher="genlab.bayesianinference.ui.bnj.editors.BNJEditorLauncher"
+            name="BNJ Editor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="genlab.bayesianInference.ui.bnj.category"
+            name="Bayesian Networks tools in Java">
+      </category>
+   </extension>
+
+</plugin>

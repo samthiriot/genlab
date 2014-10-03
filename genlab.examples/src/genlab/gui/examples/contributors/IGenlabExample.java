@@ -26,5 +26,6 @@ public interface IGenlabExample {
 	 */
 	public void createFiles(File resourcesDirectory);
 	
+	public GenlabExampleDifficulty getDifficulty();
 	
 }

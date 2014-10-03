@@ -2,7 +2,6 @@ package genlab.gui;
 
 
 import genlab.gui.actions.ExportJavaAction;
-import genlab.gui.actions.RunAction;
 
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IContributionItem;
@@ -11,7 +10,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.action.ToolBarContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.ui.IWorkbenchActionConstants;
@@ -27,6 +25,8 @@ import org.eclipse.ui.ide.IDEActionFactory;
  * An action bar advisor is responsible for creating, adding, and disposing of the
  * actions added to a workbench window. Each window will be populated with
  * new actions.
+ * 
+ * TODO see http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Freference%2Fapi%2Forg%2Feclipse%2Fui%2Factions%2Fclass-use%2FActionFactory.IWorkbenchAction.html
  */
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
@@ -35,6 +35,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     // when fillActionBars is called with FILL_PROXY.
 	
 	// file menu 
+	private IWorkbenchAction newWizardDropDownAction;
+	private IContributionItem newWizardMenu;
 	private IWorkbenchAction openNewWizard;
     private IWorkbenchAction exportAction;
     private IWorkbenchAction saveAction;
@@ -52,6 +54,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     
     // window menu
     private IWorkbenchAction openPreferences;
+    
+    // help menu
+    private IWorkbenchAction introAction;
     private IWorkbenchAction aboutAction;
     
     private IContributionItem viewShortListItem;
@@ -70,8 +75,14 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         // Registering also provides automatic disposal of the actions when
         // the window is closed.
 
-    	// file menu
+    	//PlatformUI.getWorkbench().getExportWizardRegistry()
 
+    	// file menu
+    	newWizardDropDownAction = ActionFactory.NEW_WIZARD_DROP_DOWN.create(window);
+    	register(newWizardDropDownAction);
+
+    	newWizardMenu = ContributionItemFactory.NEW_WIZARD_SHORTLIST.create(window);
+    	
         openNewWizard = ActionFactory.NEW.create(window);
         register(openNewWizard);
         
@@ -87,6 +98,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         exportJavaAction = new ExportJavaAction();
         register(exportAction);
         
+        // TODO print ? 
         saveAllAction = ActionFactory.SAVE_ALL.create(window);
         register(saveAllAction);
         
@@ -94,6 +106,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         register(exitAction);
         
         // edit menu
+        // TODO undo ?
         copyAction = ActionFactory.COPY.create(window);
         register(copyAction);
         pasteAction = ActionFactory.PASTE.create(window);
@@ -107,20 +120,23 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         
         viewShortListItem =  ContributionItemFactory.VIEWS_SHORTLIST.create(window);
         viewListItem =  ContributionItemFactory.VIEWS_SHOW_IN.create(window);
-       
         openPreferences = ActionFactory.PREFERENCES.create(window);
         register(openPreferences);
        
         // help menu
 
+        introAction = ActionFactory.INTRO.create(window);
+        register(introAction);
         aboutAction = ActionFactory.ABOUT.create(window);
         register(aboutAction);
       
         //ActionFactory.NEW_EDITOR
+
         
     }
     
     protected void fillMenuBar(IMenuManager menuBar) {
+    	
         MenuManager fileMenu = new MenuManager("&File", IWorkbenchActionConstants.M_FILE);
         MenuManager editMenu = new MenuManager("&Edit", IWorkbenchActionConstants.M_EDIT);
         MenuManager helpMenu = new MenuManager("&Help", IWorkbenchActionConstants.M_HELP);
@@ -134,6 +150,11 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         menuBar.add(windowMenu);
         menuBar.add(helpMenu);
         
+        // create the New submenu, using the same id for it as the New action
+        MenuManager fileNewMenu = new MenuManager("New", "new");
+        fileNewMenu.add(this.newWizardMenu);
+        fileMenu.add(fileNewMenu);
+
         // File
         fileMenu.add(openNewWizard);
         fileMenu.add(new Separator());
@@ -167,14 +188,21 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         windowMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         
         // Help
+        helpMenu.add(introAction);
+        helpMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         helpMenu.add(aboutAction);
         helpMenu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
         
     }
     
     protected void fillCoolBar(ICoolBarManager coolBar) {
-        IToolBarManager toolbar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
-        coolBar.add(new ToolBarContributionItem(toolbar, "main"));   
+
+    	IToolBarManager toolbar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
+        toolbar.add(newWizardDropDownAction);
+
+        coolBar.add(toolbar);   
+        
+        //coolBar.add(new ToolBarContributionItem(toolbar, "main"));   
         
     }
 }

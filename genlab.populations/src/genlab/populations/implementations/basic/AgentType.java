@@ -3,7 +3,9 @@ package genlab.populations.implementations.basic;
 import genlab.populations.bo.AttributesHolder;
 import genlab.populations.bo.IAgentType;
 
-public class AgentType extends AttributesHolder implements IAgentType {
+public class AgentType 
+					extends AttributesHolder<IAgentType> 
+					implements IAgentType {
 
 	protected final String name;
 	
@@ -20,5 +22,6 @@ public class AgentType extends AttributesHolder implements IAgentType {
 	public final String getName() {
 		return name;
 	}
+
 	
 }

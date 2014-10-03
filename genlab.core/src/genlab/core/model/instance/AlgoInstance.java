@@ -56,27 +56,6 @@ public class AlgoInstance implements IAlgoInstance {
 	protected transient List<Parameter<?>> localParameters;
 	protected transient Map<String, Parameter<?>> localParameterId2param;
 	
-	@Override
-	public void _initializeParamChangeName() {
-		
-		this.localParameters = new LinkedList<Parameter<?>>();
-		this.localParameterId2param = new HashMap<String, Parameter<?>>();
-
-		this.paramChangeName = new InstanceNameParameter(
-				this, 
-				this.getId()+"._name", 
-				"name", 
-				"the name of this algorithm", 
-				this.name
-				);
-		
-		declareParameter(paramChangeName, this.name);
-		/*
-		for (Parameter<?> p : algo.getParameters()) {
-			declareParameter(p);
-		}
-		*/
-	}
 	
 	public AlgoInstance(IAlgo algo, IGenlabWorkflowInstance workflow, String id) {
 
@@ -126,6 +105,25 @@ public class AlgoInstance implements IAlgoInstance {
 				);
 	}
 
+
+	@Override
+	public void _initializeParamChangeName() {
+		
+		this.localParameters = new LinkedList<Parameter<?>>();
+		this.localParameterId2param = new HashMap<String, Parameter<?>>();
+
+		this.paramChangeName = new InstanceNameParameter(
+				this, 
+				this.getId()+"._name", 
+				"name", 
+				"the name of this algorithm", 
+				this.name
+				);
+		
+		declareParameter(paramChangeName, this.name);
+		
+	}
+	
 	protected void declareParameter(Parameter<?> p) {
 		if (!localParameters.contains(p))
 			localParameters.add(p);
@@ -215,6 +213,9 @@ public class AlgoInstance implements IAlgoInstance {
 	
 	public Object getValueForParameter(String name) {
 		
+		if (paramChangeName.getId().equals(name))
+			return this.name;
+		
 		Object res = parametersKey2value.get(name);
 		
 		if (res == null) {
@@ -230,7 +231,10 @@ public class AlgoInstance implements IAlgoInstance {
 	}
 	
 	public Object getValueForParameter(Parameter<?> param) {
-		return getValueForParameter(param.getId());
+		if (param == paramChangeName)
+			return this.name;
+		else
+			return getValueForParameter(param.getId());
 	}
 	
 	public Map<String,Object> getParametersAndValues() {
@@ -248,7 +252,7 @@ public class AlgoInstance implements IAlgoInstance {
 
 	public void setValueForParameter(String name, Object value) {
 		
-		if (!hasParameter(name))
+		if (!hasParameter(name) && paramChangeName.getName().equals(name))
 			throw new WrongParametersException("wrong parameter "+name+": no parameter found with this name");
 	
 		if (name.equals(paramChangeName.getId())) {
@@ -347,6 +351,7 @@ public class AlgoInstance implements IAlgoInstance {
 			return;
 		
 		this.name = novelName;
+		setValueForParameter(paramChangeName, name);
 		
 		if (workflow != null)
 			workflow._notifyAlgoChanged(this);

@@ -9,6 +9,7 @@ import genlab.populations.bo.IAgentType;
 import genlab.populations.bo.PopulationDescription;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -23,6 +24,8 @@ public class PopulationDescriptionConverter extends Decoder implements Converter
 
 	public static final String XML_TAG_TYPES = "types";
 	public static final String XML_TAG_TYPE = "type";
+	
+	public static final Object KEY_INTERNAL_AVAILABLE_AGENTYPES = new Object();
 	
 	
 	public PopulationDescriptionConverter() {
@@ -42,7 +45,7 @@ public class PopulationDescriptionConverter extends Decoder implements Converter
 		
 		// add the types
 		writer.startNode(XML_TAG_TYPES);
-		for (IAgentType type: popDesc.getAgentTypes()) {
+		for (IAgentType type: popDesc.getAllAgentTypes()) {
 			writer.startNode(XML_TAG_TYPE);
 			ctxt.convertAnother(type);
 			writer.endNode();
@@ -73,6 +76,7 @@ public class PopulationDescriptionConverter extends Decoder implements Converter
 							GLLogger.debugTech("decoding types for this population description", getClass());
 							
 							final Collection<IAgentType> types = new LinkedList<IAgentType>();
+							final Map<String,IAgentType> id2type = new HashMap<String, IAgentType>();
 							
 							while (reader.hasMoreChildren()) {
 								reader.moveDown();
@@ -87,6 +91,8 @@ public class PopulationDescriptionConverter extends Decoder implements Converter
 								types.add(
 										type
 										);	
+								id2type.put(type.getName(), type);
+								ctxt.put(KEY_INTERNAL_AVAILABLE_AGENTYPES, id2type);
 								
 								reader.moveUp();
 
@@ -103,7 +109,7 @@ public class PopulationDescriptionConverter extends Decoder implements Converter
 		PopulationDescription popDesc = new PopulationDescription();
 		for (IAgentType type: (Collection<IAgentType>)readen.get(XML_TAG_TYPES)) {
 			popDesc.addAgentType(type);
-				
+			
 		}
 		// TODO add links and aggregation
 		

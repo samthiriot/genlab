@@ -14,6 +14,7 @@ import genlab.core.persistence.StoreExpectedParser;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.populations.bo.Attribute;
 import genlab.populations.bo.IAgentType;
+import genlab.populations.bo.LinkType;
 import genlab.populations.implementations.basic.AgentType;
 
 import com.thoughtworks.xstream.converters.Converter;
@@ -33,6 +34,8 @@ public class AgentTypeConverter extends Decoder implements Converter {
 	public static final String XML_ATTRIBUTE_NAME = "name";
 	public static final String XML_TAG_ATTRIBUTES = "attributes";
 	public static final String XML_TAG_ATTRIBUTE = "attribute";
+	public static final String XML_TAG_PARENTS = "inheritances";
+	public static final String XML_TAG_PARENT = "inherit";
 	
 	public AgentTypeConverter() {
 	}
@@ -50,16 +53,23 @@ public class AgentTypeConverter extends Decoder implements Converter {
 		
 		writer.addAttribute(XML_ATTRIBUTE_NAME, type.getName());
 		
+		// add atttributes
 		writer.startNode(XML_TAG_ATTRIBUTES);
-		
-		for (Attribute a: type.getAllAttributes()) {
+		for (Attribute a: type.getLocalAttributes()) {
 			writer.startNode(XML_TAG_ATTRIBUTE);
 			ctxt.convertAnother(a);
 			writer.endNode();
 		}
-		
 		writer.endNode();
 		
+		// add parents for inheritance
+		writer.startNode(XML_TAG_PARENTS);
+		for (IAgentType parentType: type.getInheritedTypes()) {
+			writer.startNode(XML_TAG_PARENT);
+			writer.setValue(parentType.getName());
+			writer.endNode();
+		}
+		writer.endNode();
 	}
 
 	@Override
@@ -105,6 +115,42 @@ public class AgentTypeConverter extends Decoder implements Converter {
 							return attributes;
 						}
 					});
+				
+					add(new ProcessOnlySubnode(XML_TAG_PARENTS) {
+						
+						@Override
+						public Object processSubnode(String name, HierarchicalStreamReader reader,
+								UnmarshallingContext ctxt) {
+	
+							GLLogger.debugTech("decoding inheritance for this type", getClass());
+							
+							final Collection<AgentType> parentTypes = new LinkedList<AgentType>();
+							
+							// retrieve the agent types already defined
+							Map<String,AgentType> id2agenttype = (Map<String,AgentType>)ctxt.get(PopulationDescriptionConverter.KEY_INTERNAL_AVAILABLE_AGENTYPES);
+							
+							while (reader.hasMoreChildren()) {
+								reader.moveDown();
+	
+								if (reader.getNodeName() != XML_TAG_PARENT) {
+									GLLogger.warnTech("ignored tag in types: "+reader.getNodeName(), getClass());
+									continue;
+								}
+								
+								final String idParentType = reader.getValue();
+								
+								final AgentType typeParent = id2agenttype.get(idParentType);
+								
+								parentTypes.add(typeParent);
+								
+								reader.moveUp();
+	
+							}
+							
+							
+							return parentTypes;
+						}
+					});
 				}}
 				);
 		
@@ -114,8 +160,17 @@ public class AgentTypeConverter extends Decoder implements Converter {
 				null
 				);
 		
-		for (Attribute a: (List<Attribute>)readen.get(XML_TAG_ATTRIBUTES)) {
-			type.addAttribute(a);
+		if (readen.get(XML_TAG_ATTRIBUTES) != null) {
+			for (Attribute a: (List<Attribute>)readen.get(XML_TAG_ATTRIBUTES)) {
+				type.addAttribute(a);
+			}
+		}
+		
+		// enable inheritance
+		if (readen.get(XML_TAG_PARENTS) != null) {
+			for (AgentType idParentType: (Collection<AgentType>)readen.get(XML_TAG_PARENTS)) {
+				type.addInheritedTypes(idParentType);
+			}
 		}
 		
 		return type;

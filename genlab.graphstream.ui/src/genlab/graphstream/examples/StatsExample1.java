@@ -14,6 +14,7 @@ import genlab.graphstream.algos.generators.WattsStrogatzAlgo;
 import genlab.graphstream.algos.measure.GraphStreamAverageClustering;
 import genlab.graphstream.ui.algos.GraphDisplayAlgo;
 import genlab.gui.algos.GraphicalConsoleAlgo;
+import genlab.gui.examples.contributors.GenlabExampleDifficulty;
 import genlab.gui.examples.contributors.IGenlabExample;
 
 public final class StatsExample1 implements IGenlabExample {
@@ -136,6 +137,10 @@ public final class StatsExample1 implements IGenlabExample {
 
 
 
+	@Override
+	public GenlabExampleDifficulty getDifficulty() {
+		return GenlabExampleDifficulty.BEGINNER;
+	}
 
 
 }

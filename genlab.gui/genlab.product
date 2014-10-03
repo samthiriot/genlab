@@ -43,6 +43,7 @@
       <plugin id="genlab.arithmetics"/>
       <plugin id="genlab.bayesianInference"/>
       <plugin id="genlab.bayesianInference.smile"/>
+      <plugin id="genlab.bayesianInference.ui.bnj"/>
       <plugin id="genlab.core"/>
       <plugin id="genlab.core.random"/>
       <plugin id="genlab.cytoscape"/>
@@ -63,6 +64,7 @@
       <plugin id="genlab.population.yang"/>
       <plugin id="genlab.populations"/>
       <plugin id="genlab.populations.random"/>
+      <plugin id="genlab.populations.ui"/>
       <plugin id="genlab.random.colt"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
@@ -191,7 +193,6 @@
       <plugin id="org.eclipse.equinox.weaving.hook" fragment="true"/>
       <plugin id="org.eclipse.gef"/>
       <plugin id="org.eclipse.graphiti"/>
-      <plugin id="org.eclipse.graphiti.examples.common"/>
       <plugin id="org.eclipse.graphiti.export.batik"/>
       <plugin id="org.eclipse.graphiti.mm"/>
       <plugin id="org.eclipse.graphiti.pattern"/>
@@ -251,6 +252,7 @@
       <plugin id="org.eclipse.ui.forms"/>
       <plugin id="org.eclipse.ui.ide"/>
       <plugin id="org.eclipse.ui.intro"/>
+      <plugin id="org.eclipse.ui.intro.universal"/>
       <plugin id="org.eclipse.ui.navigator"/>
       <plugin id="org.eclipse.ui.navigator.resources"/>
       <plugin id="org.eclipse.ui.views"/>

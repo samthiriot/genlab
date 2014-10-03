@@ -1,30 +1,47 @@
 package genlab.gui;
 
+import java.io.ByteArrayInputStream;
+import java.net.URI;
+
+import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.editors.IWorkflowEditor;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 
+import org.eclipse.core.internal.registry.ExtensionRegistry;
 import org.eclipse.core.internal.resources.File;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.ContributorFactoryOSGi;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IContributor;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.viewers.ContentViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.wizard.IWizard;
+import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
+import org.eclipse.ui.internal.registry.WizardsRegistryReader;
+import org.eclipse.ui.internal.wizards.NewWizardRegistry;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.navigator.CommonNavigator;
+import org.eclipse.ui.wizards.IWizardDescriptor;
 
 public class Utils {
 
@@ -263,6 +280,100 @@ public class Utils {
 		return workflow;
 	}
 	
+	/**
+	 * Opens a wizard of this id.
+	 * From http://blog.resheim.net/2010/07/invoking-eclipse-wizard.html
+	 * 
+	 * @param id
+	 */
+	public static void openWizard(String id) {
+		
+		 
+		// First see if this is a "new wizard".
+		IWizardDescriptor descriptor = PlatformUI.getWorkbench().getNewWizardRegistry().findWizard(id);
+		 
+		// If not check if it is an "import wizard".
+		if  (descriptor == null) {
+		  descriptor = PlatformUI.getWorkbench().getImportWizardRegistry().findWizard(id);
+		}
+		
+		// Or maybe an export wizard
+		if  (descriptor == null) {
+		  descriptor = PlatformUI.getWorkbench().getExportWizardRegistry().findWizard(id);
+		}
+		
+		if (descriptor == null)
+			return; // TODO error ?
+		
+		try  {
+			
+			// Then if we have a wizard, open it.
+		    IWizard wizard = descriptor.createWizard();
+		    WizardDialog wd = new  WizardDialog(Display.getDefault().getActiveShell(), wizard);
+		    wd.setTitle(wizard.getWindowTitle());
+		    
+		    if (wizard instanceof IWorkbenchWizard) {
+		    	
+		    	IWorkbenchWizard wiz = (IWorkbenchWizard)wizard;
+
+		    	wiz.init(
+		    			PlatformUI.getWorkbench(), 
+		    			(IStructuredSelection) PlatformUI.getWorkbench().getActiveWorkbenchWindow().getSelectionService().getSelection()
+		    			);
+		    }
+		    
+		    wd.open();
+		  
+		} catch  (CoreException e) {
+		  e.printStackTrace();
+		}
+	}
+	
+	public static IProject createEclipseAndGenlabProject(
+			final String projectName, 
+			final IRunnableContext ctxt,
+			final URI location2,
+			final Display display
+			) {
+				
+		SyncExecWithResult<IProject> runnable = new SyncExecWithResult<IProject>() {
+			
+			protected IProject retrieveResult() {
+				return GenLab2eclipseUtils.createEclipseAndGenlabProject(
+						projectName, 
+						ctxt,
+						location2
+						);
+				
+			}
+
+		};
+		
+		display.syncExec(runnable);
+		
+		return runnable.getResult();
+		
+	}
+
+	/*
+	public static void registerExtension(String contribution) {
+		
+		
+		ByteArrayInputStream is = new ByteArrayInputStream(contribution.toString().getBytes());
+		
+		IExtensionRegistry reg = Platform.getExtensionRegistry();
+		Object ut = ((ExtensionRegistry)reg).getTemporaryUserToken();
+		
+		IContributor cont = ContributorFactoryOSGi.createContributor(
+				Activator.getDefault().getBundle()
+				);
+		
+		if (!reg.addContribution(is, cont, false, null, null, ut)) {
+			throw new ProgramException("unable to register extension");
+		}
+
+	}
+	 */
 	private Utils() {
 	}
 	

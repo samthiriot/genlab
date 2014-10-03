@@ -239,8 +239,8 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				
 				Text txt = toolkit.createText(form.getBody(), value.toString(), SWT.MULTI | SWT.V_SCROLL | SWT.BORDER);
 				
-				GridData gd = new GridData(SWT.FILL, SWT.TOP, true, true);
-				gd.heightHint = 40;
+				GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true);
+				gd.minimumHeight = 40;
 				txt.setLayoutData(gd);
 				
 				//txt.setText(value.toString());
@@ -255,7 +255,7 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				
 				//Text txt = new Text(form.getBody(), SWT.BORDER);
 				
-				//txt.setText(value.toString());
+				txt.setText(value.toString());
 								
 				createdWidget = txt;
 				txt.addModifyListener(this);

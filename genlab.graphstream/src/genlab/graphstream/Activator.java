@@ -1,5 +1,6 @@
 package genlab.graphstream;
 
+import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import org.eclipse.core.runtime.Plugin;
@@ -8,7 +9,7 @@ import org.osgi.framework.BundleContext;
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends Plugin {
+public class Activator extends Plugin implements IGenlabPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "genLab.graphstream"; //$NON-NLS-1$
@@ -49,6 +50,15 @@ public class Activator extends Plugin {
 	 */
 	public static Activator getDefault() {
 		return plugin;
+	}
+	
+
+	public static final String getName() {
+		return "GenLab / graphstream";
+	}
+
+	public static final String getDescription() {
+		return "Integrates the network implementation, analysis, reading and writing algorithms provided by the powerful graphstream library";
 	}
 
 }

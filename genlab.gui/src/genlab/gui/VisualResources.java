@@ -1,8 +1,8 @@
 package genlab.gui;
 
 import genlab.core.commons.FileUtils;
+import genlab.core.commons.ProgramException;
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.quality.TestResponsivity;
 
 import java.awt.Desktop;
 import java.awt.Graphics2D;
@@ -14,9 +14,12 @@ import java.awt.image.DirectColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +29,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -47,6 +51,8 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.osgi.framework.Bundle;
 
 /**
  * TODO see ISharedImages.
@@ -87,6 +93,7 @@ public class VisualResources {
 
 	public static final Color COLOR_GRAY = Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY);
 	public static final Color COLOR_RED = Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
+	public static final Color COLOR_BG_WIDGET = Display.getDefault().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
 
 	public static final Image ICON_DEBUG = Activator.getImageDescriptor("/icons/message_information.gif").createImage();
 	public static final Image ICON_INFO = Activator.getImageDescriptor("/icons/message_information.gif").createImage();
@@ -569,6 +576,39 @@ public class VisualResources {
 			}
 	    }
 	
+	}
+	
+	public static File loadFileFromPlugin(AbstractUIPlugin plugin, String path) {
+		
+		Bundle bundle = plugin.getBundle();
+		URL fileURL = bundle.getEntry(path);
+		File file = null;
+		try {
+			file = new File(FileLocator.resolve(fileURL).toURI());
+		} catch (URISyntaxException e) {
+			throw new ProgramException("unable to load file "+path+": "+e.getLocalizedMessage(), e);
+		} catch (IOException e) {
+			throw new ProgramException("unable to load file "+path+": "+e.getLocalizedMessage(), e);
+		}
+		
+		return file;
+		
+	}
+
+
+	public static Image loadImageFromPlugin(AbstractUIPlugin plugin, String path) {
+		
+		File file = loadFileFromPlugin(plugin, path);
+		
+		FileInputStream fis;
+		try {
+			fis = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new ProgramException("unable to load image "+path+": "+e.getLocalizedMessage(), e);
+		}
+		Image image = new Image(Display.getDefault(), fis);
+		
+		return image;
 	}
 
 	

@@ -9,8 +9,10 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui.ide;bundle-version="3.9.1",
  org.eclipse.core.resources;bundle-version="3.8.101",
  genlab.core;bundle-version="0.0.1",
- genlab.gui;bundle-version="0.0.1"
+ genlab.gui;bundle-version="0.0.1",
+ org.eclipse.ui.forms
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: genlab.examples.gui.creation,
+ genlab.examples.gui.wizards,
  genlab.gui.examples.contributors

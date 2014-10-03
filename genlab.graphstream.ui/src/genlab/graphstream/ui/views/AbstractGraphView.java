@@ -8,6 +8,7 @@ import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
+import genlab.graphstream.utils.GraphstreamConvertors;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 import genlab.gui.editors.IGenlabGraphicalView;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
@@ -238,7 +239,10 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 				gsGraph = ((AbstractGraphstreamBasedGraph)glGraph)._getInternalGraphstreamGraph();
 				
 			} else {
-				throw new NotImplementedException("not yet able to transcode networks... sorry");
+				
+				messages.traceTech("had to convert the graph to a graphstream graph to display it", getClass());
+				gsGraph = GraphstreamConvertors.getGraphstreamGraphFromGenLabGraph(glGraph, messages);
+
 			}
 			
 			// if provided, add the stylesheet for this graph
@@ -414,6 +418,12 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 			gsViewer.enableAutoLayout();
 		
 		super.partVisible(partRef);
+		
+	}
+
+	@Override
+	protected void dataReceived() {
+		// TODO Auto-generated method stub
 		
 	}
 	

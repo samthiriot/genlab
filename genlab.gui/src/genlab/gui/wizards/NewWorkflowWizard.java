@@ -10,6 +10,7 @@ import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
 
@@ -19,7 +20,7 @@ import org.eclipse.ui.IWorkbenchWizard;
  * @author Samuel Thiriot
  *
  */
-public class NewWorkflowWizard extends Wizard implements IWorkbenchWizard {
+public class NewWorkflowWizard extends Wizard implements IWorkbenchWizard, INewWizard {
 
 	protected NewWorkflowWizardFilePage page2 = null;
 	protected NewWorkflowWizardDescPage page1 = null;

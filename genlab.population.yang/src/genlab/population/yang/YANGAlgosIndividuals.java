@@ -53,7 +53,7 @@ public class YANGAlgosIndividuals {
 		// reset evidence
 		infBN.resetEvidence();
 		
-		Map<Attribute,Object> attribute2value = new HashMap<Attribute, Object>(type.getAttributesCount());
+		Map<Attribute,Object> attribute2value = new HashMap<Attribute, Object>(type.getAllAttributesCount());
 		
 		for (IBayesianNode node: infBN.getBayesianNetwork().topologicalOrder()) {
 			
@@ -168,9 +168,9 @@ public class YANGAlgosIndividuals {
 			IBayesianNetwork bn
 			) {
 		
-		AttributeToNodeMapping mapping = new AttributeToNodeMapping(type.getAttributesCount());
+		AttributeToNodeMapping mapping = new AttributeToNodeMapping(type.getAllAttributesCount());
 		
-		Set<Attribute> ignoredAttributes = new HashSet<Attribute>(type.getAttributesCount());
+		Set<Attribute> ignoredAttributes = new HashSet<Attribute>(type.getAllAttributesCount());
 		
 		for (Attribute currentAttribute : type.getAllAttributes()) {
 			

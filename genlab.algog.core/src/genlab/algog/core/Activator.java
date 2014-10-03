@@ -1,5 +1,6 @@
 package genlab.algog.core;
 
+import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import org.eclipse.core.runtime.Plugin;
@@ -8,7 +9,7 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 
-public class Activator extends Plugin implements BundleActivator {
+public class Activator extends Plugin implements BundleActivator, IGenlabPlugin {
 
 	private static BundleContext context;
 
@@ -46,6 +47,13 @@ public class Activator extends Plugin implements BundleActivator {
 		return plugin;
 	}
 	
-	
+
+	public static final String getName() {
+		return "GenLab / AlgoG";
+	}
+
+	public static final String getDescription() {
+		return "genetic algorithms as meta-heuristics";
+	}
 
 }

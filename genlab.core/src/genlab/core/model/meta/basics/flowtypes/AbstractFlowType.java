@@ -1,6 +1,7 @@
 package genlab.core.model.meta.basics.flowtypes;
 
 import genlab.core.model.meta.IFlowType;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 
 public abstract class AbstractFlowType<JavaType> implements IFlowType<JavaType> {
 
@@ -63,4 +64,5 @@ public abstract class AbstractFlowType<JavaType> implements IFlowType<JavaType> 
 	public boolean compliantWith(IFlowType<?> other) {
 		return id.equals(other.getId());
 	}
+	
 }

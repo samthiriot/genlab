@@ -31,7 +31,7 @@ public final class AccessAgentsCollectionAsTable implements IGenlabTable {
 
 	@Override
 	public int getColumnsCount() {
-		return agentType.getAttributesCount();
+		return agentType.getAllAttributesCount();
 	}
 
 	@Override
@@ -144,7 +144,7 @@ public final class AccessAgentsCollectionAsTable implements IGenlabTable {
 	public Collection<Integer> getEmptyColumnsIndexes() {
 		
 		LinkedList<Integer> emptyColumnIdxs = new LinkedList<Integer>();
-		for (int i=0; i<agentType.getAttributesCount(); i++) {
+		for (int i=0; i<agentType.getAllAttributesCount(); i++) {
 			if (isColumnEmpty(i))
 				emptyColumnIdxs.add(i);
 				

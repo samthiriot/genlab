@@ -71,14 +71,24 @@ public class WritePopulationForSimdiascaExec extends
 		Map<IConnection,Object> others = getInputValuesForInput(WritePopulationForSimdiascaAlgo.INPUT_ANYTHING);
 		
 		// post process inputs
+		// add input variables
 		Map<String,Object> variablesInput = null;
 		if (!others.isEmpty()) {
 			variablesInput = new HashMap<String, Object>(others.size());
 			for (IConnection c: others.keySet()) {
+				// publish variables in format: algoname.outputname
 				variablesInput.put(
-						c.getFrom().getId(), 
+						c.getFrom().getAlgoInstance().getName()+"."+c.getFrom().getName(), 
 						others.get(c)
 						);
+				// simplified version: algoname (if there is only one output)
+				if (c.getFrom().getAlgoInstance().getOutputInstances().size() == 1) {
+					variablesInput.put(
+							c.getFrom().getAlgoInstance().getName(), 
+							others.get(c)
+							);	
+				}
+					
 			}
 		}
 		
@@ -116,12 +126,16 @@ public class WritePopulationForSimdiascaExec extends
 			}
 			
 			int i=0;
-			for (IAgentType type: inputPopulation.getPopulationDescription().getAgentTypes()) {
+			for (IAgentType type: inputPopulation.getPopulationDescription().getNonAbstractAgentTypes()) {
 				
 				// print the agent type as a comment
 				ps.print(ErlangConstants.ERLANG_COMMENT);
-				ps.print("agent types");
+				ps.print("agent type: ");
 				ps.print(type);
+				ps.println();
+				ps.print(ErlangConstants.ERLANG_COMMENT);
+				ps.print("total count: ");
+				ps.print(inputPopulation.getAgentsCount(type));
 				ps.println();
 				ps.print(ErlangConstants.ERLANG_COMMENT);
 				ps.print("attributes are: ");
@@ -143,6 +157,7 @@ public class WritePopulationForSimdiascaExec extends
 						variablesForAgent = new HashMap<String, Object>(agent.getValuesOfAttributesAsMap());
 					}
 					variablesForAgent.put("agent_type", type.getName());
+					variablesForAgent.put("id", agent.getId());
 					
 					// interpret expression
 					try {
@@ -153,6 +168,7 @@ public class WritePopulationForSimdiascaExec extends
 						return;
 					}
 					
+					/*
 					// create ID
 					String exportId = exportType+" "+(++j);
 					agent2exportId.put(agent, exportId);
@@ -176,6 +192,7 @@ public class WritePopulationForSimdiascaExec extends
 					}
 					ps.print("]}.");
 					ps.println();
+					*/
 					
 					if (i%10 == 1) {
 						

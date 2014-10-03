@@ -1,5 +1,7 @@
 package genlab.graphstream.examples;
 
+import java.io.File;
+
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.basics.algos.ConstantValueDouble;
@@ -7,6 +9,7 @@ import genlab.core.model.meta.basics.algos.ConstantValueInteger;
 import genlab.core.model.meta.basics.algos.StandardOutputAlgo;
 import genlab.graphstream.algos.generators.BarabasiAlbertAlgo;
 import genlab.graphstream.ui.algos.GraphDisplayAlgo;
+import genlab.gui.examples.contributors.GenlabExampleDifficulty;
 import genlab.gui.examples.contributors.IGenlabExample;
 
 public final class BAExample1 implements IGenlabExample {
@@ -94,6 +97,16 @@ public final class BAExample1 implements IGenlabExample {
 	}
 
 
+	@Override
+	public GenlabExampleDifficulty getDifficulty() {
+		return GenlabExampleDifficulty.BEGINNER;
+	}
+
+
+	@Override
+	public void createFiles(File resourcesDirectory) {
+		
+	}
 
 
 

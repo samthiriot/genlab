@@ -13,22 +13,22 @@ public class AttributesHolderInstance implements IAttributesHolderInstance {
 
 	protected final Object[] attributeValues;
 	
-	protected final IAttributesHolder attributesHolder;
+	protected final IAttributesHolder<?> attributesHolder;
 	
-	public AttributesHolderInstance(IAttributesHolder attributesHolder, Object[] attributeValues) {
+	public AttributesHolderInstance(IAttributesHolder<?> attributesHolder, Object[] attributeValues) {
 
 		this.attributesHolder = attributesHolder;
 		this.attributeValues = attributeValues;
 		
-		if (attributeValues.length != attributesHolder.getAttributesCount())
+		if (attributeValues.length != attributesHolder.getAllAttributesCount())
 			throw new ProgramException("the count of attributes values is not the same as defined in the agent type");
 		
 	}
 	
-	public AttributesHolderInstance(IAttributesHolder attributesHolder) {
+	public AttributesHolderInstance(IAttributesHolder<?> attributesHolder) {
 
 		this.attributesHolder = attributesHolder;
-		this.attributeValues = new Object[attributesHolder.getAttributesCount()];
+		this.attributeValues = new Object[attributesHolder.getAllAttributesCount()];
 	}
 
 

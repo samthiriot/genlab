@@ -1,11 +1,12 @@
 package genlab.cytoscape;
 
+import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public class Activator implements BundleActivator {
+public class Activator implements BundleActivator, IGenlabPlugin {
 
 	private static BundleContext context;
 
@@ -33,6 +34,15 @@ public class Activator implements BundleActivator {
 	
 	public static BundleContext getDefault() {
 		return context;
+	}
+	
+
+	public static final String getName() {
+		return "GenLab / Cytoscape";
+	}
+
+	public static final String getDescription() {
+		return "Integrates the network generation and analysis algorithms provided by the Cytoscape software";
 	}
 
 }

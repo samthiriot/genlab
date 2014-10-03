@@ -6,6 +6,8 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
+import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
+import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.model.meta.basics.flowtypes.StringFlowType;
 import genlab.core.parameters.DoubleParameter;
 import genlab.populations.bo.IPopulation;
@@ -37,25 +39,27 @@ public class SetAttributeRandomDoubleAlgo extends BasicAlgo {
 			"the name of the attribute to generate randomly"
 			);
 	
+
+	public static final InputOutput<Double> INPUT_MIN = new InputOutput<Double>(
+			DoubleFlowType.SINGLETON, 
+			"in_min", 
+			"min", 
+			"minimum value (inclusive)",
+			0.0
+			);
+	public static final InputOutput<Double> INPUT_MAX = new InputOutput<Double>(
+			DoubleFlowType.SINGLETON, 
+			"in_max", 
+			"max", 
+			"maximum value (inclusive)",
+			1.0
+			);
+	
 	public static final InputOutput<IPopulation> OUTPUT_POPULATION = new InputOutput<IPopulation>(
 			PopulationFlowType.SINGLETON, 
 			"out_pop", 
 			"population", 
 			"the population filled"
-			);
-	
-	public static final DoubleParameter PARAM_MIN = new DoubleParameter(
-			"param_min", 
-			"min", 
-			"minimum value (included)", 
-			0.0
-			);
-	
-	public static final DoubleParameter PARAM_MAX = new DoubleParameter(
-			"param_max", 
-			"max", 
-			"maximum value (included)", 
-			1.0
 			);
 	
 	public SetAttributeRandomDoubleAlgo() {
@@ -70,11 +74,10 @@ public class SetAttributeRandomDoubleAlgo extends BasicAlgo {
 		inputs.add(INPUT_POPULATION);
 		inputs.add(INPUT_TYPENAME);
 		inputs.add(INPUT_ATTRIBUTENAME);
+		inputs.add(INPUT_MIN);
+		inputs.add(INPUT_MAX);
 		
 		outputs.add(OUTPUT_POPULATION);
-		
-		registerParameter(PARAM_MIN);
-		registerParameter(PARAM_MAX);
 		
 	}
 

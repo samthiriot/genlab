@@ -1,9 +1,9 @@
 package genlab.populations.bo;
 
-// TODO inheritance
-public interface IAgentType extends IAttributesHolder {
+
+public interface IAgentType 
+					extends IAttributesHolder<IAgentType>, IMultipleInheritance<IAgentType> {
 
 	public String getName();
-	
 	
 }

@@ -1,6 +1,7 @@
 package genlab.core.model.meta.basics.flowtypes;
 
 import genlab.core.commons.WrongParametersException;
+import genlab.core.model.meta.IFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 
 public class SimpleGraphFlowType extends AbstractFlowType<IGenlabGraph> {
@@ -24,5 +25,6 @@ public class SimpleGraphFlowType extends AbstractFlowType<IGenlabGraph> {
 		}
 	
 	}
+	
 
 }

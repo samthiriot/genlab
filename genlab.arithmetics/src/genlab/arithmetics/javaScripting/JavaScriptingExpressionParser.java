@@ -68,7 +68,14 @@ public class JavaScriptingExpressionParser implements IExpressionsParser {
 	
 	protected void printInfos(ListOfMessages messages, ScriptEngine engine) {
 		
-		messages.infoUser("for evaluation, using the scripting engine "+engine.NAME+" ("+engine.ENGINE_VERSION+")", getClass());
+		messages.infoUser(
+				"for evaluation, using the scripting engine "
+				+engine.getFactory().getEngineName()
+				+" ("
+				+engine.getFactory().getEngineVersion()
+				+")", 
+				getClass()
+				);
 		
 		printedInfos = true;
 	}
@@ -93,7 +100,6 @@ public class JavaScriptingExpressionParser implements IExpressionsParser {
 		
 		if (!printedInfos)
 			printInfos(messages, engine);
-		
 		
 		// add all the variables
 		if (variables != null) {

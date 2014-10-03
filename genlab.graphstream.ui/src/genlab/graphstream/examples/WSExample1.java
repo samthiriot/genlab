@@ -1,5 +1,7 @@
 package genlab.graphstream.examples;
 
+import java.io.File;
+
 import genlab.core.commons.UniqueTimestamp;
 import genlab.core.model.instance.GenlabFactory;
 import genlab.core.model.instance.IAlgoInstance;
@@ -12,6 +14,7 @@ import genlab.graphstream.algos.generators.WattsStrogatzAlgo;
 import genlab.graphstream.algos.measure.GraphStreamAverageClustering;
 import genlab.graphstream.ui.algos.GraphDisplayAlgo;
 import genlab.gui.algos.GraphicalConsoleAlgo;
+import genlab.gui.examples.contributors.GenlabExampleDifficulty;
 import genlab.gui.examples.contributors.IGenlabExample;
 
 public final class WSExample1 implements IGenlabExample {
@@ -108,6 +111,16 @@ public final class WSExample1 implements IGenlabExample {
 
 
 
+	@Override
+	public GenlabExampleDifficulty getDifficulty() {
+		return GenlabExampleDifficulty.BEGINNER;
+	}
+
+
+	@Override
+	public void createFiles(File resourcesDirectory) {
+		
+	}
 
 
 }

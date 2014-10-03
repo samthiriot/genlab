@@ -44,7 +44,6 @@ public final class PopulationDescriptionPersistence extends AbstractPersistence 
 			// local load of classes
 			xstream.setClassLoader(Activator.class.getClassLoader());
 			
-			
 			xstream.alias(PopulationDescriptionConverter.XML_TAG_TYPE, IAgentType.class);
 			xstream.alias(XML_TAG_POPDESC, genlab.populations.bo.PopulationDescription.class);
 			xstream.alias(AgentTypeConverter.XML_TAG_ATTRIBUTE, Attribute.class);

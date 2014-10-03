@@ -6,6 +6,7 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
+import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.model.meta.basics.flowtypes.StringFlowType;
 import genlab.core.parameters.IntParameter;
 import genlab.populations.bo.IPopulation;
@@ -37,25 +38,26 @@ public class SetAttributeRandomIntegerAlgo extends BasicAlgo {
 			"the name of the attribute to generate randomly"
 			);
 	
+	public static final InputOutput<Integer> INPUT_MIN = new InputOutput<Integer>(
+			IntegerFlowType.SINGLETON, 
+			"in_min", 
+			"min", 
+			"minimum value (inclusive)",
+			0
+			);
+	public static final InputOutput<Integer> INPUT_MAX = new InputOutput<Integer>(
+			IntegerFlowType.SINGLETON, 
+			"in_max", 
+			"max", 
+			"maximum value (inclusive)",
+			100
+			);
+	
 	public static final InputOutput<IPopulation> OUTPUT_POPULATION = new InputOutput<IPopulation>(
 			PopulationFlowType.SINGLETON, 
 			"out_pop", 
 			"population", 
 			"the population filled"
-			);
-	
-	public static final IntParameter PARAM_MIN = new IntParameter(
-			"param_min", 
-			"min", 
-			"minimum value (included)", 
-			0
-			);
-	
-	public static final IntParameter PARAM_MAX = new IntParameter(
-			"param_max", 
-			"max", 
-			"maximum value (included)", 
-			100
 			);
 	
 	public SetAttributeRandomIntegerAlgo() {
@@ -70,12 +72,12 @@ public class SetAttributeRandomIntegerAlgo extends BasicAlgo {
 		inputs.add(INPUT_POPULATION);
 		inputs.add(INPUT_TYPENAME);
 		inputs.add(INPUT_ATTRIBUTENAME);
+		inputs.add(INPUT_MIN);
+		inputs.add(INPUT_MAX);
 		
 		outputs.add(OUTPUT_POPULATION);
 		
-		registerParameter(PARAM_MIN);
-		registerParameter(PARAM_MAX);
-		
+	
 	}
 
 

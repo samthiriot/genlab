@@ -70,8 +70,8 @@ public class SetAttributeConstantAlgo extends BasicAlgo {
 	
 	public SetAttributeConstantAlgo() {
 		super(
-				"rand double attribute", 
-				"define an attribute of an agent randomly", 
+				"constant attribute", 
+				"define an attribute from a constant", 
 				ExistingAlgoCategories.GENERATORS_POPULATIONS, 
 				null, 
 				null

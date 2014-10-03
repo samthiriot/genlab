@@ -1,11 +1,12 @@
 package genlab.random.colt;
 
+import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public class Activator implements BundleActivator {
+public class Activator implements BundleActivator, IGenlabPlugin {
 
 	private static BundleContext context;
 
@@ -29,6 +30,15 @@ public class Activator implements BundleActivator {
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
 		Activator.context = null;
+	}
+	
+
+	public static final String getName() {
+		return "GenLab / random / COLT";
+	}
+
+	public static final String getDescription() {
+		return "shares the COLT reference library for the generation of random numbers";
 	}
 
 }

@@ -1,12 +1,13 @@
 package genlab.gnuplot;
 
+import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public class Activator extends Plugin implements BundleActivator {
+public class Activator extends Plugin implements BundleActivator, IGenlabPlugin {
 
 	private static BundleContext context;
 
@@ -48,4 +49,11 @@ public class Activator extends Plugin implements BundleActivator {
 		return plugin;
 	}
 
+	public static final String getName() {
+		return "GenLab / gnuplot";
+	}
+
+	public static final String getDescription() {
+		return "facilitates the exportation of data to the GnuPlot powerful graph engine";
+	}
 }
