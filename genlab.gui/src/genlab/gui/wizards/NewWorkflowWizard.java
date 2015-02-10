@@ -38,8 +38,8 @@ public class NewWorkflowWizard extends Wizard implements IWorkbenchWizard, INewW
 	@Override
 	public void addPages() {
 
-		page1 = new NewWorkflowWizardDescPage("workflow description", "description", null);
 		page2 = new NewWorkflowWizardFilePage("toto", selection);
+		page1 = new NewWorkflowWizardDescPage("workflow description", "description", null, page2);
 		addPage(page1);
 		addPage(page2);
 	}
@@ -51,9 +51,9 @@ public class NewWorkflowWizard extends Wizard implements IWorkbenchWizard, INewW
 
 		try {
 			GLLogger.debugTech("Attempting to create a workflow...", getClass());
-	
 			
-			IProject eclipseProject = Utils.findEclipseProjectInSelection(selection);
+			IProject eclipseProject = page2.getSelectedProject();
+			//IProject eclipseProject = Utils.findEclipseProjectInSelection(selection);
 			IGenlabProject glProject = GenLab2eclipseUtils.getGenlabProjectForEclipseProject(eclipseProject);
 			if (glProject == null)
 				GLLogger.warnTech("unable to find glproject, trouble ahead...", getClass());

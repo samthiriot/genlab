@@ -155,14 +155,6 @@
             name="runtime perspective"
             restorable="true">
       </view>
-      <view
-            allowMultiple="false"
-            category="genlab.gui.views.categorygenlab"
-            class="genlab.gui.views.WorkflowPerspectiveIntroView"
-            id="genlab.gui.views.WorkflowPerspectiveIntroView"
-            name="Workflow perspective"
-            restorable="true">
-      </view>
    </extension>
    <extension
          point="org.eclipse.ui.commands">

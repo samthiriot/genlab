@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 
+import genlab.examples.gui.creation.ExamplesCreation;
 import genlab.gui.VisualResources;
 import genlab.gui.examples.contributors.ExistingExamples;
 import genlab.gui.examples.contributors.IGenlabExample;
@@ -49,13 +50,16 @@ public class CreateExampleWizardPageExamples extends WizardPage {
 	
 	public static final int INDENT = 24;
 	
-	public CreateExampleWizardPageExamples() {
+	protected final Collection<IGenlabExample> listOfSelectedExamples;
+	
+	public CreateExampleWizardPageExamples(Collection<IGenlabExample> listOfSelectedExamples) {
 		super(
 				"select_example", 
 				"select the example to create", 
 				null
 				);
-		// TODO Auto-generated constructor stub
+		
+		this.listOfSelectedExamples = listOfSelectedExamples;
 	}
 
 	@Override
@@ -115,6 +119,10 @@ public class CreateExampleWizardPageExamples extends WizardPage {
 				
 				
 			});
+			
+			if (listOfSelectedExamples.contains(ex)) {
+				button.setSelection(true);
+			}
 			
 			buttons.add(button);
 			

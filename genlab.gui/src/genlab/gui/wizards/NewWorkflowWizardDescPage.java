@@ -4,6 +4,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -22,12 +24,12 @@ public class NewWorkflowWizardDescPage extends WizardPage implements Listener  {
 
 	protected Text inputName;
 	protected Text inputDesc;
+	protected NewWorkflowWizardFilePage pageSelectFile;
 	
-	
-	protected NewWorkflowWizardDescPage(String pageName, String title, ImageDescriptor titleImage) {
+	protected NewWorkflowWizardDescPage(String pageName, String title, ImageDescriptor titleImage, NewWorkflowWizardFilePage page2) {
 		super(pageName, title, titleImage);
-		setPageComplete(false);
 
+		pageSelectFile = page2;
 	}
 
 	@Override
@@ -56,6 +58,14 @@ public class NewWorkflowWizardDescPage extends WizardPage implements Listener  {
 			GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 			gd.horizontalSpan = nbColumns;
 			inputName.setLayoutData(gd);
+			inputName.addModifyListener(new ModifyListener() {
+				
+				@Override
+				public void modifyText(ModifyEvent e) {
+					setPageComplete(validatePage());
+
+				}
+			});
 		}
 		
 		// description
@@ -78,11 +88,8 @@ public class NewWorkflowWizardDescPage extends WizardPage implements Listener  {
 		}
 
 		// other inits
-		validatePage();
+		setPageComplete(validatePage());
 
-		// Show description on opening
-		setErrorMessage(null);
-		setMessage(null);
 		setControl(c);
 		
 	}
@@ -109,8 +116,9 @@ public class NewWorkflowWizardDescPage extends WizardPage implements Listener  {
 				setErrorMessage("The name can not be empty");
 			}
 			
-			// TODO ensure it is unique
 			
+			// TODO ensure it is unique
+			pageSelectFile.getSelectedProject();
 		}
 		
 		// description

@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Examples
+Bundle-SymbolicName: genlab.r.examples;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: genlab.r.examples.Activator
+Bundle-Vendor: Samuel Thiriot
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ genlab.examples;bundle-version="1.0.0",
+ genlab.gui;bundle-version="0.0.1",
+ genlab.core;bundle-version="0.0.1",
+ genlab.r;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy

@@ -1,8 +1,11 @@
 package genlab.gui.examples.contributors;
 
 import java.io.File;
+import java.util.Collection;
 
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.AlgoCategory;
+import genlab.core.model.meta.IFlowType;
 import genlab.core.projects.IGenlabProject;
 
 public interface IGenlabExample {
@@ -27,5 +30,13 @@ public interface IGenlabExample {
 	public void createFiles(File resourcesDirectory);
 	
 	public GenlabExampleDifficulty getDifficulty();
+	
+	/**
+	 * Returns the list of central flowtypes involved in this example
+	 * @return
+	 */
+	public Collection<IFlowType<?>> getIllustratedFlowTypes();
+	
+	public Collection<AlgoCategory> getIllustratedAlgoCategories();
 	
 }

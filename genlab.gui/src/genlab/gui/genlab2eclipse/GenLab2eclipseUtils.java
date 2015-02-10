@@ -67,8 +67,16 @@ public class GenLab2eclipseUtils {
 	
 	public static IProject getEclipseProjectForGenlabProject(IGenlabProject genlabProject) {
 		
-		final URI eclipseProjectURI = genlabProject2eclipseProject.get(genlabProject);
+		URI eclipseProjectURI = genlabProject2eclipseProject.get(genlabProject);
 		
+		if (eclipseProjectURI == null) {
+			IProject p = getProjectFromRelativePath(genlabProject.getFolder().getName());
+			if (p != null) {
+				eclipseProjectURI = p.getLocationURI();
+				registerEclipseProjectForGenlabProject(p, genlabProject);
+			}
+		}
+
 		if (eclipseProjectURI == null) {
 			final String msg = "no eclipse project registered for genlab project "+genlabProject;
 			GLLogger.errorTech(msg, GenLab2eclipseUtils.class);

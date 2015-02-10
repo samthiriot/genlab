@@ -6,6 +6,7 @@ import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.Activator;
 
+import java.awt.Toolkit;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
@@ -16,13 +17,18 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.ColumnLayout;
+import org.eclipse.ui.forms.widgets.ColumnLayoutData;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Hyperlink;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -42,6 +48,8 @@ import org.osgi.framework.Constants;
  */
 public class MainContributedIntro extends IntroPart implements IIntroPart {
 
+	private ScrolledForm form = null;
+	
 	@Override
 	public void standbyStateChanged(boolean standby) {
 		// TODO Auto-generated method stub
@@ -82,33 +90,61 @@ public class MainContributedIntro extends IntroPart implements IIntroPart {
 	    return res;
 	}
 	
+	protected Composite createPluginWidget(FormToolkit toolkit, Composite parent, String name, String desc) {
+		
+		final Composite host = toolkit.createComposite(parent, SWT.BORDER);
+		host.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		host.setLayout(new GridLayout(1, false));
+		
+		// name
+		toolkit
+			.createLabel(host, name, SWT.WRAP | SWT.BOLD)
+			.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, true));
+		
+		// desc
+		toolkit
+			.createLabel(host, desc, SWT.WRAP)
+			.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, true));
+	
+		
+		return host;
+	}
+	
+	
 	@Override
-	public void createPartControl(Composite parent) {
+	public void createPartControl(final Composite parent) {
 
 		Collection<IGenlabIntroContributor> contributors = detectedFromExtensionPoints();
+		final Collection<Control> toResize = new LinkedList<Control>();
 		
     	// toolkit
     	FormToolkit toolkit= new FormToolkit(parent.getDisplay());
     	
     	// scrolled form
-    	ScrolledForm form = toolkit.createScrolledForm(parent);
+    	form = toolkit.createScrolledForm(parent);
     	form.setText("Welcome to GenLab !");
-    	ColumnLayout layout = new ColumnLayout();
+    	final ColumnLayout layout = new ColumnLayout();
+    	layout.minNumColumns=2;
     	form.getBody().setLayout(layout);
-
+    	
+    	final int wHint = (form.getClientArea().width - layout.leftMargin - layout.rightMargin)/layout.minNumColumns - layout.horizontalSpacing*layout.minNumColumns;
+    			
     	{
     		// general intro
-    		toolkit.createLabel(
+    		Label l1 = toolkit.createLabel(
     				form.getBody(), 
     				"GenLab is a laboratory dedicated to the generation of synthetic populations.\n"+
     				"Here 'populations' is understood as any set of entities necessary for a simulation.\n"+
     				"In GenLab, you can define the characteristics of your population, as different types of entities which might be structured.\n"+
-    				"Then, you can use the various algorithms provided to actually create this population from your available data, which can be survey data, statistical tables or Bayesian networks.\n"
-    				
+    				"Then, you can use the various algorithms provided to actually create this population from your available data, which can be survey data, statistical tables or Bayesian networks.\n", 
+    				SWT.WRAP
     				);
+    		toResize.add(l1);
+    		
     	}
     	
     	// propose first steps
+    	/*
     	{
     		Section sectionFirstSteps = toolkit.createSection(form.getBody(), Section.DESCRIPTION | Section.TITLE_BAR | Section.EXPANDED); //  | Section.TWISTIE
     		sectionFirstSteps.setText("First steps");
@@ -122,28 +158,33 @@ public class MainContributedIntro extends IntroPart implements IIntroPart {
     			contributor.contributeFirstSteps(toolkit, compoFirstSteps);
     		}
     		
+    		compoFirstSteps.pack(true);
     		sectionFirstSteps.setClient(compoFirstSteps);
-    	}
+    		
+    	}*/
     	
     	// list plugins
     	{
     		Section sectionPlugins = toolkit.createSection(form.getBody(), Section.DESCRIPTION | Section.TITLE_BAR | Section.EXPANDED | Section.TWISTIE );
     		sectionPlugins.setText("Plugins");
     		sectionPlugins.setDescription("GenLab is a modular laboratory made of many plugins. Each plugin brings features: algorithms that can be used in workflows, views or other tools.");
+    		toResize.add(sectionPlugins);
+
     		
     		Composite compoPlugins = toolkit.createComposite(sectionPlugins);
     		compoPlugins.setLayout(new GridLayout(1,false));
     		
     		// TODO propose people to develop their plugins
 			toolkit
-				.createLabel(compoPlugins, "Currently "+ExistingAlgos.getExistingAlgos().getAlgos().size()+" algorithms are provided by the plugins.")
-				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+				.createLabel(compoPlugins, "Currently "+ExistingAlgos.getExistingAlgos().getAlgos().size()+" algorithms are provided by the plugins.", SWT.WRAP)
+				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
 		
     		// populate
-    		Table tablePlugins = toolkit.createTable(compoPlugins, SWT.BORDER);
-    		tablePlugins.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-    		new TableColumn(tablePlugins, SWT.NONE).setText("name");
-    		new TableColumn(tablePlugins, SWT.NONE).setText("description");
+    		//Table tablePlugins = toolkit.createTable(compoPlugins, SWT.BORDER);
+    		//GridData gdTablePlugins = new GridData(SWT.FILL, SWT.FILL, false, true);
+    		//tablePlugins.setLayoutData(gdTablePlugins);
+    		//new TableColumn(tablePlugins, SWT.NONE).setText("name");
+    		//new TableColumn(tablePlugins, SWT.NONE).setText("description");
     		
     		//tablePlugins.setLayoutData(layoutData);
     		for (Bundle bundle: Activator.getDefault().getBundle().getBundleContext().getBundles()) {
@@ -170,8 +211,10 @@ public class MainContributedIntro extends IntroPart implements IIntroPart {
 		    				desc = (String)o;
 	    				}
 	    				
-	    				TableItem item = new TableItem(tablePlugins, SWT.NONE);
-	    				item.setText(new String[] { name, desc });
+	    				createPluginWidget(toolkit, compoPlugins, name, desc);
+	    				
+	    				//TableItem item = new TableItem(tablePlugins, SWT.WRAP);
+	    				//item.setText(new String[] { name, desc });
 	    						    					
 	    			}
 	    			
@@ -191,20 +234,48 @@ public class MainContributedIntro extends IntroPart implements IIntroPart {
 					e.printStackTrace();
 				}
     		}
-    		tablePlugins.getColumn(0).pack();
-    		tablePlugins.getColumn(1).pack();
+    		//tablePlugins.getColumn(0).pack();
+    		//tablePlugins.getColumn(1).pack();
     		sectionPlugins.setClient(compoPlugins);
     	}
+    	
+    	// update data of every plugin
+    	for (Control c: toResize) {
+    		c.setLayoutData(new ColumnLayoutData(150));
+    	}
+    	
     	
     	form.reflow(true);    	
     	parent.layout(true);
 
+    	parent.addControlListener(new ControlAdapter() {
+
+			@Override
+			public void controlResized(ControlEvent e) {
+
+				
+		    	final int wHint = (parent.getClientArea().width - layout.leftMargin - layout.rightMargin)/layout.minNumColumns - layout.horizontalSpacing*layout.minNumColumns;
+		    	System.err.println(wHint);
+		    	for (Control c: toResize) {
+		    		((ColumnLayoutData)c.getLayoutData()).widthHint = wHint;
+		    		c.pack(true);
+		    	}
+		    	form.getBody().layout(true);
+		    	form.reflow(true);
+		    	parent.layout(true);
+		    	
+			}
+    		
+    		
+		});
 	}
 
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
-		
+		if (form != null && !form.isDisposed())
+			form.forceFocus();
 	}
+	
+	
 
 }

@@ -1,5 +1,8 @@
 package genlab.examples.gui.wizards;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import genlab.core.commons.ProgramException;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -31,7 +34,8 @@ public class CreateExampleWizard extends Wizard implements IWorkbenchWizard {
 	
 	protected IProject newProject = null;
 	
-	protected IStructuredSelection selection = null;
+
+	protected Collection<IGenlabExample> listOfSelectedExamples = Collections.EMPTY_LIST;
 	
 	public CreateExampleWizard() {
 		// TODO Auto-generated constructor stub
@@ -50,7 +54,7 @@ public class CreateExampleWizard extends Wizard implements IWorkbenchWizard {
 		page1.setDescription("Select the project which will host the examples");
 		
 		
-		page2 = new CreateExampleWizardPageExamples();
+		page2 = new CreateExampleWizardPageExamples(listOfSelectedExamples);
 		addPage(page1);
 		addPage(page2);
 	}
@@ -118,9 +122,15 @@ public class CreateExampleWizard extends Wizard implements IWorkbenchWizard {
 		*/
 	}
 
+	public void init(Collection<IGenlabExample> selectedExamples) {
+		this.listOfSelectedExamples = selectedExamples;
+	}
+
+
 	@Override
 	public void init(IWorkbench workbench, IStructuredSelection selection) {
-		this.selection = selection;
+		// TODO Auto-generated method stub
+		
 	}
 	
 	

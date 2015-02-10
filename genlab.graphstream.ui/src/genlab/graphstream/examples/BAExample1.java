@@ -1,12 +1,18 @@
 package genlab.graphstream.examples;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.AlgoCategory;
+import genlab.core.model.meta.ExistingAlgoCategories;
+import genlab.core.model.meta.IFlowType;
 import genlab.core.model.meta.basics.algos.ConstantValueDouble;
 import genlab.core.model.meta.basics.algos.ConstantValueInteger;
 import genlab.core.model.meta.basics.algos.StandardOutputAlgo;
+import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.graphstream.algos.generators.BarabasiAlbertAlgo;
 import genlab.graphstream.ui.algos.GraphDisplayAlgo;
 import genlab.gui.examples.contributors.GenlabExampleDifficulty;
@@ -108,6 +114,16 @@ public final class BAExample1 implements IGenlabExample {
 		
 	}
 
+
+	@Override
+	public Collection<IFlowType<?>> getIllustratedFlowTypes() {
+		return new LinkedList<IFlowType<?>>() {{ add(SimpleGraphFlowType.SINGLETON); }};
+	}
+
+	@Override
+	public Collection<AlgoCategory> getIllustratedAlgoCategories() {
+		return new LinkedList<AlgoCategory>() {{ add(ExistingAlgoCategories.GENERATORS_GRAPHS); }};
+	}
 
 
 }

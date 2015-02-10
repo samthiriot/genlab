@@ -2,6 +2,8 @@ package genlab.gui.wizards;
 
 import genlab.core.persistence.GenlabPersistence;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.dialogs.WizardNewFileCreationPage;
@@ -34,6 +36,16 @@ public class NewWorkflowWizardFilePage extends WizardNewFileCreationPage {
 		}
 		
 		return path.toOSString();
+	}
+	
+	public IProject getSelectedProject() {
+
+		try {
+			String projectName = getContainerFullPath().uptoSegment(1).toString();
+			return ResourcesPlugin.getWorkspace().getRoot().getProject(projectName);
+		} catch (Throwable e){
+			return null;
+		}
 	}
 	
 }

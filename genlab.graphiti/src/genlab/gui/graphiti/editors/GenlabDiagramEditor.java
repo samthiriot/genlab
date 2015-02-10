@@ -1,6 +1,9 @@
 package genlab.gui.graphiti.editors;
 
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.IWorkflowContentListener;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -37,6 +40,8 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 	private String filename  = null;
 	
 	private IGenlabWorkflowInstance workflow = null;
+	
+	private boolean isWorkflowChanged = false;
 	
 	public String getFilename() {
 		return filename;
@@ -104,6 +109,7 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 		((GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider()).associateWorkflowWithThisProvider(workflow);
 		
 		workflow.addListener(WorkflowListener.lastInstance);
+		//workflow.addListener(this);
 		
 		if (diagram == null) {
 			diagram = (Diagram) dfp.getPictogramElementForBusinessObject(workflow);
@@ -115,6 +121,7 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 			return;
 		}
 		
+		isWorkflowChanged = false;
 		
 		// TODO check consistency ???
 		Genlab2GraphitiUtils.fillGraphitiFromGenlab(
@@ -173,6 +180,8 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 			return;
 		}
 		*/
+		
+		
 	}
 
 
@@ -217,8 +226,19 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 
 	@Override
 	public boolean isDirty() {
-		// TODO Auto-generated method stub
 		return super.isDirty();
+		// TODO solve this dirty aspect
+	}
+
+
+	@Override
+	public void close() {
+		super.close();
+		
+		/*
+		if (workflow != null) {
+			workflow.removeListener(this);
+		}*/
 	}
 	
 	

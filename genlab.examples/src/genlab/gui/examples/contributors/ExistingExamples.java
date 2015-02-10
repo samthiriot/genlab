@@ -1,9 +1,13 @@
 package genlab.gui.examples.contributors;
 
+import genlab.core.model.meta.AlgoCategory;
+import genlab.core.model.meta.ExistingAlgoCategories;
+import genlab.core.model.meta.IFlowType;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -77,6 +81,53 @@ public final class ExistingExamples {
 	public Collection<IGenlabExample> getAvailableExamples() {
 		return id2example.values();
 	}
+	
 
+	public Collection<IGenlabExample> getAvailableExamplesOfDifficulty(GenlabExampleDifficulty difficulty) {
+		Collection<IGenlabExample> res = new LinkedList<IGenlabExample>();
+		for (IGenlabExample e: id2example.values()) {
+			if (e.getDifficulty().equals(difficulty))
+				res.add(e);
+		}
+		return res;
+	}
+	
+	public Map<IFlowType<?>,Collection<IGenlabExample>> builtMappingOfFlowtypesToExamples() {
+		
+		Map<IFlowType<?>,Collection<IGenlabExample>> res = new HashMap<IFlowType<?>, Collection<IGenlabExample>>();
+		
+		for (IGenlabExample e: id2example.values()) {
+			for (IFlowType<?> ft : e.getIllustratedFlowTypes()) {
+				Collection<IGenlabExample> l = res.get(ft);
+				if (l == null) {
+					l = new LinkedList<IGenlabExample>();
+					res.put(ft, l);
+				}
+				l.add(e);
+			}
+		}
+		
+		return res;
+		
+	}
+
+	public Map<AlgoCategory,Collection<IGenlabExample>> builtMappingOfCategoriesToExamples() {
+		
+		Map<AlgoCategory,Collection<IGenlabExample>> res = new HashMap<AlgoCategory, Collection<IGenlabExample>>();
+		
+		for (IGenlabExample e: id2example.values()) {
+			for (AlgoCategory ac : e.getIllustratedAlgoCategories()) {
+				Collection<IGenlabExample> l = res.get(ac);
+				if (l == null) {
+					l = new LinkedList<IGenlabExample>();
+					res.put(ac, l);
+				}
+				l.add(e);
+			}
+		}
+		
+		return res;
+		
+	}
 
 }

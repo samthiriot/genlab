@@ -8,6 +8,7 @@ import genlab.core.model.meta.IInputOutput;
 import genlab.core.parameters.Parameter;
 
 import java.util.Collection;
+import java.util.Map;
 
 public interface IAlgoInstance extends IGenlabResource {
 
@@ -103,6 +104,7 @@ public interface IAlgoInstance extends IGenlabResource {
 	
 	public boolean hasParameter(String id);
 	public Parameter<?> getParameter(String id);
+	public Map<String,Object> getParametersAndValues();
 	
 	public boolean isContainedInto(IAlgoContainerInstance otherInstance);
 

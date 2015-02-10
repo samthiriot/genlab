@@ -1,14 +1,20 @@
 package genlab.graphstream.examples;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import genlab.core.commons.UniqueTimestamp;
 import genlab.core.model.instance.GenlabFactory;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.AlgoCategory;
+import genlab.core.model.meta.ExistingAlgoCategories;
+import genlab.core.model.meta.IFlowType;
 import genlab.core.model.meta.basics.algos.ConstantValueDouble;
 import genlab.core.model.meta.basics.algos.ConstantValueInteger;
 import genlab.core.model.meta.basics.algos.StandardOutputAlgo;
+import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.projects.IGenlabProject;
 import genlab.graphstream.algos.generators.WattsStrogatzAlgo;
 import genlab.graphstream.algos.measure.GraphStreamAverageClustering;
@@ -120,6 +126,17 @@ public final class WSExample1 implements IGenlabExample {
 	@Override
 	public void createFiles(File resourcesDirectory) {
 		
+	}
+	
+
+	@Override
+	public Collection<IFlowType<?>> getIllustratedFlowTypes() {
+		return new LinkedList<IFlowType<?>>() {{ add(SimpleGraphFlowType.SINGLETON); }};
+	}
+
+	@Override
+	public Collection<AlgoCategory> getIllustratedAlgoCategories() {
+		return new LinkedList<AlgoCategory>() {{ add(ExistingAlgoCategories.GENERATORS_GRAPHS); }};
 	}
 
 

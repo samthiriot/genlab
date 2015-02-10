@@ -78,7 +78,6 @@ public class Genlab2JavaExporter {
 			sb.append(algo.getClass().getSimpleName());
 			sb.append(" ");
 			// variable name
-			// TODO store in the list ? 
 			String varName = algo.getClass().getSimpleName().substring(0, 1).toLowerCase() + algo.getClass().getSimpleName().substring(1); 
 			algo2varName.put(algo, varName);
 			usedVarNames.add(varName);
@@ -108,13 +107,16 @@ public class Genlab2JavaExporter {
 					varName = varNameBase+(sub++);
 				}
 				usedVarNames.add(varName);
-				algoInstance2varName.put(ai, varNameBase);
+				algoInstance2varName.put(ai, varName);
 			}
 			sb.append(varName);
 			// init
 			sb.append(" = ");
 			sb.append(algo2varName.get(ai.getAlgo()));
 			sb.append(".createInstance(workflow);\n");
+			
+			// define name of this instance
+			sb.append(varName).append(".setName(\"").append(ai.getName()).append("\");\n");
 			
 			
 			// add to workflow
@@ -131,13 +133,13 @@ public class Genlab2JavaExporter {
 			}
 			
 			// declare parameters
-			for (Parameter<?> p : ai.getParameters()) {
+			for (Map.Entry<String,Object> entry : ai.getParametersAndValues().entrySet()) {
 				sb.append(varName);
 				sb.append(".setValueForParameter(");
 				sb.append("\n\t");
-				sb.append("\"").append(p.getId()).append("\",");
+				sb.append("\"").append(entry.getKey()).append("\",");
 				sb.append("\n\t");
-				sb.append(getJavaForValue(ai.getValueForParameter(p)));
+				sb.append(getJavaForValue(entry.getValue()));
 				sb.append("\n);\n");
 				
 			}

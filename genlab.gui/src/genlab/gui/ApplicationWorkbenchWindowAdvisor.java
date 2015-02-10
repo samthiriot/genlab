@@ -108,10 +108,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		// opens the intro (sic)
 		PlatformUI.getPreferenceStore().setValue(IWorkbenchPreferenceConstants.SHOW_INTRO, true);
 		
-		openIntro();
-		
-		TestResponsivity.startTestResponsivity();
-		 
+
 		// hide elements from toolbar
 		PlatformUI.getWorkbench().addWindowListener(new IWindowListener() {
 			
@@ -148,6 +145,12 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     	// try again (will have no impact if it worked the first time)
 		VisualResources.initVisualResource(Display.getCurrent().getActiveShell());
     
+		// open the intro
+		openIntro();
+		
+		// now start the monitoring of the SWT thread
+		TestResponsivity.startTestResponsivity();
+		 
 		
     }
     

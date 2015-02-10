@@ -63,8 +63,11 @@
       <plugin id="genlab.os"/>
       <plugin id="genlab.population.yang"/>
       <plugin id="genlab.populations"/>
+      <plugin id="genlab.populations.examples"/>
       <plugin id="genlab.populations.random"/>
       <plugin id="genlab.populations.ui"/>
+      <plugin id="genlab.r"/>
+      <plugin id="genlab.r.examples"/>
       <plugin id="genlab.random.colt"/>
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>

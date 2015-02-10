@@ -1,6 +1,9 @@
 package genlab.algog.gui.examples.examples;
 
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 import genlab.algog.algos.meta.DoubleGeneAlgo;
 import genlab.algog.algos.meta.GenomeAlgo;
@@ -12,6 +15,9 @@ import genlab.algog.gui.jfreechart.algos.AlgoGPlotRadarAlgo;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.AlgoCategory;
+import genlab.core.model.meta.ExistingAlgoCategories;
+import genlab.core.model.meta.IFlowType;
 import genlab.core.model.meta.basics.algos.ConstantValueDouble;
 import genlab.core.model.meta.basics.algos.GraphBasicPropertiesAlgo;
 import genlab.graphstream.algos.generators.WattsStrogatzAlgo;
@@ -253,6 +259,16 @@ public class ExampleMultiGoalWS implements IGenlabExample {
 	@Override
 	public GenlabExampleDifficulty getDifficulty() {
 		return GenlabExampleDifficulty.ADVANCED;
+	}
+
+	@Override
+	public Collection<IFlowType<?>> getIllustratedFlowTypes() {
+		return Collections.EMPTY_LIST;
+	}
+
+	@Override
+	public Collection<AlgoCategory> getIllustratedAlgoCategories() {
+		return new LinkedList<AlgoCategory>() {{ add(ExistingAlgoCategories.EXPLORATION_GENETIC_ALGOS); }};
 	}
 
 }

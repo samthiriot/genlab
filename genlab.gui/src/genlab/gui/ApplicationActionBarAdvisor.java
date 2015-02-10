@@ -3,6 +3,7 @@ package genlab.gui;
 
 import genlab.gui.actions.ExportJavaAction;
 
+import org.eclipse.debug.internal.ui.actions.RunLastAction;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
@@ -25,6 +26,8 @@ import org.eclipse.ui.ide.IDEActionFactory;
  * An action bar advisor is responsible for creating, adding, and disposing of the
  * actions added to a workbench window. Each window will be populated with
  * new actions.
+ * 
+ * TODO add run menu
  * 
  * TODO see http://help.eclipse.org/indigo/index.jsp?topic=%2Forg.eclipse.platform.doc.isv%2Freference%2Fapi%2Forg%2Feclipse%2Fui%2Factions%2Fclass-use%2FActionFactory.IWorkbenchAction.html
  */
@@ -131,7 +134,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         register(aboutAction);
       
         //ActionFactory.NEW_EDITOR
-
+        
+        
         
     }
     

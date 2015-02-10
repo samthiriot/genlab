@@ -57,9 +57,11 @@ public class Activator extends AbstractUIPlugin implements IGenlabPlugin {
 				);
 
 		// listen for workspace events, so we will load the corresponding genlab resources.
+		EclipseResourceListener resourcesListener = new EclipseResourceListener();
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(
-				new EclipseResourceListener(),
-				IResourceChangeEvent.POST_CHANGE
+				resourcesListener,
+				IResourceChangeEvent.POST_CHANGE 
+				| IResourceChangeEvent.PRE_DELETE
 				);
 		
 		// listen for execution events

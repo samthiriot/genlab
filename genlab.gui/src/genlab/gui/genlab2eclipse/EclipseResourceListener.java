@@ -111,6 +111,20 @@ public class EclipseResourceListener implements IResourceChangeListener {
 
 			    	final IResource resource = delta.getResource();
 			        
+			    	// TODO detect renaming ?!
+			    	// detect removals
+			    	if (delta.getKind() == IResourceDelta.REMOVED) {
+			    		// if this resource is a specific file, we have to update 
+			    		// the genlab files accordingly
+			    		if (delta.getResource().getFileExtension().equals(GenlabPersistence.EXTENSION_PROJECT)) {
+			    			GLLogger.errorTech("an eclipse project was removed; should delete the corresponding genlab project", getClass()); 
+			    		}
+			    		else if (delta.getResource().getFileExtension().equals(GenlabPersistence.EXTENSION_WORKFLOW)) {
+			    			GLLogger.errorTech("an eclipse workflow was removed; should delete the corresponding genlab workflow", getClass());
+			    		}
+			    		
+			    	}
+			    	
 			    	// stay there if the filename project is added (that means: project creation)
 			    	if (
 			    			(
