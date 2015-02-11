@@ -8,5 +8,37 @@
             id="genlab.r.algorithms.ExecuteRAlgorithm">
       </algo>
    </extension>
+   <extension
+         point="genlab.core.doc">
+      <author
+            email="richety...@gmail.com"
+            id="genlab.r.authors.richety"
+            name="richety...@gmail.com"
+            url="https://sites.google.com/site/mulabsltd/">
+      </author>
+      <library
+            description="creates a bridge between Java and R"
+            id="genlab.r.libraries.rsession"
+            licence_name="New BSD License"
+            licence_url="http://opensource.org/licenses/BSD-3-Clause"
+            name="R session"
+            url="http://code.google.com/p/rsession/">
+         <integrator_author_id
+               id="genlab.core.doc.authors.samthiriot">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.r.authors.richety">
+         </original_author_id>
+         <more_info
+               content="R language documentation"
+               url="http://cran.r-project.org/">
+         </more_info>
+      </library>
+      <docalgo
+            algo_id="genlab.r.algorithms.ExecuteRAlgorithm"
+            description="Deleguates to R a computation. Every input will be available as a variable having the same name as the instance of the algo furnishing the input. The last result from R will be used as an output.."
+            library_id="genlab.r.libraries.rsession">
+      </docalgo>
+   </extension>
 
 </plugin>

@@ -297,6 +297,16 @@ public class AlgoInstance implements IAlgoInstance {
 	@Override
 	public void checkForRun(WorkflowCheckResult res) {
 		
+		// ensure our algo is available
+		if (!algo.isAvailable()) {
+			res.messages.add(new TextMessageFromAlgoInstance(
+					this, 
+					MessageLevel.ERROR, 
+					"the algorithm "+algo.getName()+" is not available in this environment; check the startup messages for more details"
+					)
+			);
+		}
+		
 		// ensure that inputs are connected
 		for (IInputOutput<?> input: inputs2inputInstances.keySet()) {
 			

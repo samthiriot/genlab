@@ -39,6 +39,12 @@ public interface IAlgo extends IGenlabResource {
 
 	public IInputOutput<?> getOutputInstanceForId(String outputId);
 	
+	/**
+	 * Returns true if the algorithm is available in the current environment 
+	 * (dependant software, libs, etc) or false if it is not the case.
+	 * @return
+	 */
+	public boolean isAvailable();
 	
 	/**
 	 * Creates an instance into the workflow instance passed as parameter. 

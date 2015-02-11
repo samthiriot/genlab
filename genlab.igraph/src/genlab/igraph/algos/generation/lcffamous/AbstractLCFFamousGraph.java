@@ -13,6 +13,7 @@ import genlab.igraph.algos.generation.AbstractIGraphGeneratorExec;
 import genlab.igraph.algos.generation.LCF;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphLibrary;
+import genlab.igraph.natjna.IGraphRawLibrary;
 
 /**
  * Registers itself without extension point
@@ -78,4 +79,8 @@ public class AbstractLCFFamousGraph extends AbstractIGraphGenerator {
 		};
 	}
 
+	@Override
+	public boolean isAvailable() {
+		return IGraphRawLibrary.isAvailable;
+	}
 }

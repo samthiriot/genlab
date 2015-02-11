@@ -10,6 +10,7 @@ import genlab.core.model.meta.basics.flowtypes.AnythingFlowType;
 import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.parameters.TextParameter;
 import genlab.r.execs.ExecuteRExec;
+import genlab.r.rsession.Genlab2RSession;
 
 /**
  * TODO transform inputs from all types to Genlab type
@@ -67,5 +68,12 @@ public class ExecuteRAlgorithm extends BasicAlgo {
 		
 		return new ExecuteRExec(execution, algoInstance);
 	}
+	
+	@Override
+	public boolean isAvailable() {
+		return Genlab2RSession.isRAvailable();
+	}
+
+
 
 }

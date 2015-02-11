@@ -258,6 +258,11 @@ public abstract class BasicAlgo implements IAlgo {
 		return null;
 	}
 
+	@Override
+	public boolean isAvailable() {
+		return true;
+	}
+
 
 
 }
