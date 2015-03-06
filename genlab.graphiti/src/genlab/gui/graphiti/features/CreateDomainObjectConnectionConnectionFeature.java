@@ -20,6 +20,9 @@ import org.eclipse.graphiti.features.impl.AbstractCreateConnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.mm.pictograms.Shape;
+import org.eclipse.graphiti.services.Graphiti;
+import org.eclipse.graphiti.util.ILocationInfo;
 
 public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreateConnectionFeature
 		implements ICreateConnectionFeature {
@@ -60,7 +63,29 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 		
 	}
 
-	
+	/**
+	 * For a given context, returns the pictogram to take into account to search for a connection.
+	 * The easiest solution is if the context directly points to some shape; but it might also 
+	 * be a search for an host under the mouse location, or even a fallback to the parent workflow.
+	 */
+	private PictogramElement getPictogramElementToSearchForContext(ICreateConnectionContext context) {
+		
+		PictogramElement targetPictogramElement = context.getTargetPictogramElement(); 
+		
+		if (targetPictogramElement == null) {
+			// if no container is provided, maybe we should search for it under the mouse location (as user might not try to connect something, by somewhere !)
+			try {
+				ILocationInfo info = Graphiti.getPeService().getLocationInfo(getDiagram(), context.getTargetLocation().getX(), context.getTargetLocation().getY());
+				targetPictogramElement = info.getShape();
+			} catch (RuntimeException e) {
+				// ignore it 
+				e.printStackTrace();
+			}
+		}
+		
+		return targetPictogramElement;
+		
+	}
 
 	@Override
 	public boolean canCreate(ICreateConnectionContext context) {
@@ -102,8 +127,7 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 			
 			boolean fromIsOutput = from.getAlgoInstance().getOutputInstances().contains(from);
 			
-			if (to != null) {
-				
+			if (to != null && to instanceof IInputOutputInstance) {
 				// standard case: ensure the user attempts to really connect 
 				// outputs to inputs
 				
@@ -137,23 +161,22 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 				
 			} else {
 				
+
 				// no standard case: dest == null, probably the user wants us to help him.
 				// engage in a suggestion process: given the destination, what can we provide as an input ?
 				
 				// first retrieve the target container
-				PictogramElement targetPictogramElement = context.getTargetPictogramElement(); 
+				PictogramElement targetPictogramElement = getPictogramElementToSearchForContext(context);
 				
+
 				if (targetPictogramElement == null) {
 					// if no container is provided, it means the container is the diagram (graphiti obj) / workflow (in genlab world)
 					targetPictogramElement = getFeatureProvider().getPictogramElementForBusinessObject(from.getAlgoInstance().getWorkflow());
 				}
 				
-				//targetPictogramElement = targetPictogramElement.getGraphicsAlgorithm().getParentGraphicsAlgorithm().getPictogramElement();
-				
-				
 				/*
 				IInputOutputInstance ioi = null;
-				try {
+				try { 
 					ioi = (IInputOutputInstance) getBusinessObjectForPictogramElement(targetPictogramElement);
 				} catch (ClassCastException e) {
 					return false;
@@ -165,6 +188,8 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 				} catch (ClassCastException e) {
 					return false;
 				}
+				
+				System.out.println("reco for "+aci+", "+aci.getAlgo());
 				
 				ProposalObjectCreation proposal = null;
 				if (fromIsOutput) {
@@ -247,7 +272,7 @@ public class CreateDomainObjectConnectionConnectionFeature extends AbstractCreat
 			
 			IAlgoContainerInstance aci = null;
 			try {
-				aci = (IAlgoContainerInstance) getBusinessObjectForPictogramElement(context.getTargetPictogramElement());
+				aci = (IAlgoContainerInstance) getBusinessObjectForPictogramElement(getPictogramElementToSearchForContext(context));
 			} catch (ClassCastException e) {
 				// TODO what ?
 			}

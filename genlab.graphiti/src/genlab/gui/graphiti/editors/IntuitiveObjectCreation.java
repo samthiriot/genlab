@@ -8,10 +8,13 @@ import genlab.core.model.meta.IFlowType;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.usermachineinteraction.GLLogger;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -117,6 +120,98 @@ public class IntuitiveObjectCreation {
 	protected static Map<ContextObjectCreation,ProposalObjectCreation> cacheOutput2ProposalAutoInput 
 							= new HashMap<ContextObjectCreation, ProposalObjectCreation>(100);
 	
+	
+	/**
+	 * From a collection of algos, keep only the ones having an output compliant with the search type of interest
+	 * @param algosProposed
+	 * @param searchedType
+	 * @return
+	 */
+	private static Collection<IAlgo> keepAlgosWithOneOutputCompliantWithOutputs(Collection<IAlgo> algosProposed, IFlowType<?> searchedType) {
+		
+		Collection<IAlgo> res = new LinkedList<IAlgo>();
+		
+		for (IAlgo algo: algosProposed) {
+			
+			for (IInputOutput<?> output : algo.getOuputs()) {
+				// if one output is compliant, then add this algo to results
+				if (searchedType.compliantWith(output.getType()) && output.getType().compliantWith(searchedType)) {
+					res.add(algo);
+					break;
+				}
+			}
+			
+		}
+		
+		return res;
+		
+	}
+	
+	/**
+	 * From a collection of algos, keep only the ones having an input compliant with the search type of interest
+	 * @param algosProposed
+	 * @param searchedType
+	 * @return
+	 */
+	private static Collection<IAlgo> keepAlgosWithOneOutputCompliantWithInputs(Collection<IAlgo> algosProposed, IFlowType<?> searchedType) {
+		
+		Collection<IAlgo> res = new LinkedList<IAlgo>();
+		
+		for (IAlgo algo: algosProposed) {
+			
+			for (IInputOutput<?> input : algo.getInputs()) {
+				// if one output is compliant, then add this algo to results
+				if (searchedType.compliantWith(input.getType()) && input.getType().compliantWith(searchedType)) {
+					res.add(algo);
+					break;
+				}
+			}
+			
+		}
+		
+		return res;
+		
+	}
+	
+	
+	/**
+	 * returns the best algos, that is the ones having the higher priority
+	 * @return
+	 */
+	private static IAlgo selectBestAlgo(Map<IAlgo,Integer> proposals) {
+		
+		// select the best(S) algos
+		Set<IAlgo> betterAlgos = new HashSet<IAlgo>();
+		Integer higherPrority = -100;
+		for (Map.Entry<IAlgo,Integer> algo2priority : proposals.entrySet()) {
+			
+			final IAlgo algo = algo2priority.getKey();
+			final Integer priority = algo2priority.getValue();
+			
+			if (priority == higherPrority) {
+				betterAlgos.add(algo);
+			} else if (priority > higherPrority) {
+				betterAlgos.clear();
+				betterAlgos.add(algo);
+				higherPrority = priority;
+			}
+		}
+		
+		// and select only one
+		IAlgo bestAlgo = null;
+		if (betterAlgos.size() > 1) {
+			GLLogger.warnTech("found several ("+betterAlgos.size()+") best solutions for intuitive creation, so the selection will be random :"+betterAlgos, IntuitiveObjectCreation.class);
+			return  betterAlgos.iterator().next();
+		} else if (betterAlgos.size() == 1) {
+			GLLogger.traceTech("found a solution for intuitive creation:"+bestAlgo, IntuitiveObjectCreation.class);
+			return betterAlgos.iterator().next();
+		} else {
+			return null;
+		}
+		 
+	}
+
+	
 	/**
 	 * 
 	 * Search an intuitive creation for this context. searched both in the container and among constants.
@@ -130,70 +225,49 @@ public class IntuitiveObjectCreation {
 	protected static ProposalObjectCreation searchForAnAutoOutputForContext(ContextObjectCreation context) {
 		
 		// TODO adapt for output
-		GLLogger.debugTech("searching an intuitive input for context: "+context, IntuitiveObjectCreation.class);
+		GLLogger.debugTech("searching an intuitive output for context: "+context, IntuitiveObjectCreation.class);
 		
 		Map<IAlgo,Integer> proposals = new HashMap<IAlgo, Integer>(100);
 				
-		// let the container propose intuitive inputs
-		// in some way, it is a "context"
-		proposals.putAll(context.container.recommandAlgosContained());
-		
 		IFlowType<?> searchedType = context.inputOrOutputInstance.getType();
 
 		// load all the algorithms which have only an output, not an input
-		for (IAlgo algo: ExistingAlgos.getExistingAlgos().getAlgos()) {
-			
-			boolean oneOutputCompliant = false;
-			for (IInputOutput<?> output : algo.getOuputs()) {
-				if (searchedType.compliantWith(output.getType())) {
-					oneOutputCompliant = true;
-					break;
-				}
+		for (IAlgo algo: keepAlgosWithOneOutputCompliantWithOutputs(
+								ExistingAlgos.getExistingAlgos().getAlgos(),
+								searchedType)
+								) {
+			// add the proposal with its default priority
+			proposals.put(algo, algo.getPriorityForIntuitiveCreation());
+		}
+		
+		// let the container propose intuitive inputs
+		// in some way, it is a "context"
+		// ... but only keep the proposals compliant with our type !
+		{
+			Map<IAlgo,Integer> proposalsFromContainer = context.container.recommandAlgosContained();
+			for (IAlgo algoCompliant: keepAlgosWithOneOutputCompliantWithOutputs(
+									proposalsFromContainer.keySet(),
+									searchedType)
+									) {
+				// add the proposed algo from the container with the priority defined by the container
+				proposals.put(algoCompliant, proposalsFromContainer.get(algoCompliant));
 			}
-			
-			if (oneOutputCompliant) {
-				// add it to the list
-//				proposals.put(algo, new Integer(-1 - algo.getInputs().size()));
-				proposals.put(algo, algo.getPriorityForIntuitiveCreation());
+		}
 
-			}
-		}
-		
-		// now retain the best one !
-		Set<IAlgo> betterAlgos = new HashSet<IAlgo>();
-		Integer higherPrority = -100;
-		for (Map.Entry<IAlgo,Integer> algo2priority : proposals.entrySet()) {
-			
-			final IAlgo algo = algo2priority.getKey();
-			final Integer priority = algo2priority.getValue();
-			
-			if (priority == higherPrority) {
-				betterAlgos.add(algo);
-			} else if (priority > higherPrority) {
-				betterAlgos.clear();
-				betterAlgos.add(algo);
-				higherPrority = priority;
-			}
-		}
-		
 		// and select only one
-		IAlgo bestAlgo = null;
-		if (betterAlgos.size() > 1) {
-			GLLogger.warnTech("found several ("+betterAlgos.size()+") best solutions for intuitive creation, so the selection will be random :"+betterAlgos, IntuitiveObjectCreation.class);
-			bestAlgo = betterAlgos.iterator().next();
-		} else if (betterAlgos.size() == 1) {
-			bestAlgo = betterAlgos.iterator().next();
-			GLLogger.traceTech("found a solution for intuitive creation:"+bestAlgo, IntuitiveObjectCreation.class);
-		} else {
-			return null;
-		}
+		IAlgo bestAlgo = selectBestAlgo(proposals);
 		
+		// now find the corresponding output of interest
 		IInputOutput<?> io = null;
 		for (IInputOutput<?> o : bestAlgo.getOuputs()) {
 			if (context.inputOrOutputInstance.getType().compliantWith(o.getType())) {
 				io = o;
 				break;
 			}
+		}
+		if (io == null) {
+			GLLogger.warnTech("the algo found ("+bestAlgo+") provides no compliant output; cancelling the intuitive proposal", IntuitiveObjectCreation.class);
+			return null;
 		}
 		return new ProposalObjectCreation(bestAlgo, io);
 		
@@ -206,68 +280,44 @@ public class IntuitiveObjectCreation {
 		
 		Map<IAlgo,Integer> proposals = new HashMap<IAlgo, Integer>(100);
 				
-		// let the container propose intuitive inputs
-		// in some way, it is a "context"
-		proposals.putAll(context.container.recommandAlgosContained());
-		
 		IFlowType<?> searchedType = context.inputOrOutputInstance.getType();
 
 		// load all the algorithms which have only an input, not an output
-		for (IAlgo algo: ExistingAlgos.getExistingAlgos().getAlgos()) {
-			
-			if (!algo.canBeContainedInto(context.container))
-				continue;
-			
-			boolean oneInputCompliant = false;
-			for (IInputOutput<?> input : algo.getInputs()) {
-				if (input.getType().compliantWith(searchedType)) {
-					oneInputCompliant = true;
-					break;
-				}
-			}
-			
-			if (oneInputCompliant) {
-				// add it to the list
-				proposals.put(algo, algo.getPriorityForIntuitiveCreation());
-			}
+		for (IAlgo algo: keepAlgosWithOneOutputCompliantWithInputs(
+								ExistingAlgos.getExistingAlgos().getAlgos(),
+								searchedType)
+								) {
+			// add the proposal with its default priority
+			proposals.put(algo, algo.getPriorityForIntuitiveCreation());
 		}
 		
-		
-		// now retain the best one !
-		Set<IAlgo> betterAlgos = new HashSet<IAlgo>();
-		Integer higherPrority = -100;
-		for (Map.Entry<IAlgo,Integer> algo2priority : proposals.entrySet()) {
-			
-			final IAlgo algo = algo2priority.getKey();
-			final Integer priority = algo2priority.getValue();
-			
-			if (priority == higherPrority) {
-				betterAlgos.add(algo);
-			} else if (priority > higherPrority) {
-				betterAlgos.clear();
-				betterAlgos.add(algo);
-				higherPrority = priority;
+		// let the container propose intuitive inputs
+		// in some way, it is a "context"
+		// ... but only keep the proposals compliant with our type !
+		{
+			Map<IAlgo,Integer> proposalsFromContainer = context.container.recommandAlgosContained();
+			for (IAlgo algoCompliant: keepAlgosWithOneOutputCompliantWithInputs(
+									proposalsFromContainer.keySet(),
+									searchedType)
+									) {
+				// add the proposed algo from the container with the priority defined by the container
+				proposals.put(algoCompliant, proposalsFromContainer.get(algoCompliant));
 			}
 		}
 		
 		// and select only one
-		IAlgo bestAlgo = null;
-		if (betterAlgos.size() > 1) {
-			GLLogger.warnTech("found several ("+betterAlgos.size()+") best solutions for intuitive creation, so the selection will be random :"+betterAlgos, IntuitiveObjectCreation.class);
-			bestAlgo = betterAlgos.iterator().next();
-		} else if (betterAlgos.size() == 1) {
-			bestAlgo = betterAlgos.iterator().next();
-			GLLogger.traceTech("found a solution for intuitive creation:"+bestAlgo, IntuitiveObjectCreation.class);
-		} else {
-			return null;
-		}
-		
+		IAlgo bestAlgo = selectBestAlgo(proposals);
+
 		IInputOutput<?> io = null;
 		for (IInputOutput<?> o : bestAlgo.getInputs()) {
 			if (o.getType().compliantWith(context.inputOrOutputInstance.getType())) {
 				io = o;
 				break;
 			}
+		}
+		if (io == null) {
+			GLLogger.warnTech("the algo found ("+bestAlgo+") provides no compliant output; cancelling the intuitive proposal", IntuitiveObjectCreation.class);
+			return null;
 		}
 		return new ProposalObjectCreation(bestAlgo, io);
 		
