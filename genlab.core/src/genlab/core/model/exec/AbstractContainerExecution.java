@@ -181,8 +181,9 @@ public abstract class AbstractContainerExecution
 			} else if (somethingCanceled && !ignoreCancelFromChildren) {
 				//cancel();
 				ourState = ComputationState.FINISHED_CANCEL;
-			} else 
+			} else {
 				ourState = ComputationState.FINISHED_OK;
+			}
 			
 			messages.traceTech("all subs terminated; should transmit results (and set my state to "+ourState+")", getClass());
 			hookContainerExecutionFinished(ourState);
