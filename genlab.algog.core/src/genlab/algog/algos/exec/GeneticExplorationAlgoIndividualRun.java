@@ -91,10 +91,18 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 		resultTargets = new Object[fitnessOutput.size()];
 		resultValues = new Object[fitnessOutput.size()];
 		
-		if (state  == ComputationState.FINISHED_FAILURE || state  == ComputationState.FINISHED_CANCEL) {
+		if (state == ComputationState.FINISHED_FAILURE || state == ComputationState.FINISHED_CANCEL) {
 			// when there is an error, then goal fitness becomes negative infinity.
 			messages.warnUser("the evaluation of this individual led to an error. We assume the space of parameters is not full, and a defined Infinite fitness for this individual", getClass());
-			java.util.Arrays.fill(resultFitness, Double.POSITIVE_INFINITY);
+			for (int i=0; i<fitnessOutput.size(); i++) {
+				IAlgoInstance ai = fitnessOutput.get(i);
+				IGoalExec goal = (IGoalExec) instance2execForSubtasks.get(ai);
+				
+				resultFitness[i] = Double.POSITIVE_INFINITY;
+				resultTargets[i] = goal.getTarget();
+				resultValues[i] = null;
+				
+			}
 		} else {
 			for (int i=0; i<fitnessOutput.size(); i++) {
 				IAlgoInstance ai = fitnessOutput.get(i);
@@ -107,7 +115,7 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 			}
 		}
 		
-		messages.debugTech("received fitness "+Arrays.toString(resultFitness), getClass());
+		messages.debugTech("received fitness for "+individual+" => "+Arrays.toString(resultFitness), getClass());
 
 		
 	}
@@ -236,22 +244,28 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 		if (!progress.getComputationState().isFinished())
 			throw new ProgramException("asked for the fitness of an individual run which is not finished yet");
 		
-		return resultFitness;
+		if (progress.getComputationState() == ComputationState.FINISHED_OK)
+			return resultFitness;
+		else
+			return null;
 	}
 	
 	public final Object[] getResultValues() {
 		
 		if (!progress.getComputationState().isFinished())
-			throw new ProgramException("asked for the fitness of an individual run which is not finished yet");
+			throw new ProgramException("asked for the results of an individual run which is not finished yet");
 		
-		return resultValues;
+		if (progress.getComputationState() == ComputationState.FINISHED_OK)
+			return resultValues;
+		else
+			return null;
 	}
 	
 
 	public final Object[] getResultTargets() {
 		
 		if (!progress.getComputationState().isFinished())
-			throw new ProgramException("asked for the fitness of an individual run which is not finished yet");
+			throw new ProgramException("asked for the targets of an individual run which is not finished yet");
 		
 		return resultTargets;
 	}
