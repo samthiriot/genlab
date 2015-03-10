@@ -26,13 +26,7 @@ public class ADoubleGene extends ANumericGene<Double> {
 
 	@Override
 	public Double mutate(Uniform uniform, Object previousValue) {
-		return Math.min(
-				max, 
-				Math.max(
-						(Double) previousValue + uniform.nextDoubleFromTo(-0.1, 0.1), // TODO parameter ?
-						min
-						)
-				);
+		return uniform.nextDoubleFromTo(min, max); // TODO check !
 	}
 
 }

@@ -35,13 +35,7 @@ public class AIntegerGene extends ANumericGene<Integer> {
 	@Override
 	public Integer mutate(Uniform uniform, Object previousValue) {
 		
-		return Math.min(
-				max, 
-				Math.max(
-						(Integer) previousValue + uniform.nextIntFromTo(-20, 20), // TODO parameter ?
-						min
-						)
-				);
+		return uniform.nextIntFromTo(min, max);
 	}
 
 	
