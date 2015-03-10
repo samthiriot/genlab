@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 /**
  * TODO elitism ? 
@@ -42,18 +41,19 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 
 	protected SortedMap<Integer,Collection<AnIndividual>> fronts = null;
 	protected Map<AnIndividual,Integer> individual2rank = null;
-	protected Map<AnIndividual, Double[]> indiv2fitness = null;
+	protected Map<AnIndividual, Double[]> indiv2fitnessForLastGenerations = null;
 	
 
 	// for each generation, and each individual, stores the corresponding fitness
 	protected final LinkedHashMap<Integer,Collection<AnIndividual>> generation2paretoFront;
 
+	protected int targetSelectedPopulation;
 	
 	public NSGA2Exec(IExecution exec,
 			GeneticExplorationAlgoContainerInstance algoInst) {
 		super(exec, algoInst);
 
-		generation2paretoFront = new LinkedHashMap<Integer,Collection<AnIndividual>>(paramStopMaxIterations);;
+		generation2paretoFront = new LinkedHashMap<Integer,Collection<AnIndividual>>(paramStopMaxIterations);
 	}
 	
 
@@ -66,29 +66,56 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 	 * @param fit2
 	 * @return
 	 */
-	protected boolean dominates(Double[] fit1, Double[] fit2) {
+	/*protected boolean dominates(Double[] fit1, Double[] fit2) {
+		
+		int strictSup = 0;
 		
 		for (int i=0; i<fit1.length; i++) {
 			
-			if (fit1[i] > fit2[i])
+			if (fit1[i] < fit2[i]) {
+				strictSup++;
+			} else if (fit1[i] == fit2[i]) {
+				// do nothing
+			} else { // fit1[i] > fit2[i]
 				return false;
+			}
 			
 		}
 		
+		return strictSup > 0;
+		
+	}*/
+
+	protected final boolean dominates(Double[] fit1, Double[] fit2) {
+		
+		for (int i=0; i<fit1.length; i++) {
+			
+			if (fit1[i] > fit2[i]) {
+				return false;
+			} 
+			
+		}
 		return true;
 		
 	}
 
+	/**
+	 * for display purpose, transforms a set of individuals 
+	 * (possibly representing a Pareto front) to a String
+	 * @param front
+	 * @return
+	 */
 	protected String frontToString(Collection<AnIndividual> front) {
 		StringBuffer sb = new StringBuffer("\t");
 		for (AnIndividual i: front) {
-			sb.append(i.toString()).append("\n\t");
+			sb.append(i.toString()).append(" => ").append(Arrays.toString(indiv2fitnessForLastGenerations.get(i))).append("\n\t");
 		}
 		return sb.toString();
 	}
+	
 	/**
 	 * As described in NSGA-II
-	 * @param indiv2fitness
+	 * @param indiv2fitnessForLastGenerations
 	 */
 	protected void fastNonDominatedSort(Map<AnIndividual, Double[]> individuals2fitness) {
 		
@@ -104,6 +131,10 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		for (AnIndividual p : individuals2fitness.keySet()) {
 		
 			final Double[] pFitness = individuals2fitness.get(p);
+			
+			if (pFitness == null)
+				// don't even include individuals who have no fitness
+				continue; 
 			
 			int dominationCount = 0;
 			Set<AnIndividual> dominatedIndividuals = new HashSet<AnIndividual>(individuals2fitness.size());
@@ -201,7 +232,10 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 
 		@Override
 		public int compare(AnIndividual o1, AnIndividual o2) {
-			return Double.compare(indiv2fitness.get(o1)[m], indiv2fitness.get(o2)[m]);
+			
+			final Double fitness1 = indiv2fitness.get(o1)[m];
+			final Double fitness2 = indiv2fitness.get(o2)[m];
+			return Double.compare(fitness1, fitness2);
 		}
 		
 	}
@@ -251,8 +285,9 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		int objectivesCount = indiv2fitness.values().iterator().next().length;
 		
 		// init distance
-		for (AnIndividual i: pop)
+		for (AnIndividual i: pop) {
 			individual2distance.put(i,0d);
+		}
 		
 		List<AnIndividual> sortedPop = new ArrayList<AnIndividual>(pop);
 		for (int m=0; m<objectivesCount; m++) {
@@ -262,6 +297,11 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 			final double minFitness = indiv2fitness.get(sortedPop.get(0))[m];
 			final double maxFitness = indiv2fitness.get(sortedPop.get(l-1))[m];
 			final double diffFitness = maxFitness - minFitness;
+			
+			if (Double.isNaN(diffFitness)) {
+				// ignore the individuals which were not evaluated (no data for comparison !)
+				continue;
+			}
 					
 			individual2distance.put(sortedPop.get(0), Double.POSITIVE_INFINITY);
 			individual2distance.put(sortedPop.get(l-1), Double.POSITIVE_INFINITY);
@@ -298,7 +338,7 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 				break;
 			}
 			
-			messages.debugUser("keeping as offsprings the "+front.size()+" individual of front "+frontIdx, getClass());
+			messages.infoUser("keeping as offsprings the "+front.size()+" individual of front "+frontIdx, getClass());
 
 			// add all the fronts
 			offsprings.addAll(front);
@@ -309,25 +349,100 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		int remaining = parentsCountToSelect - offsprings.size();
 		if (remaining > 0) {
 			
-			messages.debugUser("still have to select "+remaining+" offsprings; will select them from the front "+lastFrontIdx, getClass());
-			
-			// now complete with only a part of the last front
-			
-			List<AnIndividual> sortedFront = new ArrayList<AnIndividual>(fronts.get(lastFrontIdx));
-			
-			Map<AnIndividual,Double> individual2distance = calculateCrowdingDistance(sortedFront, indiv2fitness);
-			
-			Collections.sort(sortedFront, new ComparatorCrowded(individual2distance));
-			
-			// add the best ones based on the crowded operator
-			for (int i=0; i<remaining; i++) {
-				offsprings.add(sortedFront.get(i));
+			if (fronts.get(lastFrontIdx) == null || fronts.get(lastFrontIdx).isEmpty()) {
+				messages.infoUser("no individuals to select from front "+lastFrontIdx+" which is empty", getClass());
+			} else {
+				messages.infoUser("still have to select "+remaining+" offsprings; will select them from the front "+lastFrontIdx, getClass());
+				
+				// now complete with only a part of the last front
+				
+				List<AnIndividual> sortedFront = new ArrayList<AnIndividual>(fronts.get(lastFrontIdx));
+				Map<AnIndividual,Double> individual2distance = calculateCrowdingDistance(sortedFront, indiv2fitness);
+				
+				Collections.sort(sortedFront, new ComparatorCrowded(individual2distance));
+				
+				// add the best ones based on the crowded operator
+				// (as long as we do have some offsprings !)
+				for (int i=0; i<remaining && i < sortedFront.size(); i++) {
+					offsprings.add(sortedFront.get(i));
+				}
 			}
-			
 		}
 		
+		if (offsprings.size() < parentsCountToSelect)
+			messages.infoUser("we were not able to select enough individuals from Q(t) and P(t): selected "+offsprings.size()+" for "+parentsCountToSelect+" expected", getClass());
 		
 		return offsprings;
+	}
+	
+	public Map<AnIndividual,Double[]> getIndivAndFitnessFor2LastGenerations(int iterationsMade) {
+		
+		Map<AnIndividual,Double[]> previous = generation2fitness.get(iterationsMade-1);
+
+		if (previous == null)
+			// generation evaluated: Q(t)
+			return generation2fitness.get(iterationsMade);
+		else {
+			Map<AnIndividual,Double[]> res = new HashMap<AnIndividual, Double[]>(paramPopulationSize*2);
+			
+			// add the last generation (there is always one)
+			// generation evaluated: Q(t)
+			res.putAll(generation2fitness.get(iterationsMade));
+			
+			// add the previous generation (only if available)
+			// generation evaluated: P(t)
+			res.putAll(previous);
+			
+			return res;
+		}
+		
+	}
+	
+
+	public Map<AnIndividual,Object[]> getIndivAndTargetFor2LastGenerations(int iterationsMade) {
+		
+		Map<AnIndividual,Object[]> previous = generation2targets.get(iterationsMade-1);
+
+		if (previous == null)
+			// generation evaluated: Q(t)
+			return generation2targets.get(iterationsMade);
+		else {
+			Map<AnIndividual,Object[]> res = new HashMap<AnIndividual, Object[]>(paramPopulationSize*2);
+			
+			// add the last generation (there is always one)
+			// generation evaluated: Q(t)
+			res.putAll(generation2targets.get(iterationsMade));
+			
+			// add the previous generation (only if available)
+			// generation evaluated: P(t)
+			res.putAll(previous);
+			
+			return res;
+		}
+		
+	}
+	
+	public Map<AnIndividual,Object[]> getIndivAndValuesFor2LastGenerations(int iterationsMade) {
+		
+		Map<AnIndividual,Object[]> previous = generation2values.get(iterationsMade-1);
+
+		if (previous == null)
+			// generation evaluated: Q(t)
+			return generation2values.get(iterationsMade);
+		else {
+			Map<AnIndividual,Object[]> res = new HashMap<AnIndividual, Object[]>(paramPopulationSize*2);
+			
+			// add the last generation (there is always one)
+			// generation evaluated: Q(t)
+			res.putAll(generation2values.get(iterationsMade));
+			
+			// add the previous generation (only if available)
+			// generation evaluated: P(t)
+			res.putAll(previous);
+			
+			return res;
+		}
+		
 	}
 	
 	protected void analyzeLastPopulation(Map<AnIndividual, Double[]> indiv2fitness) {
@@ -336,39 +451,28 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		// but NSGA2, in order to introduce elitism, compares the current generation and the previous one (if any).
 		// so we first preprocess the received fitness with the previous generation
 		// also a good way to remove solutions at negative infinity (failure)
-		this.indiv2fitness = new HashMap<AnIndividual, Double[]>(indiv2fitness.size()*2);
-		
-		/*for (Map.Entry<AnIndividual, Double[]> ind2fit : indiv2fitness.entrySet()) {
-			for (Double f: ind2fit.getValue()) {
-				if (f.isInfinite())
-					return;
-			}
-		}*/
-		this.indiv2fitness.putAll(indiv2fitness);	// the current generation
-		{
-			Map<AnIndividual, Double[]> previousGen = this.generation2fitness.get(this.iterationsMade-1);
-			if (previousGen != null)
-				this.indiv2fitness.putAll(previousGen); // the previous generation
-		}
-				
+		this.indiv2fitnessForLastGenerations = getIndivAndFitnessFor2LastGenerations(iterationsMade);
+		if (this.indiv2fitnessForLastGenerations.size() > paramPopulationSize) 
+			messages.infoUser("elitism : taking into account the results of the previous iteration "+(this.iterationsMade-1), getClass());
 		
 		// reset internal variables
 		this.fronts = null;
 		this.individual2rank = null;
-		this.indiv2fitness = indiv2fitness;
 		
-		// compute fronts and rank
-		fastNonDominatedSort(indiv2fitness);
+		// compute fronts and rank on P(t) U Q(t)
+		fastNonDominatedSort(this.indiv2fitnessForLastGenerations);
 		
 	}
 	
 	@Override
 	protected INextGeneration selectIndividuals(Map<AnIndividual, Double[]> indiv2fitness) {
 
+		// analyze the last run and the one before
 		analyzeLastPopulation(indiv2fitness);
 		
 		// select parents
-		Set<AnIndividual> offsprings  = selectParents(indiv2fitness, indiv2fitness.size()/2);
+		// TODO parameter: proportion of parents to select ? 
+		Set<AnIndividual> offsprings  = selectParents(this.indiv2fitnessForLastGenerations, paramPopulationSize);
 
 		// now sort the population by genome, as expected by the parent algo
 		NextGenerationWithElitism selectedIndividuals = new NextGenerationWithElitism(indiv2fitness.size());
@@ -381,7 +485,7 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		// clear internal variables (free memory)
 		this.fronts = null;
 		this.individual2rank = null;
-		this.indiv2fitness = null;
+		this.indiv2fitnessForLastGenerations = null;
 		
 		return selectedIndividuals;
 	}
@@ -414,10 +518,10 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 			
 			// for each iteration
 			final Collection<AnIndividual> individuals = generation2paretoFront.get(iterationId);
-			final Map<AnIndividual,Double[]> generationFitness = generation2fitness.get(iterationId);
-			final Map<AnIndividual,Object[]> indiv2value = generation2values.get(iterationId);
-			final Map<AnIndividual,Object[]> indiv2target = generation2targets.get(iterationId);
-
+			final Map<AnIndividual,Double[]> generationFitness = getIndivAndFitnessFor2LastGenerations(iterationId);
+			final Map<AnIndividual,Object[]> indiv2value = getIndivAndValuesFor2LastGenerations(iterationId);
+			final Map<AnIndividual,Object[]> indiv2target = getIndivAndTargetFor2LastGenerations(iterationId);
+			
 			storeIndividualsData(
 					tab, 
 					titleIteration, iterationId, titleParetoGenome, 
