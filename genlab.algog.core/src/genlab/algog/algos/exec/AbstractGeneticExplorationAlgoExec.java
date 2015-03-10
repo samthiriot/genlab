@@ -230,8 +230,9 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 				
 	}
 
-
 	protected Object[][] generateInitialPopulation(AGenome genome, int popsize) {
+
+		// TODO generation of the population with better init !
 		
 		Object[][] population;
 		
@@ -395,6 +396,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			Map<AnIndividual,Object[]> resultTargets,
 			Map<AnIndividual,Object[]> resultValues);
 	
+	
 	protected void manageResultsForCurrentGeneration(
 			Map<AnIndividual,Double[]> resultFitness,
 			Map<AnIndividual,Object[]> resultTargets,
@@ -521,53 +523,59 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		
 		for (AnIndividual ind : individuals) {
 			
-			final Double[] fitness = indiv2fitness.get(ind);
-			final Object[] values = indiv2value.get(ind);
-			final Object[] targets = indiv2target.get(ind);
-
-								
-			int rowId = tab.addRow();
-			tab.setValue(rowId, titleIteration, iterationId);
-			tab.setValue(rowId, titleGenome, ind.genome.name);
+			try {
+				final Double[] fitness = indiv2fitness.get(ind);
+				final Object[] values = indiv2value.get(ind);
+				final Object[] targets = indiv2target.get(ind);
+	
+									
+				int rowId = tab.addRow();
+				tab.setValue(rowId, titleIteration, iterationId);
+				tab.setValue(rowId, titleGenome, ind.genome.name);
+				
+				// export fitness
+				String[] colnames = genome2fitnessColumns.get(ind.genome);
+				for (int i=0; i<colnames.length/3; i++) {
+					
+					int I=i*3;
+					
+					tab.setValue(
+							rowId, 
+							colnames[I], 
+							targets[i]
+							);
+					
+					I=I+1;
+					
+					tab.setValue(
+							rowId, 
+							colnames[I], 
+							values[i]
+							);
+	
+					I=I+1;
+					
+					tab.setValue(
+							rowId, 
+							colnames[I], 
+							fitness[i]
+							);
+				}
+				
+				// export genes
+				String[] genesNames = genome2geneColumns.get(ind.genome);
+				for (int i=0; i<genesNames.length; i++) {
+				
+					tab.setValue(
+							rowId, 
+							genesNames[i], 
+							ind.genes[i]
+							);
+				}
 			
-			// export fitness
-			String[] colnames = genome2fitnessColumns.get(ind.genome);
-			for (int i=0; i<colnames.length/3; i++) {
-				
-				int I=i*3;
-				
-				tab.setValue(
-						rowId, 
-						colnames[I], 
-						targets[i]
-						);
-				
-				I=I+1;
-				
-				tab.setValue(
-						rowId, 
-						colnames[I], 
-						values[i]
-						);
-
-				I=I+1;
-				
-				tab.setValue(
-						rowId, 
-						colnames[I], 
-						fitness[i]
-						);
-			}
-			
-			// export genes
-			String[] genesNames = genome2geneColumns.get(ind.genome);
-			for (int i=0; i<genesNames.length; i++) {
-			
-				tab.setValue(
-						rowId, 
-						genesNames[i], 
-						ind.genes[i]
-						);
+			} catch (RuntimeException e) {
+				messages.errorTech("error while exporting data for individual "+ind, getClass());
+				e.printStackTrace();
 			}
 			
 		}
@@ -784,7 +792,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			
 		}
 		
-		messages.infoUser("mutations : "+sb.toString(), getClass());
+		messages.infoUser("evolution: "+sb.toString(), getClass());
 
 		return novelPopulation;
 	}
@@ -795,6 +803,14 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 */
 	protected abstract INextGeneration selectIndividuals(Map<AnIndividual,Double[]> indiv2fitness);
 	
+
+	public Map<AnIndividual,Double[]> getIndivAndFitnessForPreviousLastGeneration() {
+		return generation2fitness.get(iterationsMade-1);
+	}
+	
+	public Map<AnIndividual,Double[]> getIndivAndFitnessForLastGeneration() {
+		return generation2fitness.get(iterationsMade);
+	}
 	
 	/**
 	 * Generate the next generation using specific selection, crossover and mutation operators.
@@ -803,12 +819,41 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	protected Map<AGenome,Object[][]> prepareNextGeneration() {
 		
 		int previousGenerationId = iterationsMade;
-		final Map<AnIndividual,Double[]> indiv2fitness =  generation2fitness.get(previousGenerationId);
+		
+		// reuses the previous population
+		final Map<AnIndividual,Double[]> indiv2fitness =  getIndivAndFitnessForLastGeneration();
+		messages.infoUser("retrieved "+indiv2fitness.size()+" individuals from the previous generation "+previousGenerationId, getClass());
 		
 		// SELECT 
 		
+		// TODO elitism !
+		
 		final INextGeneration selectedIndividuals  = selectIndividuals(indiv2fitness);
 		final Map<AGenome,Set<AnIndividual>> selectedGenome2Population = selectedIndividuals.getAllIndividuals();
+		int totalIndividualsSelected = selectedIndividuals.getTotalOfIndividualsAllGenomes();
+		messages.infoUser("selected for "+selectedGenome2Population.size()+" genome(s) a total of "+totalIndividualsSelected+" individuals", getClass());
+		
+		// TODO if the population is not big enough, recreate some novel individuals
+		if (totalIndividualsSelected < paramPopulationSize) {
+			messages.warnUser("not enough individuals selected ! Probably many individuals were not evaluated with success. We will create novel individuals to repopulate the population", getClass());
+
+			for (AGenome genome : selectedGenome2Population.keySet()) {
+				
+				Set<AnIndividual> individuals = selectedGenome2Population.get(genome);
+				
+				int targetSizeForGenome = paramPopulationSize/genome2algoInstance.size(); // TODO should be what ?
+				int diff = targetSizeForGenome - individuals.size(); 
+				if (diff > 0) {
+					
+					messages.infoUser("adding "+diff +" new individuals in the population for genome "+genome.name, getClass());
+					Object[][] population = generateInitialPopulation(genome, diff);
+					for (Object[] indiv : population) {
+						individuals.add(new AnIndividual(genome, indiv));
+					}
+				}
+			}
+			
+		}
 		
 		// CROSS
 		// TODO manage multi specy !
