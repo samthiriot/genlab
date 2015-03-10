@@ -35,8 +35,13 @@ public class GoalExec extends AbstractAlgoExecutionOneshot implements IGoalExec 
 		
 		target = (Number)getInputValueForInput(GoalAlgo.INPUT_TARGET);
 		value = (Number)getInputValueForInput(GoalAlgo.INPUT_VALUE);
+		int rounding = (Integer)algoInst.getValueForParameter(GoalAlgo.PARM_ROUNDING);
+		int factor = (int)Math.pow(10, rounding);
 		
-		resultDiffAbs = Math.abs(target.doubleValue()-value.doubleValue());
+		resultDiffAbs = 
+				(double)Math.round(
+						Math.abs(target.doubleValue()-value.doubleValue())*factor
+				)/factor;
 		
 		// end of computation
 		setResult(new ComputationResult(algoInst, progress, messages));

@@ -9,6 +9,7 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.NumberFlowType;
+import genlab.core.parameters.IntParameter;
 
 /**
  * TODO check the algorithm with the principle: the goal should not come from a genetic algo, from a gene, in 
@@ -37,6 +38,13 @@ public class GoalAlgo extends AbstractGeneticAlgo  {
 			"the value actually observed"
 			);
 	
+	public static final IntParameter PARM_ROUNDING = new IntParameter(
+			"param_rounding", 
+			"rounding decimals for the fitness", 
+			"number of decimals to round (if negative, rounding of the int value)", 
+			10
+			);
+	
 	public static final String NAME = "goal";
 
 	public GoalAlgo() {
@@ -44,7 +52,13 @@ public class GoalAlgo extends AbstractGeneticAlgo  {
 
 		inputs.add(INPUT_TARGET);
 		inputs.add(INPUT_VALUE);
+	
+		// TODO can we have negative rounding ? 
+		// TODO is it a good idea ?
+		PARM_ROUNDING.setMinValue(0);
+		PARM_ROUNDING.setMaxValue(10);
 		
+		registerParameter(PARM_ROUNDING);
 	}
 
 	@Override
