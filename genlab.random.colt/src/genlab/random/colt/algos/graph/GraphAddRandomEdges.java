@@ -51,15 +51,19 @@ public class GraphAddRandomEdges extends AbstractBasicAlgoRandomEdges {
 				Integer count = (Integer)getInputValueForInput(INPUT_COUNT);
 
 
-				progress.setProgressTotal(count);
+				progress.setProgressTotal(count+1);
 
 				IGenlabGraph outGraph = null;
 				
 				if (count == 0) {
 					outGraph = inGraph;
+					progress.incProgressMade();
+
 				} else {
 					outGraph = inGraph.clone(inGraph.getGraphId()+"_clone");
 					
+					progress.incProgressMade();
+
 					Uniform coltUniform = new Uniform(0, inGraph.getVerticesCount()-1, randomEngine);;
 					
 					for (int i=0; i<count; i++) {
