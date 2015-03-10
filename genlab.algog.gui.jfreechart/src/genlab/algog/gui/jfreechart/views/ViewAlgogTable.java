@@ -340,7 +340,7 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 		// create chart
 		final FastScatterPlotWithLines plot = createFastScatteredChart(maxIterations, serie);
 		
-		final JFreeChart chart = new JFreeChart("gene "+gene+" values for interactions", plot);
+		final JFreeChart chart = new JFreeChart("gene "+gene+" values per iteration", plot);
 		chart.setAntiAlias(true);
 		chart.setBackgroundPaint(Color.WHITE);
         

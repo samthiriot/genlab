@@ -237,8 +237,15 @@ public final class ViewAlgogRadarTable
 	        	final Map<String,String> metadataGoal = metadata.get(goal);
 	            String colGoalTarget = metadataGoal.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_TARGET);
 	            String colGoalValue = metadataGoal.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
+	            final Object goalValueObject = lastVersionDataToDisplay.getValue(rowId, colGoalValue);
+	            
+	            if (goalValueObject == null) {
+	            	// data not available
+	            	continue;
+	            }
+	            
 	            double goalTarget = ((Number)lastVersionDataToDisplay.getValue(rowId, colGoalTarget)).doubleValue();
-	            double goalValue = ((Number)lastVersionDataToDisplay.getValue(rowId, colGoalValue)).doubleValue();
+	            double goalValue = ((Number)goalValueObject).doubleValue();
 	            
 	            double valueMin = Math.min(key2min.get(colGoalValue).doubleValue(), goalTarget);
 	            double valueMax = Math.max(key2max.get(colGoalValue).doubleValue(), goalTarget);
@@ -424,6 +431,10 @@ public final class ViewAlgogRadarTable
 		            
 		        	String colGoalValue = metadataGoal.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
 		            Number goalValue = (Number)lastVersionDataToDisplay.getValue(currentRow, colGoalValue);
+		            if (goalValue == null) {
+		            	// data not available
+		            	continue;
+		            }
 		            
 		            Number minBefore = key2min.get(colGoalValue);
 		            if ( (minBefore == null) || (minBefore.doubleValue() > goalValue.doubleValue())) {
