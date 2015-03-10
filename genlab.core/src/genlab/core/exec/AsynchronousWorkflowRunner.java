@@ -59,7 +59,7 @@ public class AsynchronousWorkflowRunner implements Runnable {
 		Execution exec = new Execution(r);
 		exec.setExecutionForced(forceExec);
 		exec.getListOfMessages().addAll(checkInfo.messages);
-		exec.getListOfMessages().setFilterIgnoreBelow(MessageLevel.INFO);
+		exec.getListOfMessages().setFilterIgnoreBelow(MessageLevel.WARNING);
 
 		ExecutionHooks.singleton.notifyParentTaskAdded(exec);	// TODO something clean...
 		IAlgoExecution execution = workflow.execute(exec);
