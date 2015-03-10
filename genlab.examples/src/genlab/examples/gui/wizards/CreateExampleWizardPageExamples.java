@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
 
+import genlab.core.model.meta.AlgoCategory;
+import genlab.core.model.meta.IFlowType;
 import genlab.examples.gui.creation.ExamplesCreation;
 import genlab.gui.VisualResources;
 import genlab.gui.examples.contributors.ExistingExamples;
@@ -16,6 +18,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -23,6 +26,7 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -66,13 +70,12 @@ public class CreateExampleWizardPageExamples extends WizardPage {
 	public void createControl(Composite parent) {
 	
 		sc = new ScrolledComposite(parent, SWT.V_SCROLL | SWT.BORDER);
-		GridData gdSc = new GridData(SWT.FILL, SWT.FILL, false, false);
+		GridData gdSc = new GridData(SWT.FILL, SWT.BEGINNING, false, false);
 		sc.setLayoutData(gdSc);
 		sc.setExpandHorizontal(false);
 		sc.setExpandVertical(false);
 		sc.setAlwaysShowScrollBars(true);
-
-		//sc.setBounds(parent.getClientArea());
+		
 		
 		final Composite inside = new Composite(sc, SWT.None);
 		sc.setContent(inside);
@@ -126,26 +129,55 @@ public class CreateExampleWizardPageExamples extends WizardPage {
 			
 			buttons.add(button);
 			
-			Label lblD = new Label(inside, SWT.NONE);
-			lblD.setBackground(VisualResources.COLOR_BG_WIDGET);
-			lblD.setText("difficulty: "+ex.getDifficulty());			
-			GridData gdLabelD = new GridData(SWT.FILL, SWT.FILL, false, false);
-			gdLabelD.horizontalIndent = INDENT;
-			lblD.setLayoutData(gdLabelD);
+			// display difficulty
+			{
+				Label lblD = new Label(inside, SWT.NONE);
+				lblD.setBackground(VisualResources.COLOR_BG_WIDGET);
+				lblD.setText("difficulty: "+ex.getDifficulty());			
+				lblD.setFont(JFaceResources.getFontRegistry().getItalic(""));
+				GridData gdLabelD = new GridData(SWT.FILL, SWT.FILL, false, false);
+				gdLabelD.horizontalIndent = INDENT;
+				lblD.setLayoutData(gdLabelD);
+			}
 			
-			Label lbl = new Label(inside, SWT.WRAP);
-			lbl.setText(ex.getDescription());
-			GridData gdLabel = new GridData(SWT.FILL, SWT.FILL, true, false);
-			gdLabel.horizontalIndent = INDENT;
-			lbl.setLayoutData(gdLabel);
-			lbl.setBackground(VisualResources.COLOR_BG_WIDGET);
+			// display description
+			{
+				Label lbl = new Label(inside, SWT.WRAP);
+				lbl.setText(ex.getDescription());
+				GridData gdLabel = new GridData(SWT.FILL, SWT.FILL, true, false);
+				gdLabel.horizontalIndent = INDENT;
+				lbl.setLayoutData(gdLabel);
+				lbl.setBackground(VisualResources.COLOR_BG_WIDGET);
+			}
 			
+			// display thematics
+			{
+				Label lbl = new Label(inside, SWT.WRAP);
+				StringBuffer sb = new StringBuffer(); 
+				sb.append("shows: ");
+				for (AlgoCategory categ : ex.getIllustratedAlgoCategories()) {
+					sb.append(categ.name);
+					sb.append(", ");
+				}
+				for (IFlowType<?> flowtype: ex.getIllustratedFlowTypes()) {
+					sb.append("type ");
+					sb.append(flowtype.getShortName());
+					sb.append(", ");
+				}
+				lbl.setText(sb.toString());
+				lbl.setFont(JFaceResources.getFontRegistry().getItalic(""));
+				GridData gdLabel = new GridData(SWT.FILL, SWT.FILL, true, false);
+				gdLabel.horizontalIndent = INDENT;
+				lbl.setLayoutData(gdLabel);
+				lbl.setBackground(VisualResources.COLOR_BG_WIDGET);
+			}
 		}
 		
 		// layout
 		inside.layout(true);
 		sc.setBounds(parent.getClientArea());
-		inside.setSize(inside.computeSize(sc.getClientArea().width, SWT.DEFAULT));
+		
+		inside.setSize(inside.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 		sc.setMinSize(inside.getSize());
 		sc.layout(true);
 		//inside.layout(true);

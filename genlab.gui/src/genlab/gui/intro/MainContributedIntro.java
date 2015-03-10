@@ -107,9 +107,170 @@ public class MainContributedIntro extends IntroPart implements IIntroPart {
 			.setLayoutData(new GridData(SWT.FILL, SWT.TOP, false, true));
 	
 		
+		// create examples
+		
 		return host;
 	}
 	
+	protected Section addSectionPlugins(FormToolkit toolkit) {
+		
+		Section sectionPlugins = toolkit.createSection(form.getBody(), Section.DESCRIPTION | Section.TITLE_BAR | Section.EXPANDED | Section.TWISTIE );
+		sectionPlugins.setText("Plugins");
+		sectionPlugins.setDescription(
+				"GenLab is a modular laboratory made of many plugins. "
+				+ "Each plugin brings features: algorithms that can be used in workflows, views or other tools. "
+				+ "Note you might contribute by creating your own plugin to integrate your favorite library !");
+
+		
+		Composite compoPlugins = toolkit.createComposite(sectionPlugins);
+		compoPlugins.setLayout(new GridLayout(1,false));
+		
+		// TODO propose people to develop their plugins
+		toolkit
+			.createLabel(compoPlugins, "Currently "+ExistingAlgos.getExistingAlgos().getAlgos().size()+" algorithms are provided by the plugins.", SWT.WRAP)
+			.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+	
+		// populate
+		//Table tablePlugins = toolkit.createTable(compoPlugins, SWT.BORDER);
+		//GridData gdTablePlugins = new GridData(SWT.FILL, SWT.FILL, false, true);
+		//tablePlugins.setLayoutData(gdTablePlugins);
+		//new TableColumn(tablePlugins, SWT.NONE).setText("name");
+		//new TableColumn(tablePlugins, SWT.NONE).setText("description");
+		
+		//tablePlugins.setLayoutData(layoutData);
+		Bundle[] bundles = Activator.getDefault().getBundle().getBundleContext().getBundles();
+		for (int i=bundles.length -1 ; i>=0; i--) {
+			Bundle bundle = bundles[i];
+			try {
+    			String activator =  (String)bundle.getHeaders().get(Constants.BUNDLE_ACTIVATOR);
+    			if (activator == null)
+    				continue;
+    			
+    			Class activatorClass = bundle.loadClass(activator);
+    			
+    			if (IGenlabPlugin.class.isAssignableFrom(activatorClass)) {
+    				
+    				String name = null;
+    				String desc = null;
+    				{
+    					Method method = activatorClass.getMethod("getName");
+    					Object o = method.invoke(null);
+	    				name = (String)o;
+    				}
+    				{
+    					Method method = activatorClass.getMethod("getDescription");
+    					Object o = method.invoke(null);
+	    				desc = (String)o;
+    				}
+    				
+    				createPluginWidget(toolkit, compoPlugins, name, desc);
+    				
+    				//TableItem item = new TableItem(tablePlugins, SWT.WRAP);
+    				//item.setText(new String[] { name, desc });
+    						    					
+    			}
+    			
+    			
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				GLLogger.warnTech("the plugin "+bundle+" activator does implement IGenlabPlugin, but does not declares static methods getName and getDescription", getClass());
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		//tablePlugins.getColumn(0).pack();
+		//tablePlugins.getColumn(1).pack();
+		sectionPlugins.setClient(compoPlugins);
+		
+		return sectionPlugins;
+	}
+	
+
+
+	protected Section addSectionDoc(FormToolkit toolkit) {
+		
+		Section sectionPlugins = toolkit.createSection(form.getBody(), Section.DESCRIPTION | Section.TITLE_BAR | Section.EXPANDED | Section.TWISTIE );
+		sectionPlugins.setText("Documentation");
+		sectionPlugins.setDescription("You can easily retrieve more information about GenLab online");
+
+		
+		Composite compoPlugins = toolkit.createComposite(sectionPlugins);
+		compoPlugins.setLayout(new GridLayout(1,false));
+		
+		// TODO propose people to develop their plugins
+		toolkit
+			.createLabel(compoPlugins, "Currently "+ExistingAlgos.getExistingAlgos().getAlgos().size()+" algorithms are provided by the plugins.", SWT.WRAP)
+			.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+	
+		// populate
+		//Table tablePlugins = toolkit.createTable(compoPlugins, SWT.BORDER);
+		//GridData gdTablePlugins = new GridData(SWT.FILL, SWT.FILL, false, true);
+		//tablePlugins.setLayoutData(gdTablePlugins);
+		//new TableColumn(tablePlugins, SWT.NONE).setText("name");
+		//new TableColumn(tablePlugins, SWT.NONE).setText("description");
+		
+		//tablePlugins.setLayoutData(layoutData);
+		for (Bundle bundle: Activator.getDefault().getBundle().getBundleContext().getBundles()) {
+			
+			try {
+    			String activator =  (String)bundle.getHeaders().get(Constants.BUNDLE_ACTIVATOR);
+    			if (activator == null)
+    				continue;
+    			
+    			Class activatorClass = bundle.loadClass(activator);
+    			
+    			if (IGenlabPlugin.class.isAssignableFrom(activatorClass)) {
+    				
+    				String name = null;
+    				String desc = null;
+    				{
+    					Method method = activatorClass.getMethod("getName");
+    					Object o = method.invoke(null);
+	    				name = (String)o;
+    				}
+    				{
+    					Method method = activatorClass.getMethod("getDescription");
+    					Object o = method.invoke(null);
+	    				desc = (String)o;
+    				}
+    				
+    				createPluginWidget(toolkit, compoPlugins, name, desc);
+    				
+    				//TableItem item = new TableItem(tablePlugins, SWT.WRAP);
+    				//item.setText(new String[] { name, desc });
+    						    					
+    			}
+    			
+    			
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				GLLogger.warnTech("the plugin "+bundle+" activator does implement IGenlabPlugin, but does not declares static methods getName and getDescription", getClass());
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		//tablePlugins.getColumn(0).pack();
+		//tablePlugins.getColumn(1).pack();
+		sectionPlugins.setClient(compoPlugins);
+		
+		return sectionPlugins;
+	}
 	
 	@Override
 	public void createPartControl(final Composite parent) {
@@ -144,7 +305,7 @@ public class MainContributedIntro extends IntroPart implements IIntroPart {
     	}
     	
     	// propose first steps
-    	/*
+    	
     	{
     		Section sectionFirstSteps = toolkit.createSection(form.getBody(), Section.DESCRIPTION | Section.TITLE_BAR | Section.EXPANDED); //  | Section.TWISTIE
     		sectionFirstSteps.setText("First steps");
@@ -161,89 +322,21 @@ public class MainContributedIntro extends IntroPart implements IIntroPart {
     		compoFirstSteps.pack(true);
     		sectionFirstSteps.setClient(compoFirstSteps);
     		
-    	}*/
+    	}
     	
     	// list plugins
-    	{
-    		Section sectionPlugins = toolkit.createSection(form.getBody(), Section.DESCRIPTION | Section.TITLE_BAR | Section.EXPANDED | Section.TWISTIE );
-    		sectionPlugins.setText("Plugins");
-    		sectionPlugins.setDescription("GenLab is a modular laboratory made of many plugins. Each plugin brings features: algorithms that can be used in workflows, views or other tools.");
-    		toResize.add(sectionPlugins);
-
-    		
-    		Composite compoPlugins = toolkit.createComposite(sectionPlugins);
-    		compoPlugins.setLayout(new GridLayout(1,false));
-    		
-    		// TODO propose people to develop their plugins
-			toolkit
-				.createLabel(compoPlugins, "Currently "+ExistingAlgos.getExistingAlgos().getAlgos().size()+" algorithms are provided by the plugins.", SWT.WRAP)
-				.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-		
-    		// populate
-    		//Table tablePlugins = toolkit.createTable(compoPlugins, SWT.BORDER);
-    		//GridData gdTablePlugins = new GridData(SWT.FILL, SWT.FILL, false, true);
-    		//tablePlugins.setLayoutData(gdTablePlugins);
-    		//new TableColumn(tablePlugins, SWT.NONE).setText("name");
-    		//new TableColumn(tablePlugins, SWT.NONE).setText("description");
-    		
-    		//tablePlugins.setLayoutData(layoutData);
-    		for (Bundle bundle: Activator.getDefault().getBundle().getBundleContext().getBundles()) {
-    			
-    			try {
-	    			String activator =  (String)bundle.getHeaders().get(Constants.BUNDLE_ACTIVATOR);
-	    			if (activator == null)
-	    				continue;
-	    			
-	    			Class activatorClass = bundle.loadClass(activator);
-	    			
-	    			if (IGenlabPlugin.class.isAssignableFrom(activatorClass)) {
-	    				
-	    				String name = null;
-	    				String desc = null;
-	    				{
-	    					Method method = activatorClass.getMethod("getName");
-	    					Object o = method.invoke(null);
-		    				name = (String)o;
-	    				}
-	    				{
-	    					Method method = activatorClass.getMethod("getDescription");
-	    					Object o = method.invoke(null);
-		    				desc = (String)o;
-	    				}
-	    				
-	    				createPluginWidget(toolkit, compoPlugins, name, desc);
-	    				
-	    				//TableItem item = new TableItem(tablePlugins, SWT.WRAP);
-	    				//item.setText(new String[] { name, desc });
-	    						    					
-	    			}
-	    			
-	    			
-    			} catch (RuntimeException e) {
-    				e.printStackTrace();
-    			} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					GLLogger.warnTech("the plugin "+bundle+" activator does implement IGenlabPlugin, but does not declares static methods getName and getDescription", getClass());
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-    		}
-    		//tablePlugins.getColumn(0).pack();
-    		//tablePlugins.getColumn(1).pack();
-    		sectionPlugins.setClient(compoPlugins);
-    	}
+    	toResize.add(addSectionPlugins(toolkit));	
+    	
+    	// add contributors
+    	/*for (IGenlabIntroContributor contributor : contributors) {
+    		contributor.contributeFirstSteps(toolkit, compoFirstSteps);
+    	}*/
+    	
     	
     	// update data of every plugin
     	for (Control c: toResize) {
     		c.setLayoutData(new ColumnLayoutData(150));
     	}
-    	
     	
     	form.reflow(true);    	
     	parent.layout(true);
