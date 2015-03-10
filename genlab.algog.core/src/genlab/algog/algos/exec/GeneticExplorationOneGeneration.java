@@ -210,16 +210,18 @@ public class GeneticExplorationOneGeneration
 		AnIndividual indiv = indivRun.getIndividual();
 		int individualId = indivRun.getIndividualId();
 
-		messages.debugUser("computed fitness "+resultFitness+" for individual "+individualId+" of genome "+indiv.genome, getClass());
+		//messages.debugUser("computed fitness "+Arrays.toString(resultFitness)+" for individual "+individualId+" of genome "+indiv.genome, getClass());
 
 		// store results
 		synchronized (lockerResults) {
 			
-			computedFitness.put(indiv, resultFitness);
-			computedTargets.put(indiv, resultTargets);
-			computedValues.put(indiv, resultValues);
+			if (resultFitness != null)
+				computedFitness.put(indiv, resultFitness);
+			if (resultTargets != null)
+				computedTargets.put(indiv, resultTargets);
+			if (resultValues != null)
+				computedValues.put(indiv, resultValues);
 
-			
 		}
 		
 	}
