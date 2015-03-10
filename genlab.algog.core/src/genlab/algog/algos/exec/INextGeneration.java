@@ -16,4 +16,6 @@ public interface INextGeneration {
 	 */
 	public Set<AnIndividual> getIndividualsToProtect();
 	
+	public int getTotalOfIndividualsAllGenomes();
+	
 }

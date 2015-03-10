@@ -45,4 +45,13 @@ public class NextGenerationWithElitism implements INextGeneration {
 		individuals.add(individual);
 	}
 
+	@Override
+	public int getTotalOfIndividualsAllGenomes() {
+		int total = 0;
+		for (Set<AnIndividual> set : selectedGenome2Population.values()) {
+			total += set.size();
+		}
+		return total;
+	}
+
 }
