@@ -336,24 +336,11 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * @param resultTargets
 	 * @param resultValues
 	 */
-	protected void manageResultsForCurrentGeneration(
+	protected abstract void manageResultsForCurrentGeneration(
 			Map<AnIndividual,Double[]> resultFitness,
 			Map<AnIndividual,Object[]> resultTargets,
 			Map<AnIndividual,Object[]> resultValues
-			) {
-		
-		messages.debugUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
-
-		// store it 
-		generation2fitness.put(iterationsMade, resultFitness);
-		generation2targets.put(iterationsMade, resultTargets);
-		generation2values.put(iterationsMade, resultValues);
-
-		
-		this.progress.incProgressMade();
-
-		
-	}
+			);
 	
 	/**
 	 * Should return true if the algorithm has converged.

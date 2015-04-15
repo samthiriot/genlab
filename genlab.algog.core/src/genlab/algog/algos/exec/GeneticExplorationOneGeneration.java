@@ -1,11 +1,5 @@
 package genlab.algog.algos.exec;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
@@ -19,8 +13,20 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
-import genlab.core.model.instance.IInputOutputInstance;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * The executable task which evaluates one complete generation of a genetic algorithm.
+ * Will creates and supervize the subtasks corresponding to the evaluation of each individual.
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class GeneticExplorationOneGeneration 
 								extends AbstractContainerExecutionSupervisor 
 								implements ICleanableTask {

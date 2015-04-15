@@ -1,17 +1,13 @@
 package genlab.algog.algos.exec;
 
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
-import genlab.algog.algos.meta.AbstractGeneticExplorationAlgo;
 import genlab.algog.algos.meta.GeneticExplorationAlgo;
 import genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo;
-import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
-import genlab.algog.internal.ANumericGene;
 import genlab.algog.internal.AnIndividual;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
-import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 
 import java.util.ArrayList;
@@ -40,21 +36,35 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	
 	// variables used only during the selection of the next generation
 
+	/**
+	 * For the last generation associates each rank with its individuals
+	 */
 	protected SortedMap<Integer,Collection<AnIndividual>> fronts = null;
+	
+	/**
+	 * For the last generation evaluated, associates each individual with its rank
+	 */
 	protected Map<AnIndividual,Integer> individual2rank = null;
+	
+	/**
+	 * For the last generation, associates each individual with its fitness
+	 */
 	protected Map<AnIndividual, Double[]> indiv2fitnessForLastGenerations = null;
 	
 
-	// for each generation, and each individual, stores the corresponding fitness
-	protected final LinkedHashMap<Integer,Collection<AnIndividual>> generation2paretoFront;
+	/**
+	 * for each generation, and each individual, stores the corresponding fitness
+	 */
+	protected final LinkedHashMap<Integer,Collection<AnIndividual>> generation2firstParetoFront;
 
-	protected int targetSelectedPopulation;
 	
 	public NSGA2Exec(IExecution exec,
 			GeneticExplorationAlgoContainerInstance algoInst) {
 		super(exec, algoInst);
 
-		generation2paretoFront = new LinkedHashMap<Integer,Collection<AnIndividual>>(paramStopMaxIterations);
+		// initializes the map of, for each iteration, the first pareto front
+		generation2firstParetoFront = new LinkedHashMap<Integer,Collection<AnIndividual>>(paramStopMaxIterations);
+		
 	}
 	
 
@@ -150,7 +160,6 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 					dominationCount++;
 				}
 				
-				
 			}
 			
 			individual2dominated.put(p, dominatedIndividuals);
@@ -171,7 +180,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		sbDomFronts.append("1st domination front (").append(currentFront.size()).append("): ").append(frontToString(currentFront)).append("\n");
 		
 		// save the first domination front
-		generation2paretoFront.put(iterationsMade, currentFront);
+		generation2firstParetoFront.put(iterationsMade, currentFront);
 		frontIdx2individuals.put(1, currentFront);
 		
 		
@@ -515,10 +524,10 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		final Map<AGenome,String[]> genome2geneColumns = declareColumnsForGenes(tab);
 				
 				
-		for (Integer iterationId : generation2paretoFront.keySet()) {
+		for (Integer iterationId : generation2firstParetoFront.keySet()) {
 			
 			// for each iteration
-			final Collection<AnIndividual> individuals = generation2paretoFront.get(iterationId);
+			final Collection<AnIndividual> individuals = generation2firstParetoFront.get(iterationId);
 			final Map<AnIndividual,Double[]> generationFitness = getIndivAndFitnessFor2LastGenerations(iterationId);
 			final Map<AnIndividual,Object[]> indiv2value = getIndivAndValuesFor2LastGenerations(iterationId);
 			final Map<AnIndividual,Object[]> indiv2target = getIndivAndTargetFor2LastGenerations(iterationId);
@@ -535,22 +544,6 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		return tab;
 	}
 	
-	@Override
-	protected void hookProcessResults(ComputationResult res, ComputationState ourState) {
-
-		if (ourState != ComputationState.FINISHED_OK)
-			return;
-		
-		// process the last Pareto front
-		analyzeLastPopulation(generation2fitness.get(iterationsMade));
-
-		// and define the result for Pareto
-		res.setResult(
-				NSGA2GeneticExplorationAlgo.OUTPUT_TABLE_PARETO, 
-				packParetoFrontsAsTable()
-				);
-		
-	}
 
 	/**
 	 * Add something to the result to be exported as an intermediate version.
@@ -575,4 +568,25 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		return false;
 	}
 
+
+	@Override
+	/**
+	 * At the very end of the exploration (end of all generations)
+	 * analyzes the last population and keeps the best Pareto print. 
+	 */
+	protected void hookProcessResults(ComputationResult res, ComputationState ourState) {
+
+		if (ourState != ComputationState.FINISHED_OK)
+			return;
+		
+		// process the last Pareto front
+		analyzeLastPopulation(generation2fitness.get(iterationsMade));
+
+		// and define the result for Pareto
+		res.setResult(
+				NSGA2GeneticExplorationAlgo.OUTPUT_TABLE_PARETO, 
+				packParetoFrontsAsTable()
+				);
+		
+	}
 }

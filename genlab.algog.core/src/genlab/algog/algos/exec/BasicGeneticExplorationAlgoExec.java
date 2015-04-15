@@ -8,7 +8,6 @@ import genlab.algog.internal.AnIndividual;
 import genlab.core.exec.IExecution;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,8 +20,35 @@ public abstract class BasicGeneticExplorationAlgoExec extends
 	public BasicGeneticExplorationAlgoExec(IExecution exec,
 			GeneticExplorationAlgoContainerInstance algoInst) {
 		super(exec, algoInst);
-		// TODO Auto-generated constructor stub
 	}
+	
+
+	/**
+	 * Stores the results for the current generation.
+	 * They will be accessible through generation2fitness, generation2targets, generation2values
+	 * @param resultFitness
+	 * @param resultTargets
+	 * @param resultValues
+	 */
+	protected void manageResultsForCurrentGeneration(
+			Map<AnIndividual,Double[]> resultFitness,
+			Map<AnIndividual,Object[]> resultTargets,
+			Map<AnIndividual,Object[]> resultValues
+			) {
+		
+		messages.debugUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
+
+		// store it 
+		generation2fitness.put(iterationsMade, resultFitness);
+		generation2targets.put(iterationsMade, resultTargets);
+		generation2values.put(iterationsMade, resultValues);
+
+		
+		this.progress.incProgressMade();
+
+		
+	}
+
 
 	protected final Object[][] crossoverOnePoint(final AGenome genome, Object[] indiv1, Object[] indiv2) {
 		
@@ -86,7 +112,7 @@ public abstract class BasicGeneticExplorationAlgoExec extends
 	}
 
 	/**
-	 * Step "construct population" of the genetic algo. Called before each 
+	 * Step "construct population" of the genetic algo. Called only for the very first one.
 	 * @return
 	 */
 	protected Map<AGenome,Object[][]> generateInitialPopulation() {
