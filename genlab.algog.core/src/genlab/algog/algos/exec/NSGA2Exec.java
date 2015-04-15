@@ -15,6 +15,7 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,7 +36,7 @@ import java.util.TreeMap;
  * 
  * @author Samuel Thiriot
  */
-public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
+public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	
 	// variables used only during the selection of the next generation
 
@@ -567,8 +568,11 @@ public class NSGA2Exec extends GeneticExplorationMultiObjectiveAlgoExec {
 		
 	}
 	
+
 	@Override
-	protected void updateProgressFromChildren() {
-		super.updateProgressFromChildren();
+	protected boolean hasConverged() {
+		// we are not yet able to detect if the algo has converged !
+		return false;
 	}
+
 }

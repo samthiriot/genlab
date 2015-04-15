@@ -15,6 +15,8 @@ import java.util.Set;
 /**
  * A mono objective genetic algorithm.
  * 
+ * TODO warn: not functional
+ * 
  * @author Samuel Thiriot
  *
  */
