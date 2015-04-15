@@ -62,6 +62,10 @@
             class="genlab.core.model.meta.basics.algos.ConstantValueString"
             id="genlab.core.model.meta.basics.algos.ConstantValueString">
       </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.ConstantValueBoolean"
+            id="genlab.core.algo.constants.bool">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">

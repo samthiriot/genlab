@@ -562,6 +562,46 @@ int igraph_k_regular_game(igraph_t *graph,
 			boolean loops
 			);
 	
+	/**
+	 * maps the enum from Igraph to something else
+	 * 
+	 * typedef enum { IGRAPH_BARABASI_BAG = 0,
+	       IGRAPH_BARABASI_PSUMTREE, 
+	       IGRAPH_BARABASI_PSUMTREE_MULTIPLE} igraph_barabasi_algorithm_t;
+
+	 * @author Samuel Thiriot
+	 *
+	 */
+	public enum IGraphBarabasiAlgorithm {
+		IGRAPH_BARABASI_BAG,
+		IGRAPH_BARABASI_PSUMTREE, 
+		IGRAPH_BARABASI_PSUMTREE_MULTIPLE;
+		
+	}
+
+	/*
+	 * int igraph_barabasi_game(igraph_t *graph, igraph_integer_t n,
+			 igraph_real_t power, 
+			 igraph_integer_t m,
+			 const igraph_vector_t *outseq,
+			 igraph_bool_t outpref,
+			 igraph_real_t A,
+			 igraph_bool_t directed,
+			 igraph_barabasi_algorithm_t algo,
+			 const igraph_t *start_from);
+	 */
+	public static native int igraph_barabasi_game(
+			InternalGraphStruct graph, 
+			int n,
+		    double power, 
+		    int m,
+		    PointerByReference outseq,
+		    boolean outpref,
+		    double A,
+		    boolean directed,
+		    int algo,
+		    InternalGraphStruct start_from
+		    );
 
 	/*
 	 * int igraph_lcf_vector(igraph_t *graph, igraph_integer_t n,

@@ -105,6 +105,41 @@ public class TestIGraphLibrary {
 	}
 	
 	
+
+	@Test
+	public void testBarabasiAlbertNotDirected() {
+
+		final int GRAPH_SIZE = 500;
+		final boolean GRAPH_DIRECTED = false;
+		
+		IGraphGraph g = lib.generateBarabasiAlbert(
+				500, 
+				2, 
+				1.0, 
+				1.0, 
+				GRAPH_DIRECTED, 
+				true, 
+				1.0
+				);
+		
+		assertEquals(GRAPH_SIZE, lib.getVertexCount(g));
+		assertEquals(GRAPH_DIRECTED, g.directed);
+		
+		
+		
+		//System.err.println(lib.computeAveragePathLength(g));
+		
+		/*
+		genlab.igraph.natjna.IGraphGraph g = lib.generateWattsStrogatz(500, 1, 0.1, 2, false, false);
+		
+		assertNotNull(g.igraphPointer);
+		assertEquals(100, lib.getVertexCount(g));
+		assertEquals(false, lib.isDirected(g));
+		
+		System.err.println(lib.computeAveragePathLength(g));
+		*/
+	}
+	
 	@Test
 	public void testAddEdge() {
 

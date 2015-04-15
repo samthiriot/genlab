@@ -6,6 +6,7 @@ import genlab.core.commons.WrongParametersException;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
+import genlab.igraph.natjna.IGraphRawLibrary.IGraphBarabasiAlgorithm;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -237,6 +238,42 @@ public class IGraphLibrary {
 		// TODO
 		
 		result.setMultiGraph(true); // looks like the algo never generates double links
+		
+		return result;
+		
+	}
+	
+	public IGraphGraph generateBarabasiAlbert(int size, int m, double power, double zeroAppeal, boolean directed, boolean outputPref, double A) {
+
+		final InternalGraphStruct g = createEmptyGraph();
+		
+		//GLLogger.debugTech("calling igraph", getClass());
+		final long startTime = System.currentTimeMillis();
+		final int res = IGraphRawLibrary.igraph_barabasi_game(
+				g, 
+				size, 
+				power, 
+				m, 
+				null, 
+				outputPref, 
+				A, 
+				directed, 
+				// always use this algo which is said to be ok for any combination of power and m
+				IGraphBarabasiAlgorithm.IGRAPH_BARABASI_PSUMTREE.ordinal(), 
+				null
+				);
+		final long duration = System.currentTimeMillis() - startTime;
+		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
+		listOfMessages.debugTech("processing took "+duration+" ms", getClass());
+		// detect errors
+		checkIGraphResult(res);
+		
+		IGraphGraph result = new IGraphGraph(this, g, directed);
+		
+		// basic checks
+		// TODO
+		
+		result.setMultiGraph(false); // looks like this PSUMTREE algo never generates double links
 		
 		return result;
 		

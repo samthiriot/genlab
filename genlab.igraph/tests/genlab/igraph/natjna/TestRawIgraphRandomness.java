@@ -430,7 +430,7 @@ public class TestRawIgraphRandomness {
 					pThreads[i].generated,
 					pThreads[i+1].generated
 					)) {
-				Assert.fail("the random network generator is shared between the threads");
+				Assert.fail("the random number generator is shared between the threads");
 			}
 			
 		}

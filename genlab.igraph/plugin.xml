@@ -59,6 +59,10 @@
             class="genlab.igraph.algos.measure.IGraphEdgeBetweenessAlgo"
             id="genlab.igraph.algos.measure.IGraphBetweeness">
       </algo>
+      <algo
+            class="genlab.igraph.algos.generation.BarabasiAlbertGeneratorAlgo"
+            id="genlab.igraph.algos.generation.BarabasiAlbertGeneratorAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -274,6 +278,16 @@
          <more_info
                content="igraph official documentation"
                url="http://igraph.sourceforge.net/doc-0.6/html/ch13s05.html#igraph_betweenness">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.generation.BarabasiAlbertGeneratorAlgo"
+            description="Generates a graph based on the Barabási-Albert model."
+            implementation_notes="Uses the PSUMTREE implementation which, according to the documentation, uses a partial prefix-sum tree to generate the graph. It does not generate multiple edges and works for any power and A values."
+            library_id="genlab.igraph.doc.library.igraph">
+         <more_info
+               content="igraph official documentation"
+               url="http://igraph.org/c/doc/igraph-Generators.html#igraph_barabasi_game">
          </more_info>
       </docalgo>
    </extension>
