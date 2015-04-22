@@ -39,6 +39,33 @@
             class="genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo"
             id="genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo">
       </algo>
+      <algo
+            class="genlab.algog.algos.meta.VerificationFunctionsAlgo"
+            id="genlab.algog.algos.meta.VerificationFunctionsAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="genlab.core.doc">
+      <library
+            description="implements genetic algorithms"
+            id="genlab.algog.core.library"
+            name="Genetic algorithms for GenLab">
+         <integrator_author_id
+               id="genlab.algog.core.integrator_author_id1">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.algog.core.original_author_id1">
+         </original_author_id>
+      </library>
+      <docalgo
+            algo_id="genlab.algog.algos.meta.VerificationFunctionsAlgo"
+            description="implements test functions for multi-objective optimization"
+            library_id="genlab.algog.core.library">
+         <more_info
+               content="wikipedia page on test functions for optimization"
+               url="en.wikipedia.org/wiki/Test_functions_for_optimization">
+         </more_info>
+      </docalgo>
    </extension>
 
 </plugin>
