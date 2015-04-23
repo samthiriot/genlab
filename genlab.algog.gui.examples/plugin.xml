@@ -7,6 +7,14 @@
             class="genlab.algog.gui.examples.examples.ExampleMultiGoalWS"
             id="genlab.algog.gui.examples.examples.ExampleMultiGoalWS">
       </example>
+      <example
+            class="genlab.algog.gui.examples.examples.ExampleTestFunctionBinhKorn"
+            id="genlab.algog.gui.examples.examples.ExampleTestFunctionBinhKorn">
+      </example>
+      <example
+            class="genlab.algog.gui.examples.examples.ExampleTestFunctionChakongHaimes"
+            id="genlab.algog.gui.examples.examples.ExampleTestFunctionChakongHaimes">
+      </example>
    </extension>
 
 </plugin>
