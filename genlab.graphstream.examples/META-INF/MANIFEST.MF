@@ -1,9 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Examples
-Bundle-SymbolicName: genlab.graphstream.examples
+Bundle-SymbolicName: genlab.graphstream.examples;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: genlab.graphstream.examples.Activator
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ genlab.core;bundle-version="0.0.1"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -116,6 +116,12 @@ public class ConsoleView extends AbstractViewOpenedByAlgo {
 	public boolean isDisposed() {
 		return text != null && text.isDisposed();
 	}
+
+	@Override
+	protected void dataReceived() {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 }

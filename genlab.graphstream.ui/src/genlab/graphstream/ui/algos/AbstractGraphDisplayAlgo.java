@@ -3,6 +3,7 @@ package genlab.graphstream.ui.algos;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
+import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
@@ -111,6 +112,16 @@ public abstract class AbstractGraphDisplayAlgo extends GraphStreamAlgo {
 				
 				glGraph = (IGenlabGraph)getInputValueForInput(INPUT_GRAPH);
 
+			}
+
+			@Override
+			protected void displayResultsSyncReduced(
+					AbstractViewOpenedByAlgo theView,
+					IAlgoExecution executionRun,
+					IConnectionExecution connectionExec, Object value) {
+				// TODO Auto-generated method stub
+				
+				// TODO implement the display reduced for graphstream ?
 			}
 		};
 	}
