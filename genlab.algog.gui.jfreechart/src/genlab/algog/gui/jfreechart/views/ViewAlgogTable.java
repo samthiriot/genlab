@@ -169,7 +169,8 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 		final float targetValue = ((Number)lastVersionDataToDisplay.getValue(0, columnTarget)).floatValue();
 		
 		final FastScatterPlotWithLines plot = ((FastScatterPlotWithLines)goal2chart.get(goal).getPlot());
-
+		plot.setNotify(false);
+		
 		// update data !
 		try {
 			final int rowsToDisplay = lastVersionDataToDisplay.getRowsCount();
@@ -230,6 +231,8 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 			// update data
 			// no need to update, will be displayed already plot.setData(serie);
 			
+			plot.setNotify(true);
+			
 		} finally {
 
 		}
@@ -260,7 +263,8 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 		}
 		
 		final FastScatterPlotWithLines plot = ((FastScatterPlotWithLines)gene2chart.get(gene).getPlot());
-
+		plot.setNotify(false);
+		
 		// update data !
 		try {
 			final int rowsToDisplay = lastVersionDataToDisplay.getRowsCount();
@@ -324,6 +328,8 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 		} finally {
 			// TODO ?
 		}
+		
+		plot.setNotify(true);
 		
 		return widgetCreated;
 	}
