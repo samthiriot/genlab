@@ -120,6 +120,31 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 
 
 	/**
+	 * Stores the results for the current generation.
+	 * They will be accessible through generation2fitness, generation2targets, generation2values
+	 * @param resultFitness
+	 * @param resultTargets
+	 * @param resultValues
+	 */
+	protected void manageResultsForCurrentGeneration(
+			Map<AnIndividual,Double[]> resultFitness,
+			Map<AnIndividual,Object[]> resultTargets,
+			Map<AnIndividual,Object[]> resultValues
+			) {
+		
+		messages.debugUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
+
+		// store it 
+		generation2fitness.put(iterationsMade, resultFitness);
+		generation2targets.put(iterationsMade, resultTargets);
+		generation2values.put(iterationsMade, resultValues);
+
+		
+		this.progress.incProgressMade();
+
+		
+	}
+	/**
 	 * Called before any other computation.
 	 * Detects the actual work to do given the parameters.
 	 */
@@ -256,16 +281,6 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 */
 	protected abstract Map<AGenome,Object[][]> generateInitialPopulation();
 	
-
-	/**
-	 * Mutates a population described by the genome passed as parameter, update the population in place, 
-	 * and update the map of gene mutation counts.
-	 * @param genome
-	 * @param novelPopulation
-	 * @param statsGene2countMutations
-	 */
-	protected abstract void mutatePopulation(AGenome genome, Object[][] novelPopulation, Map<AGene<?>,Integer> statsGene2countMutations);
-
 	
 	/**
 	 * Returns an execution task for one iteration, that is for the evaluation of one generation.
@@ -329,18 +344,6 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	}
 	
 	
-	/**
-	 * Stores the results for the current generation.
-	 * They will be accessible through generation2fitness, generation2targets, generation2values
-	 * @param resultFitness
-	 * @param resultTargets
-	 * @param resultValues
-	 */
-	protected abstract void manageResultsForCurrentGeneration(
-			Map<AnIndividual,Double[]> resultFitness,
-			Map<AnIndividual,Object[]> resultTargets,
-			Map<AnIndividual,Object[]> resultValues
-			);
 	
 	/**
 	 * Should return true if the algorithm has converged.
@@ -629,6 +632,9 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		return generation2fitness.get(iterationsMade-1);
 	}
 	
+	/**
+	 * @return P(t)
+	 */
 	public Map<AnIndividual,Double[]> getIndivAndFitnessForLastGeneration() {
 		return generation2fitness.get(iterationsMade);
 	}
