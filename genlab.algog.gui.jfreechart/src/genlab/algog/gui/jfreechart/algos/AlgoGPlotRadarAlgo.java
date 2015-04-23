@@ -1,7 +1,6 @@
 package genlab.algog.gui.jfreechart.algos;
 
 import genlab.algog.gui.jfreechart.exec.ViewAlgoGRadarTableExec;
-import genlab.algog.gui.jfreechart.exec.ViewAlgoGTableExec;
 import genlab.algog.gui.jfreechart.views.ViewAlgogRadarTable;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
@@ -23,8 +22,8 @@ public class AlgoGPlotRadarAlgo extends AbstractJFreechartAlgo {
 	
 	public AlgoGPlotRadarAlgo() {
 		super(
-				"algog radar plot", 
-				"displays scatter data", 
+				"algog radars plot", 
+				"displays the last Pareto front as several radars", 
 				ViewAlgogRadarTable.VIEW_ID,
 				ExistingAlgoCategories.DISPLAY_EXPLORATION_GENETIC_ALGOS
 				);

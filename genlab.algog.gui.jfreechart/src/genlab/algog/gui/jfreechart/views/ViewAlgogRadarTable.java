@@ -223,6 +223,9 @@ public final class ViewAlgogRadarTable
 		
 		messages.traceTech("init the jfreechart dataset for individual "+displayIndividualId+" ...", getClass());
 		
+        final SpiderWebPlot chartRadar = plots.get(displayIndividualId);
+        chartRadar.setNotify(false); // freeze during update
+
 		// update dataset
         
 		final DefaultCategoryDataset dataset = datasets.get(displayIndividualId);
@@ -296,7 +299,7 @@ public final class ViewAlgogRadarTable
         }
        
 		// update the plot
-        final SpiderWebPlot chartRadar = plots.get(displayIndividualId);
+        chartRadar.setNotify(true);
         chartRadar.setToolTipGenerator(new CategoryToolTipGenerator() {
 			
 			@Override
