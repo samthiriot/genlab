@@ -3,7 +3,9 @@ package genlab.algog.algos.exec;
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
 import genlab.algog.algos.meta.GeneticExplorationAlgo;
 import genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo;
+import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
+import genlab.algog.internal.ANumericGene;
 import genlab.algog.internal.AnIndividual;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ComputationResult;
@@ -66,48 +68,29 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		generation2firstParetoFront = new LinkedHashMap<Integer,Collection<AnIndividual>>(paramStopMaxIterations);
 		
 	}
-	
 
 	/**
-	 * returns true if the first individual Pareto-dominates the second one, meaning if for 
-	 * any dimension, the fitness of the first individual is better (meaning: lower) than the second one.
-	 * @param i1
-	 * @param fit1
-	 * @param i2
-	 * @param fit2
+	 * a dominates b if for all fitness objective fa we got fa <= fb and it exists one fa < fb
+	 * @param aFitness
+	 * @param bFitness
 	 * @return
 	 */
-	/*protected boolean dominates(Double[] fit1, Double[] fit2) {
+	protected boolean dominates(Double[] aFitness, Double[] bFitness) {
 		
-		int strictSup = 0;
+		boolean d = false;
 		
-		for (int i=0; i<fit1.length; i++) {
-			
-			if (fit1[i] < fit2[i]) {
-				strictSup++;
-			} else if (fit1[i] == fit2[i]) {
-				// do nothing
-			} else { // fit1[i] > fit2[i]
+		for( int m=0 ; m<aFitness.length ; m++ ) {
+			if( aFitness[m]>bFitness[m] ) {
 				return false;
+			}else if( bFitness[m]>aFitness[m] ) {
+				d = true;
 			}
-			
 		}
 		
-		return strictSup > 0;
+		if( d )
+			return true;
 		
-	}*/
-
-	protected final boolean dominates(Double[] fit1, Double[] fit2) {
-		
-		for (int i=0; i<fit1.length; i++) {
-			
-			if (fit1[i] > fit2[i]) {
-				return false;
-			} 
-			
-		}
-		return true;
-		
+		return false;
 	}
 
 	/**
@@ -126,7 +109,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	
 	/**
 	 * As described in NSGA-II
-	 * @param indiv2fitnessForLastGenerations
+	 * @param individualsWFitness
 	 */
 	protected void fastNonDominatedSort(Map<AnIndividual, Double[]> individuals2fitness) {
 		
@@ -178,7 +161,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		StringBuffer sbDomFronts = new StringBuffer();
 		
 		sbDomFronts.append("1st domination front (").append(currentFront.size()).append("): ").append(frontToString(currentFront)).append("\n");
-		
+
 		// save the first domination front
 		generation2firstParetoFront.put(iterationsMade, currentFront);
 		frontIdx2individuals.put(1, currentFront);
@@ -263,22 +246,20 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		public ComparatorCrowded(Map<AnIndividual,Double> individual2distance) {
 			this.individual2distance = individual2distance;
 		}
-
-
+	
+	
 		@Override
-		public int compare(AnIndividual i, AnIndividual j) {
-
-			final Integer iRank = individual2rank.get(i);
-			final Integer jRank = individual2rank.get(j);
-		
-			if (iRank < jRank)
-				return -1;
+		public int compare(AnIndividual a, AnIndividual b) {
+	
+			final Integer aRank = individual2rank.get(a);
+			final Integer bRank = individual2rank.get(b);
+			// first, we compare ranks
+			if( aRank<bRank ) return -1;
 			
-			final Double iDistance = individual2distance.get(i);
-			final Double jDistance = individual2distance.get(j);
-			
-			if ((iRank == jRank) && (iDistance > jDistance))
-				return -1;
+			final Double aDistance = individual2distance.get(a);
+			final Double bDistance = individual2distance.get(b);
+			// else, we compare crowding distance
+			if( (aRank==bRank) && (aDistance>bDistance) ) return -1;
 			
 			return 1;
 		}
@@ -317,14 +298,9 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			individual2distance.put(sortedPop.get(l-1), Double.POSITIVE_INFINITY);
 			
 			for (int i=1; i<l-2; i++) {
-				Double previousValue = individual2distance.get(sortedPop.get(i));
-				Double nextValue = previousValue + 
-									(
-										indiv2fitness.get(sortedPop.get(i+1))[m] - indiv2fitness.get(sortedPop.get(i-1))[m]
-									) / diffFitness	
-									
-									;
-				individual2distance.put(sortedPop.get(i), nextValue);
+				Double d = individual2distance.get(sortedPop.get(i));
+				d += (indiv2fitness.get(sortedPop.get(i+1))[m] - indiv2fitness.get(sortedPop.get(i-1))[m] ) / diffFitness;
+				individual2distance.put(sortedPop.get(i), d);
 			}
 		}
 		
@@ -474,7 +450,6 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		
 	}
 	
-	@Override
 	protected INextGeneration selectIndividuals(Map<AnIndividual, Double[]> indiv2fitness) {
 
 		// analyze the last run and the one before
@@ -523,7 +498,6 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		// declare columns for each possible gene
 		final Map<AGenome,String[]> genome2geneColumns = declareColumnsForGenes(tab);
 				
-				
 		for (Integer iterationId : generation2firstParetoFront.keySet()) {
 			
 			// for each iteration
@@ -560,7 +534,291 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 				);
 		
 	}
+
+	/**
+	 * Mutates a population described by the genome passed as parameter, update the population in place, 
+	 * and update the map of gene mutation counts.
+	 * @param genome
+	 * @param novelPopulation
+	 * @param statsGene2countMutations
+	 */
+	protected void mutatePopulation(AGenome genome, Object[][] novelPopulation, Map<AGene<?>,Integer> statsGene2countMutations) {
+		
+		int countMutations = 0;
+		StringBuffer sb = new StringBuffer();
+		
+		for (int i=0; i<novelPopulation.length; i++) {
+			
+			
+			AGene<?>[] genes = genome.getGenes();
+			for (int j=0; j<genes.length; j++) {
+				 
+				if (uniform.nextDoubleFromTo(0.0, 1.0) <= genes[j].getMutationProbability()) {
+					
+					Object[] individual = novelPopulation[i];
+					String debugIndivBefore = Arrays.toString(individual);
+					individual[j] = genes[j].mutate(uniform, individual[j]);
+					sb.append("mutate individual ").append(i)
+						.append(": ").append(debugIndivBefore)
+						.append(" => ").append(Arrays.toString(individual))
+						.append("\n")
+						;
+					// stats on mutation
+					Integer count = statsGene2countMutations.get(genes[j]);
+					if (count == null) {
+						count = 0;
+					} 
+					statsGene2countMutations.put(genes[j], count+1);
+					countMutations++;
+				}
+				
+			}
+			
+			
+		}
+		
+		messages.infoTech(countMutations+" mutations !! : "+sb.toString(), getClass());
+	}
+
+	/**
+	 * Create two children by the N points crossover operator
+	 * @param genome
+	 * @param nCuts
+	 * @param parent1
+	 * @param parent2
+	 * @return
+	 */
+	protected final Object[][] crossoverNPoints(final AGenome genome, int nCuts, Object[] parent1, Object[] parent2) {
+		
+		Object[][] children = new Object[2][];
+		Object[] child1 = new Object[genome.getGenes().length];
+		Object[] child2 = new Object[genome.getGenes().length];
+		
+		int t = 0;
+		int[] cuts = new int[nCuts+1];
+		cuts[0] = 0;
+		boolean crossoverApplied = uniform.nextBoolean();
+		
+		for(int i=1 ; i<=nCuts ; i++) {
+			cuts[i] = uniform.nextIntFromTo(1, genome.getGenes().length-1);
+		}
+		
+		Arrays.sort(cuts);
+		
+		for(int i=0 ; i<genome.getGenes().length ; i++) {
+			// if crossoverOn is true then first child genes are copied from parent2
+			if( crossoverApplied ) {
+				child1[i] = parent2[i];
+				child2[i] = parent1[i];
+			}
+			// else first child genes are copied from parent1
+			else {
+				child1[i] = parent1[i];
+				child2[i] = parent2[i];
+			}
+			
+			if( t<cuts.length && cuts[t]==i ) {
+				crossoverApplied = !crossoverApplied;
+				t++;
+				while( t<cuts.length && cuts[t]==i ) t++;
+			}
+		}
 	
+		children[0] = child1;
+		children[1] = child2;
+		
+		return children;
+	}
+	
+
+	protected AnIndividual crowdedTournamentSelection(AnIndividual ind1, AnIndividual ind2, Map<AnIndividual,Double> individual2distance) {	
+		
+		Map<AnIndividual, Double[]> individuals2fitness = new HashMap<AnIndividual, Double[]>(getIndivAndFitnessFor2LastGenerations(iterationsMade));
+		
+		// if 1 dominates 2
+		if( dominates(individuals2fitness.get(ind1), individuals2fitness.get(ind2)) ) {
+			return ind1;
+		}
+		// else if 2 dominates 1
+		else if( dominates(individuals2fitness.get(ind2), individuals2fitness.get(ind1)) ) {
+			return ind2;
+		}
+		// else if 1 is most spread than 2
+		else if( individual2distance.get(ind1)>individual2distance.get(ind2) ) {
+			return ind1;
+		}
+		// else if 2 is most spread than 1
+		else if( individual2distance.get(ind2)>individual2distance.get(ind1) ) {
+			return ind2;
+		}
+		// else who's the luckier?
+		else if( uniform.nextBoolean() ) {
+			return ind1;
+		}else {
+			return ind2;
+		}		
+	}
+
+	
+	/**
+	 * Based on the list of selected individuals passed as parameter, generate the next population.
+	 * This default crossover does not takes into account the fitness. It just deals with the 
+	 * selected individuals, which were selected based on the fitness. 
+	 * using crossover.   
+	 * @param indivs
+	 * @return
+	 */
+	protected Object[][] generateNextGenerationWithCrossover(AGenome genome, Set<AnIndividual> indivs, int popSize) {
+		
+		Object[][] novelPopulation = new Object[popSize][];
+		int novelPopulationSize = 0;
+		
+		List<AnIndividual> selectedPopIndex = new LinkedList<AnIndividual>(indivs);
+
+		StringBuffer sb = new StringBuffer();
+		
+		while (novelPopulationSize < popSize) {
+			// select 4 different index which will define the index of 4 individuals from the population
+			int index1, index2, index3, index4;
+			do {
+				index1 = uniform.nextIntFromTo(0, selectedPopIndex.size()-1);
+				index2 = uniform.nextIntFromTo(0, selectedPopIndex.size()-1);
+				index3 = uniform.nextIntFromTo(0, selectedPopIndex.size()-1);
+				index4 = uniform.nextIntFromTo(0, selectedPopIndex.size()-1);
+			} while( (index1==index2) || (index1==index3) || (index1==index4) || (index2==index3) || (index2==index4) || (index3==index4) );// best optimization ever
+
+			AnIndividual p1 = crowdedTournamentSelection(selectedPopIndex.get(index1), selectedPopIndex.get(index2), calculateCrowdingDistance(indivs, getIndivAndFitnessFor2LastGenerations(iterationsMade)));
+			AnIndividual p2 = crowdedTournamentSelection(selectedPopIndex.get(index3), selectedPopIndex.get(index4), calculateCrowdingDistance(indivs, getIndivAndFitnessFor2LastGenerations(iterationsMade)));
+
+			Object[] indiv1 = p1.genes;
+			Object[] indiv2 = p2.genes;
+			
+			//Object[][] novelIndividuals = crossoverOnePoint(genome, indiv1, indiv2);
+			if (genome.crossoverProbability == 1.0 || uniform.nextDoubleFromTo(0.0, 1.0) <= genome.crossoverProbability) {
+				// TODO use a parameter for crossover method
+				Object[][] novelIndividuals = crossoverNPoints(genome, 1, indiv1, indiv2);
+				//Object[][] novelIndividuals = crossoverOnePoint(genome, indiv1, indiv2);
+
+				sb.append("crossover: ")
+					.append(Arrays.toString(indiv1))
+					.append(" and ")
+					.append(Arrays.toString(indiv2))
+					.append(" => ");
+				
+				indiv1 = novelIndividuals[0];
+				indiv2 = novelIndividuals[1];
+				
+				sb.append(Arrays.toString(indiv1)).append(" and ").append(Arrays.toString(indiv2));
+				sb.append("\n");
+			}
+			
+			// add these individuals to the population (if the population is not already filled)
+			novelPopulation[novelPopulationSize++] = indiv1;
+			
+			if (novelPopulationSize >= novelPopulation.length) 
+				break;
+			
+			novelPopulation[novelPopulationSize++] = indiv2;
+			
+			
+		}
+		
+		messages.infoUser("evolution: "+sb.toString(), getClass());
+
+		return novelPopulation;
+	}
+	
+
+	@Override
+	/*
+	 * Entry point: called for each novel generation.
+	 * (non-Javadoc)
+	 * @see genlab.algog.algos.exec.AbstractGeneticExplorationAlgoExec#prepareNextGeneration()
+	 */
+	protected Map<AGenome,Object[][]> prepareNextGeneration() {
+		
+		int previousGenerationId = iterationsMade;
+		
+		// reuses the previous population
+		final Map<AnIndividual,Double[]> indiv2fitness =  getIndivAndFitnessForLastGeneration();
+		messages.infoUser("retrieved "+indiv2fitness.size()+" individuals from the previous generation "+previousGenerationId, getClass());
+		
+		// SELECT 
+		
+		// TODO elitism !
+		
+		final INextGeneration selectedIndividuals  = selectIndividuals(indiv2fitness);
+		final Map<AGenome,Set<AnIndividual>> selectedGenome2Population = selectedIndividuals.getAllIndividuals();
+		int totalIndividualsSelected = selectedIndividuals.getTotalOfIndividualsAllGenomes();
+		messages.infoUser("selected for "+selectedGenome2Population.size()+" genome(s) a total of "+totalIndividualsSelected+" individuals", getClass());
+		
+		// TODO if the population is not big enough, recreate some novel individuals
+		if (totalIndividualsSelected < paramPopulationSize) {
+			messages.warnUser("not enough individuals selected ! Probably many individuals were not evaluated with success. We will create novel individuals to repopulate the population", getClass());
+
+			for (AGenome genome : selectedGenome2Population.keySet()) {
+				
+				Set<AnIndividual> individuals = selectedGenome2Population.get(genome);
+				
+				int targetSizeForGenome = paramPopulationSize/genome2algoInstance.size(); // TODO should be what ?
+				int diff = targetSizeForGenome - individuals.size(); 
+				if (diff > 0) {
+					
+					messages.infoUser("adding "+diff +" new individuals in the population for genome "+genome.name, getClass());
+					Object[][] population = generateInitialPopulation(genome, diff);
+					for (Object[] indiv : population) {
+						individuals.add(new AnIndividual(genome, indiv));
+					}
+				}
+			}
+			
+		}
+		
+		// CROSS
+		// TODO manage multi specy !
+		
+		Map<AGenome,Object[][]> novelGenome2Population = new HashMap<AGenome, Object[][]>();
+
+		// stats on the count of mutation (to be returned to the user)
+		Map<AGene<?>,Integer> statsGene2countMutations = new HashMap<AGene<?>, Integer>();
+		
+		for (AGenome genome: selectedGenome2Population.keySet()) {
+			
+			Set<AnIndividual> indivs = selectedGenome2Population.get(genome);
+			
+			// generate the next generation
+			Object[][] novelPopulation = generateNextGenerationWithCrossover(
+					genome, 
+					indivs, 
+					paramPopulationSize
+					);
+			
+			// mutate in this novel generation
+			mutatePopulation(genome, novelPopulation, statsGene2countMutations);
+			
+			// store this novel generation
+			novelGenome2Population.put(genome, novelPopulation);
+			
+		}
+		
+		{
+			StringBuffer sb = new StringBuffer();
+			sb.append("during the generation of the population ").append(iterationsMade);
+			sb.append(" there were these mutations per gene: ");
+			for (Map.Entry<AGene<?>,Integer> gene2count : statsGene2countMutations.entrySet()) {
+				sb.append(gene2count.getKey().name);
+				sb.append(":");
+				sb.append(gene2count.getValue());
+				sb.append("; ");
+			}
+			messages.infoUser(sb.toString(), getClass());
+		}
+		
+		exportContinuousOutput();
+		
+		return novelGenome2Population;
+		
+	}
 
 	@Override
 	protected boolean hasConverged() {
