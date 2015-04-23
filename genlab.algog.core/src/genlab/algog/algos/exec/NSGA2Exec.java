@@ -246,22 +246,21 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		public ComparatorCrowded(Map<AnIndividual,Double> individual2distance) {
 			this.individual2distance = individual2distance;
 		}
-	
-	
+		
 		@Override
 		public int compare(AnIndividual a, AnIndividual b) {
-	
+
+			/*  TODO remove
 			final Integer aRank = individual2rank.get(a);
 			final Integer bRank = individual2rank.get(b);
 			// first, we compare ranks
-			if( aRank<bRank ) return -1;
+			if( aRank<bRank ) return Integer.compare(aRank, bRank);
+			*/
 			
 			final Double aDistance = individual2distance.get(a);
 			final Double bDistance = individual2distance.get(b);
 			// else, we compare crowding distance
-			if( (aRank==bRank) && (aDistance>bDistance) ) return -1;
-			
-			return 1;
+			return Double.compare(bDistance, aDistance);
 		}
 		
 	}
@@ -363,14 +362,13 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	
 	public Map<AnIndividual,Double[]> getIndivAndFitnessFor2LastGenerations(int iterationsMade) {
 		
+		Map<AnIndividual,Double[]> res = new HashMap<AnIndividual, Double[]>();
 		Map<AnIndividual,Double[]> previous = generation2fitness.get(iterationsMade-1);
 
 		if (previous == null)
 			// generation evaluated: Q(t)
-			return generation2fitness.get(iterationsMade);
+			res.putAll(generation2fitness.get(iterationsMade));
 		else {
-			Map<AnIndividual,Double[]> res = new HashMap<AnIndividual, Double[]>(paramPopulationSize*2);
-			
 			// add the last generation (there is always one)
 			// generation evaluated: Q(t)
 			res.putAll(generation2fitness.get(iterationsMade));
@@ -378,10 +376,18 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			// add the previous generation (only if available)
 			// generation evaluated: P(t)
 			res.putAll(previous);
-			
-			return res;
 		}
+//int a=0;
+//		System.out.print("Remove ");
+//		for( AnIndividual i : res.keySet() ) {
+//			if( res.get(i)==null ) {
+//				a++;
+//				res.remove(i);
+//			}
+//		}
+//		System.out.println(a+" indivs");
 		
+		return res;
 	}
 	
 
@@ -410,14 +416,13 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	
 	public Map<AnIndividual,Object[]> getIndivAndValuesFor2LastGenerations(int iterationsMade) {
 		
+		Map<AnIndividual,Object[]> res = new HashMap<AnIndividual, Object[]>();
 		Map<AnIndividual,Object[]> previous = generation2values.get(iterationsMade-1);
 
 		if (previous == null)
 			// generation evaluated: Q(t)
-			return generation2values.get(iterationsMade);
+			res.putAll(generation2values.get(iterationsMade));
 		else {
-			Map<AnIndividual,Object[]> res = new HashMap<AnIndividual, Object[]>(paramPopulationSize*2);
-			
 			// add the last generation (there is always one)
 			// generation evaluated: Q(t)
 			res.putAll(generation2values.get(iterationsMade));
@@ -425,10 +430,14 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			// add the previous generation (only if available)
 			// generation evaluated: P(t)
 			res.putAll(previous);
-			
-			return res;
 		}
+
+//		for( AnIndividual i : res.keySet() ) {
+//			if( res.get(i)==null )
+//				res.remove(i);
+//		}
 		
+		return res;
 	}
 	
 	protected void analyzeLastPopulation(Map<AnIndividual, Double[]> indiv2fitness) {
@@ -438,6 +447,9 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		// so we first preprocess the received fitness with the previous generation
 		// also a good way to remove solutions at negative infinity (failure)
 		this.indiv2fitnessForLastGenerations = getIndivAndFitnessFor2LastGenerations(iterationsMade);
+		for( AnIndividual i : indiv2fitnessForLastGenerations.keySet() ) {
+			System.out.println("!! "+i.toString()+" : "+Arrays.toString(indiv2fitnessForLastGenerations.get(i)));
+		}
 		if (this.indiv2fitnessForLastGenerations.size() > paramPopulationSize) 
 			messages.infoUser("elitism : taking into account the results of the previous iteration "+(this.iterationsMade-1), getClass());
 		
@@ -452,6 +464,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	
 	protected INextGeneration selectIndividuals(Map<AnIndividual, Double[]> indiv2fitness) {
 
+		
 		// analyze the last run and the one before
 		analyzeLastPopulation(indiv2fitness);
 		
@@ -459,13 +472,16 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		// TODO parameter: proportion of parents to select ? 
 		Set<AnIndividual> offsprings  = selectParents(this.indiv2fitnessForLastGenerations, paramPopulationSize);
 
+
 		// now sort the population by genome, as expected by the parent algo
 		NextGenerationWithElitism selectedIndividuals = new NextGenerationWithElitism(indiv2fitness.size());
+		
 		for (AnIndividual offspring: offsprings) {
-			
 			selectedIndividuals.addIndividual(offspring.genome, offspring);
 			
 		}
+		
+
 		
 		// clear internal variables (free memory)
 		this.fronts = null;
@@ -752,27 +768,6 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		int totalIndividualsSelected = selectedIndividuals.getTotalOfIndividualsAllGenomes();
 		messages.infoUser("selected for "+selectedGenome2Population.size()+" genome(s) a total of "+totalIndividualsSelected+" individuals", getClass());
 		
-		// TODO if the population is not big enough, recreate some novel individuals
-		if (totalIndividualsSelected < paramPopulationSize) {
-			messages.warnUser("not enough individuals selected ! Probably many individuals were not evaluated with success. We will create novel individuals to repopulate the population", getClass());
-
-			for (AGenome genome : selectedGenome2Population.keySet()) {
-				
-				Set<AnIndividual> individuals = selectedGenome2Population.get(genome);
-				
-				int targetSizeForGenome = paramPopulationSize/genome2algoInstance.size(); // TODO should be what ?
-				int diff = targetSizeForGenome - individuals.size(); 
-				if (diff > 0) {
-					
-					messages.infoUser("adding "+diff +" new individuals in the population for genome "+genome.name, getClass());
-					Object[][] population = generateInitialPopulation(genome, diff);
-					for (Object[] indiv : population) {
-						individuals.add(new AnIndividual(genome, indiv));
-					}
-				}
-			}
-			
-		}
 		
 		// CROSS
 		// TODO manage multi specy !
@@ -786,6 +781,12 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			
 			Set<AnIndividual> indivs = selectedGenome2Population.get(genome);
 			
+			// TODO remove
+			Map<AnIndividual,Double[]> indiv2fit = getIndivAndFitnessFor2LastGenerations(iterationsMade);
+			for (AnIndividual i : indivs) {
+				if (indiv2fit.get(i) == null)
+					System.err.println("B !!! individual has no fitness :"+i);
+			}
 			// generate the next generation
 			Object[][] novelPopulation = generateNextGenerationWithCrossover(
 					genome, 
@@ -812,6 +813,29 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 				sb.append("; ");
 			}
 			messages.infoUser(sb.toString(), getClass());
+		}
+		
+
+		// TODO if the population is not big enough, recreate some novel individuals
+		if (totalIndividualsSelected < paramPopulationSize) {
+			messages.warnUser("not enough individuals selected ! Probably many individuals were not evaluated with success. We will create novel individuals to repopulate the population", getClass());
+
+			for (AGenome genome : selectedGenome2Population.keySet()) {
+				
+				Set<AnIndividual> individuals = selectedGenome2Population.get(genome);
+				
+				int targetSizeForGenome = paramPopulationSize/genome2algoInstance.size(); // TODO should be what ?
+				int diff = targetSizeForGenome - individuals.size(); 
+				if (diff > 0) {
+					
+					messages.infoUser("adding "+diff +" new individuals in the population for genome "+genome.name, getClass());
+					Object[][] population = generateInitialPopulation(genome, diff);
+					for (Object[] indiv : population) {
+						individuals.add(new AnIndividual(genome, indiv));
+					}
+				}
+			}
+			
 		}
 		
 		exportContinuousOutput();

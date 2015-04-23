@@ -243,11 +243,11 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 		
 		if (!progress.getComputationState().isFinished())
 			throw new ProgramException("asked for the fitness of an individual run which is not finished yet");
-		
+
 		if (progress.getComputationState() == ComputationState.FINISHED_OK)
 			return resultFitness;
 		else
-			return null;
+			return null;//new Double[this.individual.genes.length];
 	}
 	
 	public final Object[] getResultValues() {
@@ -258,7 +258,7 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 		if (progress.getComputationState() == ComputationState.FINISHED_OK)
 			return resultValues;
 		else
-			return null;
+			return null;//new Double[this.individual.genes.length];
 	}
 	
 
