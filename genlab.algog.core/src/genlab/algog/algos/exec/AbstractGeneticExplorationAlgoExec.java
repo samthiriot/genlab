@@ -636,6 +636,14 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * @return P(t)
 	 */
 	public Map<AnIndividual,Double[]> getIndivAndFitnessForLastGeneration() {
+//int a=0;
+//		System.out.print("<Remove ");
+//		for( AnIndividual i : generation2fitness.get(iterationsMade).keySet() ) {
+//			if( generation2fitness.get(iterationsMade).get(i)==null )
+//				generation2fitness.get(iterationsMade).remove(i);
+//		}
+//		System.out.println(a+" indivs");
+		
 		return generation2fitness.get(iterationsMade);
 	}
 	
@@ -655,7 +663,6 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 */
 	protected final void exportContinuousOutput() {
 		
-	
 	
 		ComputationResult res = new ComputationResult(algoInst, progress, messages);
 		

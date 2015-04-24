@@ -236,7 +236,7 @@ public abstract class AbstractContainerExecution
 				if (autoUpdateProgressFromChildren)
 					t.getProgress().addDetailedListener(this);
 				
-				// add this subtask to the runner, but only if we are already running.
+				// add this subtask to the runner, but only if weupdateProgressFromChildren are already running.
 				// if we are not running yet, then the runner will discover the task itself when adding us as a task.
 				// we don't want the runner to run our tasks while we are not in his pool yet.
 				if (exec.getRunner().containsTask(this)) {

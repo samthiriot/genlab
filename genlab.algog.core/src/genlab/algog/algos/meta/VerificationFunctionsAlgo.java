@@ -54,6 +54,7 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 		
 		BINH_KORN ("Binh and Korn"),
 		CHAKONG_HAIMES ("Chakong and Haimes")
+		
 		;
 		
 		public final String label;
