@@ -342,7 +342,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		return (progress != null) 
 				&& (progress.getComputationState() != null)
 				&& (progress.getComputationState().isFinished()) 
-				&& (System.currentTimeMillis() - progress.getTimestampEnd() > 500) // TODO cleanest method !
+				&& (System.currentTimeMillis() - progress.getTimestampEnd() > 5000) // TODO cleanest method !
 				;
 		
 	}
