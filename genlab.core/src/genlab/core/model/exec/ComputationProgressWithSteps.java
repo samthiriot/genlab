@@ -106,20 +106,24 @@ public final class ComputationProgressWithSteps implements IComputationProgress,
 	}
 
 	@Override
-	public void setProgressTotal(Long total) {
+	public void setProgressTotal(Long cumulated) {
 		
-		if (total != null && total <= 0)
+		if (cumulated != null && cumulated <= 0)
 			throw new ProgramException("total should be higher than 0");
 		
-		final long difference = (total == null || made == null?(total != made?1:0):total-this.made);
+		final long difference = (cumulated == null || made == null?(cumulated != made?1:0):cumulated-this.made);
 
-		this.total = total;
+		this.total = cumulated;
 		
-		if (total == null)
+		if (cumulated == null)
 			made = null;
 		
 		else if (made == null)
 			made = 0l;
+		
+		if (this.total < made) {
+			this.total = made;
+		}
 		
 		if (difference > MIN_DIFFERENCE_TO_DISPATCH_DETAILED_CHANGE)
 			dispatchComputationStateChangedDetail();
@@ -140,12 +144,30 @@ public final class ComputationProgressWithSteps implements IComputationProgress,
 
 	@Override
 	public void incProgressMade(Long inc) {
+		if (made == null) {
+			made = 0l;
+		}
+		if (total == null) {
+			total = 1l;
+		}
 		this.made += inc;
+		if (total < made) {
+			total = made;
+		}
 	}
 
 	@Override
 	public void incProgressMade() {
+		if (made == null) {
+			made = 0l;
+		}
+		if (total == null) {
+			total = 1l;
+		}
 		this.made ++;
+		if (total < made) {
+			total = made;
+		}
 	}
 
 	@Override
