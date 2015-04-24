@@ -214,7 +214,7 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				// TODO check this behavior
 				Double minValue = p.getMinValue();
 				if (minValue == null)
-					minValue = Double.MIN_VALUE;
+					minValue = -Double.MAX_VALUE;
 				sp.setMinimum((int)Math.floor(minValue * Math.pow(10, sp.getDigits())));
 				Double maxValue = p.getMaxValue();
 				if (maxValue == null)
