@@ -53,7 +53,7 @@ public class ExampleTestFunctionChakongHaimes implements IGenlabExample {
 		geneXInstance.setContainer(nsgaInstance);
 		workflow.addAlgoInstance(geneXInstance);
 		geneXInstance.setValueForParameter(DoubleGeneAlgo.PARAM_MINIMUM, -20d);
-		geneXInstance.setValueForParameter(DoubleGeneAlgo.PARAM_MAXIMUM, 100d);
+		geneXInstance.setValueForParameter(DoubleGeneAlgo.PARAM_MAXIMUM, 20d);
 		
 		workflow.connect(
 				genomeInstance, 
@@ -67,7 +67,7 @@ public class ExampleTestFunctionChakongHaimes implements IGenlabExample {
 		nsgaInstance.addChildren(geneYInstance);
 		geneYInstance.setContainer(nsgaInstance);
 		workflow.addAlgoInstance(geneYInstance);
-		geneYInstance.setValueForParameter(DoubleGeneAlgo.PARAM_MINIMUM, -100d);
+		geneYInstance.setValueForParameter(DoubleGeneAlgo.PARAM_MINIMUM, -20d);
 		geneYInstance.setValueForParameter(DoubleGeneAlgo.PARAM_MAXIMUM, 20d);
 		
 		workflow.connect(
