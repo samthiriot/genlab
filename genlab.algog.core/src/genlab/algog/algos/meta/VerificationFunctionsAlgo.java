@@ -53,7 +53,9 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 	public static enum EAvailableFunctions {
 		
 		BINH_KORN ("Binh and Korn"),
-		CHAKONG_HAIMES ("Chakong and Haimes")
+		CHAKONG_HAIMES ("Chakong and Haimes"),
+		CTP1 ("CTP1"),
+		POLONI ("Poloni's two objective function")
 		
 		;
 		
@@ -144,27 +146,49 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 				final Double x = (Double) getInputValueForInput(INPUT_X);
 				final Double y = (Double) getInputValueForInput(INPUT_Y);
 				
-				try {	
+				try {					
 					// detect constraint violation 
 					boolean violatesConstraint = false;
 					boolean violatesSearchDomain = false;
 					switch (testedFunction) {
 						case BINH_KORN:
-							violatesConstraint = (
-											Math.pow(x - 5, 2) + Math.pow(y, 2) > 25
-											)
-											|| (
-											Math.pow(x-8, 2) + Math.pow(y+3, 2) < 7.7		
-											);
-							violatesSearchDomain = (x < 0) || (x > 5) || (y < 0) || (y > 3);
+							violatesConstraint = 
+								(
+									(Math.pow(x - 5, 2) + Math.pow(y, 2)) > 25
+								) || (
+									(Math.pow(x-8, 2) + Math.pow(y+3, 2)) < 7.7		
+								);
+							violatesSearchDomain =
+									(x < 0) || (x > 5) ||
+									(y < 0) || (y > 3);
 							break;
 						case CHAKONG_HAIMES:
-							violatesConstraint = (
-											Math.pow(x, 2)+Math.pow(y, 2) > 225
-											) || (
-											x - 3*y + 10 > 0
-											);
-							violatesSearchDomain = (x < -20) || (y > 20);
+							violatesConstraint =
+								(
+									(Math.pow(x, 2)+Math.pow(y, 2)) > 225
+								) || (
+									(x - 3*y + 10) > 0
+								);
+							violatesSearchDomain =
+									(x < -20) || (x > 20) ||
+									(y < -20) || (y > 20);
+							break;
+						case CTP1:
+							violatesConstraint =
+								(
+									(((1+y) * Math.exp(-x/(1+y))) / ( 0.858*Math.exp(-0.541*x) )) < 1
+								) || (
+									(((1+y) * Math.exp(-x/(1+y))) / ( 0.728*Math.exp(-0.295*x) )) < 1
+								);
+							violatesSearchDomain =
+									(x < 0) || (x > 1) ||
+									(y < 0) || (y > 1);
+							break;
+						case POLONI:
+							violatesConstraint = false; // no constraint
+							violatesSearchDomain =
+									(x < -Math.PI) || (x > Math.PI) ||
+									(y < -Math.PI) || (y > Math.PI);
 							break;
 						default:
 							throw new ProgramException("unknown test function "+testedFunction);
@@ -181,7 +205,8 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 						progress.setComputationState(ComputationState.FINISHED_FAILURE);
 						return;
 					}
-					// else we compute the goals
+
+					// we compute the goals
 					Double f1 = null;
 					Double f2 = null;
 					switch (testedFunction) {
@@ -192,6 +217,20 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 						case CHAKONG_HAIMES:
 							f1 = 2 + Math.pow(x-2, 2) + Math.pow(y-1, 2);
 							f2 = 9*x + Math.pow(y-1, 2);
+							break;
+						case CTP1:
+							f1 = x;
+							f2 = (1+y) * Math.exp(-x/(1+y));
+							break;
+						case POLONI:
+						    double a1, a2, b1, b2;
+						    a1 = 0.5*Math.sin(1) - 2.0*Math.cos(1) + Math.sin(2) - 1.5*Math.cos(2);
+						    a2 = 1.5*Math.sin(1) - Math.cos(1) + 2*Math.sin(2) - 0.5*Math.cos(2);
+						    b1 = 0.5*Math.sin(x) - 2*Math.cos(x) + Math.sin(y) - 1.5*Math.cos(y);
+						    b2 = 1.5*Math.sin(x) - Math.cos(x) + 2*Math.sin(y) - 0.5*Math.cos(y);
+						    
+							f1 = 1 + Math.pow(a1-b1, 2) + Math.pow(a2-b2, 2);
+							f2 = Math.pow(x+3, 2) + Math.pow(y+1, 2);
 							break;
 						default:
 							throw new ProgramException("unknown test function "+testedFunction);
