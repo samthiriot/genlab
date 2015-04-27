@@ -7,6 +7,7 @@ import genlab.core.model.instance.IParametersListener;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.gui.VisualResources;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
+import genlab.gui.jfreechart.EnhancedSpiderWebPlot;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
 import genlab.quality.Timers;
 
@@ -63,7 +64,7 @@ public final class ViewAlgogRadarTable
 	 * each iteration
 	 */
 	protected final List<DefaultCategoryDataset> datasets = new LinkedList<DefaultCategoryDataset>();
-	protected final List<SpiderWebPlot> plots = new LinkedList<SpiderWebPlot>();
+	protected final List<EnhancedSpiderWebPlot> plots = new LinkedList<EnhancedSpiderWebPlot>();
 	protected final List<JFreeChart> charts = new LinkedList<JFreeChart>();
 	protected final List<ChartComposite> chartComposites = new LinkedList<ChartComposite>();
 	protected final List<Composite> hostCharts = new LinkedList<Composite>();
@@ -102,7 +103,7 @@ public final class ViewAlgogRadarTable
 	        datasets.add(dataset);
 	        
 	        // create plot  
-	        final SpiderWebPlot plotRadar = new SpiderWebPlot(dataset);
+	        final EnhancedSpiderWebPlot plotRadar = new EnhancedSpiderWebPlot(dataset);
 	        plotRadar.setMaxValue(1.0);
 	        plotRadar.setWebFilled(true);
 	        // TODO ???chartRadar.setStartAngle(54D); 
@@ -223,7 +224,7 @@ public final class ViewAlgogRadarTable
 		
 		messages.traceTech("init the jfreechart dataset for individual "+displayIndividualId+" ...", getClass());
 		
-        final SpiderWebPlot chartRadar = plots.get(displayIndividualId);
+        final EnhancedSpiderWebPlot chartRadar = plots.get(displayIndividualId);
         chartRadar.setNotify(false); // freeze during update
 
 		// update dataset
@@ -406,7 +407,6 @@ public final class ViewAlgogRadarTable
 			}
 				
 			final String columnIteration = (String) lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION);
-			final Integer maxIterations = (Integer)lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_MAX_ITERATIONS);
 			
 			// TODO make a parameter of that
 			final Integer iterationToDisplay = (Integer)lastVersionDataToDisplay.getValue(lastVersionDataToDisplay.getRowsCount()-1, columnIteration);
