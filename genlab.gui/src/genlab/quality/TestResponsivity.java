@@ -26,7 +26,7 @@ public final class TestResponsivity extends Thread {
 	public static boolean AUDIT_SWT_THREAD_USE = false;
 	
 	
-	public static final boolean DISPLAY_ALERTS_STDERR = true;
+	public static final boolean DISPLAY_ALERTS_STDERR = false;
 	
 	/**
 	 * Delay, in ms, where the display is assumed to be unresponsive
