@@ -6,6 +6,8 @@ import java.util.Date;
 
 public class TextMessage implements ITextMessage {
 
+	public final static String LINE_SEPARATOR = System.getProperty("line.separator");
+	
 	public final MessageLevel level;
 	public final MessageAudience audience;
 	public final String message;
@@ -71,6 +73,15 @@ public class TextMessage implements ITextMessage {
 	@Override
 	public final String getMessage() {
 		return message;
+	}
+	
+	@Override
+	public final String getMessageFirstLine() {
+		int idx = message.indexOf(LINE_SEPARATOR);
+		if (idx > 0)
+			return message.substring(0, idx)+" [...]";
+		else 
+			return message;
 	}
 
 	@Override
@@ -140,5 +151,6 @@ public class TextMessage implements ITextMessage {
 		sb.append(message);
 		return sb.toString();
 	}
+
 
 }

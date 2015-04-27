@@ -466,7 +466,7 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 				
 
 				public int getToolTipDisplayDelayTime(Object object) {
-					return 500;
+					return 50;
 				}
 
 				public int getToolTipTimeDisplayed(Object object) {
@@ -523,10 +523,10 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 					    		.append(message.getCount())
 					    		.append(" times") 
 					    		.append(") ")					//$NON-NLS-1$
-					    		.append(message.getMessage())
+					    		.append(message.getMessageFirstLine())
 					    		.toString();
 					  } else
-				    	return message.getMessage();
+				    	return message.getMessageFirstLine();
 				  	}
 			  
 			  

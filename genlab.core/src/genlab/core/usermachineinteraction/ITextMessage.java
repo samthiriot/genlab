@@ -18,6 +18,7 @@ public interface ITextMessage extends Comparable<ITextMessage> {
 	public MessageAudience getAudience();
 	
 	public String getMessage();
+	public String getMessageFirstLine();
 	
 	public UniqueTimestamp getTimestamp();
 	
