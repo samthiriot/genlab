@@ -196,6 +196,16 @@ public class GenlabTable implements IGenlabTable, IDumpableToText {
 		return columnsTitles.get(colIdx);
 	}
 	
+
+	@Override
+	public Integer getIndexForColumnId(String id) {
+		for (int i=0; i<columnsTitles.size(); i++) {
+			if (columnsTitles.get(i)==id)
+				return i;
+		}
+		return null;
+	}
+	
 	@Override
 	public int addRow() {
 
@@ -379,4 +389,5 @@ public class GenlabTable implements IGenlabTable, IDumpableToText {
 		}
 		
 	}
+
 }

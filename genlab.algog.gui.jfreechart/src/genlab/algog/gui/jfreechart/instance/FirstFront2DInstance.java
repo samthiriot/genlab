@@ -1,32 +1,32 @@
-package genlab.gui.jfreechart.instance;
+package genlab.algog.gui.jfreechart.instance;
+
+import genlab.algog.gui.jfreechart.algos.FirstFront2DAlgo;
+import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.meta.IAlgo;
+import genlab.core.parameters.ListParameter;
+import genlab.core.parameters.Parameter;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.meta.IAlgo;
-import genlab.core.parameters.ListParameter;
-import genlab.core.parameters.Parameter;
-import genlab.gui.jfreechart.algos.ScatterPlotAlgo;
-
-public class ScatterPlotAlgoInstance extends AlgoInstance {
+public class FirstFront2DInstance extends AlgoInstance {
 
 	private transient LinkedList<Parameter<?>> localParameters = null;
 	private transient ListParameter paramColX;
 	private transient ListParameter paramColY;
 	
 	private transient Map<String,Parameter<?>> parameterId2value = new HashMap<String,Parameter<?>>();
-
-	public ScatterPlotAlgoInstance(IAlgo algo,
+	
+	public FirstFront2DInstance(IAlgo algo,
 			IGenlabWorkflowInstance workflow, String id) {
 		super(algo, workflow, id);
 		initParameters();
 	}
 
-	public ScatterPlotAlgoInstance(IAlgo algo, IGenlabWorkflowInstance workflow) {
+	public FirstFront2DInstance(IAlgo algo, IGenlabWorkflowInstance workflow) {
 		super(algo, workflow);
 		initParameters();
 	}
@@ -40,17 +40,17 @@ public class ScatterPlotAlgoInstance extends AlgoInstance {
 		localParameters = new LinkedList<Parameter<?>>();
 		
 		paramColX = new ListParameter(
-				ScatterPlotAlgo.PARAM_COLUMN_X.getId()+".local/"+getId(), 
-				ScatterPlotAlgo.PARAM_COLUMN_X.getName(), 
-				ScatterPlotAlgo.PARAM_COLUMN_X.getDesc()
+				FirstFront2DAlgo.PARAM_COLUMN_X.getId()+".local/"+getId(), 
+				FirstFront2DAlgo.PARAM_COLUMN_X.getName(), 
+				FirstFront2DAlgo.PARAM_COLUMN_X.getDesc()
 				);
 		localParameters.add(paramColX);
 		parameterId2value.put(paramColX.getId(), paramColX);
 
 		paramColY = new ListParameter(
-				ScatterPlotAlgo.PARAM_COLUMN_Y.getId()+".local/"+getId(), 
-				ScatterPlotAlgo.PARAM_COLUMN_Y.getName(), 
-				ScatterPlotAlgo.PARAM_COLUMN_Y.getDesc()
+				FirstFront2DAlgo.PARAM_COLUMN_Y.getId()+".local/"+getId(), 
+				FirstFront2DAlgo.PARAM_COLUMN_Y.getName(), 
+				FirstFront2DAlgo.PARAM_COLUMN_Y.getDesc()
 				);
 		localParameters.add(paramColY);
 		parameterId2value.put(paramColY.getId(), paramColY);

@@ -74,7 +74,7 @@ public abstract class AbstractViewOpenedByAlgo<ClassObjectToDisplay extends Obje
 		} else {
 			// only update visu if 
 			shouldBeRefreshed = true;
-			messages.traceTech("not displaying the data because the view is hidden.", getClass());
+			GLLogger.infoTech("not displaying the data because the view is hidden "+getTitle(), getClass());
 		}
 		
 	}

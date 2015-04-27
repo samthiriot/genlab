@@ -5,7 +5,6 @@ import genlab.core.commons.WrongParametersException;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IParametersListener;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
-import genlab.gui.VisualResources;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 import genlab.gui.jfreechart.EnhancedSpiderWebPlot;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
@@ -32,15 +31,16 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.CategoryToolTipGenerator;
-import org.jfree.chart.plot.SpiderWebPlot;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.general.Dataset;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.RectangleEdge;
 
+//TODO display when show
+		// TODO always display for last version of data
+		
 public final class ViewAlgogRadarTable 
 						extends AbstractViewOpenedByAlgo<GenlabTable> 
 						implements IParametersListener {
@@ -509,7 +509,9 @@ public final class ViewAlgogRadarTable
 
 	@Override
 	protected void dataReceived() {
-		loadDataFromTable();
+		
+		loadDataFromTable();	
+		
 		
 	}
 	
@@ -585,7 +587,11 @@ public final class ViewAlgogRadarTable
 		if (DEBUG_DURATIONS)
 			Timers.SINGLETON.startTask(DEBUG_KEY_UPDATE_DATA);
 		
-		loadDataFromTable();
+		// refresh the view only when it is visible
+		if (this.getViewSite().getPage().isPartVisible(this)) {
+			loadDataFromTable();	
+		}
+		
 		
 		if (DEBUG_DURATIONS)
 			Timers.SINGLETON.endTask(DEBUG_KEY_UPDATE_DATA, 5);

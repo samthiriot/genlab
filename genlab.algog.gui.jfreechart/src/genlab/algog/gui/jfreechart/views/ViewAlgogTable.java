@@ -5,7 +5,6 @@ import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.text.NumberFormat;
 import java.util.Arrays;
@@ -19,21 +18,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.XYLineAnnotation;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.plot.FastScatterPlot;
-import org.jfree.chart.plot.Plot;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 
 public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> {
@@ -382,6 +373,7 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 		if (lastVersionDataToDisplay == null)
 			return;
 		
+		
 		try {
 			showBusy(true);
 			
@@ -541,7 +533,11 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 
 	@Override
 	protected void dataReceived() {
-		loadDataFromTable();
+		// refresh the view only when it is visible
+		if (this.getViewSite().getPage().isPartVisible(this)) {
+			loadDataFromTable();	
+		}
+		
 	}
 
 }

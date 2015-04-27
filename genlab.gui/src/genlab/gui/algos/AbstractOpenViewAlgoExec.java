@@ -1,9 +1,7 @@
 package genlab.gui.algos;
 
 import genlab.core.exec.IExecution;
-import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshotOrReduce;
-import genlab.core.model.exec.AbstractAlgoExecutionReduce;
 import genlab.core.model.exec.AbstractContainerExecutionSupervisor;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
@@ -16,9 +14,6 @@ import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.perspectives.OutputsGUIManagement;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
 import genlab.quality.TestResponsivity;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
@@ -157,14 +152,18 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 
 	
 	protected void displayResultsAsync(final AbstractViewOpenedByAlgo theView) {
+
+		// never refresh a disposed view
+		if (theView.isDisposed())
+			return;
 		
+		// avoid doing to successive updates
 		if (updatePending)
 			return;
 		updatePending = true;
-		
+
 		if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
 			TestResponsivity.singleton.notifySWTThreadUserSubmitsRunnable(SWT_THREAD_USER_ID_DISPLAY_ASYNC);
-		
 		
 		Display.getDefault().asyncExec(new Runnable() {
 			
@@ -303,14 +302,23 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 		// will be called in continuous mode: in this case, will display the result continuously
 	
 		if (connectionExec instanceof ConnectionExecFromIterationToReduce) {
-			if (!openDisplayIfNecessary())
-				// if the display is already open, refresh it (else it will be refreshed at callback, once the view will be opened.
-				displayResultsASyncReduced(theView, executionRun, connectionExec, value);
-				
+		
+			// if the display is not open, don't display (will be refreshed at callback)
+			if (openDisplayIfNecessary())
+				return;
+			
+			// if the display is already open, refresh it 
+			displayResultsASyncReduced(theView, executionRun, connectionExec, value);
+			
 		} else {
-			if (!openDisplayIfNecessary())
-				// if the display is already open, refresh it (else it will be refreshed at callback, once the view will be opened.
-				displayResultsAsync(theView);
+			
+			// if the display is not open, don't display (will be refreshed at callback)
+			if (openDisplayIfNecessary())
+				return;
+		
+			// we don't refresh if the view is not visible 
+			// if the display is already open, refresh it (else it will be refreshed at callback, once the view will be opened.
+			displayResultsAsync(theView);
 			
 		}
 		

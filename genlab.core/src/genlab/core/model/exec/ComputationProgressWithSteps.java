@@ -206,6 +206,7 @@ public final class ComputationProgressWithSteps implements IComputationProgress,
 				this.timestampStart = System.currentTimeMillis();
 				break;
 			case FINISHED_FAILURE:
+			case FINISHED_CANCEL:
 			case FINISHED_OK:
 				this.made = this.total;
 				this.timestampEnd = System.currentTimeMillis();

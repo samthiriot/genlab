@@ -30,6 +30,13 @@ public interface IGenlabTable {
 	public List<String> getColumnsId();
 	
 	public String getColumnIdForIdx(int colIdx);
+	
+	/**
+	 * Returns the id of this id, or null if no column has this id
+	 * @param id
+	 * @return
+	 */
+	public Integer getIndexForColumnId(String id);
 		
 	
 	/**

@@ -27,6 +27,14 @@
             name="ViewAlgogBigRadarTable"
             restorable="false">
       </view>
+      <view
+            allowMultiple="true"
+            category="genlab.gui.views.categorygenlab"
+            class="genlab.algog.gui.jfreechart.views.FirstFront2DView"
+            id="genlab.algog.gui.jfreechart.views.FirstFront2DView"
+            name="FirstFrontAs2D"
+            restorable="false">
+      </view>
    </extension>
    <extension
          point="genlab.core.algo">
@@ -41,6 +49,10 @@
       <algo
             class="genlab.algog.gui.jfreechart.algos.AlgoGPlotBigRadarAlgo"
             id="genlab.algog.gui.jfreechart.algos.AlgoGPlotBigRadarAlgo">
+      </algo>
+      <algo
+            class="genlab.algog.gui.jfreechart.algos.FirstFront2DAlgo"
+            id="genlab.algog.gui.jfreechart.algos.FirstFront2DAlgo">
       </algo>
    </extension>
    <extension
@@ -77,6 +89,17 @@
                showTitle="true"
                standalone="false"
                visible="false">
+         </view>
+         <view
+               closeable="true"
+               id="genlab.algog.gui.jfreechart.views.FirstFront2DView:*"
+               minimized="false"
+               moveable="true"
+               relationship="stack"
+               relative="genlab.gui.perspectives.RunPerspective.folders.middle"
+               showTitle="true"
+               standalone="false"
+               visible="true">
          </view>
       </perspectiveExtension>
    </extension>

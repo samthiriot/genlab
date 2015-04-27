@@ -14,7 +14,8 @@ public class ScatterPlotExec extends AbstractJFreeChartAlgoExec {
 
 	// the table loaded from a continuous update, or a sequential update.
 	private GenlabTable table;
-	
+	private boolean parametersDefined = false;
+
 	public ScatterPlotExec(IExecution exec, IAlgoInstance algoInst) {
 		super(exec, algoInst);
 		
@@ -30,6 +31,7 @@ public class ScatterPlotExec extends AbstractJFreeChartAlgoExec {
 		algoInstance.getParameterColumnX().setItems(table.getColumnsId());
 		algoInstance.getParameterColumnY().setItems(table.getColumnsId());
 		
+		parametersDefined = true;
 	}
 	
 	protected void loadDataSuccessiveFromInput() {
@@ -48,12 +50,21 @@ public class ScatterPlotExec extends AbstractJFreeChartAlgoExec {
 	@Override
 	protected void displayResultsSync(AbstractViewOpenedByAlgo theView) {
 		
-		adaptParametersForData(algoInst, table);
+		if (!parametersDefined)
+			adaptParametersForData(algoInst, table);
 		
 		((ScatterView)theView).setData(
 				algoInst,
 				table
 				);
+	}
+
+	@Override
+	protected void displayResultsSyncReduced(AbstractViewOpenedByAlgo theView,
+			IAlgoExecution executionRun, IConnectionExecution connectionExec,
+			Object value) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

@@ -22,13 +22,6 @@ public class ViewAlgoGRadarTableExec extends AbstractJFreeChartAlgoExec {
 		
 	}
 
-	protected void adaptParametersForData(IAlgoInstance algoInst, GenlabTable table) {
-		
-		if (table == null)
-			return;
-		
-		
-	}
 	
 	protected void loadDataSuccessiveFromInput() {
 		table = (GenlabTable)getInputValueForInput(AlgoGPlotRadarAlgo.INPUT_TABLE);
@@ -45,8 +38,6 @@ public class ViewAlgoGRadarTableExec extends AbstractJFreeChartAlgoExec {
 	
 	@Override
 	protected void displayResultsSync(AbstractViewOpenedByAlgo theView) {
-		
-		adaptParametersForData(algoInst, table);
 		
 		((ViewAlgogRadarTable)theView).receiveData(
 				table,

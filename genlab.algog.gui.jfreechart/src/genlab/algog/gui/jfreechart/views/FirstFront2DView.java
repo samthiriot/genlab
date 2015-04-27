@@ -1,12 +1,13 @@
-package genlab.gui.jfreechart.views;
+package genlab.algog.gui.jfreechart.views;
 
+import genlab.algog.algos.meta.GeneticExplorationAlgo;
+import genlab.algog.gui.jfreechart.instance.FirstFront2DInstance;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IParametersListener;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.gui.actions.ShowParametersAction;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
-import genlab.gui.jfreechart.instance.ScatterPlotAlgoInstance;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
 
 import org.eclipse.swt.SWT;
@@ -15,6 +16,7 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -25,16 +27,16 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
 
-public class ScatterView extends AbstractViewOpenedByAlgo implements IParametersListener {
+public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> implements IParametersListener {
 
-	public static final String VIEW_ID = "genlab.gui.jfreechart.views.ScatterView";
+	public static final String VIEW_ID = "genlab.algog.gui.jfreechart.views.FirstFront2DView";
 	
 	protected String chartTitle = "xy";
 	protected String chartXLabel = "x";
 	protected String chartYLabel = "y";
 	
-	protected int glTableColumnXIdx;
-	protected int glTableColumnYIdx;
+	protected Integer glTableColumnXIdx = null;
+	protected Integer glTableColumnYIdx = null;
 	
 	public GenlabTable glTable = null;
 
@@ -42,11 +44,14 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 			
 	protected JFreeChart chart = null;
 	protected ChartComposite compositeChart = null;
+	private Label labelIteration ;
 
 	private FormToolkit toolkit;
 	private ScrolledForm form;
 		
-	public ScatterView() {
+	
+	
+	public FirstFront2DView() {
 		
 	}
 	
@@ -57,7 +62,10 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 	
 	public void loadDataFromParameters(IAlgoInstance viewAlgoInstance) {
 		
-		ScatterPlotAlgoInstance ai = (ScatterPlotAlgoInstance)viewAlgoInstance;
+		// retrieve algo instance
+		FirstFront2DInstance ai = (FirstFront2DInstance)viewAlgoInstance;
+		
+		// ... so we can retrieve the values for the index parameters
 		
 		this.glTableColumnXIdx = (Integer) viewAlgoInstance.getValueForParameter(ai.getParameterColumnX());
 		this.glTableColumnYIdx = (Integer) viewAlgoInstance.getValueForParameter(ai.getParameterColumnY());
@@ -79,10 +87,19 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 			// update data !
 			serie.setNotify(false);
 			serie.clear();
-			for (int rowId=0; rowId<glTable.getRowsCount(); rowId++) {
-		    	
-				Object dataX = glTable.getValue(rowId, glTableColumnXIdx);
-				Object dataY = glTable.getValue(rowId, glTableColumnYIdx);
+			
+			// search for the first row to display
+			final String columnIteration = (String) glTable.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION);
+			final Integer iterationToDisplay = (Integer)glTable.getValue(glTable.getRowsCount()-1, columnIteration);
+			// search for the first line to display
+			int currentRow = glTable.getRowsCount()-1;
+			
+			Integer currentRowIteration = null;
+			do {
+				// we explore backwards from the final line to the first change in the exploration
+
+				Object dataX = glTable.getValue(currentRow, glTableColumnXIdx);
+				Object dataY = glTable.getValue(currentRow, glTableColumnYIdx);
 				
 				// ignore incomplete data
 		        if (dataX == null || dataY == null)
@@ -92,14 +109,14 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 		        Number x;
 		        Number y;
 		        try {
-					x = (Number)glTable.getValue(rowId, glTableColumnXIdx);
+					x = (Number)glTable.getValue(currentRow, glTableColumnXIdx);
 				} catch (ClassCastException e) {
 		        	messages.errorUser("wrong parameter: the column with index "+glTableColumnXIdx+" does not contains numbers", getClass());
 		        	throw new WrongParametersException("wrong parameter: the column with index "+glTableColumnXIdx+" does not contains numbers");
 		        	// TODO error !
 		        }
 		        try {
-					y = (Number)glTable.getValue(rowId, glTableColumnYIdx);
+					y = (Number)glTable.getValue(currentRow, glTableColumnYIdx);
 		        } catch (ClassCastException e) {
 		        	messages.errorUser("wrong parameter: the column with index "+glTableColumnYIdx+" does not contains numbers", getClass());
 		        	throw new WrongParametersException("wrong parameter: the column with index "+glTableColumnYIdx+" does not contains numbers");
@@ -107,20 +124,17 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 		        
 		        serie.add(x, y);
 		        
-		    }
+				// shift to previous line
+				currentRow --;
+				currentRowIteration = (Integer)glTable.getValue(currentRow, columnIteration);
+			} while (currentRow > 0 && currentRowIteration == iterationToDisplay);
 			
+			labelIteration.setText("results for iteration "+iterationToDisplay+" ("+(glTable.getRowsCount()-currentRow-1)+" Pareto efficient solutions)");
+
 		} finally {
 			serie.setNotify(true);
 			showBusy(false);	
 		}
-	}
-	
-	public void adaptParametersWidgets() {
-		
-		String[] titles = new String[glTable.getColumnsCount()];
-		
-		glTable.getColumnsId().toArray(titles);
-		
 	}
 	
 	
@@ -134,19 +148,17 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 
 		this.algoInstance = viewAlgoInstance;
 		
-		viewAlgoInstance.addParametersListener(this);
-
 		// retrieve data
 		this.glTable = glTable;
 
-		adaptParametersWidgets();
+		// parameters were not loaded, let's load them
+		if (this.glTableColumnXIdx == null) {
+			viewAlgoInstance.addParametersListener(this);	
+			loadDataFromParameters(viewAlgoInstance);
+		}
 		
-		loadDataFromParameters(viewAlgoInstance);
-		
-		loadDataFromTable();
-		
-		//chart.getXYPlot().
-		
+		// if we are visible, let's display that
+		loadDataFromTable();	
 		
 	}
 	
@@ -162,6 +174,10 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 		Layout layout = new RowLayout(SWT.VERTICAL);
 		form.getBody().setLayout(layout);
 
+
+		labelIteration = toolkit.createLabel(form.getBody(), "not data displayed yet");
+
+		
 		messages.traceTech("init the jfreechart dataset...", getClass());
 		
 		XYDataset dataset = null;
@@ -190,25 +206,7 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 
 		final int preferedWidth = 900;
 		final int preferedHeight = 500;
-	/*	
-		compositeChart = new ChartComposite(
-				form.getBody(), 
-				SWT.NONE, 
-				chart,
-				preferedWidth,
-				preferedHeight,
-				100,
-				100,
-				preferedWidth*2,
-				preferedHeight*2,
-				true, // use a buffer
-				true, // allosw properties
-				true, // allow save
-				true, // allow print
-				true, // allow zoom
-				false // allow tooltips
-				);		
-				*/
+	
 		compositeChart = new ChartComposite(
 				form.getBody(), 
 				SWT.NONE, 

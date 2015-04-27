@@ -260,7 +260,7 @@ public final class TestResponsivity extends Thread {
 			
 			// warn if necessary
 			if (timeToExecute >= THRESHOLD_AUDIT_ALERT) {
-				displayMessageWithException("this SWT thread user blocked the SWT Thread for a long time ("+timeToExecute+" ms) and is thus blocking the GUI: "+user);
+				displayMessage("this SWT thread user blocked the SWT Thread for a long time ("+timeToExecute+" ms) and is thus blocking the GUI: "+user);
 				
 			}
 		}
