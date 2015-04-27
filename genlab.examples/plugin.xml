@@ -24,5 +24,14 @@
             class="genlab.gui.intro.IntroExamplesContributor">
       </contributor>
    </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="genlab.gui.perspectives.WorkflowPerspective">
+         <newWizardShortcut
+               id="genlab.examples.wizard.examples">
+         </newWizardShortcut>
+      </perspectiveExtension>
+   </extension>
 
 </plugin>

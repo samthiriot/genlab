@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.dialogs.WizardNewProjectReferencePage;
@@ -26,7 +27,7 @@ import org.eclipse.ui.dialogs.WizardNewProjectReferencePage;
  * @author Samuel Thiriot
  *
  */
-public class CreateExampleWizard extends Wizard implements IWorkbenchWizard {
+public class CreateExampleWizard extends Wizard implements IWorkbenchWizard, INewWizard {
 
 	protected CreateExampleWizardPageProject page1 = null;
 	protected CreateExampleWizardPageExamples page2 = null;

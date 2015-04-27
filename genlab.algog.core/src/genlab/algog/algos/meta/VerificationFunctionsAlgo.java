@@ -2,16 +2,12 @@ package genlab.algog.algos.meta;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
-import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.meta.AlgoCategory;
-import genlab.core.model.meta.BasicAlgo;
-import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.parameters.ListParameter;
 
