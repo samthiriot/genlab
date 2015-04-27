@@ -38,12 +38,7 @@ public class ViewAlgoGTableExec extends AbstractJFreeChartAlgoExec {
 	@Override
 	protected void displayResultsSync(AbstractViewOpenedByAlgo theView) {
 
-		// TODO force refresh for last run
-		
-		((ViewAlgogTable)theView).receiveData(
-				table,
-				false
-				);
+		theView.receiveData(table);
 	}
 
 	@Override

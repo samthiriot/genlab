@@ -508,7 +508,7 @@ public final class ViewAlgogRadarTable
 	
 
 	@Override
-	protected void dataReceived() {
+	protected void refreshDisplaySync() {
 		
 		loadDataFromTable();	
 		

@@ -7,9 +7,11 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 import genlab.gui.perspectives.OutputsGUIManagement;
+import genlab.quality.TestResponsivity;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPartReference;
@@ -33,6 +35,8 @@ public abstract class AbstractViewOpenedByAlgo<ClassObjectToDisplay extends Obje
 												IPartListener2  {
 
 
+	protected final static String SWT_THREAD_USER_ID_DISPLAY_ASYNC = "AbstractViewOpenedByAlgo/update";
+	
 	protected IExecution execution = null;
 	
 	protected ListOfMessages messages = ListsOfMessages.getGenlabMessages();
@@ -44,6 +48,12 @@ public abstract class AbstractViewOpenedByAlgo<ClassObjectToDisplay extends Obje
 	 * because it was not displayed
 	 */
 	private boolean shouldBeRefreshed = false;
+	
+	/**
+	 * true if an update is already ongoing; avoids starting two consecutive async display tasks 
+	 *  
+	 */
+	private boolean updateOngoing = false;
 	
 	protected ClassObjectToDisplay lastVersionDataToDisplay = null;
 	
@@ -58,19 +68,53 @@ public abstract class AbstractViewOpenedByAlgo<ClassObjectToDisplay extends Obje
 	protected abstract String getName(AbstractOpenViewAlgoExec exec);
 
 
-	protected abstract void dataReceived();
+	/**
+	 * Called from the SWT thread; asks for a refresh of data
+	 */
+	protected abstract void refreshDisplaySync();
 
+	protected void refreshDataAsync() {
+		
+		// don't update twice !
+		if (updateOngoing)
+			return;
+		updateOngoing = true;
+		
+		if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+			TestResponsivity.singleton.notifySWTThreadUserSubmitsRunnable(SWT_THREAD_USER_ID_DISPLAY_ASYNC);
+		
+		Display.getDefault().asyncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				
+				if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+					TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID_DISPLAY_ASYNC);
+				
+				
+				// actual display
+				refreshDisplaySync();				
+				
+				if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+					TestResponsivity.singleton.notifySWTThreadUserEndsRunnable(SWT_THREAD_USER_ID_DISPLAY_ASYNC);
+
+				updateOngoing = false;
+
+			}
+		});
+	}
 	/**
 	 * call from algo to display data. Will display it, or not, depending on the visibility of the view
 	 * @param toDisplay
 	 */
-	public final void receiveData(ClassObjectToDisplay toDisplay, boolean forceDisplay) {
+	public final void receiveData(ClassObjectToDisplay toDisplay) {
 		
 		lastVersionDataToDisplay = toDisplay;
 		
 		if (this.getSite().getPage().isPartVisible(this)) {
 			shouldBeRefreshed = false;
-			dataReceived();
+			
+			refreshDataAsync();
 		} else {
 			// only update visu if 
 			shouldBeRefreshed = true;
@@ -158,7 +202,7 @@ public abstract class AbstractViewOpenedByAlgo<ClassObjectToDisplay extends Obje
 		// if the view was not refresh but should, let's do it now !
 		if (shouldBeRefreshed) {
 			shouldBeRefreshed = false;
-			dataReceived();
+			refreshDisplaySync();
 		}
 	}
 
@@ -189,7 +233,7 @@ public abstract class AbstractViewOpenedByAlgo<ClassObjectToDisplay extends Obje
 		// if the view was not refresh but should, let's do it now !
 		if (shouldBeRefreshed) {
 			shouldBeRefreshed = false;
-			dataReceived();
+			refreshDisplaySync();
 		}
 	}
 

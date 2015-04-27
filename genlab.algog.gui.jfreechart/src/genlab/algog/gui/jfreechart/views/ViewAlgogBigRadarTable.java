@@ -259,7 +259,7 @@ public final class ViewAlgogBigRadarTable
 	
 
 	@Override
-	protected void dataReceived() {
+	protected void refreshDisplaySync() {
 		loadDataFromTable();
 		
 	}

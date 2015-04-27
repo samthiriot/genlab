@@ -267,7 +267,7 @@ public class ScatterView extends AbstractViewOpenedByAlgo implements IParameters
 	}
 
 	@Override
-	protected void dataReceived() {
+	protected void refreshDisplaySync() {
 		// TODO Auto-generated method stub
 		
 	}

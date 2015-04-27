@@ -3,7 +3,6 @@ package genlab.algog.gui.jfreechart.exec;
 import genlab.algog.algos.meta.GeneticExplorationAlgo;
 import genlab.algog.gui.jfreechart.algos.FirstFront2DAlgo;
 import genlab.algog.gui.jfreechart.instance.FirstFront2DInstance;
-import genlab.algog.gui.jfreechart.views.FirstFront2DView;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IConnectionExecution;
@@ -100,11 +99,9 @@ public class FirstFront2DExec extends AbstractJFreeChartAlgoExec {
 		
 		if (! parametersDefined ) 
 			adaptParametersForData(algoInst, table);
-		
-		((FirstFront2DView)theView).setData(
-				algoInst,
-				table
-				);
+
+		theView.receiveData(table);
+
 	}
 
 	@Override

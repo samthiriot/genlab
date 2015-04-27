@@ -532,11 +532,8 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 
 
 	@Override
-	protected void dataReceived() {
-		// refresh the view only when it is visible
-		if (this.getViewSite().getPage().isPartVisible(this)) {
-			loadDataFromTable();	
-		}
+	protected void refreshDisplaySync() {
+		loadDataFromTable();	
 		
 	}
 

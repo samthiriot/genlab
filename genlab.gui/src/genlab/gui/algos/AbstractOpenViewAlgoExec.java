@@ -36,8 +36,6 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 
 	private final String SWT_THREAD_USER_ID_DISPLAY_SYNC = this.toString()+":sync";
 
-	private final String SWT_THREAD_USER_ID_DISPLAY_ASYNC = this.toString()+":display_async";
-
 	private final String SWT_THREAD_USER_ID_DISPLAY_REDUCE = this.toString()+":display_reduce";
 
 	/**
@@ -162,29 +160,9 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 			return;
 		updatePending = true;
 
-		if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
-			TestResponsivity.singleton.notifySWTThreadUserSubmitsRunnable(SWT_THREAD_USER_ID_DISPLAY_ASYNC);
-		
-		Display.getDefault().asyncExec(new Runnable() {
-			
-			@Override
-			public void run() {
-				
-				if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
-					TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID_DISPLAY_ASYNC);
-				
-				
-				// actual display
-				displayResultsSync(theView);
-				
-				
-				if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
-					TestResponsivity.singleton.notifySWTThreadUserEndsRunnable(SWT_THREAD_USER_ID_DISPLAY_ASYNC);
+		displayResultsSync(theView);
+		updatePending = false;
 
-				updatePending = false;
-
-			}
-		});
 	}
 	
 	public void callbackRegisterView(AbstractViewOpenedByAlgo theView) {

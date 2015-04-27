@@ -422,7 +422,7 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 	}
 
 	@Override
-	protected void dataReceived() {
+	protected void refreshDisplaySync() {
 		// TODO Auto-generated method stub
 		
 	}

@@ -39,10 +39,7 @@ public class ViewAlgoGRadarTableExec extends AbstractJFreeChartAlgoExec {
 	@Override
 	protected void displayResultsSync(AbstractViewOpenedByAlgo theView) {
 		
-		((ViewAlgogRadarTable)theView).receiveData(
-				table,
-				true
-				);
+		theView.receiveData(table);
 	}
 
 	@Override

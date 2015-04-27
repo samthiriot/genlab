@@ -38,8 +38,6 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 	protected Integer glTableColumnXIdx = null;
 	protected Integer glTableColumnYIdx = null;
 	
-	public GenlabTable glTable = null;
-
 	XYSeries serie = null;
 			
 	protected JFreeChart chart = null;
@@ -74,11 +72,14 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 	
 	public void loadDataFromTable() {
 		
+		if (lastVersionDataToDisplay == null)
+			return;
+		
 		try {
 			showBusy(true);
 
-			chartXLabel = glTable.getColumnIdForIdx(glTableColumnXIdx);
-			chartYLabel = glTable.getColumnIdForIdx(glTableColumnYIdx);
+			chartXLabel = lastVersionDataToDisplay.getColumnIdForIdx(glTableColumnXIdx);
+			chartYLabel = lastVersionDataToDisplay.getColumnIdForIdx(glTableColumnYIdx);
 		
 			// update labels
 			chart.getXYPlot().getDomainAxis(0).setLabel(chartXLabel);
@@ -89,17 +90,17 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 			serie.clear();
 			
 			// search for the first row to display
-			final String columnIteration = (String) glTable.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION);
-			final Integer iterationToDisplay = (Integer)glTable.getValue(glTable.getRowsCount()-1, columnIteration);
+			final String columnIteration = (String) lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION);
+			final Integer iterationToDisplay = (Integer)lastVersionDataToDisplay.getValue(lastVersionDataToDisplay.getRowsCount()-1, columnIteration);
 			// search for the first line to display
-			int currentRow = glTable.getRowsCount()-1;
+			int currentRow = lastVersionDataToDisplay.getRowsCount()-1;
 			
 			Integer currentRowIteration = null;
 			do {
 				// we explore backwards from the final line to the first change in the exploration
 
-				Object dataX = glTable.getValue(currentRow, glTableColumnXIdx);
-				Object dataY = glTable.getValue(currentRow, glTableColumnYIdx);
+				Object dataX = lastVersionDataToDisplay.getValue(currentRow, glTableColumnXIdx);
+				Object dataY = lastVersionDataToDisplay.getValue(currentRow, glTableColumnYIdx);
 				
 				// ignore incomplete data
 		        if (dataX == null || dataY == null)
@@ -109,14 +110,14 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 		        Number x;
 		        Number y;
 		        try {
-					x = (Number)glTable.getValue(currentRow, glTableColumnXIdx);
+					x = (Number)lastVersionDataToDisplay.getValue(currentRow, glTableColumnXIdx);
 				} catch (ClassCastException e) {
 		        	messages.errorUser("wrong parameter: the column with index "+glTableColumnXIdx+" does not contains numbers", getClass());
 		        	throw new WrongParametersException("wrong parameter: the column with index "+glTableColumnXIdx+" does not contains numbers");
 		        	// TODO error !
 		        }
 		        try {
-					y = (Number)glTable.getValue(currentRow, glTableColumnYIdx);
+					y = (Number)lastVersionDataToDisplay.getValue(currentRow, glTableColumnYIdx);
 		        } catch (ClassCastException e) {
 		        	messages.errorUser("wrong parameter: the column with index "+glTableColumnYIdx+" does not contains numbers", getClass());
 		        	throw new WrongParametersException("wrong parameter: the column with index "+glTableColumnYIdx+" does not contains numbers");
@@ -126,10 +127,10 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 		        
 				// shift to previous line
 				currentRow --;
-				currentRowIteration = (Integer)glTable.getValue(currentRow, columnIteration);
+				currentRowIteration = (Integer)lastVersionDataToDisplay.getValue(currentRow, columnIteration);
 			} while (currentRow > 0 && currentRowIteration == iterationToDisplay);
 			
-			labelIteration.setText("results for iteration "+iterationToDisplay+" ("+(glTable.getRowsCount()-currentRow-1)+" Pareto efficient solutions)");
+			labelIteration.setText("results for iteration "+iterationToDisplay+" ("+(lastVersionDataToDisplay.getRowsCount()-currentRow-1)+" Pareto efficient solutions)");
 
 		} finally {
 			serie.setNotify(true);
@@ -138,31 +139,6 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 	}
 	
 	
-	public void setData(IAlgoInstance viewAlgoInstance, GenlabTable glTable) {
-
-
-		if (glTable == null)
-			return;
-		
-		messages.traceTech("received data to display.", getClass());
-
-		this.algoInstance = viewAlgoInstance;
-		
-		// retrieve data
-		this.glTable = glTable;
-
-		// parameters were not loaded, let's load them
-		if (this.glTableColumnXIdx == null) {
-			viewAlgoInstance.addParametersListener(this);	
-			loadDataFromParameters(viewAlgoInstance);
-		}
-		
-		// if we are visible, let's display that
-		loadDataFromTable();	
-		
-	}
-	
-
 	@Override
 	public void createPartControl(Composite parent) {
 		
@@ -265,9 +241,22 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 	}
 
 	@Override
-	protected void dataReceived() {
-		// TODO Auto-generated method stub
+	protected void refreshDisplaySync() {
+
+		if (this.lastVersionDataToDisplay == null)
+			return;
 		
+		messages.traceTech("received data to display.", getClass());
+		
+		
+		// parameters were not loaded, let's load them
+		if (this.glTableColumnXIdx == null) {
+			this.algoInstance.addParametersListener(this);	
+			loadDataFromParameters(this.algoInstance);
+		}
+		
+		// if we are visible, let's display that
+		loadDataFromTable();	
 	}
 
 

@@ -118,7 +118,7 @@ public class ConsoleView extends AbstractViewOpenedByAlgo {
 	}
 
 	@Override
-	protected void dataReceived() {
+	protected void refreshDisplaySync() {
 		// TODO Auto-generated method stub
 		
 	}

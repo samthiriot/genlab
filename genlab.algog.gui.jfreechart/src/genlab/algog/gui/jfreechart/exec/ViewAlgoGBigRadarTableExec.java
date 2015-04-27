@@ -46,10 +46,7 @@ public class ViewAlgoGBigRadarTableExec extends AbstractJFreeChartAlgoExec {
 		
 		adaptParametersForData(algoInst, table);
 		
-		((ViewAlgogBigRadarTable)theView).receiveData(
-				table,
-				true
-				);
+		theView.receiveData(table);
 	}
 
 	@Override
