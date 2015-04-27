@@ -21,6 +21,7 @@ public abstract class AbstractOpenViewContinuousAlgoExec
 	protected abstract void setDataFromContinuousUpdate(IAlgoExecution continuousProducer,
 			Object keyWave, IConnectionExecution connectionExec, Object value);
 
+	
 
 	@Override
 	public void receiveInputContinuous(IAlgoExecution continuousProducer,

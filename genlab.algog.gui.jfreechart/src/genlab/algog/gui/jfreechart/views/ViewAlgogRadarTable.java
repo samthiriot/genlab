@@ -529,6 +529,8 @@ public final class ViewAlgogRadarTable
 	@Override
 	public void createPartControl(Composite parent) {
 		
+		super.createPartControl(parent);
+		
 		messages.traceTech("init the form...", getClass());
 		
 		toolkit = new FormToolkit(parent.getDisplay());

@@ -34,8 +34,6 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 
 	private final String SWT_THREAD_USER_ID_OPEN_VIEW = this.toString()+":open_view";
 
-	private final String SWT_THREAD_USER_ID_DISPLAY_SYNC = this.toString()+":sync";
-
 	private final String SWT_THREAD_USER_ID_DISPLAY_REDUCE = this.toString()+":display_reduce";
 
 	/**
@@ -123,6 +121,8 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 			return;
 		}
 		
+		GLLogger.debugTech("Opening view "+getName(), getClass());
+		
 		if (theView == null) {
 			if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
 				TestResponsivity.singleton.notifySWTThreadUserSubmitsRunnable(SWT_THREAD_USER_ID_OPEN_VIEW);
@@ -160,9 +160,11 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 			return;
 		updatePending = true;
 
-		displayResultsSync(theView);
-		updatePending = false;
-
+		try {
+			displayResultsSync(theView);
+		} finally {
+			updatePending = false;
+		}
 	}
 	
 	public void callbackRegisterView(AbstractViewOpenedByAlgo theView) {
@@ -170,16 +172,7 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 		GLLogger.debugTech("received a view ! Let's display results.", getClass());
 		this.theView = theView;
 		
-		if (TestResponsivity.AUDIT_SWT_THREAD_USE) {
-			TestResponsivity.singleton.notifySWTThreadUserSubmitsRunnable(SWT_THREAD_USER_ID_DISPLAY_SYNC);
-			TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID_DISPLAY_SYNC);
-		}
-		
 		displayResultsSync(theView);
-		
-		if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
-			TestResponsivity.singleton.notifySWTThreadUserEndsRunnable(SWT_THREAD_USER_ID_DISPLAY_SYNC);
-		
 		
 	}
 	

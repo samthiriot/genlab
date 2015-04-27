@@ -1,7 +1,6 @@
 package genlab.algog.gui.jfreechart.exec;
 
 import genlab.algog.gui.jfreechart.algos.AlgoGPlotBigRadarAlgo;
-import genlab.algog.gui.jfreechart.views.ViewAlgogBigRadarTable;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IConnectionExecution;
@@ -17,14 +16,6 @@ public class ViewAlgoGBigRadarTableExec extends AbstractJFreeChartAlgoExec {
 	
 	public ViewAlgoGBigRadarTableExec(IExecution exec, IAlgoInstance algoInst) {
 		super(exec, algoInst);
-		
-	}
-
-	protected void adaptParametersForData(IAlgoInstance algoInst, GenlabTable table) {
-		
-		if (table == null)
-			return;
-		
 		
 	}
 	
@@ -43,9 +34,7 @@ public class ViewAlgoGBigRadarTableExec extends AbstractJFreeChartAlgoExec {
 	
 	@Override
 	protected void displayResultsSync(AbstractViewOpenedByAlgo theView) {
-		
-		adaptParametersForData(algoInst, table);
-		
+				
 		theView.receiveData(table);
 	}
 

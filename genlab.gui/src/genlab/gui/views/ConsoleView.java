@@ -1,10 +1,9 @@
 package genlab.gui.views;
 
-import java.util.LinkedList;
-
-import genlab.core.model.instance.IAlgoInstance;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 import genlab.quality.TestResponsivity;
+
+import java.util.LinkedList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -73,6 +72,9 @@ public class ConsoleView extends AbstractViewOpenedByAlgo {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		
+		super.createPartControl(parent);
+		
 		text = new StyledText(parent, SWT.BORDER | SWT.V_SCROLL);
 		
 	}

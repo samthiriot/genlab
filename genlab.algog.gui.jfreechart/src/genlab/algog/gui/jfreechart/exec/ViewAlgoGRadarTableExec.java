@@ -1,9 +1,6 @@
 package genlab.algog.gui.jfreechart.exec;
 
-import genlab.algog.gui.jfreechart.algos.AlgoGPlotAlgo;
 import genlab.algog.gui.jfreechart.algos.AlgoGPlotRadarAlgo;
-import genlab.algog.gui.jfreechart.views.ViewAlgogRadarTable;
-import genlab.algog.gui.jfreechart.views.ViewAlgogTable;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IConnectionExecution;
@@ -35,12 +32,12 @@ public class ViewAlgoGRadarTableExec extends AbstractJFreeChartAlgoExec {
 
 	}
 
-	
 	@Override
 	protected void displayResultsSync(AbstractViewOpenedByAlgo theView) {
 		
 		theView.receiveData(table);
 	}
+	
 
 	@Override
 	protected void displayResultsSyncReduced(AbstractViewOpenedByAlgo theView,

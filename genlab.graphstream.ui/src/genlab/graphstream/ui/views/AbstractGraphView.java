@@ -93,6 +93,9 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 
 	@Override
 	public void createPartControl(Composite parent) {
+		
+		super.createPartControl(parent);
+		
 		this.parent = parent;
 		
 		messages.traceTech("init an AWT frame...", getClass());

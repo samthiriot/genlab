@@ -130,7 +130,7 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 				currentRowIteration = (Integer)lastVersionDataToDisplay.getValue(currentRow, columnIteration);
 			} while (currentRow > 0 && currentRowIteration == iterationToDisplay);
 			
-			labelIteration.setText("results for iteration "+iterationToDisplay+" ("+(lastVersionDataToDisplay.getRowsCount()-currentRow-1)+" Pareto efficient solutions)");
+			labelIteration.setText("results for iteration "+iterationToDisplay+" ("+(lastVersionDataToDisplay.getRowsCount()-currentRow-1)+" Pareto efficient solutions)   ");
 
 		} finally {
 			serie.setNotify(true);
@@ -142,6 +142,8 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 	@Override
 	public void createPartControl(Composite parent) {
 		
+		super.createPartControl(parent);
+
 		messages.traceTech("init the form...", getClass());
 		
 		toolkit = new FormToolkit(parent.getDisplay());
