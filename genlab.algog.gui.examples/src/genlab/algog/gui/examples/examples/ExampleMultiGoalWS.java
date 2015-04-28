@@ -37,6 +37,8 @@ public class ExampleMultiGoalWS implements IGenlabExample {
 		// genetic algo host
 		final NSGA2GeneticExplorationAlgo nsgaAlgo = new NSGA2GeneticExplorationAlgo();
 		final IAlgoContainerInstance nsgaInstance = (IAlgoContainerInstance)nsgaAlgo.createInstance(workflow);
+		nsgaInstance.setValueForParameter(NSGA2GeneticExplorationAlgo.PARAM_SIZE_POPULATION, 50);
+		nsgaInstance.setValueForParameter(NSGA2GeneticExplorationAlgo.PARAM_STOP_MAXITERATIONS, 20);
 		workflow.addAlgoInstance(nsgaInstance);
 		
 		// genome
