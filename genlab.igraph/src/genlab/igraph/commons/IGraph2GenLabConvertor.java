@@ -1,10 +1,5 @@
 package genlab.igraph.commons;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.TreeMap;
-
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
@@ -16,9 +11,17 @@ import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
 import genlab.igraph.natjna.IGraphEdge;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphLibrary;
-import genlab.igraph.natjna.IIGraphProgressCallback;
 import genlab.igraph.natjna.InternalVectorStruct;
 
+import java.util.Collection;
+import java.util.HashSet;
+
+/**
+ * Conversion between igraph Graphs and Genlab Graphs 
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class IGraph2GenLabConvertor {
 
 	/**
@@ -144,7 +147,7 @@ public class IGraph2GenLabConvertor {
 			// TODO check parameters
 			
 			// TODO check directionaliy
-				
+			
 			// init the igraph network (with the good directionality and vertex count)
 			IGraphGraph igraphGraph = lib.generateEmpty(
 					(int)genlabGraph.getVerticesCount(), 

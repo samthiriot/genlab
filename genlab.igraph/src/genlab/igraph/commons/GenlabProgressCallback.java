@@ -3,6 +3,9 @@ package genlab.igraph.commons;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.igraph.natjna.IIGraphProgressCallback;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.sun.jna.Pointer;
 
 /**
@@ -20,7 +23,12 @@ public class GenlabProgressCallback implements IIGraphProgressCallback {
 	private final IComputationProgress glProgress;
 	
 	private final long glProgressInitialDone;
-	
+
+	/**
+	 * Set of references we keep there to ensure the progress callback is not going to be garbage collected
+	 * on the Java side, then accessed from C. This would lead to a dramatic crash of the JVM.
+	 */
+	private final static Set<GenlabProgressCallback> strongReferences = new HashSet<GenlabProgressCallback>(500);
 	
 	
 	public GenlabProgressCallback(IComputationProgress progress) {
@@ -42,6 +50,19 @@ public class GenlabProgressCallback implements IIGraphProgressCallback {
 		}
 		
 		return 0;
+	}
+	
+	
+	/**
+	 * Will keep a strong reference to this callback so it is not garbage collected. 
+	 * @param c
+	 */
+	public static void keepStrongReference(GenlabProgressCallback c) {
+		strongReferences.add(c);
+	}
+	
+	public static void removeStrongReference(GenlabProgressCallback c) {
+		strongReferences.remove(c);
 	}
 
 }
