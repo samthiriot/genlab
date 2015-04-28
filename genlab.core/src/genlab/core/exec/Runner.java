@@ -459,7 +459,7 @@ public class Runner extends Thread implements IRunner {
 			
 			long timeoutToWait;
 			if (notReady.isEmpty() && running.isEmpty() && tasksProducers.isEmpty())
-				timeoutToWait = 0; // nothing can happen. Let's just wait forever (until wake up)
+				timeoutToWait = 5000; // nothing can happen. Let's just wait forever (until wake up)
 			else
 				timeoutToWait = 500;
 		

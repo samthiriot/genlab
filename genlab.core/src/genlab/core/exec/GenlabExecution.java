@@ -60,7 +60,9 @@ public class GenlabExecution {
 		};
 		*/
 	
-		(new Thread(runnable)).start();
+		Thread th = new Thread(runnable);
+		th.setName("launch_workflow");
+		th.start();
 		
 		return runnable.getAlgoExecutionBlocking();
 	}

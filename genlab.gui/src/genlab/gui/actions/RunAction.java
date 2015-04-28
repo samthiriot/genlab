@@ -25,10 +25,12 @@ public class RunAction extends Action implements IWorkbenchAction {
 	
 	public void run() {  
 		
+		System.err.println("EXEC: retrieve workflow...");
 		IGenlabWorkflowInstance workflow = Utils.getSelectedWorflow();
 		if (workflow == null)
 			return;
 		
+		System.err.println("EXEC: change perspective...");
 		// change perspective
 		// TODO propose user ?
 		try {
@@ -41,6 +43,7 @@ public class RunAction extends Action implements IWorkbenchAction {
 		}
 	
 		// run the workflow
+		System.err.println("EXEC: run background...");
 		GenlabExecution.runBackground(workflow);
 
 	}  

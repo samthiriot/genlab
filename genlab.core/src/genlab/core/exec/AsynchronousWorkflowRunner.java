@@ -23,58 +23,71 @@ public class AsynchronousWorkflowRunner implements Runnable {
 	private final Object waiterExec = new Object();
 	private IAlgoExecution execution = null;
 	
+	private boolean failure = false;
 	
 	public AsynchronousWorkflowRunner(IGenlabWorkflowInstance workflow, boolean forceExec) {
 		
 		this.workflow = workflow;
 		this.forceExec = forceExec;
+		
 	}
 
 	@Override
 	public void run() {
 
-		//GLLogger.debugTech(" workflow: "+workflow, GenlabExecution.class);
-		if (workflow == null) {
-			GLLogger.warnTech("asked for the computation of a null workflow...", GenlabExecution.class);
-			return;
+		try {
+			
+			//GLLogger.debugTech(" workflow: "+workflow, GenlabExecution.class);
+			if (workflow == null) {
+				GLLogger.warnTech("asked for the computation of a null workflow...", GenlabExecution.class);
+				return;
+			}
+			
+			// check workflow
+			GLLogger.infoUser("checking the workflow "+workflow+"...", GenlabExecution.class);
+	
+			WorkflowCheckResult checkInfo = workflow.checkForRun();
+			ListsOfMessages.getGenlabMessages().addAll(checkInfo.messages); // report errors somewhere they can be viewed !
+			
+			if (checkInfo.isReady()) {
+				ListsOfMessages.getGenlabMessages().infoUser("the workflow is ready for execution :-)", GenlabExecution.class);
+				checkInfo.messages.infoUser("the workflow is ready for execution :-)", GenlabExecution.class);
+			} else {
+				ListsOfMessages.getGenlabMessages().errorUser("the workflow is not ready for execution: please report to previous errors to solve this issue.", GenlabExecution.class);
+				checkInfo.messages.errorUser("the workflow is not ready for execution: please report to previous errors to solve this issue.", GenlabExecution.class);
+				return;
+			}
+		
+			System.err.println("retrieve runner");
+			IRunner r = LocalComputationNode.getSingleton().getRunner();
+	
+			System.err.println("create execution");
+			Execution exec = new Execution(r);
+			exec.setExecutionForced(forceExec);
+			exec.getListOfMessages().addAll(checkInfo.messages);
+			exec.getListOfMessages().setFilterIgnoreBelow(MessageLevel.WARNING);
+	
+			System.err.println("create exec");
+			ExecutionHooks.singleton.notifyParentTaskAdded(exec);	// TODO something clean...
+			IAlgoExecution execution = workflow.execute(exec);
+			TasksManager.singleton.notifyListenersOfTaskAdded(execution); // TODO something clean...
+	
+			GLLogger.infoUser("start run !", GenlabExecution.class);
+			r.addTask(execution);
+	
+			GLLogger.infoUser("launched.", GenlabExecution.class);
+			
+			this.execution = execution;		
+		
+			
+		} catch (RuntimeException e) {
+			failure = true;
+			e.printStackTrace();
 		}
 		
-		// check workflow
-		GLLogger.infoUser("checking the workflow "+workflow+"...", GenlabExecution.class);
-
-		WorkflowCheckResult checkInfo = workflow.checkForRun();
-		ListsOfMessages.getGenlabMessages().addAll(checkInfo.messages); // report errors somewhere they can be viewed !
-		
-		if (checkInfo.isReady()) {
-			ListsOfMessages.getGenlabMessages().infoUser("the workflow is ready for execution :-)", GenlabExecution.class);
-			checkInfo.messages.infoUser("the workflow is ready for execution :-)", GenlabExecution.class);
-		} else {
-			ListsOfMessages.getGenlabMessages().errorUser("the workflow is not ready for execution: please report to previous errors to solve this issue.", GenlabExecution.class);
-			checkInfo.messages.errorUser("the workflow is not ready for execution: please report to previous errors to solve this issue.", GenlabExecution.class);
-			return;
-		}
-	
-		IRunner r = LocalComputationNode.getSingleton().getRunner();
-
-		Execution exec = new Execution(r);
-		exec.setExecutionForced(forceExec);
-		exec.getListOfMessages().addAll(checkInfo.messages);
-		exec.getListOfMessages().setFilterIgnoreBelow(MessageLevel.WARNING);
-
-		ExecutionHooks.singleton.notifyParentTaskAdded(exec);	// TODO something clean...
-		IAlgoExecution execution = workflow.execute(exec);
-		TasksManager.singleton.notifyListenersOfTaskAdded(execution); // TODO something clean...
-
-		
-		GLLogger.infoUser("start run !", GenlabExecution.class);
-		r.addTask(execution);
-
-		GLLogger.infoUser("launched.", GenlabExecution.class);
-		
-		this.execution = execution;		
-	
+		// whatever the result, notify listeners !
 		synchronized (waiterExec) {
-			waiterExec.notify();
+			waiterExec.notifyAll();
 		}
 	}
 	
@@ -88,22 +101,32 @@ public class AsynchronousWorkflowRunner implements Runnable {
 	
 	/**
 	 * Returns the algo execution; might wait if it is not available now.
+	 * Might return null in case of problem.
 	 * @return
 	 */
 	public IAlgoExecution getAlgoExecutionBlocking() {
-		synchronized (waiterExec) {
-			if (this.execution == null) {
-				synchronized (waiterExec) {
-					// wait for it to be available
-					try {
-						this.waiterExec.wait();
-					} catch (InterruptedException e) {
-					}	
+		
+		while (this.execution == null) {
+
+			if (failure) 
+				return null;
+			
+			System.err.println("waiting for execution to be started...");
+
+			synchronized (waiterExec) {
+				// wait for it to be available
+				try {
+					this.waiterExec.wait(500);
+				} catch (InterruptedException e) {
 				}
-				
 			}
-			return this.execution;
+				
 		}
+		
+		System.err.println("execution ok !...");
+		
+		return this.execution;
+
 	}
 
 }
