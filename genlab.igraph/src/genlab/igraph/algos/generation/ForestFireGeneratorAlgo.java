@@ -98,10 +98,10 @@ public class ForestFireGeneratorAlgo extends AbstractIGraphGenerator {
 			protected IGraphGraph generateGraph(IGraphLibrary lib,
 					ListOfMessages messages) {
 				
-				GenlabProgressCallback callback = new GenlabProgressCallback(progress);
-				GenlabProgressCallback.keepStrongReference(callback);
+				//GenlabProgressCallback callback = new GenlabProgressCallback(progress);
+				//GenlabProgressCallback.keepStrongReference(callback);
 				try {
-					lib.installProgressCallback(callback);
+					//lib.installProgressCallback(callback);
 					
 					Integer N = (Integer)getInputValueForInput(INPUT_N);
 					//System.err.println("N "+N);
@@ -136,8 +136,8 @@ public class ForestFireGeneratorAlgo extends AbstractIGraphGenerator {
 					
 					return g;
 				} finally {
-					lib.uninstallProgressCallback();
-					GenlabProgressCallback.removeStrongReference(callback);
+					//lib.uninstallProgressCallback();
+					//GenlabProgressCallback.removeStrongReference(callback);
 				}
 			}
 		};

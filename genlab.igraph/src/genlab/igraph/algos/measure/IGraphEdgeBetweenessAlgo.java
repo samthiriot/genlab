@@ -78,9 +78,9 @@ public class IGraphEdgeBetweenessAlgo extends AbstractIGraphMeasure {
 				
 				IGraphLibrary lib = new IGraphLibrary();
 
-				GenlabProgressCallback callback = new GenlabProgressCallback(progress);
-				lib.installProgressCallback(callback);
-				GenlabProgressCallback.keepStrongReference(callback);
+				//GenlabProgressCallback callback = new GenlabProgressCallback(progress);
+				//lib.installProgressCallback(callback);
+				//GenlabProgressCallback.keepStrongReference(callback);
 					
 				try {
 					
@@ -120,8 +120,8 @@ public class IGraphEdgeBetweenessAlgo extends AbstractIGraphMeasure {
 					return results;
 					
 				} finally {
-					lib.uninstallProgressCallback();
-					GenlabProgressCallback.removeStrongReference(callback);
+					//lib.uninstallProgressCallback();
+					//GenlabProgressCallback.removeStrongReference(callback);
 
 				}
 			}

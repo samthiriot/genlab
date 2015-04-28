@@ -12,6 +12,8 @@ import com.sun.jna.Pointer;
  * Receives the progress from igraph, and writes it into a genlab progress
  * 
  * @author Samuel Thiriot
+ * 
+ * @deprecated as long as the multithreading question is not solved with igraph, don't use it.
  *
  */
 public class GenlabProgressCallback implements IIGraphProgressCallback {
@@ -41,6 +43,8 @@ public class GenlabProgressCallback implements IIGraphProgressCallback {
 	@Override
 	public int igraph_progress_handler_t(String message, double percent, Pointer data) {
 	
+		System.err.println("received from igraph "+message+" / "+percent);
+		
 		if (percent >= nextToTransmit) {
 			
 			nextToTransmit = percent + THRESHOLD_TRANSMIT;
