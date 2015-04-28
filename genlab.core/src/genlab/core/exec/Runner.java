@@ -76,15 +76,15 @@ public class Runner extends Thread implements IRunner {
 	 * Contains worker threads which do not use the CPU (in fact, they are more control threads.
 	 * This thread pool will be resized on demand.
 	 */
-	private Set<WorkingRunnerThread> threadsPoolTaskNoThread = new HashSet<WorkingRunnerThread>(500);
+	private Set<Thread> threadsPoolTaskNoThread = new HashSet<Thread>(500);
 	final BlockingQueue<IAlgoExecution> readyToComputeNoThread = new LinkedBlockingQueue<IAlgoExecution>();
 	private int usedThreadsWithoutThread = 0;
 
 	/**
 	 * Contains worker threads which do use the CPU. Contains only MAX_THREADS
 	 */
-	private Set<WorkingRunnerThread> threadsPoolTaskWithThreads = new HashSet<WorkingRunnerThread>(500);
-	final BlockingQueue<IAlgoExecution> readyToComputeWithThreads = new LinkedBlockingQueue<IAlgoExecution>();
+	private Set<Thread> threadsPoolTaskWithThreads = new HashSet<Thread>(500);
+	protected final BlockingQueue<IAlgoExecution> readyToComputeWithThreads = new LinkedBlockingQueue<IAlgoExecution>();
 
 	/**
 	 * The number of threads used currently. Based on the number of thread displayed by tasks, 
@@ -110,17 +110,16 @@ public class Runner extends Thread implements IRunner {
 		// init the thread pool
 		for (int i=0; i<availableThreads; i++) {
 			WorkingRunnerThread t = new WorkingRunnerThread(
-					"gl_worker_"+i, 
+					"gl_worker_local_"+i, 
 					readyToComputeWithThreads
 					);
-			t.start();
-			threadsPoolTaskWithThreads.add(t);
+			addWorkingThread(t);
 		}
 		
 		// init the thread pool
 		for (int i=0; i<availableThreads; i++) {
 			WorkingRunnerThread t = new WorkingRunnerThread(
-					"gl_workcontroller_"+i, 
+					"gl_workcontroller_local_"+i, 
 					readyToComputeNoThread
 					);
 			t.start();
@@ -131,6 +130,16 @@ public class Runner extends Thread implements IRunner {
 		TasksManager.singleton.addRunner(this);
 	}
 	
+	protected void addWorkingThread(Thread thread) {
+		
+		synchronized (threadsPoolTaskNoThread) {
+			messagesRun.infoTech("adding working thread: "+thread.getName(), getClass());
+			
+			thread.start();
+			threadsPoolTaskWithThreads.add(thread);
+		}
+	}
+
 	
 	/* (non-Javadoc)
 	 * @see genlab.core.exec.IRunner#addTasks(java.util.Collection)
@@ -156,7 +165,7 @@ public class Runner extends Thread implements IRunner {
 					messagesRun.debugTech("not enough threads; increasing the size to "+(threadsPoolTaskNoThread.size()+1), getClass());
 					threadsPoolTaskNoThread.add(
 							new WorkingRunnerThread(
-									"gl_workcontroller_"+threadsPoolTaskNoThread.size(), 
+									"gl_workcontroller_local_"+threadsPoolTaskNoThread.size(), 
 									readyToComputeNoThread
 									)
 							);

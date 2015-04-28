@@ -9,6 +9,7 @@ import genlab.core.parameters.InstanceNameParameter;
 import genlab.core.parameters.Parameter;
 import genlab.core.usermachineinteraction.MessageLevel;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,7 +29,8 @@ import java.util.Map;
  * @author Samuel Thiriot
  *
  */
-public class AlgoInstance implements IAlgoInstance {
+@SuppressWarnings("serial")
+public class AlgoInstance implements IAlgoInstance, Serializable {
 
 	protected String id;
 	protected String name;

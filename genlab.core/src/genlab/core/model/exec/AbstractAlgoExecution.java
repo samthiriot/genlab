@@ -11,6 +11,10 @@ import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,11 +33,11 @@ import java.util.Set;
  */
 public abstract class AbstractAlgoExecution extends ExecutionTask implements IAlgoExecution  {
 
-	protected final IAlgoInstance algoInst;
-	protected final IComputationProgress progress;
+	protected IAlgoInstance algoInst;
+	protected IComputationProgress progress;
 	private IComputationResult result = null;
 	
-	protected final IExecution exec;
+	protected IExecution exec;
 
 	protected ListOfMessages messages;
 	
@@ -368,4 +372,10 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		progress.setException(e);
 		
 	}
+	
+	/**
+	 * For serialization only
+	 */
+	public AbstractAlgoExecution() {}
+
 }

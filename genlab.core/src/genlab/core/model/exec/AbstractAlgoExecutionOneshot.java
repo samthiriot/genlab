@@ -103,5 +103,11 @@ public abstract class AbstractAlgoExecutionOneshot
 		// super clean
 		super.clean();
 	}
+	
+
+	/**
+	 * For serialization only
+	 */
+	public AbstractAlgoExecutionOneshot() {}
 
 }

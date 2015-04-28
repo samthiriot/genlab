@@ -2,7 +2,6 @@ package genlab.core.model.meta.basics.algos;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
-import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
@@ -12,6 +11,8 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IInputOutput;
 
+import java.io.Serializable;
+
 /**
  * For its execution, a constant value takes as a parameter the output to update, the value to output. 
  * 
@@ -19,9 +20,14 @@ import genlab.core.model.meta.IInputOutput;
  *
  * @param <JavaType>
  */
-public class ConstantValueExecution<JavaType> extends AbstractAlgoExecutionOneshot implements IAlgoExecutionOneshot {
+@SuppressWarnings("serial")
+public class ConstantValueExecution<JavaType> 
+										extends AbstractAlgoExecutionOneshot 
+										implements IAlgoExecutionOneshot, Serializable {
 
+	
 	protected JavaType value = null;
+	
 	
 	public ConstantValueExecution(
 			IExecution exec,
@@ -93,5 +99,12 @@ public class ConstantValueExecution<JavaType> extends AbstractAlgoExecutionOnesh
 
 		throw new ProgramException("received an input for a constant, which has obviously no input. oops, this should never happen.");
 	}
+
+
+	/**
+	 * For serialization only
+	 */
+	public ConstantValueExecution() {}
+
 
 }

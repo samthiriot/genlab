@@ -41,9 +41,9 @@ public class GenlabTestingUtils {
 		return workflow;
 	}
 	
-	public static void waitUntilAllTasksExecuted() {
+	public static void waitUntilAllTasksExecuted(IRunner r) {
 		
-		IRunner r = LocalComputationNode.getSingleton().getRunner();
+		//IRunner r = LocalComputationNode.getSingleton().getRunner();
 		while (r.getCountNotFinished() > 0) {
 			try {
 				Thread.sleep(2000);
