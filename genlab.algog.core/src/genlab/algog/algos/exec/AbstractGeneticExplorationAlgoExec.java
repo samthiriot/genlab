@@ -607,11 +607,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			
 			GenlabTable tab = packDataInTable();
 		
-<<<<<<< HEAD
 			res.setResult(AbstractGeneticExplorationAlgo.OUTPUT_TABLE, tab);
-=======
-			res.setResult(GeneticExplorationAlgoConstants.OUTPUT_TABLE, tab);
->>>>>>> ec39dd19a5b1e87343f24284fb05c274873ef20a
 		}
 		
 		hookProcessResults(res, ourState);

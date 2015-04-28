@@ -12,6 +12,7 @@ import genlab.algog.algos.meta.IntegerGeneAlgo;
 import genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo;
 import genlab.algog.gui.jfreechart.algos.AlgoGPlotAlgo;
 import genlab.algog.gui.jfreechart.algos.AlgoGPlotRadarAlgo;
+import genlab.algog.gui.jfreechart.algos.FirstFront2DAlgo;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
@@ -230,6 +231,20 @@ public class ExampleMultiGoalWS implements IGenlabExample {
 					NSGA2GeneticExplorationAlgo.OUTPUT_TABLE_PARETO, 
 					algogPlotInstance,
 					AlgoGPlotRadarAlgo.INPUT_TABLE
+					);
+		}
+		
+		{
+			final FirstFront2DAlgo plot2DAlgo = new FirstFront2DAlgo();
+			final IAlgoInstance plot2DInstance = plot2DAlgo.createInstance(workflow);
+			workflow.addAlgoInstance(plot2DInstance);
+			
+			plot2DInstance.setName("Pareto fronts");
+			workflow.connect(
+					nsgaInstance, 
+					NSGA2GeneticExplorationAlgo.OUTPUT_TABLE_PARETO, 
+					plot2DInstance,
+					FirstFront2DAlgo.INPUT_TABLE
 					);
 		}
 		

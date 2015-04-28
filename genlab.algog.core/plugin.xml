@@ -8,10 +8,6 @@
             id="genlab.algog.core.algos.gene">
       </algo>
       <algo
-            class="genlab.algog.algos.meta.GeneticExplorationAlgoConstants"
-            id="genlab.algog.core.algos.geneticexplor">
-      </algo>
-      <algo
             class="genlab.algog.algos.meta.ReceiveFitnessAlgo"
             id="genlab.algog.core.algos.receivefitness">
       </algo>
