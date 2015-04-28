@@ -66,6 +66,8 @@
                moveable="true"
                relationship="stack"
                relative="genlab.gui.perspectives.RunPerspective.folders.middle"
+               showTitle="true"
+               standalone="false"
                visible="false">
          </view>
          <view

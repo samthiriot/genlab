@@ -133,7 +133,6 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		awtRootPane.getContentPane().setLayout(new BorderLayout());
 		awtRootPane.getContentPane().setBackground(Color.WHITE);
 		
-		super.createPartControl(parent);
 	}
 
 	@Override
