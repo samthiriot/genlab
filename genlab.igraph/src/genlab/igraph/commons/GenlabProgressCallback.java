@@ -3,12 +3,17 @@ package genlab.igraph.commons;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.igraph.natjna.IIGraphProgressCallback;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.sun.jna.Pointer;
 
 /**
  * Receives the progress from igraph, and writes it into a genlab progress
  * 
  * @author Samuel Thiriot
+ * 
+ * @deprecated as long as the multithreading question is not solved with igraph, don't use it.
  *
  */
 public class GenlabProgressCallback implements IIGraphProgressCallback {
@@ -20,7 +25,12 @@ public class GenlabProgressCallback implements IIGraphProgressCallback {
 	private final IComputationProgress glProgress;
 	
 	private final long glProgressInitialDone;
-	
+
+	/**
+	 * Set of references we keep there to ensure the progress callback is not going to be garbage collected
+	 * on the Java side, then accessed from C. This would lead to a dramatic crash of the JVM.
+	 */
+	private final static Set<GenlabProgressCallback> strongReferences = new HashSet<GenlabProgressCallback>(500);
 	
 	
 	public GenlabProgressCallback(IComputationProgress progress) {
@@ -33,6 +43,8 @@ public class GenlabProgressCallback implements IIGraphProgressCallback {
 	@Override
 	public int igraph_progress_handler_t(String message, double percent, Pointer data) {
 	
+		System.err.println("received from igraph "+message+" / "+percent);
+		
 		if (percent >= nextToTransmit) {
 			
 			nextToTransmit = percent + THRESHOLD_TRANSMIT;
@@ -42,6 +54,19 @@ public class GenlabProgressCallback implements IIGraphProgressCallback {
 		}
 		
 		return 0;
+	}
+	
+	
+	/**
+	 * Will keep a strong reference to this callback so it is not garbage collected. 
+	 * @param c
+	 */
+	public static void keepStrongReference(GenlabProgressCallback c) {
+		strongReferences.add(c);
+	}
+	
+	public static void removeStrongReference(GenlabProgressCallback c) {
+		strongReferences.remove(c);
 	}
 
 }

@@ -1,6 +1,6 @@
 package genlab.algog.gui.jfreechart.views;
 
-import genlab.algog.algos.meta.GeneticExplorationAlgo;
+import genlab.algog.algos.meta.GeneticExplorationAlgoConstants;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
@@ -154,9 +154,9 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 		}
 		
 		// update data
-		final String columnValue = goalMetadata.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
+		final String columnValue = goalMetadata.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
 		// TODO fitness ? final String columnFitness = goalMetadata.get(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_FITNESS);
-		final String columnTarget = goalMetadata.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_TARGET);
+		final String columnTarget = goalMetadata.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_TARGET);
 		final float targetValue = ((Number)lastVersionDataToDisplay.getValue(0, columnTarget)).floatValue();
 		
 		final FastScatterPlotWithLines plot = ((FastScatterPlotWithLines)goal2chart.get(goal).getPlot());
@@ -306,9 +306,9 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 		
 
 			// has the line ? 
-			if (!plot.hasHorizontalLine() && metadata.containsKey(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_MIN)) {
-				final Double min = (Double)metadata.get(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_MIN);
-				final Double max = (Double)metadata.get(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_MAX);
+			if (!plot.hasHorizontalLine() && metadata.containsKey(GeneticExplorationAlgoConstants.TABLE_COLUMN_GENE_METADATA_KEY_MIN)) {
+				final Double min = (Double)metadata.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GENE_METADATA_KEY_MIN);
+				final Double max = (Double)metadata.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GENE_METADATA_KEY_MAX);
 				plot.addHorizontalLine(min.floatValue(), "min", Color.BLUE);
 				plot.addHorizontalLine(max.floatValue(), "max", Color.BLUE);
 			}
@@ -379,11 +379,11 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 			
 			boolean widgetCreated = false;
 
-			final String columnIteration = (String) lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION);
-			final Integer maxIterations = (Integer)lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_MAX_ITERATIONS);
+			final String columnIteration = (String) lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_COLTITLE_ITERATION);
+			final Integer maxIterations = (Integer)lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_MAX_ITERATIONS);
 			
 			{
-				Object metadataRawGoals = lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GOALS2COLS);
+				Object metadataRawGoals = lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_GOALS2COLS);
 				if (metadataRawGoals == null) {
 					messages.warnTech("unable to find the expected metadata in this table; maybe it does not comes from a genetic algorithm ?", getClass());
 					return;
@@ -405,7 +405,7 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 			}
 			
 			{
-				Object metadataRawGenes = lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GENES2METADATA);
+				Object metadataRawGenes = lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_GENES2METADATA);
 				if (metadataRawGenes == null) {
 					messages.warnTech("unable to find the expected metadata in this table; maybe it does not comes from a genetic algorithm ?", getClass());
 					return;
@@ -421,7 +421,7 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 				// display genes
 				for (String gene: metadataValues.keySet()) {
 					final Map<String, Object> metadata = (Map<String, Object>) metadataValues.get(gene);
-					final String columnValue = (String)metadata.get(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_VALUE);
+					final String columnValue = (String)metadata.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GENE_METADATA_KEY_VALUE);
 	
 					widgetCreated = displayDataForGene(gene, columnValue, metadata, columnIteration, maxIterations) || widgetCreated;
 					

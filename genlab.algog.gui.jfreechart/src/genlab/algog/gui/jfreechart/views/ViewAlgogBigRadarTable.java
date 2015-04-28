@@ -1,6 +1,6 @@
 package genlab.algog.gui.jfreechart.views;
 
-import genlab.algog.algos.meta.GeneticExplorationAlgo;
+import genlab.algog.algos.meta.GeneticExplorationAlgoConstants;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IParametersListener;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
@@ -88,7 +88,7 @@ public final class ViewAlgogBigRadarTable
 	@SuppressWarnings("unchecked")
 	protected Map<String,Map<String,String>> getMetadataFromTable() {
 		
-		Object metadataRaw = lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GOALS2COLS);
+		Object metadataRaw = lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_GOALS2COLS);
 		if (metadataRaw == null) {
 			messages.warnTech("unable to find the expected metadata in this table; maybe it does not comes from a genetic algorithm ?", getClass());
 			return null;
@@ -123,7 +123,7 @@ public final class ViewAlgogBigRadarTable
 			final Map<String,Map<String,String>> metadata = getMetadataFromTable();
 			if (metadata == null)
 				return;
-			final String columnIteration = (String) lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION);
+			final String columnIteration = (String) lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_COLTITLE_ITERATION);
 			
 			// define what is the last iteration
 			final Integer iterationToDisplay = (Integer)lastVersionDataToDisplay.getValue(lastVersionDataToDisplay.getRowsCount()-1, columnIteration);
@@ -149,7 +149,7 @@ public final class ViewAlgogBigRadarTable
 		        	
 		        	final Map<String,String> metadataGoal = metadata.get(goal);
 		            
-		        	String colGoalValue = metadataGoal.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
+		        	String colGoalValue = metadataGoal.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
 		            Number goalValue = (Number)lastVersionDataToDisplay.getValue(currentRow, colGoalValue);
 		            if (goalValue == null) {
 		            	// data not available
@@ -189,8 +189,8 @@ public final class ViewAlgogBigRadarTable
 		        
 		        	// retrieve information about this goal
 		        	final Map<String,String> metadataGoal = metadata.get(goal);
-		            String colGoalTarget = metadataGoal.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_TARGET);
-		            String colGoalValue = metadataGoal.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
+		            String colGoalTarget = metadataGoal.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_TARGET);
+		            String colGoalValue = metadataGoal.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
 		            final Object goalValueObject = lastVersionDataToDisplay.getValue(currentRow, colGoalValue);
 		            
 		            if (goalValueObject == null) {

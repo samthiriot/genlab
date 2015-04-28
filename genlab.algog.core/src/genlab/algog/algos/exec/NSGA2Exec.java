@@ -1,7 +1,7 @@
 package genlab.algog.algos.exec;
 
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
-import genlab.algog.algos.meta.GeneticExplorationAlgo;
+import genlab.algog.algos.meta.GeneticExplorationAlgoConstants;
 import genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
@@ -454,8 +454,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		
 		GenlabTable tab = new GenlabTable();
 		tab.declareColumn(titleIteration);
-		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION, titleIteration);
-		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_MAX_ITERATIONS, paramStopMaxIterations);
+		tab.setTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_COLTITLE_ITERATION, titleIteration);
+		tab.setTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_MAX_ITERATIONS, paramStopMaxIterations);
 		
 		tab.declareColumn(titleParetoGenome);		
 		

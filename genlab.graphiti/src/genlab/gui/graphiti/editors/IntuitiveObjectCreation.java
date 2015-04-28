@@ -135,7 +135,7 @@ public class IntuitiveObjectCreation {
 			
 			for (IInputOutput<?> output : algo.getOuputs()) {
 				// if one output is compliant, then add this algo to results
-				if (searchedType.compliantWith(output.getType()) && output.getType().compliantWith(searchedType)) {
+				if (searchedType.compliantWith(output.getType())) {
 					res.add(algo);
 					break;
 				}
@@ -161,7 +161,7 @@ public class IntuitiveObjectCreation {
 			
 			for (IInputOutput<?> input : algo.getInputs()) {
 				// if one output is compliant, then add this algo to results
-				if (searchedType.compliantWith(input.getType()) && input.getType().compliantWith(searchedType)) {
+				if (input.getType().compliantWith(searchedType)) {
 					res.add(algo);
 					break;
 				}
@@ -236,6 +236,13 @@ public class IntuitiveObjectCreation {
 								ExistingAlgos.getExistingAlgos().getAlgos(),
 								searchedType)
 								) {
+			
+			// respect containers owning
+			if (!algo.canBeContainedInto(context.container))
+				continue;
+			if (!context.container.canContain(algo))
+				continue;
+			
 			// add the proposal with its default priority
 			proposals.put(algo, algo.getPriorityForIntuitiveCreation());
 		}
@@ -249,6 +256,12 @@ public class IntuitiveObjectCreation {
 									proposalsFromContainer.keySet(),
 									searchedType)
 									) {
+				// respect containers owning
+				if (!algoCompliant.canBeContainedInto(context.container))
+					continue;
+				if (!context.container.canContain(algoCompliant))
+					continue;
+				
 				// add the proposed algo from the container with the priority defined by the container
 				proposals.put(algoCompliant, proposalsFromContainer.get(algoCompliant));
 			}
@@ -287,6 +300,12 @@ public class IntuitiveObjectCreation {
 								ExistingAlgos.getExistingAlgos().getAlgos(),
 								searchedType)
 								) {
+			// respect containers owning
+			if (!algo.canBeContainedInto(context.container))
+				continue;
+			if (!context.container.canContain(algo))
+				continue;
+			
 			// add the proposal with its default priority
 			proposals.put(algo, algo.getPriorityForIntuitiveCreation());
 		}
@@ -300,6 +319,12 @@ public class IntuitiveObjectCreation {
 									proposalsFromContainer.keySet(),
 									searchedType)
 									) {
+				// respect containers owning
+				if (!algoCompliant.canBeContainedInto(context.container))
+					continue;
+				if (!context.container.canContain(algoCompliant))
+					continue;
+				
 				// add the proposed algo from the container with the priority defined by the container
 				proposals.put(algoCompliant, proposalsFromContainer.get(algoCompliant));
 			}

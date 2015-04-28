@@ -1,6 +1,6 @@
 package genlab.algog.gui.jfreechart.views;
 
-import genlab.algog.algos.meta.GeneticExplorationAlgo;
+import genlab.algog.algos.meta.GeneticExplorationAlgoConstants;
 import genlab.algog.gui.jfreechart.instance.FirstFront2DInstance;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.model.instance.IAlgoInstance;
@@ -90,7 +90,7 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 			serie.clear();
 			
 			// search for the first row to display
-			final String columnIteration = (String) lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION);
+			final String columnIteration = (String) lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_COLTITLE_ITERATION);
 			final Integer iterationToDisplay = (Integer)lastVersionDataToDisplay.getValue(lastVersionDataToDisplay.getRowsCount()-1, columnIteration);
 			// search for the first line to display
 			int currentRow = lastVersionDataToDisplay.getRowsCount()-1;

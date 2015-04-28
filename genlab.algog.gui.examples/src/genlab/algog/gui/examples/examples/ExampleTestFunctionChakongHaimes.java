@@ -7,6 +7,7 @@ import genlab.algog.algos.meta.IntegerGeneAlgo;
 import genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo;
 import genlab.algog.algos.meta.VerificationFunctionsAlgo;
 import genlab.algog.gui.jfreechart.algos.AlgoGPlotAlgo;
+import genlab.algog.gui.jfreechart.algos.FirstFront2DAlgo;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
@@ -170,18 +171,16 @@ public class ExampleTestFunctionChakongHaimes implements IGenlabExample {
 		}
 		
 		{
-			final ScatterPlotAlgo scatterPlotAlgo = new ScatterPlotAlgo();
-			final IAlgoInstance algoScatterPlotInstance = scatterPlotAlgo.createInstance(workflow);
-			workflow.addAlgoInstance(algoScatterPlotInstance);
+			final FirstFront2DAlgo plot2DAlgo = new FirstFront2DAlgo();
+			final IAlgoInstance plot2DInstance = plot2DAlgo.createInstance(workflow);
+			workflow.addAlgoInstance(plot2DInstance);
 			
-			algoScatterPlotInstance.setName("Pareto fronts");
-			algoScatterPlotInstance.setValueForParameter(ScatterPlotAlgo.PARAM_COLUMN_X, 6);
-			algoScatterPlotInstance.setValueForParameter(ScatterPlotAlgo.PARAM_COLUMN_Y, 3);
+			plot2DInstance.setName("Pareto fronts");
 			workflow.connect(
 					nsgaInstance, 
 					NSGA2GeneticExplorationAlgo.OUTPUT_TABLE_PARETO, 
-					algoScatterPlotInstance,
-					ScatterPlotAlgo.INPUT_TABLE
+					plot2DInstance,
+					FirstFront2DAlgo.INPUT_TABLE
 					);
 		}
 		

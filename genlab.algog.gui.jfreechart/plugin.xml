@@ -101,7 +101,7 @@
                relative="genlab.gui.perspectives.RunPerspective.folders.middle"
                showTitle="true"
                standalone="false"
-               visible="true">
+               visible="false">
          </view>
       </perspectiveExtension>
    </extension>

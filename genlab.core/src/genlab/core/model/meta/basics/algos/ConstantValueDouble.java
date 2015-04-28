@@ -41,7 +41,7 @@ public class ConstantValueDouble extends ConstantValue<Double> {
 
 	@Override
 	public Integer getPriorityForIntuitiveCreation() {
-		return 1;
+		return 2;
 	}
 
 
