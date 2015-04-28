@@ -8,7 +8,7 @@
             id="genlab.algog.core.algos.gene">
       </algo>
       <algo
-            class="genlab.algog.algos.meta.GeneticExplorationAlgo"
+            class="genlab.algog.algos.meta.GeneticExplorationAlgoConstants"
             id="genlab.algog.core.algos.geneticexplor">
       </algo>
       <algo

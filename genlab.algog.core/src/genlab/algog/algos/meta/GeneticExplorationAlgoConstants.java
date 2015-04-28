@@ -1,12 +1,12 @@
 package genlab.algog.algos.meta;
 
-import genlab.algog.algos.exec.GeneticExplorationMonoObjectiveAlgoExec;
-import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
-import genlab.core.exec.IExecution;
-import genlab.core.model.exec.IAlgoExecution;
-import genlab.core.model.instance.AlgoInstance;
-
-public class GeneticExplorationAlgo extends AbstractGeneticExplorationAlgo {
+/**
+ * Contains constants for genetic algorithms
+ * 
+ * @author Samuel Thiriot
+ *
+ */
+public class GeneticExplorationAlgoConstants {
 	
 	/**
 	 * This metadata of the table will contain a map associating each goal to its target, value, fitness
@@ -43,22 +43,8 @@ public class GeneticExplorationAlgo extends AbstractGeneticExplorationAlgo {
 	public static final String TABLE_COLUMN_GENE_METADATA_KEY_MIN = "algog.gene.minvalue";
 	public static final String TABLE_COLUMN_GENE_METADATA_KEY_MAX = "algog.gene.maxvalue";
 	
-	public GeneticExplorationAlgo() {
-		super(
-				"genetic exploration", 
-				"evolutionary algorithm based of genetic exploration"
-				);
+	private GeneticExplorationAlgoConstants() {
 		
-	}
-
-	@Override
-	public IAlgoExecution createExec(IExecution execution,
-			AlgoInstance algoInstance) {
-		
-		return new GeneticExplorationMonoObjectiveAlgoExec(
-				execution, 
-				(GeneticExplorationAlgoContainerInstance)algoInstance
-				);
 	}
 
 	

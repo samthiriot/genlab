@@ -1,6 +1,6 @@
 package genlab.algog.gui.jfreechart.views;
 
-import genlab.algog.algos.meta.GeneticExplorationAlgo;
+import genlab.algog.algos.meta.GeneticExplorationAlgoConstants;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IParametersListener;
@@ -239,8 +239,8 @@ public final class ViewAlgogRadarTable
 	        for (String goal: metadata.keySet()) {
 	        	
 	        	final Map<String,String> metadataGoal = metadata.get(goal);
-	            String colGoalTarget = metadataGoal.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_TARGET);
-	            String colGoalValue = metadataGoal.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
+	            String colGoalTarget = metadataGoal.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_TARGET);
+	            String colGoalValue = metadataGoal.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
 	            final Object goalValueObject = lastVersionDataToDisplay.getValue(rowId, colGoalValue);
 	            
 	            if (goalValueObject == null) {
@@ -312,8 +312,8 @@ public final class ViewAlgogRadarTable
 				String key2 = (String)dataset.getColumnKey(idx2);
 				
 	        	final Map<String,String> metadataGoal = metadata.get(key2);
-	            String colGoalTarget = metadataGoal.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_TARGET);
-	            String colGoalValue = metadataGoal.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
+	            String colGoalTarget = metadataGoal.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_TARGET);
+	            String colGoalValue = metadataGoal.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
 
 				Number goalTarget = (Number)lastVersionDataToDisplay.getValue(rowId, colGoalTarget);
 				Number goalValue = (Number)lastVersionDataToDisplay.getValue(rowId, colGoalValue);
@@ -335,10 +335,10 @@ public final class ViewAlgogRadarTable
 		((GridData)compositeHost.getLayoutData()).exclude = false;
 		
 		// remove all labels
-		Map<String,Map<String,Object>> gene2col = (Map<String, Map<String,Object>>) lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GENES2METADATA);
+		Map<String,Map<String,Object>> gene2col = (Map<String, Map<String,Object>>) lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_GENES2METADATA);
 		LinkedList<String> toDisplay = new LinkedList<String>();
 		for (String gene: gene2col.keySet()) {
-			String col = (String)gene2col.get(gene).get(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_VALUE);
+			String col = (String)gene2col.get(gene).get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GENE_METADATA_KEY_VALUE);
 			toDisplay.add("gene "+gene+": "+lastVersionDataToDisplay.getValue(rowId, col));
 		}
 		widgetChanged = displayLabels(compositeHost, toDisplay) || widgetChanged;
@@ -393,7 +393,7 @@ public final class ViewAlgogRadarTable
 				Timers.SINGLETON.startTask(DEBUG_KEY_LOAD_DATA);
 			
 			// decode metadata
-			Object metadataRaw = lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GOALS2COLS);
+			Object metadataRaw = lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_GOALS2COLS);
 			if (metadataRaw == null) {
 				messages.warnTech("unable to find the expected metadata in this table; maybe it does not comes from a genetic algorithm ?", getClass());
 				return;
@@ -406,7 +406,7 @@ public final class ViewAlgogRadarTable
 				return;
 			}
 				
-			final String columnIteration = (String) lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION);
+			final String columnIteration = (String) lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_COLTITLE_ITERATION);
 			
 			// TODO make a parameter of that
 			final Integer iterationToDisplay = (Integer)lastVersionDataToDisplay.getValue(lastVersionDataToDisplay.getRowsCount()-1, columnIteration);
@@ -432,7 +432,7 @@ public final class ViewAlgogRadarTable
 		        	
 		        	final Map<String,String> metadataGoal = metadata.get(goal);
 		            
-		        	String colGoalValue = metadataGoal.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
+		        	String colGoalValue = metadataGoal.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
 		            Number goalValue = (Number)lastVersionDataToDisplay.getValue(currentRow, colGoalValue);
 		            if (goalValue == null) {
 		            	// data not available
