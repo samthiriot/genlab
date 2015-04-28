@@ -5,7 +5,7 @@ import genlab.algog.algos.meta.AbstractGeneAlgo;
 import genlab.algog.algos.meta.AbstractGeneticExplorationAlgo;
 import genlab.algog.algos.meta.BooleanGeneAlgo;
 import genlab.algog.algos.meta.DoubleGeneAlgo;
-import genlab.algog.algos.meta.GeneticExplorationAlgo;
+import genlab.algog.algos.meta.GeneticExplorationAlgoConstants;
 import genlab.algog.algos.meta.GenomeAlgo;
 import genlab.algog.algos.meta.IntegerGeneAlgo;
 import genlab.algog.internal.ABooleanGene;
@@ -111,9 +111,9 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		this.ignoreFailuresFromChildren = true;
 
 		// read parameters
-		paramPopulationSize = (Integer) algoInst.getValueForParameter(GeneticExplorationAlgo.PARAM_SIZE_POPULATION);
+		paramPopulationSize = (Integer) algoInst.getValueForParameter(GeneticExplorationAlgoConstants.PARAM_SIZE_POPULATION);
 		
-		paramStopMaxIterations = (Integer) algoInst.getValueForParameter(GeneticExplorationAlgo.PARAM_STOP_MAXITERATIONS);
+		paramStopMaxIterations = (Integer) algoInst.getValueForParameter(GeneticExplorationAlgoConstants.PARAM_STOP_MAXITERATIONS);
 
 		
 	}
@@ -384,14 +384,14 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 
 				// store metadata
 				Map<String,Object> geneMetadata = new HashMap<String, Object>();
-				geneMetadata.put(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_VALUE, names[j]);
+				geneMetadata.put(GeneticExplorationAlgoConstants.TABLE_COLUMN_GENE_METADATA_KEY_VALUE, names[j]);
 				final String nameForOutpt = currentGenome.name+" / "+currentGenome.getGenes()[j].name;
 				// min and max if possible
 				final AGene<?> gene = currentGenome.getGenes()[j];
 				if (gene instanceof ANumericGene<?>) {
 					ANumericGene nGene = (ANumericGene)gene;
-					geneMetadata.put(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_MIN, nGene.min.doubleValue());
-					geneMetadata.put(GeneticExplorationAlgo.TABLE_COLUMN_GENE_METADATA_KEY_MAX, nGene.max.doubleValue());
+					geneMetadata.put(GeneticExplorationAlgoConstants.TABLE_COLUMN_GENE_METADATA_KEY_MIN, nGene.min.doubleValue());
+					geneMetadata.put(GeneticExplorationAlgoConstants.TABLE_COLUMN_GENE_METADATA_KEY_MAX, nGene.max.doubleValue());
 				} 
 				tableMetadataGenes.put(names[j], geneMetadata);
 
@@ -401,7 +401,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			genome2geneColumns.put(currentGenome, names);
 			
 		}
-		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GENES2METADATA, tableMetadataGenes);
+		tab.setTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_GENES2METADATA, tableMetadataGenes);
 		
 		return genome2geneColumns;
 	}
@@ -427,17 +427,17 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 				
 				names[j] = "target "+currentGenome.name+" / "+goalAI.getName();
 				tab.declareColumn(names[j]);
-				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_TARGET, names[j]);
+				colMetadataForGenome.put(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_TARGET, names[j]);
 				j++;
 				
 				names[j] = "value "+currentGenome.name+" / "+goalAI.getName();
 				tab.declareColumn(names[j]);
-				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE, names[j]);
+				colMetadataForGenome.put(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE, names[j]);
 				j++;
 				
 				names[j] = "fitness "+currentGenome.name+" / "+goalAI.getName();
 				tab.declareColumn(names[j]);
-				colMetadataForGenome.put(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_FITNESS, names[j]);
+				colMetadataForGenome.put(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_FITNESS, names[j]);
 				j++;
 				
 			}
@@ -445,7 +445,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			genome2fitnessColumns.put(currentGenome, names);
 			
 		}
-		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GOALS2COLS, tableMetadataGoals);
+		tab.setTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_GOALS2COLS, tableMetadataGoals);
 		
 		return genome2fitnessColumns;
 	}
@@ -548,8 +548,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		GenlabTable tab = new GenlabTable();
 		tab.declareColumn(titleIteration);
 		tab.declareColumn(titleGenome);
-		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_COLTITLE_ITERATION, titleIteration);
-		tab.setTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_MAX_ITERATIONS, paramStopMaxIterations);
+		tab.setTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_COLTITLE_ITERATION, titleIteration);
+		tab.setTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_MAX_ITERATIONS, paramStopMaxIterations);
 		
 		
 		// declare columns for each fitness
@@ -607,7 +607,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			
 			GenlabTable tab = packDataInTable();
 		
-			res.setResult(GeneticExplorationAlgo.OUTPUT_TABLE, tab);
+			res.setResult(GeneticExplorationAlgoConstants.OUTPUT_TABLE, tab);
 		}
 		
 		hookProcessResults(res, ourState);

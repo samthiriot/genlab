@@ -1,6 +1,6 @@
 package genlab.algog.gui.jfreechart.exec;
 
-import genlab.algog.algos.meta.GeneticExplorationAlgo;
+import genlab.algog.algos.meta.GeneticExplorationAlgoConstants;
 import genlab.algog.gui.jfreechart.algos.FirstFront2DAlgo;
 import genlab.algog.gui.jfreechart.instance.FirstFront2DInstance;
 import genlab.core.exec.IExecution;
@@ -36,7 +36,7 @@ public class FirstFront2DExec extends AbstractJFreeChartAlgoExec {
 		algoInstance.getParameterColumnY().setItems(table.getColumnsId());
 		
 		// also, attempt to use the values or fitness if available
-		Object metadataRaw = table.getTableMetaData(GeneticExplorationAlgo.TABLE_METADATA_KEY_GOALS2COLS);
+		Object metadataRaw = table.getTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_GOALS2COLS);
 		if (metadataRaw == null) {
 			messages.warnTech("unable to find the expected metadata in this table; maybe it does not comes from a genetic algorithm ?", getClass());
 			return;
@@ -54,7 +54,7 @@ public class FirstFront2DExec extends AbstractJFreeChartAlgoExec {
 		String goalDisplayed2 = null;
 		for (String goal: metadata.keySet()) {
 	    	final Map<String,String> metadataGoal = metadata.get(goal);
-	        String colGoalValue = metadataGoal.get(GeneticExplorationAlgo.TABLE_COLUMN_GOAL_METADATA_VALUE_FITNESS);
+	        String colGoalValue = metadataGoal.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_FITNESS);
 	        	        
 	        if (goalDisplayed1 == null) {
 	        	goalDisplayed1 = colGoalValue;
