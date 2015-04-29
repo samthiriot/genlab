@@ -51,7 +51,8 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 		BINH_KORN ("Binh and Korn"),
 		CHAKONG_HAIMES ("Chakong and Haimes"),
 		CTP1 ("CTP1"),
-		POLONI ("Poloni's two objective function")
+		POLONI ("Poloni's two objective function"),
+		TNK ("Tanaka's two objective function")
 		
 		;
 		
@@ -191,6 +192,17 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 									(x < -Math.PI) || (x > Math.PI) ||
 									(y < -Math.PI) || (y > Math.PI);
 							break;
+						case TNK:
+							violatesConstraint = 
+								(
+									(Math.pow(x, 2) + Math.pow(y, 2) - 1 - 0.1*Math.cos( 16*Math.atan(x/y) )) < 0
+								) || (
+									(Math.pow(x-0.5, 2) + Math.pow(y-0.5, 2)) > 0.5
+								);
+							violatesSearchDomain =
+									(x < 0) || (x > Math.PI) ||
+									(y < 0) || (y > Math.PI);
+							break;
 						default:
 							throw new ProgramException("unknown test function "+testedFunction);
 					}
@@ -232,6 +244,10 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 						    
 							f1 = 1 + Math.pow(a1-b1, 2) + Math.pow(a2-b2, 2);
 							f2 = Math.pow(x+3, 2) + Math.pow(y+1, 2);
+							break;
+						case TNK:
+							f1 = x;
+							f2 = y;
 							break;
 						default:
 							throw new ProgramException("unknown test function "+testedFunction);
