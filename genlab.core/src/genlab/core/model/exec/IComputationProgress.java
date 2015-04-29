@@ -1,5 +1,6 @@
 package genlab.core.model.exec;
 
+import java.util.List;
 import java.util.Set;
 
 import genlab.core.commons.UniqueTimestamp;
@@ -100,9 +101,11 @@ public interface IComputationProgress {
 	public void setException(Throwable exception);
 	public Throwable getException();
 	
+	public List<IComputationProgressSimpleListener> getListeners();
 	public void addListener(IComputationProgressSimpleListener listener);
 	public void removeListener(IComputationProgressSimpleListener listener);
 	
+	public List<IComputationProgressDetailedListener> getDetailedListeners();
 	public void addDetailedListener(IComputationProgressDetailedListener listener);
 	public void removeDetailedListener(IComputationProgressDetailedListener listener);
 	

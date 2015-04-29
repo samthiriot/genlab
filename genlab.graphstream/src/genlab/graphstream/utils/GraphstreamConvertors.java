@@ -11,6 +11,7 @@ import genlab.core.usermachineinteraction.MessageAudience;
 import genlab.core.usermachineinteraction.MessageLevel;
 import genlab.core.usermachineinteraction.TextMessage;
 import genlab.graphstream.algos.generators.IGenlabGraphInitializer;
+import genlab.graphstream.corejar.MultiGraphSerializable;
 
 import java.util.HashMap;
 import java.util.HashSet;

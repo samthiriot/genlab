@@ -8,6 +8,8 @@ import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
+import genlab.core.model.meta.ExistingAlgos;
+import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
@@ -31,7 +33,7 @@ import java.util.Set;
  *
  * @param 
  */
-public abstract class AbstractAlgoExecution extends ExecutionTask implements IAlgoExecution  {
+public abstract class AbstractAlgoExecution extends ExecutionTask implements IAlgoExecution, Externalizable {
 
 	protected IAlgoInstance algoInst;
 	protected IComputationProgress progress;
@@ -144,7 +146,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		return result;
 	}
 	
-	protected void setResult(IComputationResult res) {
+	public void setResult(IComputationResult res) {
 		this.result = res;
 	}
 
@@ -378,4 +380,72 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	 */
 	public AbstractAlgoExecution() {}
 
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		super.writeExternal(out);
+		// TODO
+		
+		// save elements to recreate algoInstance 
+		out.writeUTF(algoInst.getAlgo().getId());
+		out.writeUTF(algoInst.getId());
+		out.writeUTF(algoInst.getName());
+		out.writeObject(algoInst.getParametersAndValues());
+		
+		// others
+		out.writeObject(exec);
+
+		{
+			Map<String,Collection<IConnectionExecution>> inputId2connection = new HashMap<String, Collection<IConnectionExecution>>(input2connection.size());
+			for (IInputOutputInstance i: input2connection.keySet()) {
+				inputId2connection.put(i.getMeta().getId(), input2connection.get(i));
+			}
+			out.writeObject(inputId2connection);
+		}
+
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		super.readExternal(in);
+		
+		// recreate algoinstance based on these elements
+		{
+			// first recreate an instance...
+			final String algoId = in.readUTF();
+			final IAlgo algo = ExistingAlgos.getExistingAlgos().getAlgoForId(algoId);
+			if (algo == null)
+				throw new ClassNotFoundException("Unable to find the GenLab algorithm for id "+algoId);
+			algoInst = algo.createInstance(in.readUTF(), null);
+			
+			// then set name
+			algoInst.setName(in.readUTF());
+			// and parameters
+			Map<String,Object> parameterId2value = (Map<String,Object>)in.readObject();
+			for (String id: parameterId2value.keySet()) {
+				algoInst.setValueForParameter(id, parameterId2value.get(id));
+			}
+		}
+		
+		// others
+		exec = (IExecution) in.readObject();
+
+		// inits from other elements
+		messages = exec.getListOfMessages();
+		
+		progress = new ComputationProgressWithSteps();
+		progress._setAlgoExecution(this);
+		progress.setComputationState(ComputationState.CREATED);
+
+		input2connection = new HashMap<IInputOutputInstance, Collection<IConnectionExecution>>();
+		{
+			Map<String,Collection<IConnectionExecution>> inputId2connection = (Map<String, Collection<IConnectionExecution>>) in.readObject();
+			for (String id: inputId2connection.keySet()) {
+				input2connection.put(
+						getAlgoInstance().getInputInstanceForInput(id), 
+						inputId2connection.get(id)
+						);
+			}
+		}
+	}
+		
 }

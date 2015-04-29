@@ -1,6 +1,5 @@
 package genlab.core.exec;
 
-import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.util.Map;

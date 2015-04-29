@@ -1,6 +1,7 @@
 package genlab.core.model.meta.basics.algos;
 
 import genlab.core.commons.ProgramException;
+import genlab.core.exec.IAlgoExecutionRemotable;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
@@ -11,7 +12,10 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IInputOutput;
 
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
 /**
  * For its execution, a constant value takes as a parameter the output to update, the value to output. 
@@ -23,11 +27,11 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class ConstantValueExecution<JavaType> 
 										extends AbstractAlgoExecutionOneshot 
-										implements IAlgoExecutionOneshot, Serializable {
+										implements IAlgoExecutionOneshot {
+										// IAlgoExecutionRemotable, Externalizable 
 
 	
 	protected JavaType value = null;
-	
 	
 	public ConstantValueExecution(
 			IExecution exec,
@@ -105,6 +109,18 @@ public class ConstantValueExecution<JavaType>
 	 * For serialization only
 	 */
 	public ConstantValueExecution() {}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		super.writeExternal(out);
+		out.writeObject(value);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		super.readExternal(in);
+		value = (JavaType) in.readObject();
+	}
 
 
 }

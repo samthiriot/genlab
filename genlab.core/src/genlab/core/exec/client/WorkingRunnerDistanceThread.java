@@ -1,6 +1,9 @@
 package genlab.core.exec.client;
 
+import genlab.core.exec.IAlgoExecutionRemotable;
+import genlab.core.exec.server.DistantExecutionResult;
 import genlab.core.exec.server.IGenlabComputationServer;
+import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.usermachineinteraction.ListOfMessages;
@@ -16,7 +19,7 @@ import java.util.concurrent.BlockingQueue;
 public class WorkingRunnerDistanceThread extends Thread {
 
 	
-	private final BlockingQueue<IAlgoExecution> readyToCompute;
+	private final BlockingQueue<IAlgoExecutionRemotable> readyToCompute;
 	private final ListOfMessages messages = ListsOfMessages.getGenlabMessages();
 	
 	private final String host;
@@ -24,7 +27,7 @@ public class WorkingRunnerDistanceThread extends Thread {
 	
 	private IGenlabComputationServer server = null;
 	
-	public WorkingRunnerDistanceThread(String name, BlockingQueue<IAlgoExecution> readyToCompute, String host, int port) {
+	public WorkingRunnerDistanceThread(String name, BlockingQueue<IAlgoExecutionRemotable> readyToCompute, String host, int port) {
 		super(name);
 		
 		// save parameters
@@ -132,8 +135,34 @@ public class WorkingRunnerDistanceThread extends Thread {
 			// run the task
 			messages.debugTech(getName()+" running task "+exec.getName()+" in server "+host+":"+port, getClass());
 			try {
-				server.executeTask(exec);
-				//exec.run();
+				
+				// execute distantly
+				exec.getProgress().setProgressTotal(1);
+				exec.getProgress().setComputationState(ComputationState.STARTED);
+				
+				DistantExecutionResult execResult = server.executeTask(exec);
+				
+				// transfer information from the distant result to...
+				// ... the results
+				ComputationResult r = new ComputationResult(
+						exec.getAlgoInstance(), 
+						exec.getProgress(), 
+						execResult.messages
+						); 
+				for (String idRes:  execResult.id2result.keySet()) {
+					r.setResult(
+							exec.getAlgoInstance().getOutputInstanceForOutput(idRes), 
+							execResult.id2result.get(idRes)
+							);
+				}
+				exec.setResult(r);
+				// the messages
+				//exec.getExecution().getListOfMessages().addAll(execResult.messages);
+				// ... the progress
+				exec.getProgress().setProgressMade(1);
+				exec.getProgress().setComputationState(execResult.computationState);
+				
+
 			} catch (RemoteException e) {
 				messages.errorUser("task "+exec.getName()+" raised a distant error:"+e.getMessage(), getClass(), e);
 				exec.getProgress().setComputationState(ComputationState.FINISHED_FAILURE);

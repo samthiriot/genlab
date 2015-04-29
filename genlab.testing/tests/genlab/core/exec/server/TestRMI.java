@@ -149,6 +149,7 @@ public class TestRMI {
 		return runner;
 
 	}
+	
 	private void execWorkflow(IGenlabWorkflowInstance workflow, boolean execExpectedFailure, IRunner r) {
 		
 		// execute it

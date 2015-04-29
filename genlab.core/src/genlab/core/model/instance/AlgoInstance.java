@@ -3,12 +3,16 @@ package genlab.core.model.instance;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
+import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.parameters.InstanceNameParameter;
 import genlab.core.parameters.Parameter;
 import genlab.core.usermachineinteraction.MessageLevel;
 
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
@@ -487,7 +491,6 @@ public class AlgoInstance implements IAlgoInstance, Serializable {
 		parametersListener.remove(list);
 		
 	}
-
 
 
 }

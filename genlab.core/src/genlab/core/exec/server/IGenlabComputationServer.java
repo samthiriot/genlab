@@ -20,7 +20,7 @@ public interface IGenlabComputationServer extends Remote {
 	 * @param task
 	 * @throws java.rmi.RemoteException
 	 */
-	public void executeTask(IAlgoExecution task) throws java.rmi.RemoteException;
+	public DistantExecutionResult executeTask(IAlgoExecution task) throws java.rmi.RemoteException;
 	
 	
 }

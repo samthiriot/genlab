@@ -39,12 +39,5 @@ Export-Package: genlab.graphstream.corejar,
  org.graphstream.util,
  org.graphstream.util.parser,
  org.graphstream.util.set,
- org.graphstream.util.time,
- org.miv.mbox,
- org.miv.mbox.net,
- org.miv.pherd,
- org.miv.pherd.geom,
- org.miv.pherd.ntree,
- org.miv.pherd.ntree.util
-Bundle-ClassPath: .,
- ext/gs-core-1.2-nightly_20130729.jar
+ org.graphstream.util.time
+Bundle-ClassPath: .

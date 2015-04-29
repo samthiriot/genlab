@@ -1,5 +1,12 @@
 package genlab.core.model.meta.basics.graphs;
 
+import genlab.graphstream.corejar.MultiGraphSerializable;
+
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 import org.graphstream.graph.implementations.MultiGraph;
 
 /**
@@ -7,9 +14,10 @@ import org.graphstream.graph.implementations.MultiGraph;
  * @author Samuel Thiriot
  *
  */
-public class MultiplexGraphstreamBasedGraph extends AbstractGraphstreamBasedGraph {
+@SuppressWarnings("serial")
+public class MultiplexGraphstreamBasedGraph extends AbstractGraphstreamBasedGraph implements Externalizable {
 
-	final protected GraphDirectionality directionality;
+	protected GraphDirectionality directionality;
 	
 	public MultiplexGraphstreamBasedGraph(String graphId, GraphDirectionality directionality) {
 		super(new MultiGraph(graphId, true, false));
@@ -31,6 +39,27 @@ public class MultiplexGraphstreamBasedGraph extends AbstractGraphstreamBasedGrap
 			String cloneId) {
 		return new MultiplexGraphstreamBasedGraph(cloneId, directionality);
 	}
+
+
+	public MultiplexGraphstreamBasedGraph() {
+		super();
+		directionality = GraphDirectionality.DIRECTED;
+	}
+	
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		super.writeExternal(out);
+		out.writeObject(directionality);
+		
+	}
+	@Override
+	public void readExternal(ObjectInput in) throws IOException,
+			ClassNotFoundException {
+		super.readExternal(in);
+		directionality = (GraphDirectionality) in.readObject();
+
+	}
+
 
 	
 }

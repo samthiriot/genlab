@@ -1,5 +1,7 @@
 package genlab.core.model.meta.basics.graphs;
 
+import java.io.Serializable;
+
 import org.graphstream.graph.implementations.SingleGraph;
 
 /**
@@ -7,7 +9,8 @@ import org.graphstream.graph.implementations.SingleGraph;
  * @author Samuel Thiriot
  *
  */
-public class SimpleGraphstreamBasedGraph extends AbstractGraphstreamBasedGraph {
+@SuppressWarnings("serial")
+public class SimpleGraphstreamBasedGraph extends AbstractGraphstreamBasedGraph implements Serializable {
 
 	final protected GraphDirectionality directionality;
 	

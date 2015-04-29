@@ -29,7 +29,7 @@ public interface IAlgoExecution extends IExecutionTask, IDumpAsExecutionNetwork 
 	 * @return
 	 */
 	public IComputationResult getResult();
-	
+	public void setResult(IComputationResult res);
 	
 	//public int getPreferedCountThreads();
 

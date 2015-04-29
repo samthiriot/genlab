@@ -3,6 +3,7 @@ package genlab.core.model.exec;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Map;
  * 
  * @author Samuel Thiriot
  */
-public interface IComputationResult extends IStaticMessagesEmitter {
+public interface IComputationResult extends IStaticMessagesEmitter, Serializable {
 
 	/**
 	 * Returns the algo which generated this result
