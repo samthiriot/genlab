@@ -68,7 +68,12 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 		}
 		
 		public static List<String> getLabelsAsList() {
-			return new LinkedList<String>(label2value.keySet());
+			
+			List<String> res = new LinkedList<String>();
+			for (EAvailableFunctions e: values()) {
+				res.add(e.label);
+			}
+			return res;
 		}
 		
 		static {{
@@ -192,12 +197,12 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 					
 					// if constraint is violated, then fail
 					if (violatesConstraint) {
-						messages.debugUser("constraint violated.", getClass());
+						messages.debugUser("constraint violated for function "+testedFunction, getClass());
 						progress.setComputationState(ComputationState.FINISHED_FAILURE);
 						return;
 					}
 					if (violatesSearchDomain) {
-						messages.errorUser("out of search domain x="+x+", y="+y+"; please correct the search domain", getClass());
+						messages.errorUser("out of search domain for function "+testedFunction+" x="+x+", y="+y+"; please correct the search domain", getClass());
 						progress.setComputationState(ComputationState.FINISHED_FAILURE);
 						return;
 					}
