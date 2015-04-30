@@ -210,8 +210,11 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 			InetAddress address = null;
 			{
 			
-				address = findExternalAddress();
-				System.setProperty("java.rmi.server.hostname", address.getHostName());
+				// TODO !
+				// address = findExternalAddress();
+				address = InetAddress.getLocalHost();
+				//System.setProperty("java.rmi.server.hostname", address.getHostName());
+				System.setProperty("java.rmi.server.hostname", "clau5ejl");
 						
 			}
 			if (stub == null)

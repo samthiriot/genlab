@@ -47,42 +47,8 @@ public class IGraphAveragePathLengthAlgo extends AbstractIGraphMeasure {
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {
 		
-		return new AbstractIGraphMeasureExec(execution, algoInstance) {
-			
-			@Override
-			protected Map<IInputOutput<?>, Object> analyzeGraph(
-					IComputationProgress progress, 
-					IGraphGraph igraphGraph,
-					IGenlabGraph genlabGraph,
-					ListOfMessages messages
-					) {
-				
-				Map<IInputOutput<?>, Object> results = new HashMap<IInputOutput<?>, Object>();
-				
-				// average path length
-				if (isUsed(OUTPUT_AVERAGE_PATH_LENGTH) ||  exec.getExecutionForced()) {
-					double averagePathLength = igraphGraph.lib.computeAveragePathLength(igraphGraph);
-					results.put(OUTPUT_AVERAGE_PATH_LENGTH, averagePathLength);
-				} else {
-					messages.debugUser("the average path length is not used, so it will not be computed", getClass());	
-				}
-				
-				// diameter
-				if (isUsed(OUTPUT_DIAMETER) ||  exec.getExecutionForced()) {
-					int diameter = igraphGraph.lib.computeDiameter(igraphGraph);
-					results.put(OUTPUT_DIAMETER, diameter);
-				} else {
-					messages.debugUser("the diameter is not used, so it will not be computed", getClass());	
-				}
-				
-				return results;
-			}
-
-			@Override
-			public long getTimeout() {
-				return 1000*60*5; // TODO timeout with complexity
-			}
-		};
+		return new IGraphAveragePathLengthExec(execution, algoInstance);
+		
 	}
 
 }
