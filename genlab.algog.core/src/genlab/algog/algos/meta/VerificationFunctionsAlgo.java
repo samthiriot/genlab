@@ -52,7 +52,8 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 		CHAKONG_HAIMES ("Chakong and Haimes"),
 		CTP1 ("CTP1"),
 		POLONI ("Poloni's two objective function"),
-		TNK ("Tanaka's two objective function")
+		TNK ("Tanaka's two objective function"),
+		CONSTR_EX ("Constr-Ex problem")
 		
 		;
 		
@@ -145,8 +146,8 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 				final Integer idxParam = (Integer)algoInst.getValueForParameter(PARAM_FUNCTION);
 				final EAvailableFunctions testedFunction = EAvailableFunctions.values()[idxParam];
 				
-				final Double x = (Double) getInputValueForInput(INPUT_X);
-				final Double y = (Double) getInputValueForInput(INPUT_Y);
+				final double x = (Double) getInputValueForInput(INPUT_X);
+				final double y = (Double) getInputValueForInput(INPUT_Y);
 				
 				try {					
 					// detect constraint violation 
@@ -193,15 +194,28 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 									(y < -Math.PI) || (y > Math.PI);
 							break;
 						case TNK:
+							if( y==0 ) violatesConstraint = true;
+							else
 							violatesConstraint = 
 								(
-									(Math.pow(x, 2) + Math.pow(y, 2) - 1 - 0.1*Math.cos( 16*Math.atan(x/y) )) < 0
+									(Math.pow(x, 2) + Math.pow(y, 2) - 1.0d - 0.1d*Math.cos( 16d*Math.atan(x/y) )) < 0d
 								) || (
-									(Math.pow(x-0.5, 2) + Math.pow(y-0.5, 2)) > 0.5
+									(Math.pow(x-0.5d, 2) + Math.pow(y-0.5d, 2)) > 0.5d
 								);
 							violatesSearchDomain =
 									(x < 0) || (x > Math.PI) ||
 									(y < 0) || (y > Math.PI);
+							break;
+						case CONSTR_EX:
+							violatesConstraint = 
+								(
+									(y + 9*x) < 6
+								) || (
+									(-y + 9*x) < 1
+								);
+							violatesSearchDomain =
+									(x < 0.1) || (x > 1) ||
+									(y < 0) || (y > 5);
 							break;
 						default:
 							throw new ProgramException("unknown test function "+testedFunction);
@@ -209,7 +223,7 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 					
 					// if constraint is violated, then fail
 					if (violatesConstraint) {
-						messages.debugUser("constraint violated for function "+testedFunction, getClass());
+						messages.infoUser("constraint violated for function "+testedFunction, getClass());
 						progress.setComputationState(ComputationState.FINISHED_FAILURE);
 						return;
 					}
@@ -248,6 +262,10 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 						case TNK:
 							f1 = x;
 							f2 = y;
+							break;
+						case CONSTR_EX:
+							f1 = x;
+							f2 = (1+y) / x;
 							break;
 						default:
 							throw new ProgramException("unknown test function "+testedFunction);
