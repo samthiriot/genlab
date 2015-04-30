@@ -11,6 +11,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.Permission;
 
@@ -148,10 +149,15 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 	        }
 			
 			if (stub == null)
-				stub = (IGenlabComputationServer) UnicastRemoteObject.exportObject(this, 0);
+				stub = (IGenlabComputationServer) UnicastRemoteObject.exportObject(this, port);
 	        
-	        if (registry == null) 
-	        	registry = LocateRegistry.createRegistry(port);
+	        if (registry == null) {
+	        	try {
+	        		registry = LocateRegistry.createRegistry(port);
+	        	} catch (ExportException e) {
+	        		registry = LocateRegistry.getRegistry(port);
+	        	}
+	        } 
 	        
 	        
 	        Thread.currentThread().setContextClassLoader(GenlabComputationServer.class.getClassLoader());
@@ -160,11 +166,12 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 	        
 	        // TODO display info so others can connect there.
 	        state = ServerState.RUNNING;
-	        messages.infoUser("GenLab server published as "+InetAddress.getLocalHost().getHostName()+":"+port, getClass());
+	        messages.infoUser("GenLab server published as "+InetAddress.getLocalHost().getCanonicalHostName()+":"+port, getClass());
 	        
 		} catch (Exception e) {
 			state = ServerState.PROBLEM;
 			messages.errorTech("Unable to publish the GenLab server on port "+port+": "+e.getMessage(), getClass(), e);
+			registry = null;
 		} finally {
 			Thread.currentThread().setContextClassLoader(oldClassLoader);
 		}
@@ -180,11 +187,13 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 			registry.unbind(BOUNDING_NAME);
 			
 			// unbind us 
-			//UnicastRemoteObject.unexportObject(stub, true);
+			// UnicastRemoteObject.unexportObject(stub, true);
 			
 			// Nota Bene: cannot stop a RMI registry. Can only unbind it. So let it be !
 			// stop RMI registry
 			//UnicastRemoteObject.unexportObject(registry, true);
+			// just forget it
+			registry = null;
 					
 			state = ServerState.STOPPED;			
 	        messages.infoUser("GenLab server stopped", getClass());
@@ -244,7 +253,26 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 
 
 	public void setParameterStartServerPort(int int1) {
+		if (int1 == this.port)
+			return;
 		this.port = int1;
+		
+		switch (state) {
+		case STOPPED:
+		case PROBLEM:
+			// don nothing
+			break;
+		case RUNNING:
+			// restart !
+			stopServer();
+			startServer();
+			break;
+		case STARTING:
+		case STOPPING:
+			// what should we do ? 
+			// TODO
+			break;
+	}
 	}
 
 }

@@ -1,6 +1,7 @@
 package genlab.core.exec.client;
 
 import genlab.core.exec.IAlgoExecutionRemotable;
+import genlab.core.exec.server.GenlabComputationServer;
 import genlab.core.exec.server.IGenlabComputationServer;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.usermachineinteraction.ListOfMessages;
@@ -62,7 +63,7 @@ public class DistantGenlabServerManager {
 
 		// retrieve the server on the registry
 		try {
-			server = (IGenlabComputationServer) registry.lookup("GenlabComputationServer");
+			server = (IGenlabComputationServer) registry.lookup(GenlabComputationServer.BOUNDING_NAME);
 			
 		} catch (AccessException e) {
 			messages.errorUser("unable to connect to server "+hostname+":"+port+": "+e.getMessage(), getClass(), e);

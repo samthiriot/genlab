@@ -40,6 +40,10 @@ public class ComputationNodes {
 
 	private Map<String,DistantGenlabServerManager> host2serverManager = new HashMap<String, DistantGenlabServerManager>(50);
 	
+	private int distantPort = 25000;
+	private String distantHost = "192.168.0.1";
+	private boolean connectDistant = false;
+			
 	/**
 	 * Returns (and creates if necessary) a default runner which runs locally 
 	 * and/or distantly.
@@ -56,6 +60,9 @@ public class ComputationNodes {
 	
 	public void tryToAddDistantHost(String hostname, int port) {
 
+		if (!connectDistant)
+			return;
+		
 		final String keyServer = hostname+":"+port;
 
 		synchronized (host2serverManager) {
@@ -107,18 +114,17 @@ public class ComputationNodes {
 	}
 
 	public void setParameterConnectServer(boolean boolean1) {
-		// TODO Auto-generated method stub
-		
+		connectDistant = boolean1;
+		tryToAddDistantHost(distantHost, distantPort);
+		// TODO what for stopping ? 
 	}
 
 	public void setParameterConnectServerHostname(String string) {
-		// TODO Auto-generated method stub
-		
+		distantHost = string;
 	}
 
 	public void setParameterConnectServerPort(int int1) {
-		// TODO Auto-generated method stub
-		
+		distantPort = int1;
 	}
 	
 	

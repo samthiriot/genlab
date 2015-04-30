@@ -66,9 +66,10 @@ public class Genlab2eclipsePreferences {
 		
 	
 		// parameters for contacting a server
-		ComputationNodes.getSingleton().setParameterConnectServer(Activator.getDefault().getPreferenceStore().getBoolean(RunnerPreferencePage.KEY_SERVER_CONNECT));
 		ComputationNodes.getSingleton().setParameterConnectServerHostname(Activator.getDefault().getPreferenceStore().getString(RunnerPreferencePage.KEY_SERVER_HOSTNAME));
 		ComputationNodes.getSingleton().setParameterConnectServerPort(Activator.getDefault().getPreferenceStore().getInt(RunnerPreferencePage.KEY_SERVER_PORT));
+		ComputationNodes.getSingleton().setParameterConnectServer(Activator.getDefault().getPreferenceStore().getBoolean(RunnerPreferencePage.KEY_SERVER_CONNECT));
+		
 		
 	}
 		
