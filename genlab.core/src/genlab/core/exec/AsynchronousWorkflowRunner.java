@@ -1,5 +1,6 @@
 package genlab.core.exec;
 
+import genlab.core.exec.client.ComputationNodes;
 import genlab.core.model.exec.ExecutionHooks;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
@@ -59,7 +60,7 @@ public class AsynchronousWorkflowRunner implements Runnable {
 			}
 		
 			System.err.println("retrieve runner");
-			IRunner r = LocalComputationNode.getSingleton().getRunner();
+			IRunner r = ComputationNodes.getSingleton().getDefaultRunner();
 	
 			System.err.println("create execution");
 			Execution exec = new Execution(r);

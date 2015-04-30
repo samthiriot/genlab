@@ -1,24 +1,18 @@
 package genlab.core.exec.server;
 
-import genlab.core.Activator;
-import genlab.core.IGenlabPlugin;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
-import genlab.core.usermachineinteraction.GLLogger;
+import genlab.core.usermachineinteraction.ListOfMessages;
+import genlab.core.usermachineinteraction.ListsOfMessages;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.RMIClassLoader;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.Permission;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.osgi.framework.Bundle;
-import org.osgi.framework.Constants;
 
 /**
  * seems useless: -Djava.rmi.server.codebase=${workspace_loc}/ -Djava.security.policy=${workspace_loc}/genlab.core/remote/server/genlabServer.policy
@@ -28,103 +22,60 @@ import org.osgi.framework.Constants;
  */
 public class GenlabComputationServer implements IGenlabComputationServer {
 
-	private static int port = 20000;
+	private int port = 20000;
+	private int numberProcessesMax = Runtime.getRuntime().availableProcessors();
+	private ListOfMessages messages = ListsOfMessages.getGenlabMessages();
+	
+	public static final String BOUNDING_NAME = "GenlabComputationServer";
+	
+	/*
+	public enum ServerState {
+		DISCONNECTED,
+		CONNECTING,
+		CONNECTED,
+		CONNECTION_PROBLEM,
+		STOPPING;
+	}
+	*/
+	
+	public enum ServerState {
+		STOPPED,
+		STARTING,
+		RUNNING,
+		PROBLEM,
+		STOPPING;
+	}
+	
+	private ServerState state;
+	
+	private boolean shouldConnect = false;
+	
+	private Registry registry = null;
+	private IGenlabComputationServer stub = null;
+	
 	
 	public GenlabComputationServer() {
         super();
+        state = ServerState.STOPPED;
 	}
 	
-	public static GenlabComputationServer referenceStrong = null;
+	private static GenlabComputationServer singleton = null;
 	
-	public static void buildPath() {
-		
-		Set<ClassLoader> classloaders = new HashSet<ClassLoader>();
-		
-		Bundle[] bundles = Activator.getDefault().getBundle().getBundleContext().getBundles();
-		for (int i=bundles.length -1 ; i>=0; i--) {
-			Bundle bundle = bundles[i];
-			try {
-    			String activator =  (String)bundle.getHeaders().get(Constants.BUNDLE_ACTIVATOR);
-    			if (activator == null)
-    				continue;
-    			
-    			Class activatorClass = bundle.loadClass(activator);
-    			
-    			if (IGenlabPlugin.class.isAssignableFrom(activatorClass)) {
-    				
-    				Method method = activatorClass.getMethod("getClassLoader");
-					Object o = method.invoke(null);
-    				ClassLoader cl = (ClassLoader)o;
-    				
-    				System.err.println("Detected classloader from plugin: "+o);
-    				classloaders.add(cl);
-    			}
-    			
-    			
-			} catch (RuntimeException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				GLLogger.warnTech("the plugin "+bundle+" activator does implement IGenlabPlugin, but does not declares static methods getClassLoader", GenlabComputationServer.class);
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	
+	/**
+	 * Returns or creates a server. If it is created, it is started deactivated.
+	 * @return
+	 */
+	public static GenlabComputationServer getSingleton() {
+		if (singleton == null) {
+			singleton = new GenlabComputationServer();
 		}
-		
-		
-		
+		return singleton;
 	}
 	
-	
-	public static void start() {
-		
-		if (System.getSecurityManager() == null) {
-			class MySecurityManager extends SecurityManager {
-				public MySecurityManager() {}
-				public void checkPermission() {}
-				public void checkPermission(Permission perm) {}
-				public void checkPermission(Permission perm, Object context) {}
-			}
-			System.setSecurityManager(new MySecurityManager());
-            //System.setSecurityManager(new SecurityManager());
-        }
-		
-		//System.out.println(System.getProperty("java.class.path"));
-		ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
-		try {
-	        String name = "GenlabComputationServer";
-	        //System.setSecurityManager(new RMISecurityManager());
 
-	        GenlabComputationServer engine = new GenlabComputationServer();
-	        referenceStrong = engine;
-	        IGenlabComputationServer stub = (IGenlabComputationServer) UnicastRemoteObject.exportObject(engine, 0);
-	        
-	        Registry registry = null;
-	        
-	        if (registry == null) {
-	        	registry = LocateRegistry.createRegistry(port);
-	        }
-	        // java.rmi.server.codebase 
-	        
-	        
-	        //Thread.currentThread().setContextClassLoader(GenlabComputationServer.class.getClassLoader());
-	        Thread.currentThread().setContextClassLoader(GenlabComputationServer.class.getClassLoader());
+	/* TODO main !
 
-	        registry.rebind(name, stub);
-	        System.out.println("GenlabComputationServer bound");
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			Thread.currentThread().setContextClassLoader(oldClassLoader);
-		}
-	}
-	
 	public static void main(String[] args) {
 		try {
 			start();
@@ -134,6 +85,7 @@ public class GenlabComputationServer implements IGenlabComputationServer {
         }
 	
     }
+    	 */
 
 	@Override
 	public long ping(long timeSent) throws RemoteException {
@@ -145,12 +97,12 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 	public DistantExecutionResult executeTask(IAlgoExecution task) throws RemoteException {
 		
 		// run
-		System.err.println("execute on server "+task);
+		messages.infoTech("running distant task "+task, getClass());
 		try {
 			// TODO change that; but required now
 			task.getExecution().setExecutionForced(true);
 			task.run();
-			System.err.println("returning result for "+task);
+			messages.debugTech("returning result for task "+task, getClass());
 			// then retrieve results from the task
 			DistantExecutionResult res = new DistantExecutionResult(
 					task.getProgress().getComputationState(),
@@ -165,9 +117,134 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 					);
 		}
 		
-		
-		
+	}
 
+
+	@Override
+	public int getNumberTasksAccepted() throws RemoteException {
+		return numberProcessesMax;
+	}
+
+
+	public void startServer() {
+		
+		messages.infoUser("starting a GenLab server on port "+port, getClass());
+		state = ServerState.STARTING;
+				
+		//System.out.println(System.getProperty("java.class.path"));
+		ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
+		try {
+        
+
+			if (System.getSecurityManager() == null) {
+				class MySecurityManager extends SecurityManager {
+					public MySecurityManager() {}
+					public void checkPermission() {}
+					public void checkPermission(Permission perm) {}
+					public void checkPermission(Permission perm, Object context) {}
+				}
+				System.setSecurityManager(new MySecurityManager());
+	            //System.setSecurityManager(new SecurityManager());
+	        }
+			
+			if (stub == null)
+				stub = (IGenlabComputationServer) UnicastRemoteObject.exportObject(this, 0);
+	        
+	        if (registry == null) 
+	        	registry = LocateRegistry.createRegistry(port);
+	        
+	        
+	        Thread.currentThread().setContextClassLoader(GenlabComputationServer.class.getClassLoader());
+
+	        registry.rebind(BOUNDING_NAME, stub);
+	        
+	        // TODO display info so others can connect there.
+	        state = ServerState.RUNNING;
+	        messages.infoUser("GenLab server published as "+InetAddress.getLocalHost().getHostName()+":"+port, getClass());
+	        
+		} catch (Exception e) {
+			state = ServerState.PROBLEM;
+			messages.errorTech("Unable to publish the GenLab server on port "+port+": "+e.getMessage(), getClass(), e);
+		} finally {
+			Thread.currentThread().setContextClassLoader(oldClassLoader);
+		}
+		
+	}
+	
+	public void stopServer() {
+		
+		state = ServerState.STOPPING;
+		
+		try {
+			// stop server
+			registry.unbind(BOUNDING_NAME);
+			
+			// unbind us 
+			//UnicastRemoteObject.unexportObject(stub, true);
+			
+			// Nota Bene: cannot stop a RMI registry. Can only unbind it. So let it be !
+			// stop RMI registry
+			//UnicastRemoteObject.unexportObject(registry, true);
+					
+			state = ServerState.STOPPED;			
+	        messages.infoUser("GenLab server stopped", getClass());
+			
+		} catch (AccessException e) {
+			state = ServerState.PROBLEM;
+			messages.errorTech("Unable to stop the GenLab node on port "+port+": "+e.getMessage(), getClass(), e);
+		} catch (RemoteException e) {
+			state = ServerState.PROBLEM;
+			messages.errorTech("Unable to stop the GenLab node on port "+port+": "+e.getMessage(), getClass(), e);
+		} catch (NotBoundException e) {
+			state = ServerState.PROBLEM;
+			messages.errorTech("Unable to stop the GenLab node on port "+port+": "+e.getMessage(), getClass(), e);
+		}
+		
+		
+		
+	}
+	
+	public void setParameterStartServer(boolean boolean1) {
+		shouldConnect = boolean1; 
+		if (shouldConnect) {
+			switch (state) {
+				case STOPPED:
+				case PROBLEM:
+					// let's connect
+					startServer();
+					break;
+				case RUNNING:
+					// do nothing !
+					break;
+				case STARTING:
+				case STOPPING:
+					// what should we do ? 
+					// TODO
+					break;
+			}
+		} else {
+			switch (state) {
+			case RUNNING:
+				stopServer();
+				break;
+			case STOPPED:
+				// nothing to do
+				break;
+			case PROBLEM:
+				state = ServerState.STOPPED;
+				break;
+			case STARTING:
+			case STOPPING:
+				// what should we do ? 
+				// TODO
+				break;
+		}
+		}
+	}
+
+
+	public void setParameterStartServerPort(int int1) {
+		this.port = int1;
 	}
 
 }

@@ -401,6 +401,17 @@
    <extension
          point="genlab.core.doc">
       <library
+            description="core features for Graphical User Interface"
+            id="genlab.gui.library"
+            name="GUI core">
+         <integrator_author_id
+               id="genlab.gui.integrator_author_id1">
+         </integrator_author_id>
+         <original_author_id
+               id="genlab.gui.original_author_id1">
+         </original_author_id>
+      </library>
+      <library
             description="default Graphical User Interface for GenLab "
             id="genlab.gui.doc.libraries.gui"
             name="Genlab GUI">
@@ -414,7 +425,7 @@
       <docalgo
             algo_id="genlab.gui.algos.GraphicalConsoleAlgo"
             description="d"
-            library_id="genlab.core.doc.library.core"
+            library_id="genlab.gui.doc.libraries.gui"
             memory_complexity="O(n)"
             time_complexity="O(n) with n the number of inputs">
       </docalgo>

@@ -1,6 +1,14 @@
-package genlab.core.exec;
+package genlab.core.exec.client;
 
 import genlab.core.commons.ProgramException;
+import genlab.core.exec.IAlgoExecutionRemotable;
+import genlab.core.exec.ICleanableTask;
+import genlab.core.exec.IContainerTask;
+import genlab.core.exec.IRunner;
+import genlab.core.exec.ITask;
+import genlab.core.exec.ITasksDynamicProducer;
+import genlab.core.exec.TasksManager;
+import genlab.core.exec.WorkingRunnerThread;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.usermachineinteraction.ListOfMessages;
@@ -76,16 +84,22 @@ public class Runner extends Thread implements IRunner {
 	 * Contains worker threads which do not use the CPU (in fact, they are more control threads.
 	 * This thread pool will be resized on demand.
 	 */
-	private Set<Thread> threadsPoolTaskNoThread = new HashSet<Thread>(500);
+	protected Set<Thread> threadsPoolTaskNoThread = new HashSet<Thread>(500);
 	final BlockingQueue<IAlgoExecution> readyToComputeNoThread = new LinkedBlockingQueue<IAlgoExecution>();
 	private int usedThreadsWithoutThread = 0;
 
 	/**
 	 * Contains worker threads which do use the CPU. Contains only MAX_THREADS
 	 */
-	private Set<Thread> threadsPoolTaskWithThreads = new HashSet<Thread>(500);
+	protected Set<Thread> threadsPoolTaskWithThreads = new HashSet<Thread>(500);
 	protected final BlockingQueue<IAlgoExecution> readyToComputeWithThreads = new LinkedBlockingQueue<IAlgoExecution>();
 
+	/**
+	 * Contains worker threads which delegate to distant servers.
+	 */
+	protected final BlockingQueue<IAlgoExecutionRemotable> readyToComputeRemotable = new LinkedBlockingQueue<IAlgoExecutionRemotable>();
+
+	
 	/**
 	 * The number of threads used currently. Based on the number of thread displayed by tasks, 
 	 * not an objective measure.
@@ -94,13 +108,13 @@ public class Runner extends Thread implements IRunner {
 
 	private int availableThreads = 4;
 	
-	public Runner(int availableThreads) {
+	public Runner(int availableLocalThreads) {
 		
 		this.messagesRun =  ListsOfMessages.getGenlabMessages();
 		
-		this.availableThreads = availableThreads;
+		this.availableThreads = availableLocalThreads;
 		
-		messagesRun.infoUser("creating local runner (threads = "+availableThreads+")", getClass());
+		messagesRun.infoUser("creating local runner (threads = "+availableLocalThreads+")", getClass());
 		
 		setName("glRunner");
 		setPriority(MIN_PRIORITY);
@@ -108,19 +122,21 @@ public class Runner extends Thread implements IRunner {
 		
 
 		// init the thread pool
-		for (int i=0; i<availableThreads; i++) {
+		for (int i=0; i<availableLocalThreads; i++) {
 			WorkingRunnerThread t = new WorkingRunnerThread(
 					"gl_worker_local_"+i, 
-					readyToComputeWithThreads
+					readyToComputeWithThreads,
+					readyToComputeRemotable
 					);
 			addWorkingThread(t);
 		}
 		
 		// init the thread pool
-		for (int i=0; i<availableThreads; i++) {
+		for (int i=0; i<availableLocalThreads; i++) {
 			WorkingRunnerThread t = new WorkingRunnerThread(
 					"gl_workcontroller_local_"+i, 
-					readyToComputeNoThread
+					readyToComputeNoThread,
+					null
 					);
 			t.start();
 			threadsPoolTaskNoThread.add(t);
@@ -132,7 +148,7 @@ public class Runner extends Thread implements IRunner {
 	
 	protected void addWorkingThread(Thread thread) {
 		
-		synchronized (threadsPoolTaskNoThread) {
+		synchronized (threadsPoolTaskWithThreads) {
 			messagesRun.infoTech("adding working thread: "+thread.getName(), getClass());
 			
 			thread.start();
@@ -151,31 +167,37 @@ public class Runner extends Thread implements IRunner {
 			addTask(e);	
 		
 	}
-
+	
 	/**
-	 * Only called when ready.
+	 *  Directs a task to the queue of distant execution or falls back to 
+	 * standard behaviour.
 	 * 
 	 * @param exec
 	 */
 	protected void submitTaskToWorkerThreads(IAlgoExecution exec) {
 		
 		if (exec.getThreadsUsed() == 0) {
+			// control thread, let's just delegate it there
 			synchronized (threadsPoolTaskNoThread) {
 				if (usedThreadsWithoutThread == threadsPoolTaskNoThread.size()) {
 					messagesRun.debugTech("not enough threads; increasing the size to "+(threadsPoolTaskNoThread.size()+1), getClass());
 					threadsPoolTaskNoThread.add(
 							new WorkingRunnerThread(
 									"gl_workcontroller_local_"+threadsPoolTaskNoThread.size(), 
-									readyToComputeNoThread
+									readyToComputeNoThread,
+									null
 									)
 							);
 				}
 				readyToComputeNoThread.add(exec);
 
 			}
+		} else if (exec instanceof IAlgoExecutionRemotable) {
+			// if it can be executable remotely, here is its target
+			readyToComputeRemotable.add((IAlgoExecutionRemotable) exec);
 		} else {
+			// execute locally only
 			readyToComputeWithThreads.add(exec);
-			
 		}
 	}
 	
@@ -622,6 +644,8 @@ public class Runner extends Thread implements IRunner {
 						usedThreads += e.getThreadsUsed();
 					}
 				}
+				wakeUp = ready.isEmpty();
+					
 				break;
 				
 			case SENDING_CONTINOUS:
@@ -733,5 +757,19 @@ public class Runner extends Thread implements IRunner {
 	public void propagateRank(Integer rank, Set<ITask> visited) {
 		// not relevant
 	}
+
+
+	public void addRunnerDistant(WorkingRunnerDistanceThread thread) {
+		
+		try {
+			
+			addWorkingThread(thread);
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			// TODO error !
+		}
+	}
+	
+
 	
 }

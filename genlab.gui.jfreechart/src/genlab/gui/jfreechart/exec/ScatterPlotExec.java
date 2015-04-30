@@ -53,10 +53,8 @@ public class ScatterPlotExec extends AbstractJFreeChartAlgoExec {
 		if (!parametersDefined)
 			adaptParametersForData(algoInst, table);
 		
-		((ScatterView)theView).setData(
-				algoInst,
-				table
-				);
+		theView.receiveData(table);
+
 	}
 
 	@Override

@@ -2,7 +2,7 @@ package genlab.testing.commons;
 
 import static org.junit.Assert.fail;
 import genlab.core.exec.IRunner;
-import genlab.core.exec.LocalComputationNode;
+import genlab.core.exec.client.ComputationNodes;
 import genlab.core.model.instance.GenlabFactory;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.projects.GenlabProject;
