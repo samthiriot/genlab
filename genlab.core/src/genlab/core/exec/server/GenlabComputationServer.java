@@ -6,6 +6,9 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -14,6 +17,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.Permission;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * seems useless: -Djava.rmi.server.codebase=${workspace_loc}/ -Djava.security.policy=${workspace_loc}/genlab.core/remote/server/genlabServer.policy
@@ -50,6 +55,7 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 	private ServerState state;
 	
 	private boolean shouldConnect = false;
+	private String preferedInterface = "eth0";
 	
 	private Registry registry = null;
 	private IGenlabComputationServer stub = null;
@@ -125,6 +131,58 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 	public int getNumberTasksAccepted() throws RemoteException {
 		return numberProcessesMax;
 	}
+	
+	protected InetAddress findExternalAddress() {
+		
+		InetAddress res = null;
+		
+		messages.infoUser("attempting to detect the external IP to be used...", getClass());
+		try {
+			for (NetworkInterface n: Collections.list(NetworkInterface.getNetworkInterfaces())) {
+				if (n.isVirtual()) {
+					messages.infoUser("interface "+n.getDisplayName()+" is virtual, ignoring it", getClass());
+					continue;
+				}
+				if (!n.isUp()) {
+					messages.infoUser("interface "+n.getDisplayName()+" is down, ignoring it", getClass());
+					continue;
+				}
+				// TODO parameter for prefered interface
+				if (!n.getName().equals("eth0"))
+					continue;
+				for (InetAddress ip: Collections.list(n.getInetAddresses())) {
+					// not use the local ones
+					if (n.isLoopback() || ip.isLoopbackAddress()) {
+						
+						messages.infoUser("not using the local address "+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
+					} else {
+						if (res == null) {
+							res = ip;
+							messages.infoUser("will use valid external IP :"+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
+						} else {
+							// TODO message informatif
+							messages.infoUser("this IP lools valid; we use the first one nevertheless: "+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
+						}
+					}
+				}
+			}
+			
+
+			if (res == null) {
+				messages.warnUser("unable to find an external IP; this server will be only available from local computer", getClass());
+				return InetAddress.getLocalHost();
+				
+			} else {
+				return res;
+			}
+			
+		} catch (SocketException e) {
+			throw new RuntimeException("Unable to list local IP adresses", e);
+		} catch (UnknownHostException e) {
+			return null;
+		}
+		
+	}
 
 
 	public void startServer() {
@@ -147,7 +205,15 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 				System.setSecurityManager(new MySecurityManager());
 	            //System.setSecurityManager(new SecurityManager());
 	        }
+
+			// define the external IP property
+			InetAddress address = null;
+			{
 			
+				address = findExternalAddress();
+				System.setProperty("java.rmi.server.hostname", address.getHostName());
+						
+			}
 			if (stub == null)
 				stub = (IGenlabComputationServer) UnicastRemoteObject.exportObject(this, port);
 	        
@@ -166,11 +232,11 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 	        
 	        // TODO display info so others can connect there.
 	        state = ServerState.RUNNING;
-	        messages.infoUser("GenLab server published as "+InetAddress.getLocalHost().getCanonicalHostName()+":"+port, getClass());
+	        messages.infoUser("GenLab server published as "+address.getCanonicalHostName()+":"+port+", or maybe "+InetAddress.getLocalHost().getCanonicalHostName()+":"+port, getClass());
 	        
 		} catch (Exception e) {
 			state = ServerState.PROBLEM;
-			messages.errorTech("Unable to publish the GenLab server on port "+port+": "+e.getMessage(), getClass(), e);
+			messages.errorTech("Unable to publish the GenLab server on port "+port+": , or maybe "+e.getMessage(), getClass(), e);
 			registry = null;
 		} finally {
 			Thread.currentThread().setContextClassLoader(oldClassLoader);
