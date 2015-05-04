@@ -7,7 +7,7 @@ Bundle-Activator: genlab.algog.gui.jfreechart.Activator
 Bundle-Vendor: Samuel Thiriot
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
- org.eclipse.ui.forms;bundle-version="3.6.1",
+ org.eclipse.ui.forms,
  genlab.core;bundle-version="0.0.1",
  genlab.algog.core;bundle-version="1.0.0",
  genlab.gui;bundle-version="0.0.1",
