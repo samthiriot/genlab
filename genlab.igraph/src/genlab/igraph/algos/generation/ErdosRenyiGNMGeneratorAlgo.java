@@ -6,9 +6,6 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
 import genlab.core.parameters.BooleanParameter;
-import genlab.core.usermachineinteraction.ListOfMessages;
-import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphLibrary;
 
 public class ErdosRenyiGNMGeneratorAlgo extends AbstractIGraphGenerator {
 
@@ -58,26 +55,7 @@ public class ErdosRenyiGNMGeneratorAlgo extends AbstractIGraphGenerator {
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {
 		
-		return new AbstractIGraphGeneratorExec(execution, algoInstance) {
-			
-			@Override
-			public long getTimeout() {
-				return 1000;
-			}
-			
-			@Override
-			protected IGraphGraph generateGraph(IGraphLibrary lib,
-					ListOfMessages messages) {
-
-				return lib.generateErdosRenyiGNM(
-						(Integer)getInputValueForInput(INPUT_N), 
-						(Double)getInputValueForInput(INPUT_M), 
-						(Boolean)algoInst.getValueForParameter(PARAM_DIRECTED.getId()), 
-						(Boolean)algoInst.getValueForParameter(PARAM_LOOPS.getId())
-						);
-				
-			}
-		};
+		return new ErdosRenyiGNMGeneratorExec(execution, algoInstance);
 	}
 
 }

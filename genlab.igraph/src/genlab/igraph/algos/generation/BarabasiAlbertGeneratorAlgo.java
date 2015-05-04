@@ -7,9 +7,6 @@ import genlab.core.model.meta.basics.flowtypes.BooleanInOut;
 import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
 import genlab.core.parameters.BooleanParameter;
-import genlab.core.usermachineinteraction.ListOfMessages;
-import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphLibrary;
 
 public class BarabasiAlbertGeneratorAlgo extends AbstractIGraphGenerator {
 
@@ -92,30 +89,7 @@ public class BarabasiAlbertGeneratorAlgo extends AbstractIGraphGenerator {
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {
 		
-		return new AbstractIGraphGeneratorExec(execution, algoInstance) {
-			
-			@Override
-			public long getTimeout() {
-				return 1000;
-			}
-						
-			@Override
-			protected IGraphGraph generateGraph(IGraphLibrary lib,
-					ListOfMessages messages) {
-
-				
-				return lib.generateBarabasiAlbert(
-						(Integer)getInputValueForInput(INPUT_N), 
-						(Integer)getInputValueForInput(INPUT_M), 
-						(Double)getInputValueForInput(INPUT_POWER),
-						(Double)getInputValueForInput(INPUT_ZERO_APPEAL),
-						(Boolean)algoInst.getValueForParameter(PARAM_DIRECTED.getId()),
-						(Boolean)getInputValueForInput(INPUT_OUTPUT_PREF),
-						(Double)getInputValueForInput(INPUT_A)
-						);
-				
-			}
-		};
+		return new BarabasiAlbertGeneratorExec(execution, algoInstance);
 	}
 
 }

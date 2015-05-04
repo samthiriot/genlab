@@ -17,6 +17,10 @@ public class IGraphAveragePathLengthExec extends AbstractIGraphMeasureExec {
 		super(exec, algoInst);
 	}
 
+	/**
+	 * for serialization only
+	 */
+	public IGraphAveragePathLengthExec() {}
 	
 	@Override
 	protected Map<IInputOutput<?>, Object> analyzeGraph(

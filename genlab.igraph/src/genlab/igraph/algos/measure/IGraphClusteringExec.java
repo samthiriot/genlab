@@ -16,8 +16,14 @@ public class IGraphClusteringExec extends AbstractIGraphMeasureExec {
 
 	public IGraphClusteringExec(IExecution exec, IAlgoInstance algoInst) {
 		super(exec, algoInst);
-		// TODO Auto-generated constructor stub
 	}
+
+	/**
+	 * For serialization only
+	 */
+	public IGraphClusteringExec() {}
+
+	
 	@Override
 	protected Map<IInputOutput<?>, Object> analyzeGraph(
 			IComputationProgress progress, 
