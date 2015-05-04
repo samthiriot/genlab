@@ -17,7 +17,6 @@ import java.rmi.registry.Registry;
 import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.Permission;
-import java.util.Collection;
 import java.util.Collections;
 
 /**

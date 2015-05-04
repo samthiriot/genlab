@@ -58,9 +58,10 @@ public class WorkingRunnerDistanceThread extends Thread {
 	
 	protected void reinsertTaskInBackupQueue(IAlgoExecution exec) {
 		
-		exec.getExecution().getListOfMessages().warnTech("the task "+exec.getName()+" failed during the remote execution; will retry a local run", getClass());
-		exec.getProgress().setComputationState(ComputationState.READY);
+		exec.getExecution().getListOfMessages().warnTech("the task "+exec.getName()+" failed during the remote execution; will retry a local run by putting it back in queue ("+backupQueue.size()+" pending)", getClass());
 		backupQueue.add(exec);
+		//exec.getProgress().setComputationState(ComputationState.READY);
+
 	}
 	
 	@Override
@@ -72,6 +73,8 @@ public class WorkingRunnerDistanceThread extends Thread {
 			try {
 				//messages.infoTech(this.getName()+" waiting for a task in the queue", getClass());
 				exec = readyToCompute.take();
+				messages.infoTech("still "+readyToCompute.size()+" tasks pending on our queue", getClass());
+
 			} catch (InterruptedException e) {
 				messages.errorTech("catched an exception from the execution: "+e.getMessage(), getClass(), e);
 				exec.getProgress().setComputationState(ComputationState.FINISHED_FAILURE);

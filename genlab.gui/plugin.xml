@@ -18,10 +18,10 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="genlab.gui.application"
-            name="Genlab">
+            name="Genlab Server">
          <property
                name="appName"
-               value="Genlab">
+               value="Genlab Server">
          </property>
          <property
                name="preferenceCustomization"

@@ -143,12 +143,13 @@ public class DistantGenlabServerManager {
 						runner.readyToComputeWithThreads, 					
 						this
 						);
-				runner.addRunnerDistant(thread);
 				threads.add(thread);
-				thread.start();
+				runner.addRunnerDistant(thread);
+				
 				
 			} catch (RuntimeException e) {
-				messages.warnUser("unable to create a distant worker thread", getClass());
+				messages.errorUser("unable to create a distant worker thread: "+e.getMessage(), getClass(), e);
+				break;
 			}
 		}
 	}

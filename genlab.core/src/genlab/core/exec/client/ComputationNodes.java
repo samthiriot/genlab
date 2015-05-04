@@ -49,7 +49,7 @@ public class ComputationNodes {
 	 * and/or distantly.
 	 * @return
 	 */
-	public IRunner getDefaultRunner() {
+	public Runner getDefaultRunner() {
 		if (runner == null) {
 			messages.infoUser("starting a computation node with "+parameterLocalThreadsMax+" threads.", getClass());
 			runner = new Runner(parameterLocalThreadsMax);
@@ -93,7 +93,7 @@ public class ComputationNodes {
 				// create threads to use to consume local tasks and delegate them to this server
 				try {
 					manager.createWorkerThreads(
-							runner							
+							getDefaultRunner()							
 							);
 				} catch (RuntimeException e) {
 					messages.errorUser("error while creating a thread for server "+keyServer+": "+e.getMessage(), getClass(), e);

@@ -88,7 +88,7 @@ public class RunnerPreferencePage
 		}
 		{
 			IntegerFieldEditor portServerConnectEditor = new IntegerFieldEditor(
-					KEY_SERVER_CONNECT, 
+					KEY_SERVER_PORT, 
 					"server port", 
 					getFieldEditorParent()
 					);
