@@ -27,8 +27,9 @@ import java.io.ObjectOutput;
 @SuppressWarnings("serial")
 public class ConstantValueExecution<JavaType> 
 										extends AbstractAlgoExecutionOneshot 
-										implements IAlgoExecutionOneshot {
-										// IAlgoExecutionRemotable, Externalizable 
+										implements IAlgoExecutionOneshot,
+										 IAlgoExecutionRemotable, Externalizable 
+										 {
 
 	
 	protected JavaType value = null;
