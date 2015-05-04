@@ -8,9 +8,7 @@ import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphLibrary;
 
 public class ForestFireGeneratorExec extends AbstractIGraphGeneratorExec {
-	
-	public static final long serialVersionUID = 2L;
-	
+		
 	public ForestFireGeneratorExec() {}
 
 	public ForestFireGeneratorExec(IExecution execution,
