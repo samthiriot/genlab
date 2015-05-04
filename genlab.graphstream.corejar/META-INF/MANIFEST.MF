@@ -5,7 +5,7 @@ Bundle-SymbolicName: genlab.graphstream.corejar;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: genlab.graphstream.corejar.Activator
 Require-Bundle: org.eclipse.core.runtime,
- org.junit;bundle-version="4.11.0"
+ org.junit
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: genlab.graphstream.corejar,

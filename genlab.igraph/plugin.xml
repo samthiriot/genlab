@@ -183,7 +183,7 @@
       <docalgo
             algo_id="genlab.igraph.algos.generation.GRGGeneratorAlgo"
             description="A geometric random graph is created by dropping points (=vertices) randomly to the unit square and then connecting all those pairs which are less than radius apart in Euclidean norm."
-            library_id="genlab.graphstream.doc.library.graphstream"
+            library_id="genlab.igraph.doc.library.igraph"
             time_complexity="O(|V|^2+|E|)">
          <more_info
                content="igraph documentatipon"
