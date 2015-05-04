@@ -3,11 +3,11 @@
 
 <product name="Genlab Server" uid="genlab.server" id="genlab.server.genlab_server_product" application="genlab.server.application" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
+      <vmArgs>-Dosgi.requiredJavaVersion=1.5 -Dhelp.lucene.tokenizer=standard -XX:MaxPermSize=256m -Xms40m -Xmx512m -XX:MaxPermSize=512m -Xmx2048m -Djava.rmi.server.codebase=&quot;file:${workspace_loc}/ file:${workspace_loc}/genlab.igraph/ file:${workspace_loc}/genlab.igraph/bin/ file:${workspace_loc}/genlab.jna.corejar/ext/jna-4.0.0.jar  file:${workspace_loc}/genlab.jna.corejar/ext/jna-platform-4.0.0.jar file:${workspace_loc}/genlab.graphstream.corejar/bin/ file:${workspace_loc}/genlab.graphstream/bin/&quot; -Djava.rmi.server.useCodebaseOnly=False</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
@@ -17,17 +17,15 @@
       startupProgressRect="273,193,385,18"
       startupMessageRect="273,210,386,20"
       startupForegroundColor="000000" />
-   <launcher>
+   <launcher name="genlab_server">
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
 
-
    <vm>
    </vm>
-
 
    <plugins>
       <plugin id="com.ibm.icu"/>
