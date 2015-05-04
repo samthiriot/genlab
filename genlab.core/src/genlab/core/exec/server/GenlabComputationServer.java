@@ -5,6 +5,8 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
+import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -147,20 +149,34 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 					continue;
 				}
 				// TODO parameter for prefered interface
-				if (!n.getName().equals("eth0"))
-					continue;
+				//if (!n.getName().equals("eth0"))
+				//	continue;
 				for (InetAddress ip: Collections.list(n.getInetAddresses())) {
 					// not use the local ones
 					if (n.isLoopback() || ip.isLoopbackAddress()) {
 						
 						messages.infoUser("not using the local address "+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
+					} else if (!(ip instanceof Inet4Address)) {
+						messages.infoUser("not using the non-IPv4 adresse "+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
 					} else {
-						if (res == null) {
-							res = ip;
-							messages.infoUser("will use valid external IP :"+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
+						
+						boolean reachable = false;
+						try {
+							reachable = ip.isReachable(500);
+						} catch (IOException e) {
+						}
+						if (!reachable) {
+							messages.infoUser("not using the unreachable address "+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
 						} else {
-							// TODO message informatif
-							messages.infoUser("this IP lools valid; we use the first one nevertheless: "+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
+							
+							if (res == null) {
+								res = ip;
+								messages.infoUser("will use valid external IP :"+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
+							} else {
+								// TODO message informatif
+								messages.infoUser("this IP lools valid; we use the first one nevertheless: "+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
+							
+							}
 						}
 					}
 				}
@@ -202,7 +218,6 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 					public void checkPermission(Permission perm, Object context) {}
 				}
 				System.setSecurityManager(new MySecurityManager());
-	            //System.setSecurityManager(new SecurityManager());
 	        }
 
 			// define the external IP property
@@ -210,10 +225,10 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 			{
 			
 				// TODO !
-				// address = findExternalAddress();
-				address = InetAddress.getLocalHost();
-				//System.setProperty("java.rmi.server.hostname", address.getHostName());
-				System.setProperty("java.rmi.server.hostname", "clau5ejl");
+				address = findExternalAddress();
+				//address = InetAddress.getLocalHost();
+				System.setProperty("java.rmi.server.hostname", address.getHostName());
+				//System.setProperty("java.rmi.server.hostname", "clau5ejl");
 						
 			}
 			if (stub == null)
