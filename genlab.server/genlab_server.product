@@ -7,7 +7,13 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Dosgi.requiredJavaVersion=1.5 -Dhelp.lucene.tokenizer=standard -XX:MaxPermSize=256m -Xms40m -Xmx512m -XX:MaxPermSize=512m -Xmx2048m -Djava.rmi.server.codebase=&quot;file:${workspace_loc}/ file:${workspace_loc}/genlab.igraph/ file:${workspace_loc}/genlab.igraph/bin/ file:${workspace_loc}/genlab.jna.corejar/ext/jna-4.0.0.jar  file:${workspace_loc}/genlab.jna.corejar/ext/jna-platform-4.0.0.jar file:${workspace_loc}/genlab.graphstream.corejar/bin/ file:${workspace_loc}/genlab.graphstream/bin/&quot; -Djava.rmi.server.useCodebaseOnly=False</vmArgs>
+      <vmArgs>-Dosgi.requiredJavaVersion=1.5 
+-Dhelp.lucene.tokenizer=standard 
+-XX:MaxPermSize=512m 
+-Xms40m 
+-Xmx2048m 
+-Djava.rmi.server.codebase=\&quot;file:${workspace_loc}/ file:${workspace_loc}/genlab.igraph/ file:${workspace_loc}/genlab.igraph/bin/ file:${workspace_loc}/genlab.jna.corejar/ext/jna-4.0.0.jar  file:${workspace_loc}/genlab.jna.corejar/ext/jna-platform-4.0.0.jar file:${workspace_loc}/genlab.graphstream.corejar/bin/ file:${workspace_loc}/genlab.graphstream/bin/\&quot; 
+-Djava.rmi.server.useCodebaseOnly=True</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 

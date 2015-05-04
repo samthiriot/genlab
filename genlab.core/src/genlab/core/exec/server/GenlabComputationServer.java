@@ -1,5 +1,6 @@
 package genlab.core.exec.server;
 
+import genlab.core.exec.client.ComputationNodes;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.usermachineinteraction.ListOfMessages;
@@ -65,6 +66,8 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 	public GenlabComputationServer() {
         super();
         state = ServerState.STOPPED;
+        
+        
 	}
 	
 	private static GenlabComputationServer singleton = null;
@@ -209,17 +212,8 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 		ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
 		try {
         
-
-			if (System.getSecurityManager() == null) {
-				class MySecurityManager extends SecurityManager {
-					public MySecurityManager() {}
-					public void checkPermission() {}
-					public void checkPermission(Permission perm) {}
-					public void checkPermission(Permission perm, Object context) {}
-				}
-				System.setSecurityManager(new MySecurityManager());
-	        }
-
+			ComputationNodes.setUpPermissiveSecurityManager();
+			
 			// define the external IP property
 			InetAddress address = null;
 			{

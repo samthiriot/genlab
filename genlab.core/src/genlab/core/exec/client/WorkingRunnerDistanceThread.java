@@ -91,6 +91,8 @@ public class WorkingRunnerDistanceThread extends Thread {
 				exec.getProgress().setProgressTotal(1);
 				exec.getProgress().setComputationState(ComputationState.STARTED);
 				
+				messages.infoTech(getName()+" running task: "+exec.getName(), getClass());
+
 				DistantExecutionResult execResult = server.getDistantServer().executeTask(exec);
 				
 				// transfer information from the distant result to...

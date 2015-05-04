@@ -4,6 +4,7 @@ import genlab.core.exec.IRunner;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
+import java.security.Permission;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +45,19 @@ public class ComputationNodes {
 	private String distantHost = "192.168.0.1";
 	private boolean connectDistant = false;
 			
+	public static void setUpPermissiveSecurityManager() {
+
+		if (System.getSecurityManager() == null) {
+			class MySecurityManager extends SecurityManager {
+				public MySecurityManager() {}
+				public void checkPermission() {}
+				public void checkPermission(Permission perm) {}
+				public void checkPermission(Permission perm, Object context) {}
+			}
+			System.setSecurityManager(new MySecurityManager());
+	    }
+	}
+
 	/**
 	 * Returns (and creates if necessary) a default runner which runs locally 
 	 * and/or distantly.
@@ -51,9 +65,14 @@ public class ComputationNodes {
 	 */
 	public Runner getDefaultRunner() {
 		if (runner == null) {
+			
+			setUpPermissiveSecurityManager();
+
 			messages.infoUser("starting a computation node with "+parameterLocalThreadsMax+" threads.", getClass());
 			runner = new Runner(parameterLocalThreadsMax);
 			runner.start();
+			
+			
 		}
 		return runner;
 	}
