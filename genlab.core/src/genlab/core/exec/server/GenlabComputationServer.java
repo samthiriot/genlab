@@ -19,7 +19,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.ExportException;
 import java.rmi.server.UnicastRemoteObject;
-import java.security.Permission;
 import java.util.Collections;
 
 /**
@@ -30,7 +29,7 @@ import java.util.Collections;
  */
 public class GenlabComputationServer implements IGenlabComputationServer {
 
-	private int port = 20000;
+	private int port = 25555;
 	private int numberProcessesMax = Runtime.getRuntime().availableProcessors();
 	private ListOfMessages messages = ListsOfMessages.getGenlabMessages();
 	
