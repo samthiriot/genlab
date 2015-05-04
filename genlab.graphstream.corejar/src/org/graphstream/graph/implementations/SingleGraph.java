@@ -99,5 +99,13 @@ public class SingleGraph extends AdjacencyListGraph {
 	public SingleGraph(String id) {
 		this(id, true, false);
 	}
+	
+	/**
+	 * for serialization only
+	 */
+	public SingleGraph() {
+		super();
+	}
+
 
 }
