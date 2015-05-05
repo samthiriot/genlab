@@ -48,12 +48,13 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 	
 	public static enum EAvailableFunctions {
 		
-		BINH_KORN ("Binh and Korn"),
-		CHAKONG_HAIMES ("Chakong and Haimes"),
-		CTP1 ("CTP1"),
-		POLONI ("Poloni's two objective function"),
-		TNK ("Tanaka's two objective function"),
-		CONSTR_EX ("Constr-Ex problem")
+		BNH ("BNH (Binh and Korn)"),
+		CTP1 ("CTP1 (Constrained Test Problem n°1)"),
+		CTP2 ("CTP2 (Constrained Test Problem n°2)"),
+		POL ("POL (Poloni)"),
+		TNK ("TNK (Tanaka)"),
+		CONSTR_EX ("Constr-Ex problem"),
+		SRN ("SRN (Chakong and Haimes)")
 		
 		;
 		
@@ -154,7 +155,7 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 					boolean violatesConstraint = false;
 					boolean violatesSearchDomain = false;
 					switch (testedFunction) {
-						case BINH_KORN:
+						case BNH:
 							violatesConstraint = 
 								(
 									(Math.pow(x - 5, 2) + Math.pow(y, 2)) > 25
@@ -165,10 +166,10 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 									(x < 0) || (x > 5) ||
 									(y < 0) || (y > 3);
 							break;
-						case CHAKONG_HAIMES:
+						case SRN:
 							violatesConstraint =
 								(
-									(Math.pow(x, 2)+Math.pow(y, 2)) > 225
+									(Math.pow(x, 2) + Math.pow(y, 2) - 225) > 0
 								) || (
 									(x - 3*y + 10) > 0
 								);
@@ -187,21 +188,43 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 									(x < 0) || (x > 1) ||
 									(y < 0) || (y > 1);
 							break;
-						case POLONI:
+						case CTP2:
+							double g, theta, a, b, c, d, e, exp1, exp2;
+							theta = -0.2d*Math.PI;
+						    a = 0.2;
+						    b = 10.0;
+						    c = 1.0;
+						    d = 6.0;
+						    e = 1.0;
+						    g = 1 + y;
+						    exp1 = (g*(1 - Math.sqrt(x/g))-e)*Math.cos(theta) - x*Math.sin(theta);
+						    exp2 = (g*(1 - Math.sqrt(x/g))-e)*Math.sin(theta) + x*Math.cos(theta);
+						    exp2 = b*Math.PI*Math.pow(exp2,c);
+						    exp2 = Math.abs(Math.sin(exp2));
+						    exp2 = a*Math.pow(exp2,d);
+						    
+						    violatesConstraint = ( (exp1/exp2) < 1 );
+							violatesSearchDomain =
+									(x < 0) || (x > 1) ||
+									(y < 0) || (y > 1);
+							break;
+						case POL:
 							violatesConstraint = false; // no constraint
 							violatesSearchDomain =
 									(x < -Math.PI) || (x > Math.PI) ||
 									(y < -Math.PI) || (y > Math.PI);
 							break;
 						case TNK:
-							if( y==0 ) violatesConstraint = true;
-							else
-							violatesConstraint = 
+							if( y==0 ) {
+								violatesConstraint = true;
+							}else {
+								violatesConstraint = 
 								(
-									(Math.pow(x, 2) + Math.pow(y, 2) - 1.0d - 0.1d*Math.cos( 16d*Math.atan(x/y) )) < 0d
+									(Math.pow(x, 2) + Math.pow(y, 2) - 0.1*Math.cos( 16*Math.atan(x/y) ) - 1) < 0
 								) || (
-									(Math.pow(x-0.5d, 2) + Math.pow(y-0.5d, 2)) > 0.5d
+									(2*Math.pow(x-0.5, 2) + 2*Math.pow(y-0.5, 2)) > 1
 								);
+							}
 							violatesSearchDomain =
 									(x < 0) || (x > Math.PI) ||
 									(y < 0) || (y > Math.PI);
@@ -237,19 +260,24 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 					Double f1 = null;
 					Double f2 = null;
 					switch (testedFunction) {
-						case BINH_KORN:
+						case BNH:
 							f1 = 4*Math.pow(x, 2)+4*Math.pow(y, 2);
 							f2 = Math.pow(x - 5,  2) + Math.pow(y - 5, 2);
 							break;
-						case CHAKONG_HAIMES:
-							f1 = 2 + Math.pow(x-2, 2) + Math.pow(y-1, 2);
+						case SRN:
+							f1 = Math.pow(x-2, 2) + Math.pow(y-1, 2) + 2;
 							f2 = 9*x + Math.pow(y-1, 2);
 							break;
 						case CTP1:
 							f1 = x;
 							f2 = (1+y) * Math.exp(-x/(1+y));
 							break;
-						case POLONI:
+						case CTP2:
+						    double g = 1 + y;
+						    f1 = x;
+						    f2 = g*(1 - Math.sqrt(x/g));
+							break;
+						case POL:
 						    double a1, a2, b1, b2;
 						    a1 = 0.5*Math.sin(1) - 2.0*Math.cos(1) + Math.sin(2) - 1.5*Math.cos(2);
 						    a2 = 1.5*Math.sin(1) - Math.cos(1) + 2*Math.sin(2) - 0.5*Math.cos(2);

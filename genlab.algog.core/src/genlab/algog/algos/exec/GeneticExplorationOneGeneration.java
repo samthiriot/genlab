@@ -221,11 +221,11 @@ public class GeneticExplorationOneGeneration
 		// store results
 		synchronized (lockerResults) {
 			
-			if (resultFitness != null)
+//			if (resultFitness != null)
 				computedFitness.put(indiv, resultFitness);
-			if (resultTargets != null)
+//			if (resultTargets != null)
 				computedTargets.put(indiv, resultTargets);
-			if (resultValues != null)
+//			if (resultValues != null)
 				computedValues.put(indiv, resultValues);
 
 		}

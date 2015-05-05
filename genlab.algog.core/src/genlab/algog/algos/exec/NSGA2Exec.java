@@ -554,11 +554,10 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		Object[] child2 = new Object[genome.getGenes().length];
 		
 		int t = 0;
-		int[] cuts = new int[nCuts+1];
-		cuts[0] = 0;
+		int[] cuts = new int[nCuts];
 		boolean crossoverApplied = uniform.nextBoolean();
 		
-		for( int i=1 ; i<=nCuts ; i++ ) {
+		for( int i=0 ; i<nCuts ; i++ ) {
 			cuts[i] = uniform.nextIntFromTo(1, genome.getGenes().length-1);
 		}
 		

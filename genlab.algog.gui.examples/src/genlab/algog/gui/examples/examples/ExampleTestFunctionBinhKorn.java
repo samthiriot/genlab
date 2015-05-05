@@ -85,7 +85,7 @@ public class ExampleTestFunctionBinhKorn implements IGenlabExample {
 		verificationFunctionInstance.setContainer(nsgaInstance);
 		verificationFunctionInstance.setValueForParameter(
 				VerificationFunctionsAlgo.PARAM_FUNCTION, 
-				VerificationFunctionsAlgo.EAvailableFunctions.BINH_KORN.ordinal()
+				VerificationFunctionsAlgo.EAvailableFunctions.BNH.ordinal()
 				);
 		
 		nsgaInstance.addChildren(verificationFunctionInstance);

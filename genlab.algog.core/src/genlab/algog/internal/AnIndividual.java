@@ -1,6 +1,5 @@
 package genlab.algog.internal;
 
-
 public class AnIndividual implements Comparable<AnIndividual> {
 
 	public final AGenome genome;
@@ -23,6 +22,4 @@ public class AnIndividual implements Comparable<AnIndividual> {
 		
 		return fitness.compareTo(arg0.fitness);
 	}
-	
-	
 }
