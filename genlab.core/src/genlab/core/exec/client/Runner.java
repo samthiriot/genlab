@@ -123,11 +123,10 @@ public class Runner extends Thread implements IRunner {
 
 		// init the thread pool
 		for (int i=0; i<availableLocalThreads; i++) {
-			// TODO reactivate the local execution of distant stuff
 			WorkingRunnerThread t = new WorkingRunnerThread(
 					"gl_worker_local_"+i, 
 					readyToComputeWithThreads,
-					null // readyToComputeRemotable
+					readyToComputeRemotable
 					);
 			addWorkingThread(t);
 		}
