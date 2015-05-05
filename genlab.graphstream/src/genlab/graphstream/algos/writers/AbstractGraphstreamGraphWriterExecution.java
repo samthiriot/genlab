@@ -2,7 +2,6 @@ package genlab.graphstream.algos.writers;
 
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
-import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;

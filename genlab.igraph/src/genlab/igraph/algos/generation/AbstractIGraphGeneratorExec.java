@@ -32,6 +32,9 @@ public abstract class AbstractIGraphGeneratorExec
 		
 	}
 	
+	/**
+	 * for serialization only
+	 */
 	public AbstractIGraphGeneratorExec(){}
 	
 	protected abstract IGraphGraph generateGraph(

@@ -6,7 +6,6 @@ import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 
 import org.graphstream.algorithm.generator.BaseGenerator;
-import org.graphstream.algorithm.generator.ChvatalGenerator;
 import org.graphstream.algorithm.generator.FlowerSnarkGenerator;
 
 public class FlowerSnarkAlgo extends GraphStreamGeneratorAlgo {

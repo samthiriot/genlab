@@ -12,7 +12,6 @@ import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.parameters.BooleanParameter;
-import genlab.core.usermachineinteraction.GLLogger;
 import genlab.graphstream.algos.GraphStreamAlgo;
 import genlab.graphstream.utils.GraphstreamConvertors;
 

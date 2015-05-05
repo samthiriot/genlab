@@ -1,5 +1,6 @@
 package genlab.igraph.algos.measure;
 
+import genlab.core.exec.IAlgoExecutionRemotable;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IAlgoInstance;
@@ -11,7 +12,7 @@ import genlab.igraph.natjna.IGraphGraph;
 import java.util.HashMap;
 import java.util.Map;
 
-public class IGraphAveragePathLengthExec extends AbstractIGraphMeasureExec {
+public class IGraphAveragePathLengthExec extends AbstractIGraphMeasureExec implements IAlgoExecutionRemotable {
 
 	public IGraphAveragePathLengthExec(IExecution exec, IAlgoInstance algoInst) {
 		super(exec, algoInst);

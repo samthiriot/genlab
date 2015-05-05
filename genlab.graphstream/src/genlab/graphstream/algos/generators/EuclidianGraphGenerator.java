@@ -4,7 +4,6 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
-import genlab.core.parameters.BooleanParameter;
 
 import org.graphstream.algorithm.generator.BaseGenerator;
 import org.graphstream.algorithm.generator.RandomEuclideanGenerator;
