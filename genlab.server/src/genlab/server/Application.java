@@ -130,27 +130,6 @@ public class Application implements IApplication {
 		System.out.println();
 		System.out.println();
 		
-		// parse command-line
-		/*
-		String[] args = Platform.getCommandLineArgs();
-		String filenameWorkflow = null;
-		for (int i=0; i<args.length; i++) {
-			
-			if (args[i].startsWith("-")) {
-				i++; // pass this option and its value
-				continue;
-			}
-			
-			filenameWorkflow = args[i];
-			break;
-		}
-		
-		if (filenameWorkflow == null)
-			printUsage();
-		else
-			runWorkflow(filenameWorkflow);
-		*/
-
 		// parse arguments
 		parseArguments();
 		
@@ -166,7 +145,6 @@ public class Application implements IApplication {
 				
 			}
 		}
-		// TODO ? context.getArguments()
 		
 		//GLLogger.infoTech("closing", getClass());
 		
