@@ -147,7 +147,6 @@ public class ComputationNodes {
 		DistantGenlabServerManager server = host2serverManager.get(host);
 
 		if (server != null) {
-			messages.infoUser("disconnecting server "+host+"...", getClass());
 			server.disconnect();
 			this.host2serverManager.remove(host);
 			this.paramRequiredHosts.remove(host);

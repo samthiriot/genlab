@@ -70,7 +70,11 @@ public class RunnerPreferencePage
 			addField(portServerEditor);
 		}
 		{
-			HostsListFieldEditor list = new HostsListFieldEditor(KEY_SERVERS, "servers", getFieldEditorParent());
+			HostsListFieldEditor list = new HostsListFieldEditor(
+					KEY_SERVERS, 
+					"connect to these GenLab servers to delegate computations", 
+					getFieldEditorParent()
+					);
 			addField(list);
 		}
 	}
