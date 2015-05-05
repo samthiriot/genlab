@@ -20,7 +20,8 @@ public class RunnerPreferencesInitializer extends AbstractPreferenceInitializer 
 		store.setDefault(RunnerPreferencePage.KEY_MAX_CPUS, Runtime.getRuntime().availableProcessors());
 		store.setDefault(RunnerPreferencePage.KEY_START_SERVER, false);
 		store.setDefault(RunnerPreferencePage.KEY_START_SERVER_PORT, GenlabComputationServer.DEFAULT_PORT);
-		
+		store.setDefault(RunnerPreferencePage.KEY_START_SERVER_INTERFACE, "automatic");
+				
 		// TODO
 		store.setDefault(RunnerPreferencePage.KEY_SERVERS, Boolean.FALSE.toString()+"|192.168.0.1:"+GenlabComputationServer.DEFAULT_PORT);
 

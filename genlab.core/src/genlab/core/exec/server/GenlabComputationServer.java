@@ -32,6 +32,7 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 	public static final int DEFAULT_PORT = 25555;
 	
 	private int port = DEFAULT_PORT;
+	private String interfaceToBind = "automatic";
 	private int numberProcessesMax = Runtime.getRuntime().availableProcessors();
 	private ListOfMessages messages = ListsOfMessages.getGenlabMessages();
 	
@@ -136,9 +137,11 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 		return numberProcessesMax;
 	}
 	
+		
 	protected InetAddress findExternalAddress() {
 		
 		InetAddress res = null;
+		
 		
 		messages.infoUser("attempting to detect the external IP to be used...", getClass());
 		try {
@@ -201,6 +204,64 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 		}
 		
 	}
+	
+
+	protected InetAddress loadExternalAddress() {
+		
+		InetAddress res = null;
+				
+		messages.infoUser("attempting to detect the external IP to be used on interface "+this.interfaceToBind+"...", getClass());
+		try {
+			NetworkInterface n = NetworkInterface.getByName(this.interfaceToBind);
+			if (n == null || !n.isUp()) {
+				messages.warnUser("unable to user interface "+this.interfaceToBind+" on this machine; falling back to automatic detection.", getClass());
+				return findExternalAddress();
+			}
+			
+				
+			for (InetAddress ip: Collections.list(n.getInetAddresses())) {
+				// not use the local ones
+				if (n.isLoopback() || ip.isLoopbackAddress()) {
+					messages.infoUser("not using the local address "+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
+				} else if (!(ip instanceof Inet4Address)) {
+					messages.infoUser("not using the non-IPv4 adresse "+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
+				} else {
+					
+					boolean reachable = false;
+					try {
+						reachable = ip.isReachable(500);
+					} catch (IOException e) {
+					}
+					if (!reachable) {
+						messages.infoUser("not using the unreachable address "+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
+					} else {
+						
+						if (res == null) {
+							res = ip;
+							messages.infoUser("will use valid external IP :"+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
+						} else {
+							// TODO message informatif
+							messages.infoUser("this IP lools valid; we use the first one nevertheless: "+n.getDisplayName()+"/"+ip.getHostAddress(), getClass());
+						
+						}
+					}
+				}
+			}
+		
+
+			if (res == null) {
+				messages.warnUser("unable to find a valid IP on the user interface "+this.interfaceToBind+"; falling back to automatic detection.", getClass());
+				return findExternalAddress();
+				
+			} else {
+				return res;
+			}
+			
+		} catch (SocketException e) {
+			throw new RuntimeException("Unable to list local IP adresses", e);
+		} 
+		
+	}
 
 
 	public void startServer() {
@@ -219,7 +280,10 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 			{
 			
 				// TODO !
-				address = findExternalAddress();
+				if (this.interfaceToBind.equals("automatic")) 
+					address = findExternalAddress();
+				else
+					address = loadExternalAddress();
 				//address = InetAddress.getLocalHost();
 				System.setProperty("java.rmi.server.hostname", address.getHostName());
 				//System.setProperty("java.rmi.server.hostname", "clau5ejl");
@@ -328,6 +392,29 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 		}
 	}
 
+	public void setParameterInterfaceToBind(String interfaceToBind) {
+		if (interfaceToBind.equals(this.interfaceToBind))
+			return;
+		
+		this.interfaceToBind = interfaceToBind;
+		
+		switch (state) {
+			case STOPPED:
+			case PROBLEM:
+				// don nothing
+				break;
+			case RUNNING:
+				// restart !
+				stopServer();
+				startServer();
+				break;
+			case STARTING:
+			case STOPPING:
+				// what should we do ? 
+				// TODO
+				break;
+		}
+	}
 
 	public void setParameterStartServerPort(int int1) {
 		if (int1 == this.port)
@@ -335,21 +422,21 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 		this.port = int1;
 		
 		switch (state) {
-		case STOPPED:
-		case PROBLEM:
-			// don nothing
-			break;
-		case RUNNING:
-			// restart !
-			stopServer();
-			startServer();
-			break;
-		case STARTING:
-		case STOPPING:
-			// what should we do ? 
-			// TODO
-			break;
-	}
+			case STOPPED:
+			case PROBLEM:
+				// don nothing
+				break;
+			case RUNNING:
+				// restart !
+				stopServer();
+				startServer();
+				break;
+			case STARTING:
+			case STOPPING:
+				// what should we do ? 
+				// TODO
+				break;
+		}
 	}
 
 }

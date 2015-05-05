@@ -60,10 +60,11 @@ public class Genlab2eclipsePreferences {
 		ComputationNodes.getSingleton().setParameterLocalThreadsMax(Activator.getDefault().getPreferenceStore().getInt(RunnerPreferencePage.KEY_MAX_CPUS));
 		
 		// parameters for starting a server
-		// TODO start server
+		GenlabComputationServer.getSingleton().setParameterInterfaceToBind(Activator.getDefault().getPreferenceStore().getString(RunnerPreferencePage.KEY_START_SERVER_INTERFACE));
 		GenlabComputationServer.getSingleton().setParameterStartServerPort(Activator.getDefault().getPreferenceStore().getInt(RunnerPreferencePage.KEY_START_SERVER_PORT));
 		GenlabComputationServer.getSingleton().setParameterStartServer(Activator.getDefault().getPreferenceStore().getBoolean(RunnerPreferencePage.KEY_START_SERVER));
-	
+		
+
 		// parameters for contacting a server
 		ComputationNodes.getSingleton().setParameterListOfHosts(ServerHostPreference.parseAsList(Activator.getDefault().getPreferenceStore().getString(RunnerPreferencePage.KEY_SERVERS)));
 		
