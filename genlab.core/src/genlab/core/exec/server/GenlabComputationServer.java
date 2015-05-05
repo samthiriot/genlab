@@ -121,6 +121,13 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 
 			return res;
 		} catch (RuntimeException e) {
+			messages.errorTech("error while running distant task "+task.getName()+": "+e.getMessage(), getClass(), e);
+			return new DistantExecutionResult(
+					ComputationState.FINISHED_FAILURE, 
+					task.getResult()
+					);
+		} catch (Error e) {
+			messages.errorTech("error while running distant task "+task.getName()+": "+e.getMessage(), getClass(), e);
 			return new DistantExecutionResult(
 					ComputationState.FINISHED_FAILURE, 
 					task.getResult()
