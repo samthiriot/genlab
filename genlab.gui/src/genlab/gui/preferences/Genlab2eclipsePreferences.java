@@ -1,11 +1,11 @@
 package genlab.gui.preferences;
 
 import genlab.core.exec.client.ComputationNodes;
+import genlab.core.exec.client.ServerHostPreference;
 import genlab.core.exec.server.GenlabComputationServer;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.Activator;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.util.IPropertyChangeListener;
 
 /**
@@ -63,12 +63,9 @@ public class Genlab2eclipsePreferences {
 		// TODO start server
 		GenlabComputationServer.getSingleton().setParameterStartServerPort(Activator.getDefault().getPreferenceStore().getInt(RunnerPreferencePage.KEY_START_SERVER_PORT));
 		GenlabComputationServer.getSingleton().setParameterStartServer(Activator.getDefault().getPreferenceStore().getBoolean(RunnerPreferencePage.KEY_START_SERVER));
-		
 	
 		// parameters for contacting a server
-		ComputationNodes.getSingleton().setParameterConnectServerHostname(Activator.getDefault().getPreferenceStore().getString(RunnerPreferencePage.KEY_SERVER_HOSTNAME));
-		ComputationNodes.getSingleton().setParameterConnectServerPort(Activator.getDefault().getPreferenceStore().getInt(RunnerPreferencePage.KEY_SERVER_PORT));
-		ComputationNodes.getSingleton().setParameterConnectServer(Activator.getDefault().getPreferenceStore().getBoolean(RunnerPreferencePage.KEY_SERVER_CONNECT));
+		ComputationNodes.getSingleton().setParameterListOfHosts(ServerHostPreference.parseAsList(Activator.getDefault().getPreferenceStore().getString(RunnerPreferencePage.KEY_SERVERS)));
 		
 		
 	}

@@ -34,6 +34,11 @@ public class WorkingRunnerDistanceThread extends Thread {
 	private final String serverName;
 	
 	private DistantGenlabServerManager server = null;
+	
+	/**
+	 * If true, will stop when possible.
+	 */
+	private boolean askStop = false;
 		
 	public WorkingRunnerDistanceThread(
 						String serverName,
@@ -67,7 +72,7 @@ public class WorkingRunnerDistanceThread extends Thread {
 	@Override
 	public void run() {
 
-		while (true) {
+		while (!askStop) {
 		
 			IAlgoExecution exec = null;
 			try {
@@ -142,10 +147,15 @@ public class WorkingRunnerDistanceThread extends Thread {
 			}
 			
 		}
+		
+		messages.infoTech(getName()+": closing thread.", getClass());
 
 	}
-	
-	
+
+
+	public void askStop() {
+		askStop = true;
+	}
 
 	
 }

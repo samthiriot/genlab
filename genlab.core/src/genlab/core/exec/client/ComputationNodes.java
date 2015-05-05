@@ -1,12 +1,16 @@
 package genlab.core.exec.client;
 
-import genlab.core.exec.IRunner;
+import genlab.core.exec.client.DistantGenlabServerManager.ManagerState;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
 import java.security.Permission;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Entry point to access a computation node, that is something you can give 
@@ -17,6 +21,7 @@ import java.util.Map;
  */
 public class ComputationNodes {
 
+	
 	private static final ComputationNodes singleton = new ComputationNodes();
 	
 	public static final ComputationNodes getSingleton() {
@@ -38,13 +43,20 @@ public class ComputationNodes {
 	 */
 	private int parameterLocalThreadsMax = Runtime.getRuntime().availableProcessors();
 	
-
-	private Map<String,DistantGenlabServerManager> host2serverManager = new HashMap<String, DistantGenlabServerManager>(50);
+	/**
+	 * Associates an host to its manager
+	 */
+	private Map<ServerHostPreference,DistantGenlabServerManager> host2serverManager = new HashMap<ServerHostPreference, DistantGenlabServerManager>(50);
 	
-	private int distantPort = 25000;
-	private String distantHost = "192.168.0.1";
-	private boolean connectDistant = false;
-			
+	/**
+	 * List of the hosts we should connect to
+	 */
+	private List<ServerHostPreference> paramRequiredHosts = new LinkedList<ServerHostPreference>();
+	
+	/**
+	 * Defines, at the system scale, a security manager permissive enough for RMI
+	 * (maybe even too permissive ?)
+	 */
 	public static void setUpPermissiveSecurityManager() {
 
 		if (System.getSecurityManager() == null) {
@@ -72,56 +84,8 @@ public class ComputationNodes {
 			runner = new Runner(parameterLocalThreadsMax);
 			runner.start();
 			
-			
 		}
 		return runner;
-	}
-	
-	public void tryToAddDistantHost(String hostname, int port) {
-
-		if (!connectDistant)
-			return;
-		
-		final String keyServer = hostname+":"+port;
-
-		synchronized (host2serverManager) {
-			
-			if (host2serverManager.containsKey(keyServer)) {
-				messages.infoUser("server "+keyServer+" is already managed", getClass());
-			} else {
-				messages.infoUser("discovering server "+keyServer+"...", getClass());
-				
-				// add a local manager for this server
-				DistantGenlabServerManager manager = new DistantGenlabServerManager(hostname, port);
-				
-				// keep it in memory
-				host2serverManager.put(
-						keyServer, 
-						manager
-						);
-				
-				// try to connect
-				messages.infoUser("connecting server "+keyServer+"...", getClass());
-				try {
-					manager.connect();
-				} catch (RuntimeException e) {
-					messages.errorUser("unable to connect server "+keyServer+": "+e.getMessage(), getClass(), e);
-					return;
-				}
-				
-				// create threads to use to consume local tasks and delegate them to this server
-				try {
-					manager.createWorkerThreads(
-							getDefaultRunner()							
-							);
-				} catch (RuntimeException e) {
-					messages.errorUser("error while creating a thread for server "+keyServer+": "+e.getMessage(), getClass(), e);
-					return;
-				}
-				
-			}
-		}
-				
 	}
 	
 	public void setParameterLocalThreadsMax(int max) {
@@ -131,21 +95,98 @@ public class ComputationNodes {
 	public int getParameterLocalThreadsMax() {
 		return this.parameterLocalThreadsMax;
 	}
-
-	public void setParameterConnectServer(boolean boolean1) {
-		connectDistant = boolean1;
-		tryToAddDistantHost(distantHost, distantPort);
-		// TODO what for stopping ? 
-	}
-
-	public void setParameterConnectServerHostname(String string) {
-		distantHost = string;
-	}
-
-	public void setParameterConnectServerPort(int int1) {
-		distantPort = int1;
+	
+	protected void manageDistantHost(final ServerHostPreference host) {
+		
+		DistantGenlabServerManager server = host2serverManager.get(host);
+		
+		if (server == null) {
+			// not existing yet... let's create it !
+			messages.infoUser("discovering server "+host+"...", getClass());
+			
+			// add a local manager for this server
+			final DistantGenlabServerManager manager = new DistantGenlabServerManager(host.hostname, host.port);
+			
+			// keep it in memory
+			host2serverManager.put(
+					host, 
+					manager
+					);			
+			
+			(new Thread("connect_server_"+host) {
+				public void run() {
+					
+					// try to connect
+					messages.infoUser("connecting server "+host+"...", getClass());
+					try {
+						manager.connect();
+					} catch (RuntimeException e) {
+						messages.errorUser("unable to connect server "+host+": "+e.getMessage(), getClass(), e);
+						return;
+					}
+					
+					if (manager.getState() != ManagerState.CONNECTED)
+						return;
+					
+					// create threads to use to consume local tasks and delegate them to this server
+					try {
+						manager.createWorkerThreads();
+					} catch (RuntimeException e) {
+						messages.errorUser("error while creating a thread for server "+host+": "+e.getMessage(), getClass(), e);
+						return;
+					}		
+				}
+			}).start();
+			
+		} 
+		
 	}
 	
+	protected void removeDistantHost(ServerHostPreference host) {
+
+		DistantGenlabServerManager server = host2serverManager.get(host);
+
+		if (server != null) {
+			messages.infoUser("disconnecting server "+host+"...", getClass());
+			server.disconnect();
+			this.host2serverManager.remove(host);
+			this.paramRequiredHosts.remove(host);
+		}
+		
+	}
+
+	protected void reactToParameterChangeListOfHosts() {
+		
+		Set<ServerHostPreference> hostsToRemove = new HashSet<ServerHostPreference>();
+		hostsToRemove.addAll(host2serverManager.keySet());
+		
+		// add the ones which are required
+		for (ServerHostPreference hostExpected: this.paramRequiredHosts) {
+			
+			// host should be used
+			if (hostExpected.active) {
+				// this host is active
+				// let's activate it or refresh it
+				manageDistantHost(hostExpected);
+				
+				hostsToRemove.remove(hostExpected);
+			} 
+		 
+		}
+		
+		// remove the ones not required anymore
+		for (ServerHostPreference hostRemoved: hostsToRemove) {
+			removeDistantHost(hostRemoved);
+		}
+		
+	}
+	
+	public void setParameterListOfHosts(List<ServerHostPreference> hosts) {
+		synchronized (hosts) {
+			this.paramRequiredHosts = hosts;
+			reactToParameterChangeListOfHosts();	
+		}
+	}
 	
 	
 }

@@ -156,6 +156,14 @@ public class Runner extends Thread implements IRunner {
 		}
 	}
 
+	private void removeWorkingThread(WorkingRunnerDistanceThread thread) {
+		
+		synchronized (threadsPoolTaskWithThreads) {
+			messagesRun.infoTech("removing working thread: "+thread.getName(), getClass());
+			
+			threadsPoolTaskWithThreads.remove(thread);
+		}
+	}
 	
 	/* (non-Javadoc)
 	 * @see genlab.core.exec.IRunner#addTasks(java.util.Collection)
@@ -769,6 +777,15 @@ public class Runner extends Thread implements IRunner {
 			// TODO error !
 		}
 	}
+
+	public void removeRunnerDistant(WorkingRunnerDistanceThread thread) {
+		try {
+			removeWorkingThread(thread);
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+		}
+	}
+
 	
 
 	

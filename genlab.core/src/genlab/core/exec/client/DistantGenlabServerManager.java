@@ -18,6 +18,18 @@ import java.util.concurrent.BlockingQueue;
 
 public class DistantGenlabServerManager {
 
+
+	public enum ManagerState {
+		DISCONNECTED,
+		CONNECTING,
+		CONNECTED,
+		CONNECTION_PROBLEM,
+		STOPPING,
+		STOPPED;
+	}
+	
+	private ManagerState state = ManagerState.DISCONNECTED;
+	
 	private final String hostname;
 	private final int port;
 	
@@ -43,8 +55,14 @@ public class DistantGenlabServerManager {
 		return server;
 	}
 
+	public ManagerState getState() {
+		return state;
+	}
+	
 	public void connect() {
 	
+		state = ManagerState.CONNECTING;
+		
 		Registry registry;
 		messages.infoUser("attempting to connect server "+hostname+":"+port, getClass());
 		messages.infoTech("connecting to RMI registry...", getClass());
@@ -52,8 +70,9 @@ public class DistantGenlabServerManager {
 		try {
 			registry = LocateRegistry.getRegistry(hostname, port);
 		} catch (RemoteException e) {
-			messages.errorUser("unable to connect to server "+hostname+":"+port, getClass(), e);
-			throw new RuntimeException(e);
+			messages.errorUser("unable to connect to server "+hostname+":"+port+" : "+e.getMessage(), getClass(), e);
+			state = ManagerState.CONNECTION_PROBLEM;
+			return;
 		}
 
 		server = null;
@@ -64,42 +83,34 @@ public class DistantGenlabServerManager {
 		// retrieve the server on the registry
 		try {
 			server = (IGenlabComputationServer) registry.lookup(GenlabComputationServer.BOUNDING_NAME);
-			
 		} catch (AccessException e) {
 			messages.errorUser("unable to connect to server "+hostname+":"+port+": "+e.getMessage(), getClass(), e);
-			throw new RuntimeException(e);
+			state = ManagerState.CONNECTION_PROBLEM;
+			return;
 		} catch (RemoteException e) {
 			messages.errorUser("unable to connect to server "+hostname+":"+port+": "+e.getMessage(), getClass(), e);
-			throw new RuntimeException(e);
+			state = ManagerState.CONNECTION_PROBLEM;
+			return;
 		} catch (NotBoundException e) {
 			messages.errorUser("unable to connect to server "+hostname+":"+port+": "+e.getMessage(), getClass(), e);
-			throw new RuntimeException(e);
+			state = ManagerState.CONNECTION_PROBLEM;
+			return;
 		}  
-
-		// check we can ping the server
-		long timeSend = System.currentTimeMillis();
-		try {
-			long timeReceived = server.ping(timeSend);
-			long diff = System.currentTimeMillis() - timeSend;
-			System.out.println("ping in "+diff+" ms");
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException(e);
-
-		}
-				
+	
 		// retrieve informations
 		try {
 			numberOfThreads = server.getNumberTasksAccepted();
 			messages.infoUser("server "+hostname+":"+port+" accepts up to "+numberOfThreads+" parallel tasks", getClass());
 		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			messages.errorUser("unable to connect to server "+hostname+":"+port+": "+e.getMessage(), getClass(), e);
+			state = ManagerState.CONNECTION_PROBLEM;
+			return;
 		}
 		
 		doStatisticsPing();
 
+		if (state != ManagerState.CONNECTION_PROBLEM) 
+			state = ManagerState.CONNECTED;
 		
 	}
 		
@@ -115,10 +126,8 @@ public class DistantGenlabServerManager {
 				long diff = System.currentTimeMillis() - timeSend;
 				cumulated += diff;
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				throw new RuntimeException(e);
-	
+				messages.errorUser("unable to ping server "+hostname+":"+port+": "+e.getMessage(), getClass(), e);
+				state = ManagerState.CONNECTION_PROBLEM;
 			}
 		}
 		messages.infoTech("delay between us and server "+hostname+":"+port+": "+(cumulated/total)+" ms", getClass());
@@ -131,7 +140,12 @@ public class DistantGenlabServerManager {
 		
 	}
 
-	public void createWorkerThreads(Runner runner) {
+	public void createWorkerThreads() {
+		
+		if (state != ManagerState.CONNECTED)
+			return;
+		
+		Runner runner = ComputationNodes.getSingleton().getDefaultRunner();
 		while (threads.size() < numberOfThreads) {
 			
 			try {
@@ -152,6 +166,22 @@ public class DistantGenlabServerManager {
 				break;
 			}
 		}
+	}
+
+	public void disconnect() {
+		
+		if (state != ManagerState.CONNECTED)
+			return;
+		
+		state = ManagerState.STOPPING;
+		Runner runner = ComputationNodes.getSingleton().getDefaultRunner();
+		messages.infoUser("disconnecting server "+hostname+":"+port+"...", getClass());
+		for (WorkingRunnerDistanceThread thread: threads) {
+			thread.askStop();
+			runner.removeRunnerDistant(thread);
+		}
+		threads.clear();
+		state = ManagerState.STOPPED;
 	}
 	
 	

@@ -29,21 +29,15 @@ import java.util.Collections;
  */
 public class GenlabComputationServer implements IGenlabComputationServer {
 
-	private int port = 25555;
+	public static final int DEFAULT_PORT = 25555;
+	
+	private int port = DEFAULT_PORT;
 	private int numberProcessesMax = Runtime.getRuntime().availableProcessors();
 	private ListOfMessages messages = ListsOfMessages.getGenlabMessages();
 	
 	public static final String BOUNDING_NAME = "GenlabComputationServer";
 	
-	/*
-	public enum ServerState {
-		DISCONNECTED,
-		CONNECTING,
-		CONNECTED,
-		CONNECTION_PROBLEM,
-		STOPPING;
-	}
-	*/
+	
 	
 	public enum ServerState {
 		STOPPED,
