@@ -8,7 +8,7 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Dosgi.requiredJavaVersion=1.6 
+      <vmArgs>-Dosgi.requiredJavaVersion=1.7 
 -Dhelp.lucene.tokenizer=standard 
 -XX:MaxPermSize=512m 
 -Xms40m 
