@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Genlab" uid="genlab.product.gui" id="genlab.gui.product" application="genlab.gui.application" version="0.0.2" useFeatures="false" includeLaunchers="true">
+<product name="Genlab" uid="genlab.product.gui" id="genlab.gui.product" application="genlab.gui.application" version="0.9" useFeatures="false" includeLaunchers="true">
 
 
    <configIni use="default">
@@ -40,6 +40,8 @@
 
 
    <plugins>
+      <plugin id="ar.com.tadp.xml.rinzo.core"/>
+      <plugin id="ar.com.tadp.xml.rinzo.jdt"/>
       <plugin id="com.google.gson"/>
       <plugin id="com.ibm.icu"/>
       <plugin id="com.jcraft.jsch"/>
