@@ -60,7 +60,7 @@ public class WorkingRunnerThread extends Thread {
 				// we can only consume from one principal queue
 				// then just wait for it.
 				try {
-					messages.infoTech(this.getName()+" waiting for a task in the unique queue", getClass());
+					//messages.infoTech(this.getName()+" waiting for a task in the unique queue", getClass());
 					exec = readyToCompute.take();
 				} catch (InterruptedException e) {
 					messages.errorTech("catched an exception when trying to fetch a task: "+e.getMessage(), getClass(), e);
@@ -88,7 +88,7 @@ public class WorkingRunnerThread extends Thread {
 			}
 			
 			// and run this task
-			messages.infoTech(getName()+" running task: "+exec.getName(), getClass());
+			messages.debugTech(getName()+" running task: "+exec.getName(), getClass());
 			try {
 				exec.run();
 			} catch (Exception e) {
