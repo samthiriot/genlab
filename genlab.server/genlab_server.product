@@ -3,19 +3,19 @@
 
 <product name="Genlab Server" uid="genlab.server" id="genlab.server.genlab_server_product" application="genlab.server.application" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
       <vmArgs>-server
--Dosgi.requiredJavaVersion=1.5
+-Dosgi.requiredJavaVersion=1.7
 -Dhelp.lucene.tokenizer=standard
 -XX:MaxPermSize=512m
 -Xms40m
 -Xmx4G
 -Djava.rmi.server.codebase=&quot;file://$LOCALAPPDATA/plugins/genlab.core_0.0.1.jar file://$LOCALAPPDATA/plugins/genlab.igraph_1.0.0.201505061122.jar file://$LOCALAPPDATA/plugins/genlab.jna.corejar_1.0.0.201505061122.jar file://$LOCALAPPDATA/ext/jna-4.0.0.jar file://$LOCALAPPDATA/ext/jna-platform-4.0.0.jar file://$LOCALAPPDATA/plugins/genlab.graphstream.corejar_1.0.0.201505061122.jar file://$LOCALAPPDATA/plugins/genlab.graphstream_0.0.1.jar&quot;
--Djava.rmi.server.useCodebaseOnly=True</vmArgs>
+-Djava.rmi.server.useCodebaseOnly=True
+-Djna.nosys=true</vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts</vmArgsMac>
    </launcherArgs>
 
@@ -31,7 +31,6 @@
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>
