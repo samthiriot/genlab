@@ -1,6 +1,7 @@
 package genlab.algog.algos.exec;
 
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
+import genlab.algog.internal.AFitnessBoard;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
 import genlab.algog.internal.AnIndividual;
@@ -14,6 +15,7 @@ import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,9 +56,10 @@ public class GeneticExplorationOneGeneration
 	private AnIndividual currentIndiv = null;
 
 	private final Object lockerResults = new Object();
-	private Map<AnIndividual,Double[]> computedFitness = new HashMap<AnIndividual, Double[]>();
-	private Map<AnIndividual,Object[]> computedValues = new HashMap<AnIndividual, Object[]>();
-	private Map<AnIndividual,Object[]> computedTargets = new HashMap<AnIndividual, Object[]>();
+	private List<AnIndividual> computedIndividuals = new ArrayList<AnIndividual>();
+//	private Map<AnIndividual,Double[]> computedFitness = new HashMap<AnIndividual, Double[]>();
+//	private Map<AnIndividual,Object[]> computedValues = new HashMap<AnIndividual, Object[]>();
+//	private Map<AnIndividual,Object[]> computedTargets = new HashMap<AnIndividual, Object[]>();
 
 	
 	private final Map <IConnection,Object> inputConnection2value;
@@ -209,9 +212,10 @@ public class GeneticExplorationOneGeneration
 	
 	protected void computeResultsForIndividual(GeneticExplorationAlgoIndividualRun indivRun) {
 
-		final Double[] resultFitness = indivRun.getResultFitness();
-		final Object[] resultTargets = indivRun.getResultTargets();
-		final Object[] resultValues = indivRun.getResultValues();
+		List<AFitnessBoard> fitnessBoard = indivRun.getFitnessBoard();
+//		final Double[] resultFitness = indivRun.getResultFitness();
+//		final Object[] resultTargets = indivRun.getResultTargets();
+//		final Object[] resultValues = indivRun.getResultValues();
 		
 		AnIndividual indiv = indivRun.getIndividual();
 		int individualId = indivRun.getIndividualId();
@@ -222,11 +226,15 @@ public class GeneticExplorationOneGeneration
 		synchronized (lockerResults) {
 			
 //			if (resultFitness != null)
-				computedFitness.put(indiv, resultFitness);
+//				computedFitness.put(indiv, resultFitness);
 //			if (resultTargets != null)
-				computedTargets.put(indiv, resultTargets);
+//				computedTargets.put(indiv, resultTargets);
 //			if (resultValues != null)
-				computedValues.put(indiv, resultValues);
+//				computedValues.put(indiv, resultValues);
+			
+			indiv.setFitnessBoard(fitnessBoard);
+			
+			this.computedIndividuals.add(indiv);
 
 		}
 		
@@ -292,10 +300,10 @@ public class GeneticExplorationOneGeneration
 	}
 	
 	/**
-	 * Returns a copy of the computed fitness for each individual of the generation.
+	 * Returns a copy of the computed individuals
 	 * @return
 	 */
-	public Map<AnIndividual,Double[]> getComputedFitness() {
+	public List<AnIndividual> getComputedIndividuals() {
 		// store results
 		synchronized (lockerResults) {
 			
@@ -303,41 +311,57 @@ public class GeneticExplorationOneGeneration
 				throw new ProgramException("asked for a fitness for an exploration which did not terminated yet");
 				
 				
-			return new HashMap<AnIndividual, Double[]>(computedFitness);
+			return new ArrayList<AnIndividual>(this.computedIndividuals);
 		}
 	}
 	
-	/**
-	 * Returns a copy of the computed targets for each individual of the generation.
-	 * @return
-	 */
-	public Map<AnIndividual,Object[]> getComputedTargets() {
-		// store results
-		synchronized (lockerResults) {
-			
-			if (!progress.getComputationState().isFinished())
-				throw new ProgramException("asked for a fitness for an exploration which did not terminated yet");
-				
-				
-			return new HashMap<AnIndividual, Object[]>(computedTargets);
-		}
-	}
-	
-	/**
-	 * Returns a copy of the computed targets for each individual of the generation.
-	 * @return
-	 */
-	public Map<AnIndividual,Object[]> getComputedValues() {
-		// store results
-		synchronized (lockerResults) {
-			
-			if (!progress.getComputationState().isFinished())
-				throw new ProgramException("asked for a fitness for an exploration which did not terminated yet");
-				
-				
-			return new HashMap<AnIndividual, Object[]>(computedValues);
-		}
-	}
+//	/**
+//	 * Returns a copy of the computed fitness for each individual of the generation.
+//	 * @return
+//	 */
+//	public Map<AnIndividual,Double[]> getComputedFitness() {
+//		// store results
+//		synchronized (lockerResults) {
+//			
+//			if (!progress.getComputationState().isFinished())
+//				throw new ProgramException("asked for a fitness for an exploration which did not terminated yet");
+//				
+//				
+//			return new HashMap<AnIndividual, Double[]>(computedFitness);
+//		}
+//	}
+//	
+//	/**
+//	 * Returns a copy of the computed targets for each individual of the generation.
+//	 * @return
+//	 */
+//	public Map<AnIndividual,Object[]> getComputedTargets() {
+//		// store results
+//		synchronized (lockerResults) {
+//			
+//			if (!progress.getComputationState().isFinished())
+//				throw new ProgramException("asked for a fitness for an exploration which did not terminated yet");
+//				
+//				
+//			return new HashMap<AnIndividual, Object[]>(computedTargets);
+//		}
+//	}
+//	
+//	/**
+//	 * Returns a copy of the computed targets for each individual of the generation.
+//	 * @return
+//	 */
+//	public Map<AnIndividual,Object[]> getComputedValues() {
+//		// store results
+//		synchronized (lockerResults) {
+//			
+//			if (!progress.getComputationState().isFinished())
+//				throw new ProgramException("asked for a fitness for an exploration which did not terminated yet");
+//				
+//				
+//			return new HashMap<AnIndividual, Object[]>(computedValues);
+//		}
+//	}
 	
 	@Override
 	public void initInputs(Map<IAlgoInstance,IAlgoExecution> instance2exec) {

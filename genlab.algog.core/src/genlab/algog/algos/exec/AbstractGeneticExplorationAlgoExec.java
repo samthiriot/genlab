@@ -10,6 +10,7 @@ import genlab.algog.algos.meta.GenomeAlgo;
 import genlab.algog.algos.meta.IntegerGeneAlgo;
 import genlab.algog.internal.ABooleanGene;
 import genlab.algog.internal.ADoubleGene;
+import genlab.algog.internal.AFitnessBoard;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
 import genlab.algog.internal.AIntegerGene;
@@ -80,9 +81,10 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	protected Map<AGenome, List<IAlgoInstance>> genome2fitnessOutput = new HashMap<AGenome, List<IAlgoInstance>>();
 
 	// for each generation, and each individual, stores the corresponding fitness
-	protected LinkedHashMap<Integer,Map<AnIndividual,Double[]>> generation2fitness = new LinkedHashMap<Integer, Map<AnIndividual,Double[]>>(500);
-	protected LinkedHashMap<Integer,Map<AnIndividual,Object[]>> generation2targets = new LinkedHashMap<Integer, Map<AnIndividual,Object[]>>(500);
-	protected LinkedHashMap<Integer,Map<AnIndividual,Object[]>> generation2values = new LinkedHashMap<Integer, Map<AnIndividual,Object[]>>(500);
+	protected Map<Integer, List<AnIndividual>> generation = new HashMap<Integer, List<AnIndividual>>();
+//	protected LinkedHashMap<Integer,Map<AnIndividual,Double[]>> generation2fitness = new LinkedHashMap<Integer, Map<AnIndividual,Double[]>>(500);
+//	protected LinkedHashMap<Integer,Map<AnIndividual,Object[]>> generation2targets = new LinkedHashMap<Integer, Map<AnIndividual,Object[]>>(500);
+//	protected LinkedHashMap<Integer,Map<AnIndividual,Object[]>> generation2values = new LinkedHashMap<Integer, Map<AnIndividual,Object[]>>(500);
 
 	protected final GeneticExplorationAlgoContainerInstance algoInst;
 	
@@ -126,18 +128,19 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * @param resultTargets
 	 * @param resultValues
 	 */
-	protected void manageResultsForCurrentGeneration(
-			Map<AnIndividual,Double[]> resultFitness,
-			Map<AnIndividual,Object[]> resultTargets,
-			Map<AnIndividual,Object[]> resultValues
+	protected void manageResultsForCurrentGeneration(List<AnIndividual> individuals
+//			Map<AnIndividual,Double[]> resultFitness,
+//			Map<AnIndividual,Object[]> resultTargets,
+//			Map<AnIndividual,Object[]> resultValues
 			) {
 		
 		messages.debugUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
 
 		// store it 
-		generation2fitness.put(iterationsMade, resultFitness);
-		generation2targets.put(iterationsMade, resultTargets);
-		generation2values.put(iterationsMade, resultValues);
+		generation.put(iterationsMade, individuals);
+//		generation2fitness.put(iterationsMade, resultFitness);
+//		generation2targets.put(iterationsMade, resultTargets);
+//		generation2values.put(iterationsMade, resultValues);
 
 		
 		this.progress.incProgressMade();
@@ -194,7 +197,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 							geneInstance.getName(),
 							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION.getId()), 
 							(Integer)geneInstance.getValueForParameter(IntegerGeneAlgo.PARAM_MINIMUM.getId()),
-							(Integer)geneInstance.getValueForParameter(IntegerGeneAlgo.PARAM_MAXIMUM.getId())
+							(Integer)geneInstance.getValueForParameter(IntegerGeneAlgo.PARAM_MAXIMUM.getId()),
+							null
 							);
 					
 				} else if (geneAlgo instanceof DoubleGeneAlgo) {
@@ -203,14 +207,16 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 							geneInstance.getName(), 
 							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION.getId()),
 							(Double)geneInstance.getValueForParameter(DoubleGeneAlgo.PARAM_MINIMUM.getId()),
-							(Double)geneInstance.getValueForParameter(DoubleGeneAlgo.PARAM_MAXIMUM.getId())
+							(Double)geneInstance.getValueForParameter(DoubleGeneAlgo.PARAM_MAXIMUM.getId()),
+							null
 							);
 					
 				} else if (geneAlgo instanceof BooleanGeneAlgo) {
 					
 					gene = new ABooleanGene(
 							geneInstance.getName(),
-							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION.getId())
+							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION.getId()),
+							null
 							);
 					
 				} else {
@@ -329,13 +335,13 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	protected void displayOnStream(PrintStream ps, int generationId) {
 		
 		
-		for (Map.Entry<AnIndividual,Double[]> indiv2fitness : generation2fitness.get(generationId).entrySet()) {
+		for ( AnIndividual individual : generation.get(generationId) ) {
 			
-			ps.print(indiv2fitness.getValue());
+			ps.print(individual.getFitnessBoard().toString());
 			ps.print("\t");
-			ps.print(indiv2fitness.getKey().genome);
+			ps.print(individual.genome);
 			ps.print("\t");
-			ps.print(Arrays.toString(indiv2fitness.getKey().genes));
+			ps.print(individual.genesToString());
 			ps.println();
 
 		}
@@ -467,19 +473,16 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 				GenlabTable tab, 
 				String titleIteration, Integer iterationId, 
 				String titleGenome, 
-				Map<AGenome,String[]> genome2fitnessColumns, Map<AGenome,String[]> genome2geneColumns,
-				Collection<AnIndividual> individuals,
-				Map<AnIndividual,Double[]> indiv2fitness, Map<AnIndividual,Object[]> indiv2value, Map<AnIndividual,Object[]> indiv2target
+				Map<AGenome,String[]> genome2fitnessColumns,
+				Map<AGenome,String[]> genome2geneColumns,
+				List<AnIndividual> individuals
 				) {
 		
 		
 		for (AnIndividual ind : individuals) {
 			
 			try {
-				final Double[] fitness = indiv2fitness.get(ind);
-				final Object[] values = indiv2value.get(ind);
-				final Object[] targets = indiv2target.get(ind);
-	
+				ArrayList<AFitnessBoard> fb = new ArrayList<AFitnessBoard>(ind.getFitnessBoard());
 									
 				int rowId = tab.addRow();
 				tab.setValue(rowId, titleIteration, iterationId);
@@ -494,7 +497,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					tab.setValue(
 							rowId, 
 							colnames[I], 
-							targets[i]
+							fb.get(i).getTarget()
 							);
 					
 					I=I+1;
@@ -502,7 +505,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					tab.setValue(
 							rowId, 
 							colnames[I], 
-							values[i]
+							fb.get(i).getValue()
 							);
 	
 					I=I+1;
@@ -510,7 +513,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					tab.setValue(
 							rowId, 
 							colnames[I], 
-							fitness[i]
+							fb.get(i).getFitness()
 							);
 				}
 				
@@ -559,19 +562,15 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		final Map<AGenome,String[]> genome2geneColumns = declareColumnsForGenes(tab);
 		
 		
-		for (Integer iterationId : generation2fitness.keySet()) {
+		for (Integer iterationId : generation.keySet()) {
 			
 			// for each iteration
-			final Map<AnIndividual,Double[]> indiv2fitness = generation2fitness.get(iterationId);
-			final Map<AnIndividual,Object[]> indiv2value = generation2values.get(iterationId);
-			final Map<AnIndividual,Object[]> indiv2target = generation2targets.get(iterationId);
-
+			
 			storeIndividualsData(
 					tab, 
 					titleIteration, iterationId, titleGenome, 
 					genome2fitnessColumns, genome2geneColumns, 
-					indiv2fitness.keySet(),
-					indiv2fitness, indiv2value, indiv2target
+					generation.get(iterationId)
 					);
 			
 				
@@ -627,24 +626,13 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	protected void hookProcessResults(ComputationResult res, ComputationState ourState) {
 		
 	}
-
-	public Map<AnIndividual,Double[]> getIndivAndFitnessForPreviousLastGeneration() {
-		return generation2fitness.get(iterationsMade-1);
+	
+	public List<AnIndividual> getIndividualsForPreviousLastGeneration() {
+		return generation.get(iterationsMade-1);
 	}
 	
-	/**
-	 * @return P(t)
-	 */
-	public Map<AnIndividual,Double[]> getIndivAndFitnessForLastGeneration() {
-//int a=0;
-//		System.out.print("<Remove ");
-//		for( AnIndividual i : generation2fitness.get(iterationsMade).keySet() ) {
-//			if( generation2fitness.get(iterationsMade).get(i)==null )
-//				generation2fitness.get(iterationsMade).remove(i);
-//		}
-//		System.out.println(a+" indivs");
-		
-		return generation2fitness.get(iterationsMade);
+	public List<AnIndividual> getIndividualsForLastGeneration() {
+		return generation.get(iterationsMade);
 	}
 	
 	/**
@@ -708,12 +696,13 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			final GeneticExplorationOneGeneration algoFinished = (GeneticExplorationOneGeneration)progress.getAlgoExecution();
 			
 			// retrieve the different results of the evaluation of the generation: fitness, values explored, and targets
-			final Map<AnIndividual,Double[]> resultFitness = algoFinished.getComputedFitness(); // (this is already a copy)
-			final Map<AnIndividual,Object[]> resultValues = algoFinished.getComputedValues(); // (this is already a copy)
-			final Map<AnIndividual,Object[]> resultTargets = algoFinished.getComputedTargets(); // (this is already a copy)
+			List<AnIndividual> individuals = algoFinished.getComputedIndividuals();
+//			final Map<AnIndividual,Double[]> resultFitness = algoFinished.getComputedFitness(); // (this is already a copy)
+//			final Map<AnIndividual,Object[]> resultValues = algoFinished.getComputedValues(); // (this is already a copy)
+//			final Map<AnIndividual,Object[]> resultTargets = algoFinished.getComputedTargets(); // (this is already a copy)
 
 			// now use these results: store them ! 
-			manageResultsForCurrentGeneration(resultFitness, resultTargets, resultValues);
+			manageResultsForCurrentGeneration(individuals);
 			
 			// give the JVM some time and recommand a memory analysis (its good time for doing it !) 
 			Runtime.getRuntime().gc();

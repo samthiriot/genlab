@@ -1,6 +1,7 @@
 package genlab.algog.algos.exec;
 
 import genlab.algog.algos.meta.AbstractGeneAlgo;
+import genlab.algog.internal.AFitnessBoard;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AnIndividual;
 import genlab.core.commons.ProgramException;
@@ -39,9 +40,10 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 	private final Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance;
 	private final Map <IConnection,Object> inputConnection2value;
 	private final List<IAlgoInstance> fitnessOutput;
-	private Double[] resultFitness = null;
-	private Object[] resultValues = null;
-	private Object[] resultTargets = null;
+//	private List<AFitnessBoard> fitnessBoard;
+//	private Double[] resultFitness = null;
+//	private Object[] resultValues = null;
+//	private Object[] resultTargets = null;
 	
 	private final AnIndividual individual;
 	
@@ -87,9 +89,10 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 	@Override
 	protected void hookContainerExecutionFinished(ComputationState state) {
 		
-		resultFitness = new Double[fitnessOutput.size()];
-		resultTargets = new Object[fitnessOutput.size()];
-		resultValues = new Object[fitnessOutput.size()];
+		List<AFitnessBoard> fitnessBoard = new ArrayList<AFitnessBoard>(fitnessOutput.size());
+//		resultFitness = new Double[fitnessOutput.size()];
+//		resultTargets = new Object[fitnessOutput.size()];
+//		resultValues = new Object[fitnessOutput.size()];
 		
 		if (state == ComputationState.FINISHED_FAILURE || state == ComputationState.FINISHED_CANCEL) {
 			// when there is an error, then goal fitness becomes negative infinity.
@@ -98,9 +101,14 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 				IAlgoInstance ai = fitnessOutput.get(i);
 				IGoalExec goal = (IGoalExec) instance2execForSubtasks.get(ai);
 				
-				resultFitness[i] = Double.POSITIVE_INFINITY;
-				resultTargets[i] = goal.getTarget();
-				resultValues[i] = null;
+				fitnessBoard.add( new AFitnessBoard(
+					Double.POSITIVE_INFINITY, // fitness
+					goal.getTarget(), // target
+					null // value
+				) );
+//				resultFitness[i] = Double.POSITIVE_INFINITY;
+//				resultTargets[i] = goal.getTarget();
+//				resultValues[i] = null;
 				
 			}
 		} else {
@@ -108,14 +116,22 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 				IAlgoInstance ai = fitnessOutput.get(i);
 				IGoalExec goal = (IGoalExec) instance2execForSubtasks.get(ai);
 				
-				resultFitness[i] = goal.getFitness();
-				resultTargets[i] = goal.getTarget();
-				resultValues[i] = goal.getActualValue();
+				fitnessBoard.add( new AFitnessBoard(
+					goal.getFitness(), // fitness
+					goal.getTarget(), // target
+					goal.getActualValue() // value
+				) );
+				
+//				resultFitness[i] = goal.getFitness();
+//				resultTargets[i] = goal.getTarget();
+//				resultValues[i] = goal.getActualValue();
 				
 			}
 		}
 		
-		messages.debugTech("received fitness for "+individual+" => "+Arrays.toString(resultFitness), getClass());
+		individual.setFitnessBoard(fitnessBoard);
+		
+		messages.debugTech("received fitness for "+individual+" => "+individual.fitnessToString(), getClass());
 
 		
 	}
@@ -189,7 +205,8 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 			AGene<?> gene = genomeGenes[i];
 			IAlgoInstance aiCurrent = gene2geneAlgoInstance.get(gene);
 			if (aiCurrent == ai)
-				return individual.genes[i];
+				return individual.genome.getGenes()[i];
+				//return individual.genes[i]
 		}
 		return null;
 	}
@@ -239,36 +256,44 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 		
 	}
 	
-	public final Double[] getResultFitness() {
+	public List<AFitnessBoard> getFitnessBoard() {
 		
 		if (!progress.getComputationState().isFinished())
 			throw new ProgramException("asked for the fitness of an individual run which is not finished yet");
-
-		if (progress.getComputationState() == ComputationState.FINISHED_OK)
-			return resultFitness;
-		else
-			return null;//new Double[this.individual.genes.length];
+		
+		return individual.getFitnessBoard();
 	}
 	
-	public final Object[] getResultValues() {
-		
-		if (!progress.getComputationState().isFinished())
-			throw new ProgramException("asked for the results of an individual run which is not finished yet");
-		
-		if (progress.getComputationState() == ComputationState.FINISHED_OK)
-			return resultValues;
-		else
-			return null;//new Double[this.individual.genes.length];
-	}
-	
-
-	public final Object[] getResultTargets() {
-		
-		if (!progress.getComputationState().isFinished())
-			throw new ProgramException("asked for the targets of an individual run which is not finished yet");
-		
-		return resultTargets;
-	}
+//	public final Double[] getResultFitness() {
+//		
+//		if (!progress.getComputationState().isFinished())
+//			throw new ProgramException("asked for the fitness of an individual run which is not finished yet");
+//
+//		if (progress.getComputationState() == ComputationState.FINISHED_OK)
+//			return individual.getFitnessFromFitnessBoard();
+//		else
+//			return null;//new Double[this.individual.genes.length];
+//	}
+//	
+//	public final Object[] getResultValues() {
+//		
+//		if (!progress.getComputationState().isFinished())
+//			throw new ProgramException("asked for the results of an individual run which is not finished yet");
+//		
+//		if (progress.getComputationState() == ComputationState.FINISHED_OK)
+//			return individual.getValuesFromFitnessBoard();
+//		else
+//			return null;//new Double[this.individual.genes.length];
+//	}
+//	
+//
+//	public final Object[] getResultTargets() {
+//		
+//		if (!progress.getComputationState().isFinished())
+//			throw new ProgramException("asked for the targets of an individual run which is not finished yet");
+//		
+//		return individual.getTargetsFromFitnessBoard();
+//	}
 	
 	public final AnIndividual getIndividual() {
 		return individual; 

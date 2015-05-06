@@ -7,13 +7,14 @@ public class ADoubleGene extends ANumericGene<Double> {
 	/** value of distribution index for mutation */
 	protected final double eta_m = 1.0;
 
-	public ADoubleGene(String name,double mutationProba, Double min, Double max) {
-		super(name, mutationProba, min, max);
+	public ADoubleGene(String name,double mutationProba, Double min, Double max, Double value) {
+		super(name, mutationProba, min, max, value);
 	}
 
 	@Override
 	public Double generateRandomnly(Uniform uniform) {
-		return uniform.nextDoubleFromTo(min, max);
+		this.value = uniform.nextDoubleFromTo(min, max);
+		return this.value;
 	}
 
 	@Override
@@ -53,8 +54,9 @@ public class ADoubleGene extends ANumericGene<Double> {
             y = yl;
         if( y > yu )
             y = yu;
-        
-        return y;
+
+		this.value = y;
+		return this.value;
 	}
 
 }

@@ -4,19 +4,21 @@ import cern.jet.random.Uniform;
 
 public class ABooleanGene extends AGene<Boolean> {
 
-	public ABooleanGene(String name, double mutationProba) {
-		super(name, mutationProba);
+	public ABooleanGene(String name, double mutationProba, Boolean value) {
+		super(name, mutationProba, value);
 	}
 
 	@Override
 	public Boolean generateRandomnly(Uniform uniform) {
-		return uniform.nextBoolean();
+		this.value = uniform.nextBoolean();
+		return this.value;
 	}
 
 	@Override
 	public Boolean mutate(Uniform uniform, Object previousValue) {
 		// invert the value
-		return !((Boolean)previousValue);
+		this.value = !((Boolean)previousValue);
+		return this.value;
 	}
 
 }

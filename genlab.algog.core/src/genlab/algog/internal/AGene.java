@@ -13,10 +13,12 @@ public abstract class AGene<TypeName> {
 
 	public final String name;
 	public final double mutationProba;
+	public TypeName value;
 	
-	public AGene(String name, double mutationProba) {
+	public AGene(String name, double mutationProba, TypeName value) {
 		this.name = name;
 		this.mutationProba = mutationProba;
+		this.value = value;
 	}
 	
 	public abstract TypeName generateRandomnly(Uniform uniform);
