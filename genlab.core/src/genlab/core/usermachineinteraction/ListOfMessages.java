@@ -430,10 +430,12 @@ public class ListOfMessages implements Iterable<ITextMessage>, Serializable {
 	 */
 	public boolean addAll(Iterable<ITextMessage> others) {
 
+		
 		for (ITextMessage m : others) {
 			
 			try {
-				receivedMessages.put(m);
+				if (m.getLevel().shouldDisplay(filterIgnoreBelow))
+					receivedMessages.put(m);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
