@@ -1,11 +1,10 @@
 package genlab.core.model.exec;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.ITask;
 import genlab.core.model.instance.IConnection;
+
+import java.util.Set;
 
 /**
  * This weird connection links an iteration to its one-shot children.
@@ -19,7 +18,14 @@ import genlab.core.model.instance.IConnection;
  */
 public class ConnectionExecFromIterationToChild extends AbstractConnectionExec<IAlgoExecution,IAlgoExecutionOneshot> {
 
-	
+
+
+	/**
+	 * For serialization only
+	 */
+	public ConnectionExecFromIterationToChild() {}
+
+
 	public ConnectionExecFromIterationToChild(IConnection c, IAlgoExecution from, IAlgoExecutionOneshot to, boolean check) {
 		
 		super(c, from, to);
@@ -55,5 +61,6 @@ public class ConnectionExecFromIterationToChild extends AbstractConnectionExec<I
 	public void propagateRank(Integer rank, Set<ITask> visited) {
 		// don't propagate
 	}
+
 
 }
