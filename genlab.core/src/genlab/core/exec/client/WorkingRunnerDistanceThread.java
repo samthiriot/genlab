@@ -118,6 +118,7 @@ public class WorkingRunnerDistanceThread extends Thread {
 					reinsertTaskInBackupQueue(exec);
 					
 				} else {
+					exec.getExecution().getListOfMessages().addAll(r.getMessages());
 					exec.setResult(r);
 					// the messages
 					//exec.getExecution().getListOfMessages().addAll(execResult.messages);
