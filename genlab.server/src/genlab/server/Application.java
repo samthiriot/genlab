@@ -1,16 +1,14 @@
 package genlab.server;
 
-import java.net.NetworkInterface;
-import java.net.SocketException;
-
-import javax.management.RuntimeErrorException;
-
 import genlab.core.GenLab;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.server.GenlabComputationServer;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
+
+import java.net.NetworkInterface;
+import java.net.SocketException;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
