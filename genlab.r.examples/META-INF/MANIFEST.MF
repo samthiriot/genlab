@@ -11,5 +11,5 @@ Require-Bundle: org.eclipse.ui,
  genlab.gui;bundle-version="0.0.1",
  genlab.core;bundle-version="0.0.1",
  genlab.r;bundle-version="1.0.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy

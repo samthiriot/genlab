@@ -11,7 +11,7 @@ Require-Bundle: org.eclipse.core.runtime,
  genlab.core;bundle-version="0.0.1",
  genlab.gui;bundle-version="0.0.1",
  org.eclipse.ui.forms
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: genlab.examples.gui.creation,
  genlab.examples.gui.wizards,

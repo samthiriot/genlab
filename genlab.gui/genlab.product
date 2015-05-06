@@ -3,11 +3,12 @@
 
 <product name="Genlab" uid="genlab.product.gui" id="genlab.gui.product" application="genlab.gui.application" version="0.0.2" useFeatures="false" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Dosgi.requiredJavaVersion=1.5 
+      <vmArgs>-Dosgi.requiredJavaVersion=1.6 
 -Dhelp.lucene.tokenizer=standard 
 -XX:MaxPermSize=512m 
 -Xms40m 
@@ -33,12 +34,12 @@
       </win>
    </launcher>
 
+
    <vm>
    </vm>
 
+
    <plugins>
-      <plugin id="ar.com.tadp.xml.rinzo.core"/>
-      <plugin id="ar.com.tadp.xml.rinzo.jdt"/>
       <plugin id="com.google.gson"/>
       <plugin id="com.ibm.icu"/>
       <plugin id="com.jcraft.jsch"/>

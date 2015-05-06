@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.junit,
  genlab.jna.corejar,
  genlab.core;bundle-version="0.0.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-NativeCode: ext/native/linux/x86/libigraph.so ; 
  osname=Linux ;
