@@ -78,9 +78,10 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 	private boolean firstDisplay = true;
 
 	{
+		
 		// reduce flickering for Windows
 		System.setProperty("sun.awt.noerasebackground", "true");
-		System.setProperty("gs.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+		System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 		
 		// define the more advanced viewer as the default graphstream viewer
 		// TODO find a way to use the better renderer
@@ -361,17 +362,24 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		
 		messages.traceTech("disposing this view...", getClass());
 		
+		System.err.println("DISPOSING ABSTRACT GRAPH VIEW");
+		
 		if (gsViewer != null) {
 			gsViewer.disableAutoLayout();
 			gsViewer.close();
 		}
-		if (gsView != null) {
-			// TODO ?
-		}
-		if (hostSwtComposite != null && !hostSwtComposite.isDisposed())
-			hostSwtComposite.dispose();
 		
-		awtFrame.dispose();
+		/* creates a freeze of the whole GUI
+		if (awtFrame != null) {
+			System.err.println("dispose awt");
+			awtFrame.dispose();
+		}
+		*/
+		if (hostSwtComposite != null && !hostSwtComposite.isDisposed()) {
+			hostSwtComposite.dispose();
+		}
+		
+		System.err.println("done");
 		
 		super.dispose();
 	}
@@ -402,8 +410,10 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 	@Override
 	public void partClosed(IWorkbenchPartReference partRef) {
 		
-		if (gsViewer != null)
+		if (gsViewer != null) {
+			System.err.println("CLOSING ABSTRACT GRAPH VIEW");
 			gsViewer.disableAutoLayout();
+		}
 		
 		super.partClosed(partRef);
 	}
