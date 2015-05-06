@@ -293,6 +293,16 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 				stub = (IGenlabComputationServer) UnicastRemoteObject.exportObject(this, port);
 	        
 	        if (registry == null) {
+
+		        // replace variable in user environment, in case it would not be done by equinox
+		        {
+			        String codeBaseBefore = System.getProperty("java.rmi.server.codebase");
+			        String codeBaseAfter = codeBaseBefore.replaceAll("\\$LOCALAPPDATA", System.getProperty("user.dir"));
+		        	if (!codeBaseAfter.equals(codeBaseBefore))
+		        		System.setProperty("java.rmi.server.codebase",codeBaseAfter);
+			        messages.infoTech("replaced rmi codebase: "+codeBaseAfter+" (was "+codeBaseBefore+")", getClass());
+				}
+
 	        	try {
 	        		registry = LocateRegistry.createRegistry(port);
 	        	} catch (ExportException e) {
