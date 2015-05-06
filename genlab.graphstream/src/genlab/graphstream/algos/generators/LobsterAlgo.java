@@ -1,15 +1,10 @@
 package genlab.graphstream.algos.generators;
 
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.meta.InputOutput;
-import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
-import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
-import genlab.core.parameters.BooleanParameter;
 
 import org.graphstream.algorithm.generator.BaseGenerator;
 import org.graphstream.algorithm.generator.LobsterGenerator;
-import org.graphstream.algorithm.generator.WattsStrogatzGenerator;
 
 public class LobsterAlgo extends GraphStreamGeneratorAlgo {
 

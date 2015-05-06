@@ -13,7 +13,6 @@ import genlab.core.model.instance.IInputOutputInstance;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * An iteration execution (meaning: one run of all the algos into the container) is driven like:

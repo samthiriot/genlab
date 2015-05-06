@@ -1,7 +1,7 @@
 package genlab.graphstream.ui.views;
 
 import org.graphstream.graph.Graph;
-import org.graphstream.ui.swingViewer.Viewer;
+import org.graphstream.ui.view.Viewer;
 
 /**
  * Displays a graph 

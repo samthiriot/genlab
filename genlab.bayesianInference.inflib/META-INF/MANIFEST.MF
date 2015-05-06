@@ -9,7 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  genlab.core.random;bundle-version="1.0.0",
  genlab.random.colt;bundle-version="1.0.0",
  genlab.bayesianInference;bundle-version="1.0.0",
- org.junit;bundle-version="4.11.0"
+ org.junit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: genlab.bayesianinference.algos,

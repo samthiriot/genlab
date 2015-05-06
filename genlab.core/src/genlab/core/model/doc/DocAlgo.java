@@ -33,7 +33,7 @@ public class DocAlgo {
 		if (algo == null)
 			throw new WrongParametersException("algo can not be null");
 		if (library== null)
-			throw new WrongParametersException("library can not be null");
+			throw new WrongParametersException(algo.getName()+": library can not be null (class "+algo.getClass().getCanonicalName()+")");
 		this.algo = algo;
 		this.library = library;
 		this.complexityTime = complexityTime;

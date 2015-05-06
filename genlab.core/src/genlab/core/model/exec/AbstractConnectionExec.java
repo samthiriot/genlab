@@ -1,5 +1,9 @@
 package genlab.core.model.exec;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,7 +25,7 @@ import genlab.core.model.instance.IConnection;
  *
  */
 public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, TypeTo extends IAlgoExecution> 
-						implements IConnectionExecution {
+						implements IConnectionExecution, Externalizable {
 
 	public final IConnection c;
 	
@@ -156,4 +160,27 @@ public abstract class AbstractConnectionExec<TypeFrom extends IAlgoExecution, Ty
 		to.propagateRank(rank, new HashSet<ITask>(visited));
 	}
 
+	public AbstractConnectionExec() {
+		c = null;
+		exec = null;
+		from = null;
+		to = null;
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+
+		out.writeObject(value);
+	}
+
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException,
+			ClassNotFoundException {
+		
+		value = in.readObject();
+	}
+
+
+	
 }

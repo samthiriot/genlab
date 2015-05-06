@@ -93,7 +93,6 @@ public class IGraph2GenLabConvertor {
 			// add edges
 			for (IGraphEdge edge : graph) {
 			
-				
 				glGraph.addEdge(
 						Integer.toString(edge.id), 
 						Integer.toString(edge.node1id),

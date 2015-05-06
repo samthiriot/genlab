@@ -12,13 +12,13 @@ Require-Bundle: org.eclipse.ui,
  genlab.graphstream;bundle-version="0.0.1",
  genlab.gui,
  genlab.examples;bundle-version="1.0.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
- ext/gs-ui-1.2-nightly_20130729.jar,
- bin/
+ ext/gs-ui-1.3.jar
 Export-Package: genlab.graphstream.ui,
  genlab.graphstream.ui.algos,
  genlab.graphstream.ui.views,
- org.graphstream.ui.j2dviewer,
- org.graphstream.ui.j2dviewer.a
+ org.graphstream.ui.j2dviewer
+
+

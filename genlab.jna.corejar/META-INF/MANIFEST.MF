@@ -6,11 +6,11 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: genlab.jna.corejar.Activator
 Bundle-Vendor: Samuel Thiriot
 Require-Bundle: org.eclipse.core.runtime
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .,
- ext/jna-4.0.0.jar,
- ext/jna-platform-4.0.0.jar
+ ext/jna-4.1.0.jar,
+ ext/jna-platform-4.1.0.jar
 Export-Package: com.sun.jna,
  com.sun.jna.darwin,
  com.sun.jna.platform,
@@ -19,6 +19,8 @@ Export-Package: com.sun.jna,
  com.sun.jna.platform.unix,
  com.sun.jna.platform.win32,
  com.sun.jna.platform.win32.COM,
+ com.sun.jna.platform.win32.COM.tlb,
+ com.sun.jna.platform.win32.COM.tlb.imp,
  com.sun.jna.platform.wince,
  com.sun.jna.ptr,
  com.sun.jna.win32,

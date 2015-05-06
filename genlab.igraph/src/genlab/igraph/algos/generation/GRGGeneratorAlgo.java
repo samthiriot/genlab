@@ -6,9 +6,6 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
 import genlab.core.parameters.BooleanParameter;
-import genlab.core.usermachineinteraction.ListOfMessages;
-import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphLibrary;
 
 public class GRGGeneratorAlgo extends AbstractIGraphGenerator {
 
@@ -51,26 +48,8 @@ public class GRGGeneratorAlgo extends AbstractIGraphGenerator {
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {
 		
-		return new AbstractIGraphGeneratorExec(execution, algoInstance) {
-			
-			@Override
-			public long getTimeout() {
-				return 1000;
-			}
-			
-			@Override
-			protected IGraphGraph generateGraph(IGraphLibrary lib,
-					ListOfMessages messages) {
-
-				int nodes = (Integer)getInputValueForInput(INPUT_NODES);
-				double radius = (Double)getInputValueForInput(INPUT_RADIUS);
-
-				boolean torus = (Boolean)algoInst.getValueForParameter(PARAM_TORUS.getId());
+		return new GRGGeneratorExec(execution, algoInstance);
 		
-				return lib.generateGRG(nodes, radius, torus);
-				
-			}
-		};
 	}
 
 }

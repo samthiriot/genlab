@@ -46,46 +46,7 @@ public class IGraphClusteringAlgo extends AbstractIGraphMeasure {
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {
 		
-		return new AbstractIGraphMeasureExec(execution, algoInstance) {
-			
-			@Override
-			protected Map<IInputOutput<?>, Object> analyzeGraph(
-					IComputationProgress progress, 
-					IGraphGraph igraphGraph,
-					IGenlabGraph genlabGraph,
-					ListOfMessages messages
-					) {
-
-				if (genlabGraph.getDirectionality() != GraphDirectionality.UNDIRECTED) {
-					messages.infoUser("the global clustering assumes the graph is undirected, while the graph provided as parameter is "+genlabGraph.getDirectionality(), getClass());
-				}
-				
-				Map<IInputOutput<?>, Object> results = new HashMap<IInputOutput<?>, Object>();
-				
-				// global clustering
-				if (isUsed(OUTPUT_CLUSTERING_GLOBAL) ||  exec.getExecutionForced()) {
-					double clusteringGlobal = igraphGraph.lib.computeGlobalClustering(igraphGraph);
-					results.put(OUTPUT_CLUSTERING_GLOBAL, clusteringGlobal);
-				} else {
-					messages.debugTech("the global clustering is not used, so it will not be computed", getClass());	
-				}
-				
-				// average clustering
-				if (isUsed(OUTPUT_CLUSTERING_AVERAGE) ||  exec.getExecutionForced()) {
-					double clusteringAvg = igraphGraph.lib.computeGlobalClusteringLocal(igraphGraph);
-					results.put(OUTPUT_CLUSTERING_AVERAGE, clusteringAvg);
-				} else {
-					messages.debugTech("the average clustering is not used, so it will not be computed", getClass());	
-				}
-				
-				return results;
-			}
-
-			@Override
-			public long getTimeout() {
-				return 1000*60*5; // TODO timeout with complexity
-			}
-		};
+		return new IGraphClusteringExec(execution, algoInstance);
 	}
 
 }

@@ -21,6 +21,12 @@ import genlab.core.model.instance.IConnection;
  */
 public class ConnectionExecFromIterationToReduce extends AbstractConnectionExec<IAlgoExecution, IReduceAlgoExecution> {
 
+
+	/**
+	 * For serialization only
+	 */
+	public ConnectionExecFromIterationToReduce() {}
+
 	public ConnectionExecFromIterationToReduce(IConnection c, IAlgoExecution from, IReduceAlgoExecution to) {
 
 		super(c, from, to);

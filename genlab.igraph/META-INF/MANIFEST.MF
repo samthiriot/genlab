@@ -7,10 +7,10 @@ Bundle-Activator: genlab.igraph.Activator
 Bundle-Vendor: Samuel Thiriot
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources;bundle-version="3.8.1",
- org.junit,
  genlab.jna.corejar,
- genlab.core;bundle-version="0.0.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+ genlab.core;bundle-version="0.0.1",
+ org.junit
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-NativeCode: ext/native/linux/x86/libigraph.so ; 
  osname=Linux ;
@@ -58,7 +58,7 @@ Export-Package: genlab.igraph,
  genlab.igraph.algos.generation.lcffamous,
  genlab.igraph.algos.measure,
  genlab.igraph.algos.transform,
- genlab.igraph.commons
+ genlab.igraph.commons,
+ genlab.igraph.natjna
 Bundle-ClassPath: .,
- ext/native/linux/x86/,
- ext/native/linux/x86_64/
+ ext/native/

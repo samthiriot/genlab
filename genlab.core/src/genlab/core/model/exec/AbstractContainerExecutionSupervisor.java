@@ -7,12 +7,8 @@ import genlab.core.exec.ITasksDynamicProducer;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
-import genlab.core.model.instance.IInputOutputInstance;
-import genlab.core.model.instance.IReduceAlgoInstance;
-import genlab.core.model.meta.IReduceAlgo;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 

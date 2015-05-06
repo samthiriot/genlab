@@ -1,10 +1,11 @@
 package genlab.gui.preferences;
 
-import genlab.core.exec.LocalComputationNode;
+import genlab.core.exec.client.ComputationNodes;
+import genlab.core.exec.client.ServerHostPreference;
+import genlab.core.exec.server.GenlabComputationServer;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.Activator;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.util.IPropertyChangeListener;
 
 /**
@@ -52,16 +53,22 @@ public class Genlab2eclipsePreferences {
 		
 	}
 	
-	public Integer getLocalRunnerMaxCpusCount() {
-		
-		return Activator.getDefault().getPreferenceStore().getInt(RunnerPreferencePage.KEY_MAX_CPUS);
-		
-	}
-	
+
 	protected void updateGenlabSettingsFromEclipsePreferencesForLocalRunner() {
 		
-		LocalComputationNode.getSingleton().setCpusCount(getLocalRunnerMaxCpusCount());
-	
+		// parameters for local runner
+		ComputationNodes.getSingleton().setParameterLocalThreadsMax(Activator.getDefault().getPreferenceStore().getInt(RunnerPreferencePage.KEY_MAX_CPUS));
+		
+		// parameters for starting a server
+		GenlabComputationServer.getSingleton().setParameterInterfaceToBind(Activator.getDefault().getPreferenceStore().getString(RunnerPreferencePage.KEY_START_SERVER_INTERFACE));
+		GenlabComputationServer.getSingleton().setParameterStartServerPort(Activator.getDefault().getPreferenceStore().getInt(RunnerPreferencePage.KEY_START_SERVER_PORT));
+		GenlabComputationServer.getSingleton().setParameterStartServer(Activator.getDefault().getPreferenceStore().getBoolean(RunnerPreferencePage.KEY_START_SERVER));
+		
+
+		// parameters for contacting a server
+		ComputationNodes.getSingleton().setParameterListOfHosts(ServerHostPreference.parseAsList(Activator.getDefault().getPreferenceStore().getString(RunnerPreferencePage.KEY_SERVERS)));
+		
+		
 	}
 		
 	

@@ -7,6 +7,7 @@ import genlab.core.model.meta.IAlgo;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -17,6 +18,7 @@ import java.util.Set;
  * @author Samuel Thiriot
  *
  */
+@SuppressWarnings("serial")
 public final class ComputationProgressWithSteps implements IComputationProgress, Cloneable {
 
 	private IAlgoExecution algoExec = null;
@@ -441,6 +443,21 @@ public final class ComputationProgressWithSteps implements IComputationProgress,
 	public boolean isCleaned() {
 		return cleaned;
 	}
+
+
+
+	@Override
+	public List<IComputationProgressSimpleListener> getListeners() {
+		return listeners;
+	}
+
+
+	@Override
+	public List<IComputationProgressDetailedListener> getDetailedListeners() {
+		return listenersDetails;
+	}
+
+
 
 
 }

@@ -11,15 +11,24 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 public class ComputationResult implements IComputationResult {
 
-	protected final IAlgoInstance algo;
-	protected final IComputationProgress progress;
+	protected final transient IAlgoInstance algo;
+	protected final transient IComputationProgress progress;
 	public Map<IInputOutputInstance,Object> results;
 
-	protected final ListOfMessages listOfMessages;
+	protected ListOfMessages listOfMessages;
 	
 	protected Object wave = new UniqueTimestamp();
+	
+
+	public ComputationResult() {
+		this.algo = null;
+		this.progress = null;
+		
+	}
+	
 	
 	public ComputationResult(IAlgoInstance algo, IComputationProgress progress, ListOfMessages listOfMessages) {
 		this.algo = algo;

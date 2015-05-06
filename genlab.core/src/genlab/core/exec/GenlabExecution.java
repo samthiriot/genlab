@@ -8,7 +8,19 @@ public class GenlabExecution {
 	public static IAlgoExecution runBackground(IGenlabWorkflowInstance workflow) {
 		return runBackground(workflow, false);
 	}
+	
 
+	public static void runBackgroundWithoutWaiting(IGenlabWorkflowInstance workflow, boolean forceExec) {
+
+		AsynchronousWorkflowRunner runnable = new AsynchronousWorkflowRunner(workflow, forceExec);
+		
+		Thread th = new Thread(runnable);
+		th.setName("launch_workflow");
+		th.start();
+		
+	}
+	
+	
 	public static IAlgoExecution runBackground(IGenlabWorkflowInstance workflow, boolean forceExec) {
 
 		AsynchronousWorkflowRunner runnable = new AsynchronousWorkflowRunner(workflow, forceExec);

@@ -146,6 +146,47 @@ public class FileUtils {
 	
 	protected static File genlabTmpDirectory = null;
 	
+	/**
+	 * Returns a tmp directory, always different at each call.
+	 * Will be deleted at the end of the program.
+	 * @return
+	 */
+	public static File getGenlabTmpUniqueDirectory() {
+			
+		// TODO jvm7: simpler method in java 7
+		
+		File genlabTmpDirectory = null;
+		
+		GLLogger.debugTech("creating the directory for tmp data...", FileUtils.class);
+		try {
+			// first ask for a tmp file...
+			genlabTmpDirectory = File.createTempFile("genlab_tmpdata", "");
+			// then delete it...
+			genlabTmpDirectory.delete();
+			// then create it as a directory !
+			genlabTmpDirectory.mkdirs();
+		} catch (IOException e) {
+			GLLogger.debugTech("error while creating the directory for tmp data: "+e, FileUtils.class, e);
+			throw new ProgramException("unable to create the tmp directory for genlab",e);
+		}
+		
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+
+			@Override
+			public void run() {
+				FileUtils.clearTmpData();
+			}
+			
+		});
+		// attempt to redirect all the other temp resources there. Not this is not guaranteed
+		try {
+			System.setProperty("java.io.tmpdir", genlabTmpDirectory.getAbsolutePath());
+		} catch (Throwable t) {
+		}
+			
+		return genlabTmpDirectory;
+	}
+
 	public static File getGenlabTmpDirectory() {
 		
 		if (genlabTmpDirectory == null) {

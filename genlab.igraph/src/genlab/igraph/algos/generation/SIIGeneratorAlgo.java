@@ -5,9 +5,6 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
-import genlab.core.usermachineinteraction.ListOfMessages;
-import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphLibrary;
 
 public class SIIGeneratorAlgo extends AbstractIGraphGenerator {
 
@@ -59,29 +56,7 @@ public class SIIGeneratorAlgo extends AbstractIGraphGenerator {
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {
 		
-		return new AbstractIGraphGeneratorExec(execution, algoInstance) {
-			
-			@Override
-			public long getTimeout() {
-				return 1000;
-			}
-			
-			@Override
-			protected IGraphGraph generateGraph(IGraphLibrary lib,
-					ListOfMessages messages) {
-
-				return lib.generateInterconnectedIslands(
-						(Integer)getInputValueForInput(INPUT_islands_n), 
-						(Integer)getInputValueForInput(INPUT_islands_size), 
-						(Double)getInputValueForInput(INPUT_islands_pin), 
-						(Integer)getInputValueForInput(INPUT_n_inter),
-						true,
-						true
-						);
-				
-				
-			}
-		};
+		return new SIIGeneratorExec(execution, algoInstance);
 	}
 
 }

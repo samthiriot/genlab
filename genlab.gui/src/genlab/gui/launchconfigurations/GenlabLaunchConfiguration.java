@@ -1,26 +1,21 @@
 package genlab.gui.launchconfigurations;
 
-import java.io.File;
-
 import genlab.core.exec.GenlabExecution;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.meta.IGenlabWorkflow;
-import genlab.core.persistence.GenlabPersistence;
 import genlab.core.projects.IGenlabProject;
 import genlab.gui.Activator;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 import genlab.gui.perspectives.RunPerspective;
 
+import java.io.File;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
-import org.eclipse.debug.core.model.IProcess;
-import org.eclipse.debug.core.model.IStreamsProxy;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
@@ -56,8 +51,6 @@ public class GenlabLaunchConfiguration implements ILaunchConfigurationDelegate {
 				false
 				);
 
-		System.out.println("should launch "+projectPath);
-		System.out.println("should launch "+workflowPath);
 
 		IProject pro = GenLab2eclipseUtils.getProjectFromRelativePath(projectPath);
 		IGenlabProject glPro = GenLab2eclipseUtils.getGenlabProjectForEclipseProject(pro);
@@ -75,7 +68,7 @@ public class GenlabLaunchConfiguration implements ILaunchConfigurationDelegate {
 						   RunPerspective.ID,       
 						   PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 						   );
-					GenlabExecution.runBackground(glWorkflow, forceExec);
+					GenlabExecution.runBackgroundWithoutWaiting(glWorkflow, forceExec);
 
 				} catch (WorkbenchException e) {
 				   e.printStackTrace();

@@ -32,9 +32,10 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.graphstream.ui.swingViewer.View;
-import org.graphstream.ui.swingViewer.Viewer;
-import org.graphstream.ui.swingViewer.Viewer.CloseFramePolicy;
+import org.graphstream.ui.swingViewer.ViewPanel;
+import org.graphstream.ui.view.View;
+import org.graphstream.ui.view.Viewer;
+import org.graphstream.ui.view.Viewer.CloseFramePolicy;
 
 /**
  * TODO: do not display graphs when they are too big; alert instead.
@@ -59,7 +60,7 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 	
 	private JRootPane awtRootPane;
 	
-	private View gsView = null;
+	private ViewPanel gsView = null;
 	
 	private Viewer gsViewer = null;
 	
@@ -77,9 +78,11 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 	private boolean firstDisplay = true;
 
 	{
+		
 		// reduce flickering for Windows
 		System.setProperty("sun.awt.noerasebackground", "true");
-
+		System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+		
 		// define the more advanced viewer as the default graphstream viewer
 		// TODO find a way to use the better renderer
 		// System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
@@ -172,6 +175,8 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 	protected void configureViewer(Viewer gsViewer) {
 		//gsViewer.disableAutoLayout();
 		gsViewer.setCloseFramePolicy(CloseFramePolicy.CLOSE_VIEWER);
+		// TODO ?        viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.HIDE_ONLY);
+
 	}
 	
 	protected void startViewer(Viewer gsViewer) {
@@ -193,11 +198,12 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 				
 				messages.traceTech("create the view...", getClass());
 				gsView = gsViewer.addDefaultView(false); // false indicates "no JFrame".
+				
 				gsView.setDoubleBuffered(true); // test for windows !
 				//gsView.setIgnoreRepaint(true);
-				gsView.setBackground(Color.CYAN);
+				// TODO ? gsView.setBackground(Color.CYAN);
 				
-				awtRootPane.getContentPane().add(gsView, BorderLayout.CENTER);
+				awtRootPane.getContentPane().add( gsView, BorderLayout.CENTER);
 				
 				//awtFrame.invalidate();
 				//awtRootPane.invalidate();
@@ -356,17 +362,24 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		
 		messages.traceTech("disposing this view...", getClass());
 		
+		System.err.println("DISPOSING ABSTRACT GRAPH VIEW");
+		
 		if (gsViewer != null) {
 			gsViewer.disableAutoLayout();
 			gsViewer.close();
 		}
-		if (gsView != null) {
-			// TODO ?
-		}
-		if (hostSwtComposite != null && !hostSwtComposite.isDisposed())
-			hostSwtComposite.dispose();
 		
-		awtFrame.dispose();
+		/* creates a freeze of the whole GUI
+		if (awtFrame != null) {
+			System.err.println("dispose awt");
+			awtFrame.dispose();
+		}
+		*/
+		if (hostSwtComposite != null && !hostSwtComposite.isDisposed()) {
+			hostSwtComposite.dispose();
+		}
+		
+		System.err.println("done");
 		
 		super.dispose();
 	}
@@ -397,8 +410,10 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 	@Override
 	public void partClosed(IWorkbenchPartReference partRef) {
 		
-		if (gsViewer != null)
+		if (gsViewer != null) {
+			System.err.println("CLOSING ABSTRACT GRAPH VIEW");
 			gsViewer.disableAutoLayout();
+		}
 		
 		super.partClosed(partRef);
 	}

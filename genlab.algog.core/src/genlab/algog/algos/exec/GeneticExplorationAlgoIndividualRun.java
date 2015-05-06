@@ -4,6 +4,7 @@ import genlab.algog.algos.meta.AbstractGeneAlgo;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AnIndividual;
 import genlab.core.commons.ProgramException;
+import genlab.core.exec.IAlgoExecutionRemotable;
 import genlab.core.exec.ICleanableTask;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractContainerExecution;
@@ -17,9 +18,7 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,9 @@ import cern.colt.Arrays;
  * @author Samuel Thiriot
  *
  */
-public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecution implements ICleanableTask {
+public class GeneticExplorationAlgoIndividualRun 
+									extends AbstractContainerExecution 
+									implements ICleanableTask {
 
 	private final Collection<IAlgoInstance> algoInstancesToRun;
 	private final int individualId;

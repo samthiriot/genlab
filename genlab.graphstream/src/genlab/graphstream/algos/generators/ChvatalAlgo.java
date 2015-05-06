@@ -20,7 +20,6 @@ public class ChvatalAlgo extends GraphStreamGeneratorAlgo {
 				);
 		
 	}
-		
 
 
 	@Override
