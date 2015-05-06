@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -108,9 +108,11 @@ public abstract class NodeParticle extends Particle {
 	 *            The node identifier.
 	 */
 	public NodeParticle(BarnesHutLayout box, String id) {
-		this(box, id, (box.random.nextDouble() * 2) - 1, (box.random
-				.nextDouble() * 2) - 1,
-				box.is3D ? (box.random.nextDouble() * 2) - 1 : 0);
+//		this(box, id, box.getCenterPoint().x, box.getCenterPoint().y, box.is3D() ? box.getCenterPoint().z : 0);
+		this(box, id,  box.randomXInsideBounds(), box.randomYInsideBounds(), box.is3D ? box.randomZInsideBounds() : 0);	
+//		this(box, id, (box.random.nextDouble() * 2) - 1, (box.random
+//				.nextDouble() * 2) - 1,
+//				box.is3D ? (box.random.nextDouble() * 2) - 1 : 0);
 
 		this.box = box;
 	}

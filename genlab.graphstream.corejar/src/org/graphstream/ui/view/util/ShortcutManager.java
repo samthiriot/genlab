@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -29,15 +29,28 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C and LGPL licenses and that you accept their terms.
  */
-package org.graphstream.ui.swingViewer;
+package org.graphstream.ui.view.util;
+
+import org.graphstream.ui.graphicGraph.GraphicGraph;
+import org.graphstream.ui.view.View;
+
+import java.awt.event.KeyListener;
 
 /**
- * Listener for specific viewer events.
+ * Utility to centralise the shortcuts and actions for all view instances.
  */
-public interface ViewerListener {
-	void viewClosed(String viewName);
-
-	void buttonPushed(String id);
-
-	void buttonReleased(String id);
+public interface ShortcutManager extends KeyListener {
+	/**
+	 * Make the manager active on the given graph and view.
+	 * @param graph
+	 *            The graph to control.
+	 * @param view
+	 *            The view to control.
+	 */
+	void init(GraphicGraph graph, View view);
+	
+	/**
+	 * Release the links between this manager and the view and the graph.
+	 */
+	void release();
 }

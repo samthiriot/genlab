@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,22 +31,24 @@
  */
 package org.graphstream.ui.swingViewer;
 
+import org.graphstream.ui.graphicGraph.GraphicElement;
+import org.graphstream.ui.graphicGraph.GraphicGraph;
+import org.graphstream.ui.view.Viewer;
+import org.graphstream.ui.view.Camera;
+import org.graphstream.ui.view.util.DefaultMouseManager;
+import org.graphstream.ui.view.util.DefaultShortcutManager;
+import org.graphstream.ui.view.util.MouseManager;
+import org.graphstream.ui.view.util.ShortcutManager;
+
+import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.ArrayList;
-
-import javax.swing.JFrame;
-
-import org.graphstream.ui.graphicGraph.GraphicElement;
-import org.graphstream.ui.graphicGraph.GraphicGraph;
-import org.graphstream.ui.swingViewer.util.Camera;
-import org.graphstream.ui.swingViewer.util.DefaultMouseManager;
-import org.graphstream.ui.swingViewer.util.DefaultShortcutManager;
-import org.graphstream.ui.swingViewer.util.MouseManager;
-import org.graphstream.ui.swingViewer.util.ShortcutManager;
+import java.util.Collection;
 
 /**
  * Base for constructing views.
@@ -100,7 +102,7 @@ import org.graphstream.ui.swingViewer.util.ShortcutManager;
  * graph attribute is the identifier of the view.
  * </p>
  */
-public class DefaultView extends View implements WindowListener
+public class DefaultView extends ViewPanel implements WindowListener, ComponentListener
 {
 	private static final long serialVersionUID = - 4489484861592064398L;
 
@@ -154,12 +156,12 @@ public class DefaultView extends View implements WindowListener
 
 	// Command
 
-	@Override
+
 	public Camera getCamera() {
 		return renderer.getCamera();
 	}
 
-	@Override
+
 	public void display(GraphicGraph graph, boolean graphChanged) {
 		repaint();
 	}
@@ -189,7 +191,6 @@ public class DefaultView extends View implements WindowListener
 		}
 	}
 
-	@Override
 	public void close(GraphicGraph graph) {
 		renderer.close();
 		graph.addAttribute("ui.viewClosed", getId());
@@ -201,14 +202,12 @@ public class DefaultView extends View implements WindowListener
 		openInAFrame(false);
 	}
 
-	@Override
 	public void resizeFrame(int width, int height) {
 		if (frame != null) {
 			frame.setSize(width, height);
 		}
 	}
 
-	@Override
 	public void openInAFrame(boolean on) {
 		if (on) {
 			if (frame == null) {
@@ -216,14 +215,17 @@ public class DefaultView extends View implements WindowListener
 				frame.setLayout(new BorderLayout());
 				frame.add(this, BorderLayout.CENTER);
 				frame.setSize(800, 600);
+				frame.setLocationRelativeTo(null);
 				frame.setVisible(true);
 				frame.addWindowListener(this);
+				frame.addComponentListener(this);
 				frame.addKeyListener(shortcuts);
 			} else {
 				frame.setVisible(true);
 			}
 		} else {
 			if (frame != null) {
+				frame.removeComponentListener(this);
 				frame.removeWindowListener(this);
 				frame.removeKeyListener(shortcuts);
 				frame.remove(this);
@@ -246,19 +248,16 @@ public class DefaultView extends View implements WindowListener
 
 	// Selection
 
-	@Override
 	public void beginSelectionAt(double x1, double y1) {
 		renderer.beginSelectionAt(x1, y1);
 		repaint();
 	}
 
-	@Override
 	public void selectionGrowsAt(double x, double y) {
 		renderer.selectionGrowsAt(x, y);
 		repaint();
 	}
 
-	@Override
 	public void endSelectionAt(double x2, double y2) {
 		renderer.endSelectionAt(x2, y2);
 		repaint();
@@ -308,20 +307,34 @@ public class DefaultView extends View implements WindowListener
 		graph.removeAttribute("ui.viewClosed");
 	}
 
+	public void componentHidden(ComponentEvent e) {
+		repaint();
+	}
+
+ 	public void componentMoved(ComponentEvent e) {
+		repaint();
+ 	}
+
+ 	public void componentResized(ComponentEvent e) {
+		repaint();
+ 	}
+
+ 	public void componentShown(ComponentEvent e) {
+ 		repaint();
+ 	}
+
+
 	// Methods deferred to the renderer
 
-	@Override
-	public ArrayList<GraphicElement> allNodesOrSpritesIn(double x1, double y1,
+	public Collection<GraphicElement> allNodesOrSpritesIn(double x1, double y1,
 			double x2, double y2) {
 		return renderer.allNodesOrSpritesIn(x1, y1, x2, y2);
 	}
 
-	@Override
 	public GraphicElement findNodeOrSpriteAt(double x, double y) {
 		return renderer.findNodeOrSpriteAt(x, y);
 	}
 
-	@Override
 	public void moveElementAtPx(GraphicElement element, double x, double y) {
 		// The feedback on the node positions is often off since not needed
 		// and generating lots of events. We activate it here since the
@@ -332,8 +345,7 @@ public class DefaultView extends View implements WindowListener
 		renderer.moveElementAtPx(element, x, y);
 		graph.feedbackXYZ(on);
 	}
-	
-	@Override
+
 	public void freezeElement(GraphicElement element, boolean frozen) {
 		if(frozen) {
 			element.addAttribute("layout.frozen");
@@ -342,19 +354,16 @@ public class DefaultView extends View implements WindowListener
 		}
 	}
 
-	@Override
 	public void setBackLayerRenderer(LayerRenderer renderer) {
 		this.renderer.setBackLayerRenderer(renderer);
 		repaint();
 	}
 
-	@Override
 	public void setForeLayoutRenderer(LayerRenderer renderer) {
 		this.renderer.setForeLayoutRenderer(renderer);
 		repaint();
 	}
 
-	@Override
 	public void setMouseManager(MouseManager manager) {
 		if(mouseClicks != null)
 			mouseClicks.release();
@@ -367,7 +376,6 @@ public class DefaultView extends View implements WindowListener
 		mouseClicks = manager;
 	}
 
-	@Override
 	public void setShortcutManager(ShortcutManager manager) {
 		if(shortcuts != null)
 			shortcuts.release();

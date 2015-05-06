@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -38,6 +38,8 @@ import org.graphstream.ui.graphicGraph.stylesheet.Value;
 import org.graphstream.ui.graphicGraph.stylesheet.Values;
 import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.Units;
 
+import java.util.logging.Logger;
+
 /**
  * p Various geometric informations on the graphic graph.
  * 
@@ -53,6 +55,12 @@ import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.Units;
  * </p>
  */
 public class GraphMetrics {
+
+    /**
+     * class level logger
+     */
+    private static final Logger logger = Logger.getLogger(GraphMetrics.class.getSimpleName());
+
 	// Attribute
 
 	/**
@@ -187,7 +195,8 @@ public class GraphMetrics {
 	public double lengthToGu(double value, StyleConstants.Units units) {
 		switch (units) {
 		case PX:
-			return (value - 0.01f) / ratioPx2Gu;
+			//return (value - 0.01f) / ratioPx2Gu;
+			return value / ratioPx2Gu;
 		case PERCENTS:
 			return (diagonal * value);
 		case GU:
@@ -231,7 +240,8 @@ public class GraphMetrics {
 	public double lengthToPx(double value, StyleConstants.Units units) {
 		switch (units) {
 		case GU:
-			return (value - 0.01f) * ratioPx2Gu;
+			//return (value - 0.01f) * ratioPx2Gu;
+			return value * ratioPx2Gu;
 		case PERCENTS:
 			return (diagonal * value) * ratioPx2Gu;
 		case PX:
@@ -279,7 +289,7 @@ public class GraphMetrics {
 			throw new IllegalArgumentException();
 		}
 
-		System.out.printf("%spixel[%d] %d --> %fgu\n", this, index, pixels, l);
+		logger.fine(String.format("%spixel[%d] %d --> %fgu", this, index, pixels, l));
 		
 		return l;
 	}
@@ -331,6 +341,8 @@ public class GraphMetrics {
 			ratioPx2Gu = ratio;
 			px1 = 0.95f / ratioPx2Gu;
 		}
+		else if(ratio == 0) throw new RuntimeException("ratio PX to GU cannot be zero");
+		else if(ratio < 0) throw new RuntimeException(String.format("ratio PX to GU cannot be negative (%f)",ratio)) ;
 	}
 
 	/**
@@ -363,7 +375,5 @@ public class GraphMetrics {
 		size.data[2] = hi.z - lo.z;
 		diagonal = Math.sqrt(size.data[0] * size.data[0] + size.data[1]
 				* size.data[1] + size.data[2] * size.data[2]);
-
-		// System.err.printf( "lo=%s hi=%s%n", lo, hi );
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -127,8 +127,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 		jj_consume_token(LBRACE);
 		styles(style);
 		jj_consume_token(RBRACE);
-
-		return rule;
+		{
+			if (true)
+				return rule;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public void styles(Style style) throws ParseException {
@@ -276,6 +279,10 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 					t = jj_consume_token(STRING);
 					select.setId(t.image.substring(1, t.image.length() - 1));
 					break;
+				case REAL:
+					t = jj_consume_token(REAL);
+					select.setId(t.image.toString());
+					break;
 				default:
 					jj_la1[5] = jj_gen;
 					jj_consume_token(-1);
@@ -331,8 +338,7 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 				break;
 			case STRING:
 				t = jj_consume_token(STRING);
-				select.setPseudoClass(t.image
-						.substring(1, t.image.length() - 1));
+				select.setPseudoClass(t.image.substring(1, t.image.length() - 1));
 				break;
 			case IDENTIFIER:
 				t = jj_consume_token(IDENTIFIER);
@@ -348,8 +354,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_la1[10] = jj_gen;
 			;
 		}
-
-		return select;
+		{
+			if (true)
+				return select;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public void style(Style style) throws ParseException {
@@ -673,8 +682,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 		} catch (NumberFormatException e) {
 			generateParseException();
 		}
-
-		return value;
+		{
+			if (true)
+				return value;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Values values() throws ParseException {
@@ -695,8 +707,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			value = value();
 			values.addValues(value.value);
 		}
-
-		return values;
+		{
+			if (true)
+				return values;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public String url() throws ParseException {
@@ -705,8 +720,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 		jj_consume_token(LPAREN);
 		t = jj_consume_token(STRING);
 		jj_consume_token(RPAREN);
-
-		return t.image.substring(1, t.image.length() - 1);
+		{
+			if (true)
+				return t.image.substring(1, t.image.length() - 1);
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public String icon() throws ParseException {
@@ -714,15 +732,24 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 		switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
 		case DYNICON:
 			jj_consume_token(DYNICON);
-			return "dynamic";
+			{
+				if (true)
+					return "dynamic";
+			}
+			break;
 		case URL:
 			s = url();
-			return s;
+			{
+				if (true)
+					return s;
+			}
+			break;
 		default:
 			jj_la1[13] = jj_gen;
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public String font() throws ParseException {
@@ -742,8 +769,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return s;
+		{
+			if (true)
+				return s;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Color color() throws ParseException {
@@ -796,8 +826,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 		Color color = Style.convertColor(s);
 		if (color == null)
 			color = Color.BLACK;
-
-		return color;
+		{
+			if (true)
+				return color;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Colors colors() throws ParseException {
@@ -818,8 +851,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			color = color();
 			colors.add(color);
 		}
-
-		return colors;
+		{
+			if (true)
+				return colors;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.FillMode fillMode() throws ParseException {
@@ -878,8 +914,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return m;
+		{
+			if (true)
+				return m;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.StrokeMode strokeMode() throws ParseException {
@@ -910,8 +949,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return m;
+		{
+			if (true)
+				return m;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.ShadowMode shadowMode() throws ParseException {
@@ -950,8 +992,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return s;
+		{
+			if (true)
+				return s;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.TextMode textMode() throws ParseException {
@@ -974,8 +1019,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return m;
+		{
+			if (true)
+				return m;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.TextVisibilityMode textVisMode() throws ParseException {
@@ -1014,8 +1062,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return m;
+		{
+			if (true)
+				return m;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.TextBackgroundMode textBgMode() throws ParseException {
@@ -1038,8 +1089,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return m;
+		{
+			if (true)
+				return m;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.TextStyle textStyle() throws ParseException {
@@ -1066,8 +1120,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return t;
+		{
+			if (true)
+				return t;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.SizeMode sizeMode() throws ParseException {
@@ -1090,8 +1147,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return m;
+		{
+			if (true)
+				return m;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.TextAlignment textAlign() throws ParseException {
@@ -1138,8 +1198,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return t;
+		{
+			if (true)
+				return t;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.IconMode iconMode() throws ParseException {
@@ -1170,8 +1233,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return i;
+		{
+			if (true)
+				return i;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.VisibilityMode visMode() throws ParseException {
@@ -1210,8 +1276,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return m;
+		{
+			if (true)
+				return m;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.Shape shape() throws ParseException {
@@ -1330,8 +1399,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return s;
+		{
+			if (true)
+				return s;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.ArrowShape arrowShape() throws ParseException {
@@ -1362,8 +1434,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return s;
+		{
+			if (true)
+				return s;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.JComponents jcomponent() throws ParseException {
@@ -1386,8 +1461,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return c;
+		{
+			if (true)
+				return c;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	final public Style.SpriteOrientation spriteOrient() throws ParseException {
@@ -1422,8 +1500,11 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 			jj_consume_token(-1);
 			throw new ParseException();
 		}
-
-		return s;
+		{
+			if (true)
+				return s;
+		}
+		throw new Error("Missing return statement in function");
 	}
 
 	/** Generated Token Manager. */
@@ -1451,7 +1532,7 @@ public class StyleSheetParser implements StyleSheetParserConstants {
 
 	private static void jj_la1_init_0() {
 		jj_la1_0 = new int[] { 0xf000000, 0xf000000, 0xf0000000, 0xf0000000,
-				0xf000000, 0x400000, 0x400000, 0x4200, 0x4200, 0x400000,
+				0xf000000, 0x600000, 0x400000, 0x4200, 0x4200, 0x400000,
 				0x8000, 0xf0000000, 0x20000, 0x800000, 0x400000, 0x5c0000,
 				0x20000, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
 				0x0, 0x0, 0x0, 0x0, };

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,16 +31,10 @@
  */
 package org.graphstream.graph.implementations;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.UUID;
 
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.EdgeFactory;
@@ -61,7 +55,7 @@ import org.graphstream.graph.NodeFactory;
  * the CPU.
  * </p>
  */
-public class AdjacencyListGraph extends AbstractGraph implements Externalizable {
+public class AdjacencyListGraph extends AbstractGraph {
 
 	public static final double GROW_FACTOR = 1.1;
 	public static final int DEFAULT_NODE_CAPACITY = 128;
@@ -325,64 +319,4 @@ public class AdjacencyListGraph extends AbstractGraph implements Externalizable 
 	 * this.<ALNode> getEachNode()) count += n.edges.length - n.degree; return
 	 * count; }
 	 */
-	
-
-	public AdjacencyListGraph() {
-		this(UUID.randomUUID().toString());
-	}
-
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
-		
-		super.writeExternal(out);
-		
-		out.writeInt(nodeCount);
-		
-		for (int i=0; i<nodeCount; i++) {
-			out.writeUTF(nodeArray[i].id);
-			out.writeObject(nodeArray[i].attributes);
-		}
-		
-		out.writeInt(edgeCount);
-		for (int i=0; i<edgeCount; i++) {
-			out.writeUTF(edgeArray[i].id);
-			out.writeUTF(edgeArray[i].source.id);
-			out.writeUTF(edgeArray[i].target.id);
-			out.writeBoolean(edgeArray[i].directed);
-			out.writeObject(edgeArray[i].attributes);
-		}
-		
-	}
-
-	@Override
-	public void readExternal(ObjectInput in) throws IOException,
-			ClassNotFoundException {
-		
-		super.readExternal(in);
-		
-		int nodeCount = in.readInt();
-		for (int i=0; i<nodeCount; i++) {
-			Node nodeCreated = addNode(in.readUTF());
-			Map<String, Object> attributes = (Map<String, Object>) in.readObject();
-			if (attributes != null)
-				nodeCreated.addAttributes(attributes);
-		}
-		
-		int edgeCount = in.readInt();
-		for (int i=0; i<edgeCount; i++) {
-			Edge e = addEdge(
-					in.readUTF(), 
-					in.readUTF(), 
-					in.readUTF(),
-					in.readBoolean()
-					);
-			Map<String, Object> attributes = (Map<String, Object>) in.readObject();
-			if (attributes != null)
-				e.addAttributes(attributes);
-
-		}
-		
-		
-	}
-
 }

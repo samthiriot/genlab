@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,12 +31,13 @@
  */
 package org.graphstream.ui.swingViewer;
 
+import org.graphstream.ui.graphicGraph.GraphicGraph;
+import org.graphstream.ui.graphicGraph.StyleGroupListener;
+import org.graphstream.ui.view.Selection;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Graphics2D;
-
-import org.graphstream.ui.graphicGraph.GraphicGraph;
-import org.graphstream.ui.graphicGraph.StyleGroupListener;
 
 public abstract class GraphRendererBase implements GraphRenderer,
 		StyleGroupListener {

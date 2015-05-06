@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -29,28 +29,65 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C and LGPL licenses and that you accept their terms.
  */
-package org.graphstream.ui.swingViewer.util;
+package org.graphstream.stream.file.gexf;
 
-import java.awt.event.KeyListener;
+import javax.xml.stream.XMLStreamException;
 
-import org.graphstream.ui.graphicGraph.GraphicGraph;
-import org.graphstream.ui.swingViewer.View;
+public class GEXFNode implements GEXFElement {
+	GEXF root;
 
-/**
- * Utility to centralise the shortcuts and actions for all view instances.
- */
-public interface ShortcutManager extends KeyListener {
-	/**
-	 * Make the manager active on the given graph and view.
-	 * @param graph
-	 *            The graph to control.
-	 * @param view
-	 *            The view to control.
+	String id;
+	String label;
+
+	GEXFAttValues attvalues;
+	GEXFSpells spells;
+
+	//
+	// VIZ Extension
+	float x;
+	float y;
+	float z;
+	boolean position;
+
+	//
+
+	public GEXFNode(GEXF root, String id) {
+		this.root = root;
+
+		this.id = id;
+		this.label = id;
+
+		spells = new GEXFSpells(root);
+		attvalues = new GEXFAttValues(root);
+		position = false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.graphstream.stream.file.gexf.GEXFElement#export(org.graphstream.stream
+	 * .file.gexf.SmartXMLWriter)
 	 */
-	void init(GraphicGraph graph, View view);
-	
-	/**
-	 * Release the links between this manager and the view and the graph.
-	 */
-	void release();
+	public void export(SmartXMLWriter stream) throws XMLStreamException {
+		stream.startElement("node");
+
+		stream.stream.writeAttribute("id", id);
+		stream.stream.writeAttribute("label", label);
+
+		if (position && root.isExtensionEnable(Extension.VIZ)) {
+			stream.startElement("viz:position");
+			stream.stream.writeAttribute("x", Float.toString(x));
+			stream.stream.writeAttribute("y", Float.toString(y));
+			stream.stream.writeAttribute("z", Float.toString(z));
+			stream.endElement(); // POSITION
+		}
+
+		attvalues.export(stream);
+
+		if (root.isExtensionEnable(Extension.DYNAMICS))
+			spells.export(stream);
+
+		stream.endElement(); // SPELLS
+	}
 }

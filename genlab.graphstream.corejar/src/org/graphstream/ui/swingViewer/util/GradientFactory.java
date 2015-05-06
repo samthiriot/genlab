@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,15 +31,15 @@
  */
 package org.graphstream.ui.swingViewer.util;
 
+import org.graphstream.ui.graphicGraph.stylesheet.Style;
+import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.FillMode;
+
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.LinearGradientPaint;
 import java.awt.MultipleGradientPaint;
 import java.awt.Paint;
 import java.awt.RadialGradientPaint;
-
-import org.graphstream.ui.graphicGraph.stylesheet.Style;
-import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.FillMode;
 
 public class GradientFactory {
 	/**

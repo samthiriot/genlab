@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,10 +31,6 @@
  */
 package org.graphstream.graph.implementations;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,8 +45,7 @@ import org.graphstream.graph.Node;
  * Nodes used with {@link MultiGraph}
  *
  */
-public class MultiNode extends AdjacencyListNode implements Externalizable {
-	
+public class MultiNode extends AdjacencyListNode {
 	protected HashMap<AbstractNode, List<AbstractEdge>> neighborMap;
 
 	// *** Constructor ***
@@ -60,8 +55,6 @@ public class MultiNode extends AdjacencyListNode implements Externalizable {
 		neighborMap = new HashMap<AbstractNode, List<AbstractEdge>>(
 				4 * INITIAL_EDGE_CAPACITY / 3 + 1);
 	}
-	
-
 
 	// *** Helpers ***
 
@@ -135,34 +128,4 @@ public class MultiNode extends AdjacencyListNode implements Externalizable {
 	public <T extends Edge> Collection<T> getEdgeSetBetween(int index) {
 		return getEdgeSetBetween(graph.getNode(index));
 	}
-	
-
-	public MultiNode() {
-		super();
-		neighborMap = new HashMap<AbstractNode, List<AbstractEdge>>(
-				4 * INITIAL_EDGE_CAPACITY / 3 + 1);
-	}
-	
-
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
-				
-		// don't backup graph; caller will have to restore graph
-		super.writeExternal(out);
-		
-	}
-
-	@Override
-	public void readExternal(ObjectInput in) throws IOException,
-			ClassNotFoundException {
-		
-		super.readExternal(in);
-		
-		// reconstruct local map
-		for (AbstractEdge e : edges) {
-			addEdgeCallback(e);
-		}
-	}
-	
-	
 }

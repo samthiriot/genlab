@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -37,14 +37,6 @@ import org.graphstream.util.parser.TokenMgrError;
 
 /** Token Manager. */
 public class StyleSheetParserTokenManager implements StyleSheetParserConstants {
-
-	/** Debug output. */
-	public java.io.PrintStream debugStream = System.out;
-
-	/** Set debug output. */
-	public void setDebugStream(java.io.PrintStream ds) {
-		debugStream = ds;
-	}
 
 	private final int jjStopStringLiteralDfa_0(int pos, long active0,
 			long active1, long active2) {
@@ -797,8 +789,9 @@ public class StyleSheetParserTokenManager implements StyleSheetParserConstants {
 
 	private final int jjStartNfa_0(int pos, long active0, long active1,
 			long active2) {
-		return jjMoveNfa_0(jjStopStringLiteralDfa_0(pos, active0, active1,
-				active2), pos + 1);
+		return jjMoveNfa_0(
+				jjStopStringLiteralDfa_0(pos, active0, active1, active2),
+				pos + 1);
 	}
 
 	private int jjStopAtPos(int pos, int kind) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -32,6 +32,12 @@
 package org.graphstream.ui.layout.springbox;
 
 import java.util.Iterator;
+
+import org.miv.pherd.Particle;
+import org.miv.pherd.ntree.BarycenterCellData;
+import org.miv.pherd.ntree.Cell;
+import org.miv.pherd.ntree.CellData;
+import org.miv.pherd.ntree.NTreeListener;
 
 /**
  * A N-Tree cell data that both compute the barycenter of each cell (aggregate position),

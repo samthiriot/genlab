@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,15 +31,6 @@
  */
 package org.graphstream.graph.implementations;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
-
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.EdgeFactory;
 import org.graphstream.graph.EdgeRejectedException;
@@ -56,9 +47,22 @@ import org.graphstream.stream.GraphReplay;
 import org.graphstream.stream.Sink;
 import org.graphstream.stream.file.FileSink;
 import org.graphstream.stream.file.FileSource;
-import org.graphstream.ui.swingViewer.Viewer;
+import org.graphstream.ui.view.Viewer;
+
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
 public class Graphs {
+
+    private static final Logger logger = Logger.getLogger(Graphs.class.getSimpleName());
 
 	public static Graph unmutableGraph(Graph g) {
 		return null;
@@ -103,9 +107,7 @@ public class Graphs {
 			Class<? extends Graph> cls = graphs[0].getClass();
 			result = cls.getConstructor(String.class).newInstance(id);
 		} catch (Exception e) {
-			System.err.printf("*** WARNING *** can not create a graph of %s\n",
-					graphs[0].getClass().getName());
-
+            logger.warning(String.format("Cannot create a graph of %s.", graphs[0].getClass().getName()));
 			result = new MultiGraph(id);
 		}
 
@@ -137,6 +139,95 @@ public class Graphs {
 
 		replay.removeSink(result);
 		result.setStrict(strict);
+	}
+
+	/**
+	 * Clone a given graph with same node/edge structure and same attributes.
+	 * 
+	 * @param g
+	 *            the graph to clone
+	 * @return a copy of g
+	 */
+	public static Graph clone(Graph g) {
+		Graph copy;
+
+		try {
+			Class<? extends Graph> cls = g.getClass();
+			copy = cls.getConstructor(String.class).newInstance(g.getId());
+		} catch (Exception e) {
+            logger.warning(String.format("Cannot create a graph of %s.", g.getClass().getName()));
+			copy = new AdjacencyListGraph(g.getId());
+		}
+
+		copyAttributes(g, copy);
+
+		for (int i = 0; i < g.getNodeCount(); i++) {
+			Node source = g.getNode(i);
+			Node target = copy.addNode(source.getId());
+
+			copyAttributes(source, target);
+		}
+
+		for (int i = 0; i < g.getEdgeCount(); i++) {
+			Edge source = g.getEdge(i);
+			Edge target = copy.addEdge(source.getId(), source.getSourceNode()
+					.getId(), source.getTargetNode().getId(), source
+					.isDirected());
+
+			copyAttributes(source, target);
+		}
+
+		return copy;
+	}
+
+	/**
+	 * 
+	 * @param source
+	 * @param target
+	 */
+	public static void copyAttributes(Element source, Element target) {
+		for (String key : source.getAttributeKeySet()) {
+			Object value = source.getAttribute(key);
+			value = checkedArrayOrCollectionCopy(value);
+
+			target.setAttribute(key, value);
+		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static Object checkedArrayOrCollectionCopy(Object o) {
+		if (o == null)
+			return null;
+
+		if (o.getClass().isArray()) {
+
+			Object c = Array.newInstance(o.getClass().getComponentType(),
+					Array.getLength(o));
+
+			for (int i = 0; i < Array.getLength(o); i++) {
+				Object t = checkedArrayOrCollectionCopy(Array.get(o, i));
+				Array.set(c, i, t);
+			}
+
+			return c;
+		}
+
+		if (Collection.class.isAssignableFrom(o.getClass())) {
+			Collection<?> t;
+
+			try {
+				t = (Collection<?>) o.getClass().newInstance();
+				t.addAll((Collection) o);
+
+				return t;
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return o;
 	}
 
 	static class SynchronizedElement<U extends Element> implements Element {
@@ -217,7 +308,7 @@ public class Graphs {
 			return getAttributeKeySet().iterator();
 		}
 
-		public Iterable<String> getAttributeKeySet() {
+		public Collection<String> getAttributeKeySet() {
 			ArrayList<String> o;
 			Iterator<String> it;
 
@@ -232,6 +323,10 @@ public class Graphs {
 			attributeLock.unlock();
 
 			return o;
+		}
+		
+		public Iterable<String> getEachAttributeKey() {
+			return getAttributeKeySet();
 		}
 
 		public <T> T getFirstAttributeOf(String... keys) {
@@ -382,7 +477,7 @@ public class Graphs {
 			attributeLock.lock();
 			wrappedElement.setAttribute(attribute, values);
 			attributeLock.unlock();
-		}
+		}		
 	}
 
 	static class SynchronizedGraph extends SynchronizedElement<Graph> implements
@@ -480,10 +575,10 @@ public class Graphs {
 			T e;
 			Edge se;
 			final Node unsyncNode1, unsyncNode2;
-			
+
 			unsyncNode1 = ((SynchronizedElement<Node>) node1).wrappedElement;
 			unsyncNode2 = ((SynchronizedElement<Node>) node2).wrappedElement;
-			
+
 			elementLock.lock();
 
 			e = wrappedElement.addEdge(id, unsyncNode1, unsyncNode2);
@@ -501,7 +596,7 @@ public class Graphs {
 			T e;
 			Edge se;
 			final Node unsyncFrom, unsyncTo;
-			
+
 			unsyncFrom = ((SynchronizedElement<Node>) from).wrappedElement;
 			unsyncTo = ((SynchronizedElement<Node>) to).wrappedElement;
 

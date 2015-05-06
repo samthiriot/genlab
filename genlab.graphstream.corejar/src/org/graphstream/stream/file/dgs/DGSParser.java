@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -341,7 +341,7 @@ public class DGSParser implements Parser {
 	protected void attributes(ElementType type, String id) throws IOException,
 			ParseException {
 		int c;
-		
+
 		skipWhitespaces();
 
 		while ((c = nextChar()) != '\n' && c != '#' && c >= 0) {
@@ -444,8 +444,13 @@ public class DGSParser implements Parser {
 					try {
 						if (word.indexOf('.') > 0)
 							o = Double.valueOf(word);
-						else
-							o = Integer.valueOf(word);
+						else {
+							try {
+								o = Integer.valueOf(word);
+							} catch (NumberFormatException e) {
+								o = Long.valueOf(word);
+							}
+						}
 					} catch (NumberFormatException e) {
 						throw parseException("invalid number format '%s'", word);
 					}
@@ -734,6 +739,11 @@ public class DGSParser implements Parser {
 					break;
 				case Character.DASH_PUNCTUATION:
 					if (c != '-')
+						stop = true;
+
+					break;
+				case Character.MATH_SYMBOL:
+					if (c != '+')
 						stop = true;
 
 					break;

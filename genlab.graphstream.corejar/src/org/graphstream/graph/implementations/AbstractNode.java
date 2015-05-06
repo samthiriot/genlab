@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,10 +31,6 @@
  */
 package org.graphstream.graph.implementations;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.HashSet;
@@ -65,7 +61,7 @@ import org.graphstream.stream.SourceBase;
  * graph. This class has a low memory overhead (one reference as field).
  * </p>
  */
-public abstract class AbstractNode extends AbstractElement implements Node, Externalizable {
+public abstract class AbstractNode extends AbstractElement implements Node {
 
 	// *** Fields ***
 
@@ -89,38 +85,33 @@ public abstract class AbstractNode extends AbstractElement implements Node, Exte
 		super(id);
 		this.graph = graph;
 	}
-	
 
 	// *** Inherited from abstract element ***
 
 	@Override
-	protected void attributeChanged(String sourceId, long timeId,
-			String attribute, AttributeChangeEvent event, Object oldValue,
-			Object newValue) {
-		graph.listeners.sendAttributeChangedEvent(sourceId, timeId, id,
+	protected void attributeChanged(AttributeChangeEvent event,
+			String attribute, Object oldValue, Object newValue) {
+		graph.listeners.sendAttributeChangedEvent(id,
 				SourceBase.ElementType.NODE, attribute, event, oldValue,
 				newValue);
-
 	}
 
-	@Override
 	/**
 	 * @return The id of the parent graph
 	 * @see org.graphstream.graph.implementations.AbstractElement#myGraphId()
 	 */
-	protected String myGraphId() {
-		return graph.getId();
-	}
+	// protected String myGraphId() {
+	// return graph.getId();
+	// }
 
-	@Override
 	/**
 	 * This implementation calls the corresponding method of the parent graph
 	 * 
 	 * @see org.graphstream.graph.implementations.AbstractElement#newEvent()
 	 */
-	protected long newEvent() {
-		return graph.newEvent();
-	}
+	// protected long newEvent() {
+	// return graph.newEvent();
+	// }
 
 	@Override
 	/**
@@ -604,28 +595,5 @@ public abstract class AbstractNode extends AbstractElement implements Node, Exte
 	 */
 	public boolean isIncidentEdge(Edge e) {
 		return e.getSourceNode() == this || e.getTargetNode() == this;
-	}
-	
-
-	protected AbstractNode() {
-		
-	}
-
-	protected void _setGraph(AbstractGraph g) {
-		this.graph = g;
-	}
-	
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
-				
-		// don't backup graph; caller will have to restore graph
-		super.writeExternal(out);
-	}
-
-	@Override
-	public void readExternal(ObjectInput in) throws IOException,
-			ClassNotFoundException {
-		
-		super.readExternal(in);
 	}
 }

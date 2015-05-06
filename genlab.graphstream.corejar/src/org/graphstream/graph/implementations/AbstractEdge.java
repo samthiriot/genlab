@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,12 +31,6 @@
  */
 package org.graphstream.graph.implementations;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.io.Serializable;
-
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 import org.graphstream.stream.SourceBase.ElementType;
@@ -55,7 +49,7 @@ import org.graphstream.stream.SourceBase.ElementType;
  * methods are executed in O(1) time.
  * </p>
  */
-public class AbstractEdge extends AbstractElement implements Edge, Externalizable {
+public class AbstractEdge extends AbstractElement implements Edge {
 
 	// *** Fields ***
 
@@ -103,37 +97,14 @@ public class AbstractEdge extends AbstractElement implements Edge, Externalizabl
 		this.directed = directed;
 		this.graph = (AbstractGraph) source.getGraph();
 	}
-	
-
 
 	// *** Inherited from AbstractElement ***
 
 	@Override
-	protected void attributeChanged(String sourceId, long timeId,
-			String attribute, AttributeChangeEvent event, Object oldValue,
-			Object newValue) {
-		graph.listeners.sendAttributeChangedEvent(sourceId, timeId, id,
-				ElementType.EDGE, attribute, event, oldValue,
-				newValue);
-	}
-
-	/**
-	 * @return The id of the parent graph
-	 * @see org.graphstream.graph.implementations.AbstractElement#myGraphId()
-	 */
-	@Override
-	protected String myGraphId() {
-		return graph.getId();
-	}
-
-	/**
-	 * This implementation calls the corresponding method of the parent graph
-	 * 
-	 * @see org.graphstream.graph.implementations.AbstractElement#newEvent()
-	 */
-	@Override
-	protected long newEvent() {
-		return graph.newEvent();
+	protected void attributeChanged(AttributeChangeEvent event,
+			String attribute, Object oldValue, Object newValue) {
+		graph.listeners.sendAttributeChangedEvent(id, ElementType.EDGE,
+				attribute, event, oldValue, newValue);
 	}
 
 	/**
@@ -145,7 +116,7 @@ public class AbstractEdge extends AbstractElement implements Edge, Externalizabl
 	protected boolean nullAttributesAreErrors() {
 		return graph.nullAttributesAreErrors();
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.format("%s[%s-%s%s]", getId(), source, directed ? ">"
@@ -189,39 +160,5 @@ public class AbstractEdge extends AbstractElement implements Edge, Externalizabl
 
 	public boolean isLoop() {
 		return source == target;
-	}
-	
-
-	protected AbstractEdge() {
-		
-	}
-
-	protected void _setGraph(AbstractGraph g) {
-		this.graph = g;
-	}
-	
-	@Override
-	public void writeExternal(ObjectOutput out) throws IOException {
-				
-		// don't backup graph; caller will have to restore graph
-		super.writeExternal(out);
-		
-		out.writeBoolean(directed);
-		out.writeObject(source);
-		out.writeObject(target);
-		
-		
-	}
-
-	@Override
-	public void readExternal(ObjectInput in) throws IOException,
-			ClassNotFoundException {
-		
-		super.readExternal(in);
-		
-		directed = in.readBoolean();
-		source = (AbstractNode) in.readObject();
-		target = (AbstractNode) in.readObject();
-		
 	}
 }

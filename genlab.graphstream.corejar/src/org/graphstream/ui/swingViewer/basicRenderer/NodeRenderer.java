@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -42,7 +42,7 @@ import org.graphstream.ui.graphicGraph.stylesheet.Values;
 import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants;
 import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.FillMode;
 import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.SizeMode;
-import org.graphstream.ui.swingViewer.util.Camera;
+import org.graphstream.ui.view.Camera;
 import org.graphstream.ui.swingViewer.util.GraphMetrics;
 
 public class NodeRenderer extends ElementRenderer {

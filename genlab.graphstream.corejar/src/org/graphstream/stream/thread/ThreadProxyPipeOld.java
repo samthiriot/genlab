@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -43,6 +43,9 @@ import org.miv.mbox.MBox;
 import org.miv.mbox.MBoxListener;
 import org.miv.mbox.MBoxStandalone;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Filter that allows to pass graph events between two threads without explicit
  * synchronization.
@@ -68,8 +71,8 @@ import org.miv.mbox.MBoxStandalone;
  * 
  * <p>
  * The only restriction is that the sink thread must regularly call the
- * {@link #pump()} method to dispatch events coming from the source to all
- * sinks registered (see the explanation in {@link org.graphstream.stream.ProxyPipe}).
+ * {@link #pump()} method to dispatch events coming from the source to all sinks
+ * registered (see the explanation in {@link org.graphstream.stream.ProxyPipe}).
  * </p>
  * 
  * <p>
@@ -80,11 +83,16 @@ import org.miv.mbox.MBoxStandalone;
  * graph as input.
  * </p>
  * 
- * @deprecated This is the old version of {@link org.graphstream.stream.thread.ThreadProxyPipe}.
+ * @deprecated This is the old version of
+ *             {@link org.graphstream.stream.thread.ThreadProxyPipe}.
  */
 @Deprecated
-public class ThreadProxyPipeOld extends SourceBase implements ProxyPipe,
-		MBoxListener {
+public class ThreadProxyPipeOld extends SourceBase implements ProxyPipe, MBoxListener {
+
+    /**
+     * class level logger
+     */
+    private static final Logger logger = Logger.getLogger(ThreadProxyPipe.class.getSimpleName());
 
 	/**
 	 * Proxy id.
@@ -254,15 +262,29 @@ public class ThreadProxyPipeOld extends SourceBase implements ProxyPipe,
 		((MBoxStandalone) events).processMessages();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.graphstream.stream.ProxyPipe#blockingPump()
+	 */
+	public void blockingPump() throws InterruptedException {
+		throw new UnsupportedOperationException();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.graphstream.stream.ProxyPipe#blockingPump(long)
+	 */
+	public void blockingPump(long timeout) throws InterruptedException {
+		throw new UnsupportedOperationException();
+	}
+
 	/**
 	 * Set of events sent via the message box.
 	 */
 	protected static enum GraphEvents {
-		ADD_NODE, DEL_NODE, ADD_EDGE, DEL_EDGE,
-		STEP, CLEARED,
-		ADD_GRAPH_ATTR, CHG_GRAPH_ATTR, DEL_GRAPH_ATTR,
-		ADD_NODE_ATTR, CHG_NODE_ATTR, DEL_NODE_ATTR,
-		ADD_EDGE_ATTR, CHG_EDGE_ATTR, DEL_EDGE_ATTR
+		ADD_NODE, DEL_NODE, ADD_EDGE, DEL_EDGE, STEP, CLEARED, ADD_GRAPH_ATTR, CHG_GRAPH_ATTR, DEL_GRAPH_ATTR, ADD_NODE_ATTR, CHG_NODE_ATTR, DEL_NODE_ATTR, ADD_EDGE_ATTR, CHG_EDGE_ATTR, DEL_EDGE_ATTR
 	};
 
 	protected void replayGraph(Graph graph) {
@@ -277,7 +299,7 @@ public class ThreadProxyPipeOld extends SourceBase implements ProxyPipe,
 							sourceTime.newEvent(), key, graph.getAttribute(key));
 
 			Thread.yield();
-			
+
 			// Replay all nodes and their attributes.
 
 			for (Node node : graph) {
@@ -308,9 +330,7 @@ public class ThreadProxyPipeOld extends SourceBase implements ProxyPipe,
 				Thread.yield();
 			}
 		} catch (CannotPostException e) {
-			System.err
-					.printf("GraphRendererRunner: cannot post message to listeners: %s%n",
-							e.getMessage());
+            logger.log(Level.WARNING, "Unable to post message to listeners.", e);
 		}
 	}
 
@@ -512,8 +532,6 @@ public class ThreadProxyPipeOld extends SourceBase implements ProxyPipe,
 	// MBoxListener
 
 	public void processMessage(String from, Object[] data) {
-		// System.err.printf( "    %s.msg(%s, %s, %s, %s)%n", from, data[1],
-		// data[2], data[0], data[3] );
 		if (data[0].equals(GraphEvents.ADD_NODE)) {
 			String graphId = (String) data[1];
 			Long timeId = (Long) data[2];
@@ -625,8 +643,7 @@ public class ThreadProxyPipeOld extends SourceBase implements ProxyPipe,
 
 			sendGraphCleared(graphId, timeId);
 		} else {
-			System.err.printf("ThreadProxyFilter : Unknown message %s !!%n",
-					data[0]);
+            logger.warning(String.format("Unknown message %s.", data[0]));
 		}
 	}
 }

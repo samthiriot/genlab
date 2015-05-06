@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,11 +31,11 @@
  */
 package org.graphstream.graph.implementations;
 
+import org.graphstream.graph.Element;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.graphstream.graph.Element;
 
 /**
  * An implementation of an {@link org.graphstream.graph.Element}.
@@ -177,20 +177,15 @@ public abstract class OneAttributeElement implements Element {
 
 	public void addAttribute(String attribute, Object value) {
 		this.attribute = value;
-		// System.out.println(attribute+" = "+value.toString());
 	}
 
 	public void changeAttribute(String attribute, Object value) {
 		addAttribute(attribute, value);
-		// System.out.println(attribute+" = "+value.toString());
-
 	}
 
 	public void addAttributes(Map<String, Object> attributes) {
-		// System.out.println(attributes.toString());
 		if (attributes.size() >= 1)
 			addAttribute("", attributes.get((attributes.keySet().toArray()[0])));
-
 	}
 
 	public void removeAttribute(String attribute) {

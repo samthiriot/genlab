@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -239,8 +239,8 @@ public class ISODateIO {
 				int from = offset;
 				while (offset < format.length() && format.charAt(offset) != '%')
 					offset++;
-				components.addLast(new TextComponent(Pattern.quote(format
-						.substring(from, offset))));
+				components.addLast(new TextComponent(format.substring(from,
+						offset)));
 			}
 		}
 

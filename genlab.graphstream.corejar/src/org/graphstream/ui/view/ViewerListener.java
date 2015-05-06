@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -29,8 +29,15 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C and LGPL licenses and that you accept their terms.
  */
-package org.graphstream.ui.swingViewer;
+package org.graphstream.ui.view;
 
-public class Selection {
-	public double x1, y1, x2, y2;
+/**
+ * Listener for specific viewer events.
+ */
+public interface ViewerListener {
+	void viewClosed(String viewName);
+
+	void buttonPushed(String id);
+
+	void buttonReleased(String id);
 }

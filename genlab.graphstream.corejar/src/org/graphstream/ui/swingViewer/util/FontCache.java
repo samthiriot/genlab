@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,11 +31,12 @@
  */
 package org.graphstream.ui.swingViewer.util;
 
+import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants;
+
 import java.awt.Font;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants;
+import java.util.TreeMap;
 
 /**
  * A cache for fonts.
@@ -49,12 +50,12 @@ public class FontCache {
 	/**
 	 * The default font.
 	 */
-	protected Font defaultFont;
+	protected final Font defaultFont;
 
 	/**
 	 * Cached fonts.
 	 */
-	protected HashMap<String, FontSlot> cache = new HashMap<String, FontSlot>();
+	protected final Map<String, FontSlot> cache = new TreeMap<String, FontSlot>();
 
 	/**
 	 * The default font cache.
@@ -188,9 +189,7 @@ class FontSlot {
 		Font font = map.get(size);
 
 		if (font == null) {
-			// System.err.printf( "new font %s %s %d%n", name, style, size );
 			font = new Font(name, style, size);
-
 			map.put(size, font);
 		}
 

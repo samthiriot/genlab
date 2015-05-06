@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -99,13 +99,5 @@ public class SingleGraph extends AdjacencyListGraph {
 	public SingleGraph(String id) {
 		this(id, true, false);
 	}
-	
-	/**
-	 * for serialization only
-	 */
-	public SingleGraph() {
-		super();
-	}
-
 
 }

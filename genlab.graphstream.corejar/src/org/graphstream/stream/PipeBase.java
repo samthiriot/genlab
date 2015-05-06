@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -79,7 +79,7 @@ public class PipeBase extends SourceBase implements Pipe {
 
 	public void nodeAttributeAdded(String graphId, long timeId, String nodeId,
 			String attribute, Object value) {
-		sendNodeAdded(graphId, timeId, nodeId);
+		sendNodeAttributeAdded(graphId, timeId, nodeId, attribute, value);
 	}
 
 	public void nodeAttributeChanged(String graphId, long timeId,

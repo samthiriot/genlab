@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -32,6 +32,7 @@
 package org.graphstream.ui.spriteManager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -399,8 +400,12 @@ public class Sprite implements Element {
 	public Iterator<String> getAttributeKeyIterator() {
 		throw new RuntimeException("not implemented");
 	}
+	
+	public Iterable<String> getEachAttributeKey() {
+		return getAttributeKeySet();
+	}
 
-	public Iterable<String> getAttributeKeySet() {
+	public Collection<String> getAttributeKeySet() {
 		throw new RuntimeException("not implemented");
 	}
 

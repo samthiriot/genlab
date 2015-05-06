@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,6 +31,23 @@
  */
 package org.graphstream.ui.swingViewer.basicRenderer;
 
+import org.graphstream.graph.Element;
+import org.graphstream.ui.geom.Point3;
+import org.graphstream.ui.graphicGraph.GraphicElement;
+import org.graphstream.ui.graphicGraph.GraphicGraph;
+import org.graphstream.ui.graphicGraph.StyleGroup;
+import org.graphstream.ui.graphicGraph.StyleGroupSet;
+import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants;
+import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.FillMode;
+import org.graphstream.ui.graphicGraph.stylesheet.Value;
+import org.graphstream.ui.swingViewer.GraphRendererBase;
+import org.graphstream.ui.swingViewer.LayerRenderer;
+import org.graphstream.ui.swingViewer.util.DefaultCamera;
+import org.graphstream.ui.swingViewer.util.GraphMetrics;
+import org.graphstream.ui.swingViewer.util.Graphics2DOutput;
+import org.graphstream.ui.view.Camera;
+
+import javax.imageio.ImageIO;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Container;
@@ -43,26 +60,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
-
-import javax.imageio.ImageIO;
-
-import org.graphstream.graph.Element;
-import org.graphstream.ui.geom.Point3;
-import org.graphstream.ui.graphicGraph.GraphicElement;
-import org.graphstream.ui.graphicGraph.GraphicGraph;
-import org.graphstream.ui.graphicGraph.StyleGroup;
-import org.graphstream.ui.graphicGraph.StyleGroupSet;
-import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants;
-import org.graphstream.ui.graphicGraph.stylesheet.Value;
-import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.FillMode;
-import org.graphstream.ui.swingViewer.GraphRendererBase;
-import org.graphstream.ui.swingViewer.LayerRenderer;
-import org.graphstream.ui.swingViewer.util.Camera;
-import org.graphstream.ui.swingViewer.util.DefaultCamera;
-import org.graphstream.ui.swingViewer.util.GraphMetrics;
-import org.graphstream.ui.swingViewer.util.Graphics2DOutput;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A very simple view of the graph that respect only a subset of CSS.
@@ -80,6 +81,9 @@ import org.graphstream.ui.swingViewer.util.Graphics2DOutput;
  * TODO - Les sprites. - Les bordures.
  */
 public class SwingBasicGraphRenderer extends GraphRendererBase {
+
+    private static final Logger logger = Logger.getLogger(SwingBasicGraphRenderer.class.getName());
+
 	// Attribute
 
 	/**
@@ -134,7 +138,7 @@ public class SwingBasicGraphRenderer extends GraphRendererBase {
 		return camera;
 	}
 
-	public ArrayList<GraphicElement> allNodesOrSpritesIn(double x1, double y1,
+	public Collection<GraphicElement> allNodesOrSpritesIn(double x1, double y1,
 			double x2, double y2) {
 		return camera.allNodesOrSpritesIn(graph, x1, y1, x2, y2);
 	}
@@ -147,7 +151,9 @@ public class SwingBasicGraphRenderer extends GraphRendererBase {
 
 	public void render(Graphics2D g, int x, int y, int width, int height) {
 		// If not closed, one or two renders can occur after closed.
-		if (graph != null) {
+		// Camera == null means closed. In case render occurs after closing
+		// (called from the gfx thread).
+		if (graph != null && g != null && camera != null) {
 			beginFrame();
 
 			if (camera.getGraphViewport() == null
@@ -297,11 +303,8 @@ public class SwingBasicGraphRenderer extends GraphRendererBase {
 					}
 				}
 			}
-		} catch (NullPointerException e) {
-			// Mysterious bug, where are you ?
-			e.printStackTrace();
-			System.err.printf("We spotted the mysterious bug ...");
-			System.exit(1);
+		} catch (Exception e) {
+			logger.log(Level.WARNING, "Unexpected error during graph render.", e);
 		}
 	}
 
@@ -476,12 +479,10 @@ public class SwingBasicGraphRenderer extends GraphRendererBase {
 								(int) camera.getMetrics().viewport[3]);
 						out.outputTo(filename);
 					} else {
-						System.err
-								.printf("plugin %s is not an instance of Graphics2DOutput (%s)%n",
-										plugin, o.getClass().getName());
+                        logger.warning(String.format("Plugin %s is not an instance of Graphics2DOutput (%s).", plugin, o.getClass().getName()));
 					}
 				} catch (Exception e) {
-					e.printStackTrace();
+                    logger.log(Level.WARNING, "Unexpected error during screen shot.", e);
 				}
 			}
 		}

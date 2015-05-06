@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -40,8 +40,6 @@ import java.nio.charset.Charset;
 
 import org.graphstream.stream.Sink;
 import org.graphstream.stream.netstream.packing.NetStreamPacker;
-
-import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
 
 /**
  * <p>
@@ -281,6 +279,7 @@ public class NetStreamSender implements Sink {
 		return null;
 	}
 
+	/*
 	private void outBuffer(ByteBuffer buf){
 		System.out.println(buf.toString());
 		int nbytes = buf.capacity();
@@ -291,7 +290,7 @@ public class NetStreamSender implements Sink {
 			System.out.printf("%d ", bt);
 		}
 		System.out.println();
-	}
+	}*/
 	
 	/**
 	 * @param in
@@ -337,7 +336,9 @@ public class NetStreamSender implements Sink {
 	 * @return ByteBuffer with encoded double in it
 	 */
 	protected ByteBuffer encodeDouble(Object in) {
-		return ByteBuffer.allocate(8).putDouble((Double) in);
+		ByteBuffer bb = ByteBuffer.allocate(8).putDouble((Double) in);
+		bb.rewind();
+		return bb;
 	}
 
 	/**

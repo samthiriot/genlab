@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -41,6 +41,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -104,10 +105,11 @@ public class FileSinkImages implements FileSink {
 		QVGA(320, 240), CGA(320, 200), VGA(640, 480), NTSC(720, 480), PAL(768,
 				576), WVGA_5by3(800, 480), SVGA(800, 600), WVGA_16by9(854, 480), WSVGA(
 				1024, 600), XGA(1024, 768), HD720(1280, 720), WXGA_5by3(1280,
-				768), WXGA_8by5(1280, 800), SXGA(1280, 1024), SXGAp(1400, 1050), WSXGAp(
-				1680, 1050), UXGA(1600, 1200), HD1080(1920, 1080), WUXGA(1920,
-				1200), TwoK(2048, 1080), QXGA(2048, 1536), WQXGA(2560, 1600), QSXGA(
-				2560, 2048)
+				768), WXGA_8by5(1280, 800), SXGA(1280, 1024), FWXGA(1366, 768), SXGAp(
+				1400, 1050), WSXGAp(1680, 1050), UXGA(1600, 1200), HD1080(1920,
+				1080), WUXGA(1920, 1200), TwoK(2048, 1080), QXGA(2048, 1536), WQXGA(
+				2560, 1600), QSXGA(2560, 2048), UHD_4K(3840, 2160), UHD_8K_16by9(
+				7680, 4320), UHD_8K_17by8(8192, 4320), UHD_8K_1by1(8192, 8192)
 
 		;
 
@@ -259,6 +261,9 @@ public class FileSinkImages implements FileSink {
 		LOW, MEDIUM, HIGH
 	}
 
+	private static final Logger LOGGER = Logger.getLogger(FileSinkImages.class
+			.getName());
+
 	protected Resolution resolution;
 	protected OutputType outputType;
 	protected GraphRenderer renderer;
@@ -403,8 +408,8 @@ public class FileSinkImages implements FileSink {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (ClassCastException e) {
-			System.err
-					.printf("not a renderer \"%s\"%n", rendererType.classname);
+			LOGGER.warning(String.format("not a renderer \"%s\"%n",
+					rendererType.classname));
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -585,6 +590,11 @@ public class FileSinkImages implements FileSink {
 		renderer.getCamera().setViewPercent(zoom);
 	}
 
+	public void setGraphViewport(double minx, double miny, double maxx,
+			double maxy) {
+		renderer.getCamera().setGraphViewport(minx, miny, maxx, maxy);
+	}
+
 	public void setClearImageBeforeOutputEnabled(boolean on) {
 		clearImageBeforeOutput = on;
 	}
@@ -679,7 +689,8 @@ public class FileSinkImages implements FileSink {
 	}
 
 	protected void printProgress() {
-		System.out.printf("\033[s\033[K%d images written\033[u", counter);
+		LOGGER.info(String.format("\033[s\033[K%d images written\033[u",
+				counter));
 	}
 
 	/*
@@ -1200,13 +1211,14 @@ public class FileSinkImages implements FileSink {
 	}
 
 	public static void usage() {
-		System.out.printf("usage: java %s [options] fichier.dgs%n",
-				FileSinkImages.class.getName());
-		System.out.printf("where options in:%n");
+		LOGGER.info(String.format("usage: java %s [options] fichier.dgs%n",
+				FileSinkImages.class.getName()));
+		LOGGER.info(String.format("where options in:%n"));
 		for (Option option : Option.values()) {
-			System.out.printf("%n --%s%s , -%s %s%n%s%n", option.fullopts,
-					option.valuable ? "=..." : "", option.shortopts,
-					option.valuable ? "..." : "", option.description);
+			LOGGER.info(String.format("%n --%s%s , -%s %s%n%s%n",
+					option.fullopts, option.valuable ? "=..." : "",
+					option.shortopts, option.valuable ? "..." : "",
+					option.description));
 		}
 	}
 
@@ -1245,8 +1257,8 @@ public class FileSinkImages implements FileSink {
 					}
 
 					if (!found) {
-						System.err.printf("unknown option: %s%n",
-								args[i].substring(0, args[i].indexOf('=')));
+						LOGGER.severe(String.format("unknown option: %s%n",
+								args[i].substring(0, args[i].indexOf('='))));
 						System.exit(1);
 					}
 				} else if (args[i].matches("^-\\w$")) {
@@ -1260,7 +1272,8 @@ public class FileSinkImages implements FileSink {
 					}
 
 					if (!found) {
-						System.err.printf("unknown option: %s%n", args[i]);
+						LOGGER.severe(String.format("unknown option: %s%n",
+								args[i]));
 						System.exit(1);
 					}
 				} else {
@@ -1353,10 +1366,10 @@ public class FileSinkImages implements FileSink {
 		}
 
 		if (errors.size() > 0) {
-			System.err.printf("error:%n");
+			LOGGER.info(String.format("error:%n"));
 
 			for (String error : errors)
-				System.err.printf("- %s%n", error);
+				LOGGER.info(String.format("- %s%n", error));
 
 			System.exit(1);
 		}

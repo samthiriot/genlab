@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,12 +31,6 @@
  */
 package org.graphstream.ui.layout.springbox;
 
-import java.io.FileNotFoundException;
-import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Random;
-
 import org.graphstream.stream.Sink;
 import org.graphstream.stream.SourceBase;
 import org.graphstream.stream.sync.SinkTime;
@@ -49,6 +43,13 @@ import org.miv.pherd.ntree.Anchor;
 import org.miv.pherd.ntree.CellSpace;
 import org.miv.pherd.ntree.OctreeCellSpace;
 import org.miv.pherd.ntree.QuadtreeCellSpace;
+
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * Base implementation of a Barnes-Hut space decomposition and particle
@@ -101,8 +102,12 @@ import org.miv.pherd.ntree.QuadtreeCellSpace;
  * </ul>
  * </p>
  */
-public abstract class BarnesHutLayout extends SourceBase implements Layout,
-		ParticleBoxListener {
+public abstract class BarnesHutLayout extends SourceBase implements Layout, ParticleBoxListener {
+
+    /**
+     * class level logger
+     */
+    private static final Logger logger = Logger.getLogger(BarnesHutLayout.class.getName());
 
 	/**
 	 * The nodes representation and the n-tree. The particle-box is an
@@ -315,6 +320,30 @@ public abstract class BarnesHutLayout extends SourceBase implements Layout,
 		hi.set(p.x, p.y, p.z);
 		return hi;
 	}
+
+	public double randomXInsideBounds() {
+		org.miv.pherd.geom.Point3 c = ((GraphCellData)nodes.getNTree().getRootCell().getData()).center;
+		return c.x + (random.nextDouble()*2-1);
+		//org.miv.pherd.geom.Point3 lo = nodes.getNTree().getLowestPoint();
+		//org.miv.pherd.geom.Point3 hi = nodes.getNTree().getHighestPoint();
+		//return lo.x + ((hi.x - lo.x)*random.nextDouble());
+	}
+
+	public double randomYInsideBounds() {
+		org.miv.pherd.geom.Point3 c = ((GraphCellData)nodes.getNTree().getRootCell().getData()).center;
+		return c.y + (random.nextDouble()*2-1);
+		//org.miv.pherd.geom.Point3 lo = nodes.getNTree().getLowestPoint();
+		//org.miv.pherd.geom.Point3 hi = nodes.getNTree().getHighestPoint();
+		//return lo.y + ((hi.y - lo.y)*random.nextDouble());
+	}
+
+	public double randomZInsideBounds() {
+		org.miv.pherd.geom.Point3 c = ((GraphCellData)nodes.getNTree().getRootCell().getData()).center;
+		return c.z + (random.nextDouble()*2-1);
+		//org.miv.pherd.geom.Point3 lo = nodes.getNTree().getLowestPoint();
+		//org.miv.pherd.geom.Point3 hi = nodes.getNTree().getHighestPoint();
+		//return lo.z + ((hi.z - lo.z)*random.nextDouble());
+	}
 	
 	public Point3 getCenterPoint() {
 		return center;
@@ -515,8 +544,10 @@ public abstract class BarnesHutLayout extends SourceBase implements Layout,
 		energies.clearEnergies();
 	}
 
-	protected void addNode(String sourceId, String id) {
-		nodes.addParticle(newNodeParticle(id));
+	protected NodeParticle addNode(String sourceId, String id) {
+		NodeParticle np = newNodeParticle(id);
+		nodes.addParticle(np);
+		return np;
 	}
 
 	public void moveNode(String id, double x, double y, double z) {
@@ -549,9 +580,7 @@ public abstract class BarnesHutLayout extends SourceBase implements Layout,
 		if (node != null) {
 			node.removeNeighborEdges();
 		} else {
-			System.err.printf(
-					"layout %s: cannot remove non existing node %s%n",
-					getLayoutAlgorithmName(), id);
+            logger.warning(String.format("layout %s: cannot remove non existing node %s%n", getLayoutAlgorithmName(), id));
 		}
 	}
 
@@ -565,10 +594,7 @@ public abstract class BarnesHutLayout extends SourceBase implements Layout,
 			EdgeSpring o = edges.put(id, e);
 
 			if (o != null) {
-				// throw new SingletonException(
-				// "edge '"+id+"' already exists");
-				System.err.printf("layout %s: edge '%s' already exists%n",
-						getLayoutAlgorithmName(), id);
+				logger.warning(String.format("layout %s: edge '%s' already exists.", getLayoutAlgorithmName(), id));
 			} else {
 				n0.registerEdge(e);
 				n1.registerEdge(e);
@@ -577,13 +603,9 @@ public abstract class BarnesHutLayout extends SourceBase implements Layout,
 			chooseNodePosition(n0, n1);
 		} else {
 			if (n0 == null)
-				System.err
-						.printf("layout %s: node '%s' does not exist, cannot create edge %s%n",
-								getLayoutAlgorithmName(), from, id);
+                logger.warning(String.format("layout %s: node '%s' does not exist, cannot create edge %s.", getLayoutAlgorithmName(), from, id));
 			if (n1 == null)
-				System.err
-						.printf("layout %s: node '%s' does not exist, cannot create edge %s%n",
-								getLayoutAlgorithmName(), to, id);
+                logger.warning(String.format("layout %s: node '%s' does not exist, cannot create edge %s.", getLayoutAlgorithmName(), to, id));
 		}
 	}
 
@@ -599,9 +621,7 @@ public abstract class BarnesHutLayout extends SourceBase implements Layout,
 	protected abstract void chooseNodePosition(NodeParticle n0, NodeParticle n1);
 
 	protected void addEdgeBreakPoint(String edgeId, int points) {
-		System.err.printf(
-				"layout %s: edge break points are not handled yet.%n",
-				getLayoutAlgorithmName());
+		logger.warning(String.format("layout %s: edge break points are not handled yet.", getLayoutAlgorithmName()));
 	}
 
 	protected void ignoreEdge(String edgeId, boolean on) {
@@ -626,9 +646,7 @@ public abstract class BarnesHutLayout extends SourceBase implements Layout,
 			e.node0.unregisterEdge(e);
 			e.node1.unregisterEdge(e);
 		} else {
-			System.err.printf(
-					"layout %s: cannot remove non existing edge %s%n",
-					getLayoutAlgorithmName(), id);
+            logger.warning(String.format("layout %s: cannot remove non existing edge %s%n", getLayoutAlgorithmName(), id));
 		}
 	}
 
@@ -677,7 +695,7 @@ public abstract class BarnesHutLayout extends SourceBase implements Layout,
 
 	public void nodeAdded(String graphId, long time, String nodeId) {
 		if (sinkTime.isNewEvent(graphId, time)) {
-			addNode(graphId, nodeId);
+			NodeParticle np = addNode(graphId, nodeId);
 			sendNodeAdded(graphId, time, nodeId);
 		}
 	}
@@ -731,9 +749,6 @@ public abstract class BarnesHutLayout extends SourceBase implements Layout,
 		if (attribute.equals("layout.force")) {
 			if (newValue instanceof Number)
 				setForce(((Number) newValue).doubleValue());
-			// System.err.printf("layout.elasticBox.force: %f%n",
-			// ((Number) newValue).doubleValue());
-
 			energies.clearEnergies();
 		} else if (attribute.equals("layout.quality")) {
 			if (newValue instanceof Number) {
@@ -743,7 +758,7 @@ public abstract class BarnesHutLayout extends SourceBase implements Layout,
 				q = q < 0 ? 0 : q;
 
 				setQuality(q);
-				System.err.printf("layout.%s.quality: %d%n", getLayoutAlgorithmName(), q);
+                logger.fine(String.format("layout.%s.quality: %d.", getLayoutAlgorithmName(), q));
 			}
 
 			energies.clearEnergies();
@@ -751,7 +766,7 @@ public abstract class BarnesHutLayout extends SourceBase implements Layout,
 			if(newValue instanceof Number) {
 				double value = ((Number)newValue).doubleValue();
 				setGravityFactor(value);
-				System.err.printf("layout.%s.gravity: %f%n", getLayoutAlgorithmName(), value);
+                logger.fine(String.format("layout.%s.gravity: %f.", getLayoutAlgorithmName(), value));
 			}
 		} else if (attribute.equals("layout.exact-zone")) {
 			if (newValue instanceof Number) {
@@ -761,9 +776,7 @@ public abstract class BarnesHutLayout extends SourceBase implements Layout,
 				factor = factor < 0 ? 0 : factor;
 
 				viewZone = factor;
-				System.err.printf(
-						"layout.%s.exact-zone: %f of [0..1]%n", getLayoutAlgorithmName(),
-						viewZone);
+                logger.fine(String.format("layout.%s.exact-zone: %f of [0..1]%n", getLayoutAlgorithmName(), viewZone));
 
 				energies.clearEnergies();
 			}
@@ -773,8 +786,7 @@ public abstract class BarnesHutLayout extends SourceBase implements Layout,
 			else
 				outputStats = true;
 
-			System.err.printf("layout.%s.output-stats: %b%n", getLayoutAlgorithmName(),
-					outputStats);
+            logger.fine(String.format("layout.%s.output-stats: %b%n", getLayoutAlgorithmName(), outputStats));
 		} else if (attribute.equals("layout.stabilization-limit")) {
 			if (newValue instanceof Number) {
 				stabilizationLimit = ((Number) newValue).doubleValue();
@@ -824,12 +836,10 @@ public abstract class BarnesHutLayout extends SourceBase implements Layout,
 			energies.clearEnergies();
 		} else if (attribute.equals("layout.frozen")) {
 			freezeNode(nodeId, (newValue != null));
-//System.err.printf("user froze node %s (%b)%n", nodeId, (newValue != null));
 		} else if (attribute.equals("xyz") || attribute.equals("xy")) {
 			double xyz[] = new double[3];
 			GraphPosLengthUtils.positionFromObject(newValue, xyz);
 			moveNode(nodeId, xyz[0], xyz[1], xyz[2]);
-//System.err.printf("user moved node %s to %f %f%n", nodeId, xyz[0], xyz[1]);
 		} else if (attribute.equals("x") && newValue instanceof Number) {
 			NodeParticle node = (NodeParticle) nodes.getParticle(nodeId);
 			if (node != null) {

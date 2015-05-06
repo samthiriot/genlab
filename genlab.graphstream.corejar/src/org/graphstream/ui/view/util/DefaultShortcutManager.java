@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -29,15 +29,17 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C and LGPL licenses and that you accept their terms.
  */
-package org.graphstream.ui.swingViewer.util;
-
-import java.awt.event.KeyEvent;
+package org.graphstream.ui.view.util;
 
 import org.graphstream.ui.geom.Point3;
 import org.graphstream.ui.graphicGraph.GraphicGraph;
-import org.graphstream.ui.swingViewer.View;
+import org.graphstream.ui.view.Camera;
+import org.graphstream.ui.view.View;
 
-public class DefaultShortcutManager implements ShortcutManager {
+import java.awt.event.KeyEvent;
+
+public class DefaultShortcutManager implements ShortcutManager
+{
 	// Attributes
 
 	/**
@@ -57,7 +59,7 @@ public class DefaultShortcutManager implements ShortcutManager {
 		this.view = view;
 		view.addKeyListener(this);
 	}
-	
+
 	public void release() {
 		view.removeKeyListener(this);
 	}
@@ -67,16 +69,16 @@ public class DefaultShortcutManager implements ShortcutManager {
 	/**
 	 * A key has been pressed.
 	 * 
-	 * @param event
-	 *            The event that generated the key.
+	 * @param event  The event that generated the key.
 	 */
 	public void keyPressed(KeyEvent event) {
 		Camera camera = view.getCamera();
-		
+
 		if (event.getKeyCode() == KeyEvent.VK_PAGE_UP) {
-			camera.setViewPercent(camera.getViewPercent() - 0.05f);
+			camera.setViewPercent(Math.max(0.0001f,
+					camera.getViewPercent() * 0.9f));
 		} else if (event.getKeyCode() == KeyEvent.VK_PAGE_DOWN) {
-			camera.setViewPercent(camera.getViewPercent() + 0.05f);
+			camera.setViewPercent(camera.getViewPercent() * 1.1f);
 		} else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
 			if ((event.getModifiers() & KeyEvent.ALT_MASK) != 0) {
 				double r = camera.getViewRotation();
@@ -88,6 +90,8 @@ public class DefaultShortcutManager implements ShortcutManager {
 					delta = camera.getGraphDimension() * 0.1f;
 				else
 					delta = camera.getGraphDimension() * 0.01f;
+
+				delta *= camera.getViewPercent();
 
 				Point3 p = camera.getViewCenter();
 				camera.setViewCenter(p.x - delta, p.y, 0);
@@ -104,6 +108,8 @@ public class DefaultShortcutManager implements ShortcutManager {
 				else
 					delta = camera.getGraphDimension() * 0.01f;
 
+				delta *= camera.getViewPercent();
+
 				Point3 p = camera.getViewCenter();
 				camera.setViewCenter(p.x + delta, p.y, 0);
 			}
@@ -115,6 +121,8 @@ public class DefaultShortcutManager implements ShortcutManager {
 			else
 				delta = camera.getGraphDimension() * 0.01f;
 
+			delta *= camera.getViewPercent();
+
 			Point3 p = camera.getViewCenter();
 			camera.setViewCenter(p.x, p.y + delta, 0);
 		} else if (event.getKeyCode() == KeyEvent.VK_DOWN) {
@@ -124,6 +132,8 @@ public class DefaultShortcutManager implements ShortcutManager {
 				delta = camera.getGraphDimension() * 0.1f;
 			else
 				delta = camera.getGraphDimension() * 0.01f;
+
+			delta *= camera.getViewPercent();
 
 			Point3 p = camera.getViewCenter();
 			camera.setViewCenter(p.x, p.y - delta, 0);

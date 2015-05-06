@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -32,19 +32,21 @@
 package org.graphstream.ui.graphicGraph;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-
+import java.util.Map;
+import java.util.TreeMap;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.ui.graphicGraph.stylesheet.Rule;
 import org.graphstream.ui.graphicGraph.stylesheet.Selector;
+import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.ShadowMode;
 import org.graphstream.ui.graphicGraph.stylesheet.StyleSheet;
 import org.graphstream.ui.graphicGraph.stylesheet.StyleSheetListener;
-import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants.ShadowMode;
 
 /**
  * A set of style groups.
@@ -68,27 +70,27 @@ public class StyleGroupSet implements StyleSheetListener {
 	/**
 	 * All the groups indexed by their unique identifier.
 	 */
-	protected HashMap<String, StyleGroup> groups = new HashMap<String, StyleGroup>();
+	protected final Map<String, StyleGroup> groups = new TreeMap<String, StyleGroup>();
 
 	/**
 	 * Allows to retrieve the group containing a node knowing the node id.
 	 */
-	protected HashMap<String, String> byNodeIdGroups = new HashMap<String, String>();
+	protected final Map<String, String> byNodeIdGroups = new TreeMap<String, String>();
 
 	/**
 	 * Allows to retrieve the group containing an edge knowing the node id.
 	 */
-	protected HashMap<String, String> byEdgeIdGroups = new HashMap<String, String>();
+	protected final Map<String, String> byEdgeIdGroups = new TreeMap<String, String>();
 
 	/**
 	 * Allows to retrieve the group containing a sprite knowing the node id.
 	 */
-	protected HashMap<String, String> bySpriteIdGroups = new HashMap<String, String>();
+	protected final Map<String, String> bySpriteIdGroups = new TreeMap<String, String>();
 
 	/**
 	 * Allows to retrieve the group containing a graph knowing the node id.
 	 */
-	protected HashMap<String, String> byGraphIdGroups = new HashMap<String, String>();
+	protected final Map<String, String> byGraphIdGroups = new TreeMap<String, String>();
 
 	/**
 	 * Virtual set of nodes. This set provides fake methods to make it appear as
@@ -287,7 +289,7 @@ public class StyleGroupSet implements StyleSheetListener {
 	 *            The kind of element.
 	 * @return The element or null if not found.
 	 */
-	protected Element getElement(String id, HashMap<String, String> elt2grp) {
+	protected Element getElement(String id, Map<String, String> elt2grp) {
 		String gid = elt2grp.get(id);
 
 		if (gid != null) {
@@ -607,7 +609,7 @@ public class StyleGroupSet implements StyleSheetListener {
 		groups.put(id, group);
 		zIndex.groupAdded(group);
 		shadow.groupAdded(group);
-		
+
 		return group;
 	}
 
@@ -662,6 +664,10 @@ public class StyleGroupSet implements StyleSheetListener {
 	 */
 	public void removeElement(Element element) {
 		String gid = getElementGroup(element);
+        if (null == gid)
+        {
+            return;
+        }
 		StyleGroup group = groups.get(gid);
 
 		if (group != null) {
@@ -701,14 +707,16 @@ public class StyleGroupSet implements StyleSheetListener {
 
 		// Get the old element "dynamic" status.
 
-		boolean isDyn = oldGroup.isElementDynamic(element);
+		boolean isDyn = false;
 
 		// Get the old event set for the given element.
 
 		StyleGroup.ElementEvents events = null;
 
-		if (oldGroup != null)
+		if (oldGroup != null) {
+			isDyn = oldGroup.isElementDynamic(element);
 			events = oldGroup.getEventsFor(element);
+		}
 
 		// Remove the element from its old style and add it to insert it in the
 		// correct style.
@@ -938,7 +946,7 @@ public class StyleGroupSet implements StyleSheetListener {
 				if (oldRule.getGroups() != null)
 					for (String s : oldRule.getGroups()) {
 						StyleGroup group = groups.get(s);
-						if(group != null) {
+						if (group != null) {
 							zIndex.groupChanged(group);
 							shadow.groupChanged(group);
 						}
@@ -968,22 +976,22 @@ public class StyleGroupSet implements StyleSheetListener {
 	 * 
 	 * Two cases :
 	 * <ol>
-	 *    <li>The style is an specific (id) style. In this case a new
-	 *        group may be added.
-	 *        <ul>
-	 *            <li>check an element matches the style and in this case
-     *                create the group by adding the element.</li>
-     *            <li>else do nothing.</li>
-     *        </ul></li>
-     *   <li>The style is a kind or class style.
-     *        <ul>
-     *            <li>check all the groups in the kind of the style
-	 *                  (graph, node, edge, sprite) and only in this kind (since other will never
-	 *                  be affected).</li>
-	 *            <li>remove all groups of this kind.</li>
-	 *            <li>add all elements of this kind anew to recreate the group.</li>
-	 *        </ul>
-	 *   </li>
+	 * <li>The style is an specific (id) style. In this case a new group may be
+	 * added.
+	 * <ul>
+	 * <li>check an element matches the style and in this case create the group
+	 * by adding the element.</li>
+	 * <li>else do nothing.</li>
+	 * </ul>
+	 * </li>
+	 * <li>The style is a kind or class style.
+	 * <ul>
+	 * <li>check all the groups in the kind of the style (graph, node, edge,
+	 * sprite) and only in this kind (since other will never be affected).</li>
+	 * <li>remove all groups of this kind.</li>
+	 * <li>add all elements of this kind anew to recreate the group.</li>
+	 * </ul>
+	 * </li>
 	 * </ol>
 	 */
 	protected void checkForNewStyle(Rule newRule) {
@@ -1027,7 +1035,7 @@ public class StyleGroupSet implements StyleSheetListener {
 	 *            The name space.
 	 */
 	protected void checkForNewIdStyle(Rule newRule,
-			HashMap<String, String> elt2grp) {
+			Map<String, String> elt2grp) {
 		// There is only one element that matches the identifier.
 
 		Element element = getElement(newRule.selector.getId(), elt2grp);
@@ -1051,8 +1059,8 @@ public class StyleGroupSet implements StyleSheetListener {
 	 *            The name space.
 	 */
 	protected void checkForNewStyle(Rule newRule,
-			HashMap<String, String> elt2grp) {
-		ArrayList<Element> elementsToCheck = new ArrayList<Element>();
+			Map<String, String> elt2grp) {
+		Collection<Element> elementsToCheck = new ArrayList<Element>();
 
 		for (String eltId : elt2grp.keySet())
 			elementsToCheck.add(getElement(eltId, elt2grp));
@@ -1401,11 +1409,11 @@ public class StyleGroupSet implements StyleSheetListener {
 	 *            The kind of graph element.
 	 */
 	protected class ElementIterator<E extends Element> implements Iterator<E> {
-		protected HashMap<String, String> elt2grp;
+		protected Map<String, String> elt2grp;
 
 		protected Iterator<String> elts;
 
-		public ElementIterator(HashMap<String, String> elements2groups) {
+		public ElementIterator(final Map<String, String> elements2groups) {
 			elt2grp = elements2groups;
 			elts = elements2groups.keySet().iterator();
 		}

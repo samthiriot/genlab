@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -41,6 +41,7 @@ import org.graphstream.ui.layout.springbox.NodeParticle;
 import org.miv.pherd.Particle;
 import org.miv.pherd.ParticleBox;
 import org.miv.pherd.geom.Point3;
+import org.miv.pherd.ntree.Anchor;
 import org.miv.pherd.ntree.Cell;
 
 public class SpringBoxNodeParticle extends NodeParticle {
@@ -55,10 +56,9 @@ public class SpringBoxNodeParticle extends NodeParticle {
 	 *            The node identifier.
 	 */
 	public SpringBoxNodeParticle(SpringBox box, String id) {
-		this(box, id, (box.getRandom().nextDouble() * 2 * box.k) - box.k, (box
-				.getRandom().nextDouble() * 2 * box.k) - box.k,
-				box.is3D() ? (box.getRandom().nextDouble() * 2 * box.k) - box.k
-						: 0);
+		//this(box, id, box.getCenterPoint().x, box.getCenterPoint().y, box.is3D() ? box.getCenterPoint().z : 0);
+		this(box, id,  box.randomXInsideBounds(), box.randomYInsideBounds(), box.is3D() ? box.randomZInsideBounds() : 0);	
+		//this(box, id, (box.getRandom().nextDouble() * 2 * box.k) - box.k, (box.getRandom().nextDouble() * 2 * box.k) - box.k, box.is3D() ? (box.getRandom().nextDouble() * 2 * box.k) - box.k : 0);
 
 		this.box = box;
 	}
@@ -251,27 +251,30 @@ public class SpringBoxNodeParticle extends NodeParticle {
 
 		double k = box.k;
 		double vz = box.getViewZone();
+		
+		Anchor lo = cell.getSpace().getLoAnchor();
+		Anchor hi = cell.getSpace().getHiAnchor();
 
-		double x1 = cell.getSpace().getLoAnchor().x;
-		double y1 = cell.getSpace().getLoAnchor().y;
-		double z1 = cell.getSpace().getLoAnchor().z;
-
-		double x2 = cell.getSpace().getHiAnchor().x;
-		double y2 = cell.getSpace().getHiAnchor().y;
-		double z2 = cell.getSpace().getHiAnchor().z;
-
+		double x1 = lo.x;
+		double x2 = hi.x;
 		double X1 = pos.x - (k * vz);
-		double Y1 = pos.y - (k * vz);
-		double Z1 = pos.z - (k * vz);
 		double X2 = pos.x + (k * vz);
-		double Y2 = pos.y + (k * vz);
-		double Z2 = pos.z + (k * vz);
 
 		if (X2 < x1 || X1 > x2)
 			return false;
 
+		double y1 = lo.y;
+		double y2 = hi.y;
+		double Y1 = pos.y - (k * vz);
+		double Y2 = pos.y + (k * vz);
+
 		if (Y2 < y1 || Y1 > y2)
 			return false;
+
+		double z1 = lo.z;
+		double z2 = hi.z;
+		double Z1 = pos.z - (k * vz);
+		double Z2 = pos.z + (k * vz);
 
 		if (Z2 < z1 || Z1 > z2)
 			return false;

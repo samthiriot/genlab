@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,6 +31,7 @@
  */
 package org.graphstream.ui.swingViewer.util;
 
+import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -38,9 +39,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-
-import javax.imageio.ImageIO;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A simple cache for images to avoid reloading them constantly and to allow
@@ -50,16 +52,22 @@ import javax.imageio.ImageIO;
  * time.
  */
 public class ImageCache {
+
+    /**
+     * class level logger
+     */
+    private static final Logger logger = Logger.getLogger(DefaultCamera.class.getSimpleName());
+
 	/**
 	 * The image cache.
 	 */
-	protected HashMap<String, Image> imageCache = new HashMap<String, Image>();
+	protected final Map<String, Image> imageCache = new TreeMap<String, Image>();
 
 	/**
 	 * The dummy image used to mark a not found image (and avoid trying to
 	 * reload it again and again).
 	 */
-	protected Image dummy;
+	protected final Image dummy;
 
 	/**
 	 * The default singleton image cache instance.
@@ -148,9 +156,7 @@ public class ImageCache {
 						imageCache.put(fileNameOrUrl, ii);
 					} catch (IOException ee) {
 						imageCache.put(fileNameOrUrl, dummy);
-						// ee.printStackTrace();
-						System.err.printf("Cannot read image '%s'%n",
-								fileNameOrUrl);
+                        logger.log(Level.WARNING, String.format("Cannot read image '%s'.", fileNameOrUrl), e);
 					}
 				}
 			}

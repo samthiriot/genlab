@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,13 +31,6 @@
  */
 package org.graphstream.graph.implementations;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.io.Serializable;
-import java.util.UUID;
-
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.NodeFactory;
 
@@ -45,7 +38,7 @@ import org.graphstream.graph.NodeFactory;
  * A graph implementation that supports multiple edges between two nodes.
  */
 
-public class MultiGraph extends AdjacencyListGraph implements Externalizable {
+public class MultiGraph extends AdjacencyListGraph {
 
 	/**
 	 * Creates an empty graph.
@@ -107,13 +100,4 @@ public class MultiGraph extends AdjacencyListGraph implements Externalizable {
 	public MultiGraph(String id) {
 		this(id, true, false);
 	}
-
-	/*
-	 * For serialization
-	 */
-	public MultiGraph() {
-		this(UUID.randomUUID().toString());
-	}
-
-	
 }

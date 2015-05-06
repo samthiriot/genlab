@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -64,7 +64,7 @@ public interface Node extends Element, Iterable<Edge> {
 	/**
 	 * Number of leaving edges.
 	 * 
-	 * @return the count of edges that only enter this node plus all undirected
+	 * @return the count of edges that only leave this node plus all undirected
 	 *         edges.
 	 */
 	int getOutDegree();
@@ -72,7 +72,7 @@ public interface Node extends Element, Iterable<Edge> {
 	/**
 	 * Number of entering edges.
 	 * 
-	 * @return the count of edges that only leave this node plus all undirected
+	 * @return the count of edges that only enter this node plus all undirected
 	 *         edges.
 	 */
 	int getInDegree();

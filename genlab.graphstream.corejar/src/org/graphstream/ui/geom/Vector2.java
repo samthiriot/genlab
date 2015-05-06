@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -30,6 +30,8 @@
  * knowledge of the CeCILL-C and LGPL licenses and that you accept their terms.
  */
 package org.graphstream.ui.geom;
+
+import java.util.Arrays;
 
 public class Vector2 implements java.io.Serializable {
 	// Attributes
@@ -286,4 +288,11 @@ public class Vector2 implements java.io.Serializable {
 
 		return sb.toString();
 	}
+
+
+    @Override
+    public int hashCode()
+    {
+        return data != null ? Arrays.hashCode(data) : 0;
+    }
 }

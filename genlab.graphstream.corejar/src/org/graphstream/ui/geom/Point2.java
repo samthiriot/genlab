@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -256,4 +256,44 @@ public class Point2 implements java.io.Serializable {
 
 		return buf.toString();
 	}
+
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (this == o)
+        {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass())
+        {
+            return false;
+        }
+
+        Point2 point2 = (Point2) o;
+
+        if (Double.compare(point2.x, x) != 0)
+        {
+            return false;
+        }
+        if (Double.compare(point2.y, y) != 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    @Override
+    public int hashCode()
+    {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(x);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(y);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }

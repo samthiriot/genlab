@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -31,16 +31,16 @@
  */
 package org.graphstream.ui.swingViewer;
 
-import java.awt.Graphics2D;
-
 import org.graphstream.ui.graphicGraph.GraphicGraph;
+
+import java.awt.Graphics2D;
 
 /**
  * A specific rendering class that can be plugged in any view and is called to
  * draw under or above the graph.
  * 
- * @see View#setForeLayoutRenderer(LayerRenderer)
- * @see View#setBackLayerRenderer(LayerRenderer)
+ * @see org.graphstream.ui.view.View#setForeLayoutRenderer(LayerRenderer)
+ * @see org.graphstream.ui.view.View#setBackLayerRenderer(LayerRenderer)
  */
 public interface LayerRenderer {
 	/**

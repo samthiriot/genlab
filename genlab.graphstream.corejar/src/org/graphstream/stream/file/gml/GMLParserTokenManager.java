@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -346,7 +346,7 @@ public class GMLParserTokenManager implements GMLParserConstants {
 						jjCheckNAdd(11);
 						break;
 					case 11:
-						if ((0x3ff200000000000L & l) == 0L)
+						if ((0x3ff600000000000L & l) == 0L)
 							break;
 						if (kind > 14)
 							kind = 14;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 - 2013
+ * Copyright 2006 - 2015
  *     Stefan Balev     <stefan.balev@graphstream-project.org>
  *     Julien Baudry    <julien.baudry@graphstream-project.org>
  *     Antoine Dutot    <antoine.dutot@graphstream-project.org>
@@ -472,22 +472,25 @@ public class StyleSheet {
 		rule.setStyle(style);
 		addRule(rule);
 	}
-	
+
 	/**
-	 * Load a style sheet from an attribute value, the value can either be
-	 * the contents of the whole style sheet, or begin by "url". If it starts
-	 * with "url", it must then contain between parenthesis the string of the
-	 * URL to load. For example:
+	 * Load a style sheet from an attribute value, the value can either be the
+	 * contents of the whole style sheet, or begin by "url". If it starts with
+	 * "url", it must then contain between parenthesis the string of the URL to
+	 * load. For example:
+	 * 
 	 * <pre>
 	 * 		url('file:///some/path/on/the/file/system')
 	 * </pre>
+	 * 
 	 * Or
+	 * 
 	 * <pre>
 	 * 		url('http://some/web/url')
 	 * </pre>
 	 * 
-	 * The loaded style sheet will be merged with the styles already present
-	 * in the style sheet.
+	 * The loaded style sheet will be merged with the styles already present in
+	 * the style sheet.
 	 * 
 	 * @param styleSheetValue
 	 *            The style sheet name of content.
