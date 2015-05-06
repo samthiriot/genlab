@@ -406,7 +406,7 @@ public class ListOfMessages implements Iterable<ITextMessage>, Serializable {
 	 * Waits until all the messages are processed and stored.
 	 * Remember that once a message was added, it takes time before being added.
 	 */
-	protected void waitUntilMessagesQueueConsumed() {
+	public void waitUntilMessagesQueueConsumed() {
 		if (queueConsumerThread != null)
 			queueConsumerThread.waitUntilEndOfQueue();
 	}
