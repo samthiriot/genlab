@@ -10,7 +10,6 @@ import genlab.algog.algos.meta.GenomeAlgo;
 import genlab.algog.algos.meta.IntegerGeneAlgo;
 import genlab.algog.internal.ABooleanGene;
 import genlab.algog.internal.ADoubleGene;
-import genlab.algog.internal.AFitnessBoard;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
 import genlab.algog.internal.AIntegerGene;
@@ -197,8 +196,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 							geneInstance.getName(),
 							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION.getId()), 
 							(Integer)geneInstance.getValueForParameter(IntegerGeneAlgo.PARAM_MINIMUM.getId()),
-							(Integer)geneInstance.getValueForParameter(IntegerGeneAlgo.PARAM_MAXIMUM.getId()),
-							null
+							(Integer)geneInstance.getValueForParameter(IntegerGeneAlgo.PARAM_MAXIMUM.getId())
 							);
 					
 				} else if (geneAlgo instanceof DoubleGeneAlgo) {
@@ -207,16 +205,14 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 							geneInstance.getName(), 
 							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION.getId()),
 							(Double)geneInstance.getValueForParameter(DoubleGeneAlgo.PARAM_MINIMUM.getId()),
-							(Double)geneInstance.getValueForParameter(DoubleGeneAlgo.PARAM_MAXIMUM.getId()),
-							null
+							(Double)geneInstance.getValueForParameter(DoubleGeneAlgo.PARAM_MAXIMUM.getId())
 							);
 					
 				} else if (geneAlgo instanceof BooleanGeneAlgo) {
 					
 					gene = new ABooleanGene(
 							geneInstance.getName(),
-							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION.getId()),
-							null
+							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION.getId())
 							);
 					
 				} else {
@@ -334,19 +330,25 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 */
 	protected void displayOnStream(PrintStream ps, int generationId) {
 		
-		
 		for ( AnIndividual individual : generation.get(generationId) ) {
-			
-			ps.print(individual.getFitnessBoard().toString());
+			ps.print(individual.fitness);
 			ps.print("\t");
 			ps.print(individual.genome);
 			ps.print("\t");
-			ps.print(individual.genesToString());
+			ps.print(Arrays.toString(individual.genes));
 			ps.println();
-
 		}
-		
-		
+
+//			for (Map.Entry<AnIndividual,Double[]> indiv2fitness : generation2fitness.get(generationId).entrySet()) {
+//				
+//				ps.print(indiv2fitness.getValue());
+//				ps.print("\t");
+//				ps.print(indiv2fitness.getKey().genome);
+//				ps.print("\t");
+//				ps.print(Arrays.toString(indiv2fitness.getKey().genes));
+//				ps.println();
+//
+//			}
 	}
 	
 	
@@ -482,8 +484,6 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		for (AnIndividual ind : individuals) {
 			
 			try {
-				ArrayList<AFitnessBoard> fb = new ArrayList<AFitnessBoard>(ind.getFitnessBoard());
-									
 				int rowId = tab.addRow();
 				tab.setValue(rowId, titleIteration, iterationId);
 				tab.setValue(rowId, titleGenome, ind.genome.name);
@@ -497,7 +497,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					tab.setValue(
 							rowId, 
 							colnames[I], 
-							fb.get(i).getTarget()
+							ind.targets[i]
 							);
 					
 					I=I+1;
@@ -505,7 +505,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					tab.setValue(
 							rowId, 
 							colnames[I], 
-							fb.get(i).getValue()
+							ind.values[i]
 							);
 	
 					I=I+1;
@@ -513,7 +513,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					tab.setValue(
 							rowId, 
 							colnames[I], 
-							fb.get(i).getFitness()
+							ind.fitness[i]
 							);
 				}
 				
@@ -584,13 +584,11 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * and also changes the executable status.
 	 */
 	protected final void manageEndOfExploration() {
-		
 		messages.infoUser("stopping after "+iterationsMade+" iterations", getClass());
 		
 		// update our computation state
 		ComputationState ourState = null;
 		ComputationResult res = new ComputationResult(algoInst, progress, messages);
-		
 		{
 			
 			if (somethingFailed)

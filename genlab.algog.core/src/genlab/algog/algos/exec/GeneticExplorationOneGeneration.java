@@ -1,7 +1,6 @@
 package genlab.algog.algos.exec;
 
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
-import genlab.algog.internal.AFitnessBoard;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
 import genlab.algog.internal.AnIndividual;
@@ -212,13 +211,13 @@ public class GeneticExplorationOneGeneration
 	
 	protected void computeResultsForIndividual(GeneticExplorationAlgoIndividualRun indivRun) {
 
-		List<AFitnessBoard> fitnessBoard = indivRun.getFitnessBoard();
+//		List<AFitnessBoard> fitnessBoard = indivRun.getFitnessBoard();
 //		final Double[] resultFitness = indivRun.getResultFitness();
 //		final Object[] resultTargets = indivRun.getResultTargets();
 //		final Object[] resultValues = indivRun.getResultValues();
 		
 		AnIndividual indiv = indivRun.getIndividual();
-		int individualId = indivRun.getIndividualId();
+//		int individualId = indivRun.getIndividualId();
 
 		//messages.debugUser("computed fitness "+Arrays.toString(resultFitness)+" for individual "+individualId+" of genome "+indiv.genome, getClass());
 
@@ -232,7 +231,7 @@ public class GeneticExplorationOneGeneration
 //			if (resultValues != null)
 //				computedValues.put(indiv, resultValues);
 			
-			indiv.setFitnessBoard(fitnessBoard);
+//			indiv.setFitnessBoard(fitnessBoard);
 			
 			this.computedIndividuals.add(indiv);
 

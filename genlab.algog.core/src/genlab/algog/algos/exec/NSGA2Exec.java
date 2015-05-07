@@ -109,12 +109,12 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		
 		SortedMap<Integer,Collection<AnIndividual>> frontIndexWIndividuals = new TreeMap<Integer, Collection<AnIndividual>>();
 //		Map<AnIndividual, Integer> individualWRank = new HashMap<AnIndividual, Integer>(individualsWFitness.size());
-//		Map<AnIndividual,Integer> individualWDominationCount = new HashMap<AnIndividual, Integer>(individualsWFitness.size());
+		Map<AnIndividual,Integer> individualWDominationCount = new HashMap<AnIndividual, Integer>(individuals.size());
 		Map<AnIndividual,Set<AnIndividual>> individualWDominatedIndividuals = new HashMap<AnIndividual, Set<AnIndividual>>(individuals.size());
 		List<AnIndividual> individualsInCurrentFront = new LinkedList<AnIndividual>();
 		
 		for( AnIndividual p : individuals ) {
-			final Double[] pFitness = p.getFitnessFromFitnessBoard();
+			final Double[] pFitness = p.fitness;
 			
 			// don't even include individuals who have no fitness
 			if( pFitness==null )
@@ -124,7 +124,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			Set<AnIndividual> dominatedIndividuals = new HashSet<AnIndividual>(individuals.size());
 			
 			for( AnIndividual q : individuals ) {
-				final Double[] qFitness = q.getFitnessFromFitnessBoard();
+				final Double[] qFitness = q.fitness;
 
 				// if p is feasible and q is not
 				if( p.isFeasible() && !q.isFeasible() ) {
@@ -154,12 +154,12 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			}
 			
 			individualWDominatedIndividuals.put(p, dominatedIndividuals);
-			p.setDominationCount(dominationCount);
+			individualWDominationCount.put(p, dominationCount);
 
 			// does this individual belong to the first front?
 			if( dominationCount==0 ) {
 				individualsInCurrentFront.add(p);
-				p.setRank(1);
+				p.rank = 1;
 			}
 		}
 		
@@ -186,12 +186,12 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			
 			for( AnIndividual p : individualsInCurrentFront ) {
 				for( AnIndividual q : individualWDominatedIndividuals.get(p) ) {
-					Integer nq = q.getDominationCount() - 1;
-					q.setDominationCount(nq);
+					Integer nq = individualWDominationCount.get(q) - 1;
+					individualWDominationCount.put(q, nq);
 					// if q belongs to the next front
 					if( nq==0 ) {
 						nextFront.add(q);
-						q.setRank(frontIndex+1);
+						q.rank = frontIndex + 1;
 					}
 				}
 			}
@@ -234,8 +234,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		@Override
 		public int compare(AnIndividual o1, AnIndividual o2) {
 			
-			final Double fitness1 = individuals.get( individuals.lastIndexOf(o1) ).getFitnessFromFitnessBoard()[m];
-			final Double fitness2 = individuals.get( individuals.lastIndexOf(o2) ).getFitnessFromFitnessBoard()[m];
+			final Double fitness1 = individuals.get( individuals.lastIndexOf(o1) ).fitness[m];
+			final Double fitness2 = individuals.get( individuals.lastIndexOf(o2) ).fitness[m];
 			return Double.compare(fitness1, fitness2);
 		}
 	}
@@ -255,8 +255,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		@Override
 		public int compare(AnIndividual o1, AnIndividual o2) {
 			
-			final Double aDistance = individuals.get( individuals.lastIndexOf(o1) ).getCrowdedDistance();
-			final Double bDistance = individuals.get( individuals.lastIndexOf(o2) ).getCrowdedDistance();
+			final Double aDistance = individuals.get( individuals.lastIndexOf(o1) ).crowdedDistance;
+			final Double bDistance = individuals.get( individuals.lastIndexOf(o2) ).crowdedDistance;
 			return Double.compare(aDistance, bDistance);
 		}
 	}
@@ -270,37 +270,37 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	protected void calculateCrowdingDistance(Collection<AnIndividual> population, List<AnIndividual> indivs) {
 		
 		int l = population.size();
-		int objectivesCount = indivs.get(0).getFitnessBoard().size();
+		int objectivesCount = indivs.get(0).fitness.length;
 //		Map<AnIndividual,Double> individualWDistance = new HashMap<AnIndividual, Double>(population.size());
 //		List<AnIndividual> sortedPop = new ArrayList<AnIndividual>(population);
 		
 		// set distance to 0
 		for( AnIndividual i : population ) {
-			i.setCrowdedDistance(0d);
+			i.crowdedDistance = 0d;
 		}
 		
 		for (int m=0; m<objectivesCount; m++) {			
 			Collections.sort(indivs, new ComparatorFitness(m, indivs));
 			
-			final double minFitness = indivs.get(0).getFitnessFromFitnessBoard()[m];//individualWFitness.get(sortedPop.get(0))[m];
-			final double maxFitness = indivs.get(l-1).getFitnessFromFitnessBoard()[m];//individualWFitness.get(sortedPop.get(l-1))[m];
+			final double minFitness = indivs.get(0).fitness[m];//individualWFitness.get(sortedPop.get(0))[m];
+			final double maxFitness = indivs.get(l-1).fitness[m];//individualWFitness.get(sortedPop.get(l-1))[m];
 			final double diffFitness = maxFitness - minFitness;
 			
 			// ignore the individuals which were not evaluated (no data for comparison !)
 			if (Double.isNaN(diffFitness))
 				continue;
 
-			indivs.get(0).setCrowdedDistance(Double.POSITIVE_INFINITY);
-			indivs.get(l-1).setCrowdedDistance(Double.POSITIVE_INFINITY);
+			indivs.get(0).crowdedDistance = Double.POSITIVE_INFINITY;
+			indivs.get(l-1).crowdedDistance = Double.POSITIVE_INFINITY;
 //			individualWDistance.put(sortedPop.get(0), Double.POSITIVE_INFINITY);
 //			individualWDistance.put(sortedPop.get(l-1), Double.POSITIVE_INFINITY);
 			
 			for( int i=1 ; i<l-2 ; i++ ) {
-				Double d = indivs.get(i).getCrowdedDistance();
+				Double d = indivs.get(i).crowdedDistance;
 				//Double d = individualWDistance.get(sortedPop.get(i));
-				d += ( indivs.get(i+1).getFitnessFromFitnessBoard()[m] - indivs.get(i-1).getFitnessFromFitnessBoard()[m] ) / diffFitness;
+				d += ( indivs.get(i+1).fitness[m] - indivs.get(i-1).fitness[m] ) / diffFitness;
 				//d += (individualWFitness.get(sortedPop.get(i+1))[m] - individualWFitness.get(sortedPop.get(i-1))[m] ) / diffFitness;
-				indivs.get(i).setCrowdedDistance(d);
+				indivs.get(i).crowdedDistance = d;
 				//individualWDistance.put(sortedPop.get(i), d);
 			}
 		}
@@ -655,19 +655,19 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		int index2 = parents.lastIndexOf(ind2);
 		
 		// if 1 dominates 2
-		if( dominates(parents.get(index1).getFitnessFromFitnessBoard(), parents.get(index2).getFitnessFromFitnessBoard()) ) {
+		if( dominates(parents.get(index1).fitness, parents.get(index2).fitness) ) {
 			return ind1;
 		}
 		// else if 2 dominates 1
-		else if( dominates(parents.get(index2).getFitnessFromFitnessBoard(), parents.get(index1).getFitnessFromFitnessBoard()) ) {
+		else if( dominates(parents.get(index2).fitness, parents.get(index1).fitness) ) {
 			return ind2;
 		}
 		// else if 1 is most spread than 2
-		else if( parents.get(index1).getCrowdedDistance()>parents.get(index2).getCrowdedDistance() ) {
+		else if( parents.get(index1).crowdedDistance>parents.get(index2).crowdedDistance ) {
 			return ind1;
 		}
 		// else if 2 is most spread than 1
-		else if( parents.get(index2).getCrowdedDistance()>parents.get(index1).getCrowdedDistance() ) {
+		else if( parents.get(index2).crowdedDistance>parents.get(index1).crowdedDistance ) {
 			return ind2;
 		}
 		// else who's the luckier?

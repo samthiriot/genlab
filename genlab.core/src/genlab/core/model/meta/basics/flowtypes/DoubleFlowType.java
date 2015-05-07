@@ -20,13 +20,13 @@ public class DoubleFlowType extends AbstractFlowType<Double> {
 			try {
 				return Double.parseDouble((String)value);
 			} catch (NumberFormatException e) {
-				throw new WrongParametersException("unable to decode integer from "+value);
+				throw new WrongParametersException("unable to decode double from String "+value, e);
 			}
 		else
 			try {
 				return (Double)value;
 			} catch (ClassCastException e) {
-				throw new WrongParametersException("unable to cast integer from "+value);
+				throw new WrongParametersException("unable to cast double from value "+value, e);
 			}
 		
 	}

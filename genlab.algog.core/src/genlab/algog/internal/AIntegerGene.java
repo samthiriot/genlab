@@ -4,8 +4,8 @@ import cern.jet.random.Uniform;
 
 public class AIntegerGene extends ANumericGene<Integer> {
 
-	public AIntegerGene(String name, double mutationProba, Integer min, Integer max, Integer value) {
-		super(name, mutationProba, min, max, value);
+	public AIntegerGene(String name, double mutationProba, Integer min, Integer max) {
+		super(name, mutationProba, min, max);
 	}
 
 
@@ -29,14 +29,12 @@ public class AIntegerGene extends ANumericGene<Integer> {
 
 	@Override
 	public Integer generateRandomnly(Uniform uniform) {
-		this.value = uniform.nextIntFromTo(min, max);
-		return this.value;
+		return uniform.nextIntFromTo(min, max);
 	}
 
 	@Override
 	public Integer mutate(Uniform uniform, Object previousValue) {
-		this.value = uniform.nextIntFromTo(min, max);
-		return this.value;
+		return uniform.nextIntFromTo(min, max);
 	}
 
 	

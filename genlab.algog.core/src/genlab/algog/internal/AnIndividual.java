@@ -6,26 +6,30 @@ import java.util.Map;
 
 public class AnIndividual implements Comparable<AnIndividual> {
 
+	/** Definition of the genome */
 	public final AGenome genome;
+	/** Values for each gene defined */
 	public final Object[] genes;
-//	public Double fitness;
-	
-	/**
-	 * List of (fitness/target/value)
-	 */
-	private List<AFitnessBoard> fitnessBoard;
-	private int rank;
-	private int dominationCount;
-	private Double crowdedDistance;
+	/** Fitness for each objective defined */
+	public final Double[] fitness;
+	/** Target values to reach for each objective defined */
+	public final Object[] targets;
+	/** Actual value for each objective defined */
+	public final Object[] values;
+	/** Pareto front ranking */
+	public int rank;
+	/** Crowded distance */
+	public Double crowdedDistance;
 	
 	public AnIndividual(AGenome genome, Object[] genes) {
 		super();
 		this.genome = genome;
 		this.genes = genes;
-		this.fitnessBoard = new ArrayList<AFitnessBoard>();
+		this.fitness = new Double[genome.getGenes().length];
+		this.targets = new Object[genome.getGenes().length];
+		this.values = new Object[genome.getGenes().length];
 		this.rank = -1;
-		this.dominationCount = -1;
-		this.crowdedDistance = Double.POSITIVE_INFINITY;
+		this.crowdedDistance = -1d;
 	}
 
 	@Override
@@ -34,116 +38,20 @@ public class AnIndividual implements Comparable<AnIndividual> {
 		return crowdedDistance.compareTo(arg0.crowdedDistance);
 	}
 	
+	/**
+	 * if one fitness isn't computed then this individual is not feasible
+	 * @return true if feasible, false else
+	 */
 	public Boolean isFeasible() {
 		
-		for( AFitnessBoard fb : fitnessBoard ) {
-			if( fb.getValue()==null )
+		for( Double fitness : this.fitness ) {
+			if( fitness==null )
 				return false;
 		}
 		
 		return true;
 	}
-	
-	/*
-	 * 
-	 * 
-	 * GETTERS
-	 * & SETTERS
-	 * 
-	 * 
-	 */
 
-	public Double[] getFitnessFromFitnessBoard() {
-		Double[] d = new Double[fitnessBoard.size()];
-		for( int i=0 ; i<fitnessBoard.size() ; i++ ) {
-			d[i] = fitnessBoard.get(i).getFitness();
-		}
-		
-		return d;
-	}
-	
-	public Object[] getTargetsFromFitnessBoard() {
-		Object[] o = new Object[fitnessBoard.size()];
-		for( int i=0 ; i<fitnessBoard.size() ; i++ ) {
-			o[i] = fitnessBoard.get(i).getTarget();
-		}
-		
-		return o;
-	}
-	
-	public Object[] getValuesFromFitnessBoard() {
-		Object[] o = new Object[fitnessBoard.size()];
-		for( int i=0 ; i<fitnessBoard.size() ; i++ ) {
-			o[i] = fitnessBoard.get(i).getValue();
-		}
-		
-		return o;
-	}
-
-	/**
-	 * @return the fitnessBoard
-	 */
-	public List<AFitnessBoard> getFitnessBoard() {
-		return fitnessBoard;
-	}
-
-	/**
-	 * @param fitnessBoard the fitnessBoard to add
-	 */
-	public void addFitnessBoard(AFitnessBoard fitnessBoard) {
-		this.fitnessBoard.add(fitnessBoard);
-	}
-
-	/**
-	 * @param fitnessBoard the fitnessBoard to set
-	 */
-	public void setFitnessBoard(List<AFitnessBoard> fitnessBoard) {
-		this.fitnessBoard.clear();
-		this.fitnessBoard.addAll(fitnessBoard);
-	}
-	
-	/**
-	 * @return the rank
-	 */
-	public int getRank() {
-		return rank;
-	}
-
-	/**
-	 * @param rank the rank to set
-	 */
-	public void setRank(int rank) {
-		this.rank = rank;
-	}
-
-	/**
-	 * @return the dominationCount
-	 */
-	public int getDominationCount() {
-		return dominationCount;
-	}
-
-	/**
-	 * @param dominationCount the dominationCount to set
-	 */
-	public void setDominationCount(int dominationCount) {
-		this.dominationCount = dominationCount;
-	}
-	
-	/**
-	 * @return the crowdedDistance
-	 */
-	public Double getCrowdedDistance() {
-		return crowdedDistance;
-	}
-
-	/**
-	 * @param crowdedDistance the crowdedDistance to set
-	 */
-	public void setCrowdedDistance(Double crowdedDistance) {
-		this.crowdedDistance = crowdedDistance;
-	}
-	
 	/*
 	 * 
 	 * 
@@ -162,26 +70,14 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	}
 	
 	public String fitnessToString() {
-		List<Double> list = new ArrayList<Double>(fitnessBoard.size());
-		for( int i=0 ; i<fitnessBoard.size() ; i++ ) {
-			list.add(fitnessBoard.get(i).getFitness());
-		}
-		return genome.readableValues(list.toArray());
+		return genome.readableValues( this.fitness );
 	}
 	
 	public String targetsToString() {
-		List<Object> list = new ArrayList<Object>(fitnessBoard.size());
-		for( int i=0 ; i<fitnessBoard.size() ; i++ ) {
-			list.add(fitnessBoard.get(i).getTarget());
-		}
-		return genome.readableValues(list.toArray());
+		return genome.readableValues( this.targets );
 	}
 	
 	public String valuesToString() {
-		List<Object> list = new ArrayList<Object>(fitnessBoard.size());
-		for( int i=0 ; i<fitnessBoard.size() ; i++ ) {
-			list.add(fitnessBoard.get(i).getValue());
-		}
-		return genome.readableValues(list.toArray());
+		return genome.readableValues( this.values );
 	}
 }

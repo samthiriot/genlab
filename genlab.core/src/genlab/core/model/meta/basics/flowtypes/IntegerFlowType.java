@@ -20,13 +20,13 @@ public class IntegerFlowType extends AbstractFlowType<Integer> {
 			try {
 				return Integer.parseInt((String)value);
 			} catch (NumberFormatException e) {
-				throw new WrongParametersException("unable to decode integer from "+value);
+				throw new WrongParametersException("unable to decode integer from string "+value, e);
 			}
 		else
 			try {
 				return (Integer)value;
 			} catch (ClassCastException e) {
-				throw new WrongParametersException("unable to cast integer from "+value);
+				throw new WrongParametersException("unable to cast integer from value "+value, e);
 			}
 		
 	}

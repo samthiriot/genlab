@@ -79,7 +79,7 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 			return res;
 		}
 		
-		static {{
+		static {
 			
 			// cache the map from label to enum value
 			for (EAvailableFunctions value : EAvailableFunctions.values()) {
@@ -92,7 +92,7 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 				label2value.put(value.label, value);
 			}
 			
-		}}
+		}
 		
 	}
 	
@@ -150,7 +150,7 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 				final double x = (Double) getInputValueForInput(INPUT_X);
 				final double y = (Double) getInputValueForInput(INPUT_Y);
 				
-				try {					
+				try {
 					// detect constraint violation 
 					boolean violatesConstraint = false;
 					boolean violatesSearchDomain = false;
