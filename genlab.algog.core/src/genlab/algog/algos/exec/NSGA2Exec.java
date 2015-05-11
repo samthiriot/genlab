@@ -38,13 +38,13 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	
 	/** for the last generation associates each rank with its individuals */
 	protected SortedMap<Integer,Collection<AnIndividual>> fronts = null;
-	protected List<AnIndividual> individuals = null;
+	protected Set<AnIndividual> individuals = null;
 //	/** for the last generation evaluated, associates each individual with its rank */
 //	protected Map<AnIndividual,Integer> individualWRank = null;
 //	/** for the last generation, associates each individual with its fitness */
 //	protected Map<AnIndividual, Double[]> individualWFitness_LastGenerations = null;
 	/** for each generation, and each individual, stores the corresponding fitness */
-	protected final LinkedHashMap<Integer,List<AnIndividual>> generationWFirstPF;
+	protected final LinkedHashMap<Integer,Set<AnIndividual>> generationWFirstPF;
 	/** number of cuts to make on genes for the crossover operator */
 	public static final int NCUTS = 2;
 
@@ -58,7 +58,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	public NSGA2Exec(IExecution exec, GeneticExplorationAlgoContainerInstance algoInst) {
 		super(exec, algoInst);
 		// initializes the map of, for each iteration, the first pareto front
-		generationWFirstPF = new LinkedHashMap<Integer,List<AnIndividual>>(paramStopMaxIterations);
+		generationWFirstPF = new LinkedHashMap<Integer,Set<AnIndividual>>(paramStopMaxIterations);
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 //		Map<AnIndividual, Integer> individualWRank = new HashMap<AnIndividual, Integer>(individualsWFitness.size());
 		Map<AnIndividual,Integer> individualWDominationCount = new HashMap<AnIndividual, Integer>(individuals.size());
 		Map<AnIndividual,Set<AnIndividual>> individualWDominatedIndividuals = new HashMap<AnIndividual, Set<AnIndividual>>(individuals.size());
-		List<AnIndividual> individualsInCurrentFront = new LinkedList<AnIndividual>();
+		Set<AnIndividual> individualsInCurrentFront = new HashSet<AnIndividual>();
 		
 		for( AnIndividual p : individuals ) {
 			final Double[] pFitness = p.fitness;
@@ -182,10 +182,10 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		
 		// build the second, third, ..., Xth domination fronts
 		int frontIndex = 1;
-		List<AnIndividual> nextFront = null;
+		Set<AnIndividual> nextFront = null;
 		
 		while( !individualsInCurrentFront.isEmpty() ) {
-			nextFront = new LinkedList<AnIndividual>();
+			nextFront = new HashSet<AnIndividual>();
 			
 			for( AnIndividual p : individualsInCurrentFront ) {
 				for( AnIndividual q : individualWDominatedIndividuals.get(p) ) {
@@ -270,7 +270,9 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	 * @param individualWFitness
 	 * @return
 	 */
-	protected void calculateCrowdingDistance(Collection<AnIndividual> population, List<AnIndividual> indivs) {
+	protected void calculateCrowdingDistance(Collection<AnIndividual> population, Set<AnIndividual> inds) {
+		
+		List<AnIndividual> indivs = new ArrayList<AnIndividual>(inds);
 		
 		int l = population.size();
 		int objectivesCount = indivs.get(0).fitness.length;
@@ -349,7 +351,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 				
 				calculateCrowdingDistance(sortedFront, individuals);
 				
-				Collections.sort(sortedFront, new ComparatorCrowded(individuals));
+				List<AnIndividual> t_inds = new ArrayList<AnIndividual>(individuals);
+				Collections.sort(sortedFront, new ComparatorCrowded(t_inds));
 				
 				// add the best ones based on the crowded operator (as long as we do have some offsprings !)
 				for( int i=0 ; i<remaining && i<sortedFront.size() ; i++ ) {
@@ -365,11 +368,11 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		return offsprings;
 	}
 	
-	public List<AnIndividual> getIndividualsForTwoLastGenerations() {
-		List<AnIndividual> result = new ArrayList<AnIndividual>(generation.get(iterationsMade));
+	public Set<AnIndividual> getIndividualsForTwoLastGenerations() {
+		Set<AnIndividual> result = new HashSet<AnIndividual>(parentGeneration.get(iterationsMade));
 		
-//		if( generation.get(iterationsMade-1)!=null )
-//			result.addAll(generation.get(iterationsMade-1));
+		if( offspringGeneration.get(iterationsMade)!=null )
+			result.addAll(offspringGeneration.get(iterationsMade));
 		
 		return result;
 	}
@@ -505,7 +508,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 				
 		for( Integer iterationId : generationWFirstPF.keySet() ) {
 			// for each iteration
-			final List<AnIndividual> indivs = generationWFirstPF.get(iterationId);
+			final Set<AnIndividual> indivs = generationWFirstPF.get(iterationId);
 //			final Map<AnIndividual,Double[]> generationFitness = getIndividualWFitnessFor2LastGenerations(iterationId);
 //			final Map<AnIndividual,Object[]> indiv2value = getIndividualWValuesFor2LastGenerations(iterationId);
 //			final Map<AnIndividual,Object[]> indiv2target = getIndividualWTargetFor2LastGenerations(iterationId);
@@ -543,23 +546,23 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	 * @param novelPopulation
 	 * @param statsGeneWCountMutations
 	 */
-	protected void mutatePopulation(AGenome genome, List<AnIndividual> novelPopulation, Map<AGene<?>,Integer> statsGeneWCountMutations) {
+	protected void mutatePopulation(AGenome genome, Set<AnIndividual> novelPopulation, Map<AGene<?>,Integer> statsGeneWCountMutations) {
 		
 		int countMutations = 0;
 		StringBuffer _message = new StringBuffer();
 		
-		for( int i=0 ; i<novelPopulation.size() ; i++) {
+		for( AnIndividual i : novelPopulation ) {
 			AGene<?>[] genes = genome.getGenes();
 
 			for (int j=0; j<genes.length; j++) {
 				if (uniform.nextDoubleFromTo(0.0, 1.0) <= genes[j].getMutationProbability()) {
-					String debugIndivBefore = Arrays.toString(novelPopulation.get(i).genes);
+					String debugIndivBefore = Arrays.toString(i.genes);
 					
-					novelPopulation.get(i).genes[j] = genes[j].mutate(uniform, novelPopulation.get(i).genes[j]);
+					i.genes[j] = genes[j].mutate(uniform, i.genes[j]);
 					
 					_message.append("\nMutate individual n°").append(i)
 						.append(" from ").append(debugIndivBefore)
-						.append(" to ").append(Arrays.toString(novelPopulation.get(i).genes));
+						.append(" to ").append(Arrays.toString(i.genes));
 					
 					// stats on mutation
 					Integer count = statsGeneWCountMutations.get(genes[j]);
@@ -596,7 +599,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		boolean crossoverApplied = uniform.nextBoolean();
 		
 		for( int i=0 ; i<nCuts ; i++ ) {
-			cuts[i] = uniform.nextIntFromTo(1, genome.getGenes().length-1);
+			cuts[i] = uniform.nextIntFromTo(0, genome.getGenes().length-1);
 		}
 		
 		Arrays.sort(cuts);
@@ -633,7 +636,9 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	 * @param parents
 	 * @return
 	 */
-	protected AnIndividual crowdedTournamentSelection(AnIndividual ind1, AnIndividual ind2, List<AnIndividual> parents) {
+	protected AnIndividual crowdedTournamentSelection(AnIndividual ind1, AnIndividual ind2, Set<AnIndividual> p) {
+		
+		List<AnIndividual> parents = new ArrayList<AnIndividual>(p);
 
 		// if 1 is feasible and 2 is not
 		if( ind1.isFeasible() && !ind2.isFeasible() ) {
@@ -688,9 +693,9 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	 * @param parents
 	 * @return
 	 */
-	protected List<AnIndividual> generateNextGenerationWithCrossover(AGenome genome, List<AnIndividual> parents, int populationSize) {
+	protected Set<AnIndividual> generateNextGenerationWithCrossover(AGenome genome, Set<AnIndividual> parents, int populationSize) {
 		
-		List<AnIndividual> offspring = new ArrayList<AnIndividual>(populationSize);// new Object[populationSize][];
+		Set<AnIndividual> offspring = new HashSet<AnIndividual>(populationSize);// new Object[populationSize][];
 		int countCrossover = 0;		
 		List<AnIndividual> selectedPopIndex = new LinkedList<AnIndividual>(parents);
 
@@ -745,7 +750,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	
 
 	@Override
-	protected Map<AGenome,List<AnIndividual>> prepareNextGeneration() {
+	protected Map<AGenome,Set<AnIndividual>> prepareNextGeneration() {
 		
 		String s = "So... at iteration "+iterationsMade+":\n";
 		
@@ -756,8 +761,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 
 		s += "\nP(t) and Q(t)\n";
 		s = "(pq0:"+individuals.size()+")"+s;
-		for( int i=0 ; i<individuals.size() ; i++ ) {
-			s += individuals.get(i).toMiniString();
+		for( AnIndividual i : individuals ) {
+			s += i.toMiniString();
 		}
 		
 		
@@ -776,7 +781,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		
 		messages.infoUser("Selected for "+selectedGenomeWPopulation.size()+" genome(s) a total of "+selectedIndividuals.getTotalOfIndividualsAllGenomes()+" parents", getClass());
 		
-		Map<AGenome,List<AnIndividual>> novelGenomeWPopulation = new HashMap<AGenome, List<AnIndividual>>();
+		Map<AGenome,Set<AnIndividual>> novelGenomeWPopulation = new HashMap<AGenome, Set<AnIndividual>>();
 		// stats on the count of mutation (to be returned to the user)
 		Map<AGene<?>,Integer> statsGeneWCountMutations = new HashMap<AGene<?>, Integer>();
 		
@@ -788,16 +793,18 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 //			generation.put(iterationsMade+1, p);
 			
 			// select all individuals in P(t+1) with the right genome
-			List<AnIndividual> parents = new ArrayList<AnIndividual>(selectedGenomeWPopulation.get(genome));
+			Set<AnIndividual> parents = new HashSet<AnIndividual>(selectedGenomeWPopulation.get(genome));
+			
+			parentGeneration.put(iterationsMade+1, parents);
 			
 			s += "\nP(t+1)\n";
 			s = "(p1:"+parents.size()+")"+s;
-			for( int i=0 ; i<parents.size() ; i++ ) {
-				s += parents.get(i).toMiniString();
+			for( AnIndividual i : parents ) {
+				s += i.toMiniString();
 			}		
 
 			// generate the next generation
-			List<AnIndividual> offspring = generateNextGenerationWithCrossover(
+			Set<AnIndividual> offspring = generateNextGenerationWithCrossover(
 				genome, 
 				parents, 
 				paramPopulationSize
@@ -807,15 +814,15 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			mutatePopulation(genome, offspring, statsGeneWCountMutations);
 
 			// do not forget parents!
-			List<AnIndividual> merged = new ArrayList<AnIndividual>();//new Object[parents.size()+offspring.length][];
+			//Set<AnIndividual> merged = new HashSet<AnIndividual>();//new Object[parents.size()+offspring.length][];
 			s = "(off:"+offspring.size()+")"+"(pq1:"+(parents.size()+offspring.size())+")"+s;
-			merged.addAll(parents);
-			merged.addAll(offspring);
+			//merged.addAll(parents);
+			//merged.addAll(offspring);
 			
-			countPeople += merged.size();
+			//countPeople += merged.size();
 
 			// store this novel generation
-			novelGenomeWPopulation.put(genome, merged);
+			novelGenomeWPopulation.put(genome, offspring);
 		}
 		
 				
@@ -836,34 +843,34 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		messages.warnUser( "Loss: " + ((paramPopulationSize*2)-countPeople) + " individual(s), thus " + Math.round((paramPopulationSize-countPeople)*100/paramPopulationSize) + "% of the population will must be regenerated", getClass());
 
 		// TODO if the population is not big enough, recreate some novel individuals
-		if( countPeople<paramPopulationSize*2 ) {
-			
-			messages.warnUser( Math.round((paramPopulationSize-countPeople)*100/paramPopulationSize) + "% of the population must be regenerated", getClass());
-			
-			for( AGenome genome : selectedGenomeWPopulation.keySet() ) {
-				Set<AnIndividual> individuals = selectedGenomeWPopulation.get(genome);
-				int targetSizeForGenome = paramPopulationSize/genome2algoInstance.size(); // TODO should be what ?
-				int delta = targetSizeForGenome - individuals.size(); 
-
-				if( delta>0 ) {
-					messages.warnUser("Adding "+delta+" new individuals in the population for genome "+genome.name, getClass());
-
-					List<AnIndividual> population = generateInitialPopulation(genome, delta);
-					
-					for( AnIndividual i : population ) {
-						individuals.add(i);
-					}
-				}
-				
-				List<AnIndividual> merged = novelGenomeWPopulation.get(genome);
-				merged.addAll(individuals);
-
-				novelGenomeWPopulation.put(genome, merged);
-			}
-		}
+//		if( countPeople<paramPopulationSize*2 ) {
+//			
+//			messages.warnUser( Math.round((paramPopulationSize-countPeople)*100/paramPopulationSize) + "% of the population must be regenerated", getClass());
+//			
+//			for( AGenome genome : selectedGenomeWPopulation.keySet() ) {
+//				Set<AnIndividual> individuals = selectedGenomeWPopulation.get(genome);
+//				int targetSizeForGenome = paramPopulationSize/genome2algoInstance.size(); // TODO should be what ?
+//				int delta = targetSizeForGenome - individuals.size(); 
+//
+//				if( delta>0 ) {
+//					messages.warnUser("Adding "+delta+" new individuals in the population for genome "+genome.name, getClass());
+//
+//					Set<AnIndividual> population = generateInitialPopulation(genome, delta);
+//					
+//					for( AnIndividual i : population ) {
+//						individuals.add(i);
+//					}
+//				}
+//				
+//				Set<AnIndividual> merged = novelGenomeWPopulation.get(genome);
+//				merged.addAll(individuals);
+//
+//				novelGenomeWPopulation.put(genome, merged);
+//			}
+//		}
 		
 		s += "\nP(t+1) and Q(t+1)\n";
-		for( List<AnIndividual> i : novelGenomeWPopulation.values() ) {
+		for( Set<AnIndividual> i : novelGenomeWPopulation.values() ) {
 			for( AnIndividual j : i ) {
 				s += j.toMiniString();
 			}

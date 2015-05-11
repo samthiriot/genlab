@@ -29,11 +29,11 @@ public abstract class BasicGeneticExplorationAlgoExec extends
 	 * Step "construct population" of the genetic algo. Called only for the very first one.
 	 * @return
 	 */
-	protected Map<AGenome,List<AnIndividual>> generateInitialPopulation() {
+	protected Map<AGenome,Set<AnIndividual>> generateInitialPopulation() {
 	
 
 		// associates each geneome to its corresponding population (for one generation)
-		Map<AGenome,List<AnIndividual>> genome2population = new HashMap<AGenome, List<AnIndividual>>();
+		Map<AGenome,Set<AnIndividual>> genome2population = new HashMap<AGenome, Set<AnIndividual>>();
 
 		// generate the novel population for each specy
 		// for each specy
@@ -43,7 +43,9 @@ public abstract class BasicGeneticExplorationAlgoExec extends
 			messages.debugUser("generation of the sub population based on genome: "+genome, getClass());
 
 			
-			List<AnIndividual> population = generateInitialPopulation(genome, paramPopulationSize/genome2algoInstance.size());
+			Set<AnIndividual> population = generateInitialPopulation(genome, paramPopulationSize/genome2algoInstance.size());
+			
+			parentGeneration.put(iterationsMade, population);
 			
 			genome2population.put(genome, population);
 

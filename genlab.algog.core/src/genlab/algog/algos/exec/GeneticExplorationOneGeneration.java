@@ -38,7 +38,7 @@ public class GeneticExplorationOneGeneration
 	
 	private final String name;
 	
-	private final Map<AGenome,List<AnIndividual>> generationToEvaluate;
+	private final Map<AGenome,Set<AnIndividual>> generationToEvaluate;
 	private Map<AGenome, Collection<IAlgoInstance>> genome2algoInstance;
 	private final Map<AGenome, List<IAlgoInstance>> genome2fitnessOutput;
 	private final Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance;
@@ -75,7 +75,7 @@ public class GeneticExplorationOneGeneration
 	public GeneticExplorationOneGeneration(
 			IExecution exec,
 			GeneticExplorationAlgoContainerInstance algoInst,
-			Map<AGenome,List<AnIndividual>> generationToEvaluate,
+			Map<AGenome,Set<AnIndividual>> generationToEvaluate,
 			Map<AGenome, Collection<IAlgoInstance>> genome2algoInstance,
 			Map<AGenome, List<IAlgoInstance>> map,
 			Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance,
@@ -107,7 +107,7 @@ public class GeneticExplorationOneGeneration
 		
 		// compute the count of iterations to do
 		totalIterationsToDo = 0;
-		for (List<AnIndividual> popToCompute : generationToEvaluate.values()) {
+		for (Set<AnIndividual> popToCompute : generationToEvaluate.values()) {
 			totalIterationsToDo += popToCompute.size();
 		}
 		progress.setProgressTotal(totalIterationsToDo);
@@ -197,7 +197,7 @@ public class GeneticExplorationOneGeneration
 		}
 		
 		// retrieve current population
-		List<AnIndividual> currentPopulation = generationToEvaluate.get(currentGenome);
+		Set<AnIndividual> currentPopulation = generationToEvaluate.get(currentGenome);
 		
 		// if we finished the current population, then shift to the next genome !
 		if (currentIndexIndividual == currentPopulation.size()) {
@@ -206,7 +206,8 @@ public class GeneticExplorationOneGeneration
 			currentPopulation = generationToEvaluate.get(currentGenome);
 		}
 		
-		currentIndividual = currentPopulation.get(currentIndexIndividual);
+		List<AnIndividual> cp = new ArrayList<AnIndividual>(currentPopulation);
+		currentIndividual = cp.get(currentIndexIndividual);
 		
 		totalIterationsDone++;
 	}
@@ -304,7 +305,7 @@ public class GeneticExplorationOneGeneration
 	 * Returns a copy of the computed individuals
 	 * @return
 	 */
-	public List<AnIndividual> getComputedIndividuals() {
+	public Set<AnIndividual> getComputedIndividuals() {
 		// store results
 		synchronized (lockerResults) {
 			
@@ -312,7 +313,7 @@ public class GeneticExplorationOneGeneration
 				throw new ProgramException("asked for a fitness for an exploration which did not terminated yet");
 				
 				
-			return new ArrayList<AnIndividual>(this.computedIndividuals);
+			return new HashSet<AnIndividual>(this.computedIndividuals);
 		}
 	}
 	

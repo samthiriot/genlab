@@ -4,7 +4,9 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import cern.jet.random.Uniform;
 
@@ -44,10 +46,10 @@ public class AGenome {
 		
 	}
 	
-	public List<AnIndividual> generateInitialGeneration(Uniform uniform, int populationSize) {
+	public Set<AnIndividual> generateInitialGeneration(Uniform uniform, int populationSize) {
 		
 
-		List<AnIndividual> population = new ArrayList<AnIndividual>(populationSize);//new Object[populationSize][];
+		Set<AnIndividual> population = new HashSet<AnIndividual>(populationSize);//new Object[populationSize][];
 				
 		for (int n=0; n<populationSize; n++) {
 			population.add(generateARandomGenome(uniform));
@@ -57,11 +59,12 @@ public class AGenome {
 	}
 	
 	
-	public void printToStream(PrintStream ps, List<AnIndividual> pop) {
+	public void printToStream(PrintStream ps, Set<AnIndividual> pop) {
 		
 		ps.println(Arrays.toString(genes));
+		List<AnIndividual> p = new ArrayList<AnIndividual>(pop);
 		for (int n=0; n<pop.size(); n++) {
-			AnIndividual ind = pop.get(n);
+			AnIndividual ind = p.get(n);
 			ps.println(Arrays.toString(ind.genes));
 		}
 	}

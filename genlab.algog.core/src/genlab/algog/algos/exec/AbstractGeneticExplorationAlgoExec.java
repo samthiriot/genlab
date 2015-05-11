@@ -80,7 +80,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	protected Map<AGenome, List<IAlgoInstance>> genome2fitnessOutput = new HashMap<AGenome, List<IAlgoInstance>>();
 
 	// for each generation, and each individual, stores the corresponding fitness
-	protected Map<Integer, List<AnIndividual>> generation = new HashMap<Integer, List<AnIndividual>>();
+	protected Map<Integer, Set<AnIndividual>> offspringGeneration = new HashMap<Integer, Set<AnIndividual>>();
+	protected Map<Integer, Set<AnIndividual>> parentGeneration = new HashMap<Integer, Set<AnIndividual>>();
 //	protected LinkedHashMap<Integer,Map<AnIndividual,Double[]>> generation2fitness = new LinkedHashMap<Integer, Map<AnIndividual,Double[]>>(500);
 //	protected LinkedHashMap<Integer,Map<AnIndividual,Object[]>> generation2targets = new LinkedHashMap<Integer, Map<AnIndividual,Object[]>>(500);
 //	protected LinkedHashMap<Integer,Map<AnIndividual,Object[]>> generation2values = new LinkedHashMap<Integer, Map<AnIndividual,Object[]>>(500);
@@ -127,16 +128,16 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * @param resultTargets
 	 * @param resultValues
 	 */
-	protected void manageResultsForCurrentGeneration(List<AnIndividual> individuals
+	protected void manageResultsForCurrentGeneration(Set<AnIndividual> individuals
 //			Map<AnIndividual,Double[]> resultFitness,
 //			Map<AnIndividual,Object[]> resultTargets,
 //			Map<AnIndividual,Object[]> resultValues
 			) {
 		
-		messages.debugUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
+		messages.infoUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
 
 		// store it 
-		generation.put(iterationsMade, individuals);
+		offspringGeneration.put(iterationsMade, individuals);
 //		generation2fitness.put(iterationsMade, resultFitness);
 //		generation2targets.put(iterationsMade, resultTargets);
 //		generation2values.put(iterationsMade, resultValues);
@@ -257,11 +258,11 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 				
 	}
 
-	protected List<AnIndividual> generateInitialPopulation(AGenome genome, int popsize) {
+	protected Set<AnIndividual> generateInitialPopulation(AGenome genome, int popsize) {
 
 		// TODO generation of the population with better init !
 		
-		List<AnIndividual> population;
+		Set<AnIndividual> population;
 		
 		messages.infoUser("generating the initial population ("+popsize+" individuals) for genome "+genome.name, getClass());
 		population = genome.generateInitialGeneration(uniform, popsize);
@@ -281,7 +282,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * Step "construct population" of the genetic algo. Called before each 
 	 * @return
 	 */
-	protected abstract Map<AGenome,List<AnIndividual>> generateInitialPopulation();
+	protected abstract Map<AGenome,Set<AnIndividual>> generateInitialPopulation();
 	
 	
 	/**
@@ -292,7 +293,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * Returns an execution for one iteration, that is for one generation.
 	 * @return
 	 */
-	protected GeneticExplorationOneGeneration createExecutableForGeneration(Map<AGenome,List<AnIndividual>> generationToEvaluate) {
+	protected GeneticExplorationOneGeneration createExecutableForGeneration(Map<AGenome,Set<AnIndividual>> generationToEvaluate) {
 		
 		// one iteration means: create one container to run the evaluation of this whole population
 		// in other words, we are a supervisor which will contain a supervisor which contains population evaluations.
@@ -330,7 +331,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 */
 	protected void displayOnStream(PrintStream ps, int generationId) {
 		
-		for ( AnIndividual individual : generation.get(generationId) ) {
+		for ( AnIndividual individual : offspringGeneration.get(generationId) ) {
 			ps.print(individual.fitness);
 			ps.print("\t");
 			ps.print(individual.genome);
@@ -477,7 +478,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 				String titleGenome, 
 				Map<AGenome,String[]> genome2fitnessColumns,
 				Map<AGenome,String[]> genome2geneColumns,
-				List<AnIndividual> individuals
+				Set<AnIndividual> individuals
 				) {
 		
 		
@@ -562,7 +563,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		final Map<AGenome,String[]> genome2geneColumns = declareColumnsForGenes(tab);
 		
 		
-		for (Integer iterationId : generation.keySet()) {
+		for (Integer iterationId : offspringGeneration.keySet()) {
 			
 			// for each iteration
 			
@@ -570,7 +571,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					tab, 
 					titleIteration, iterationId, titleGenome, 
 					genome2fitnessColumns, genome2geneColumns, 
-					generation.get(iterationId)
+					offspringGeneration.get(iterationId)
 					);
 			
 				
@@ -625,12 +626,12 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		
 	}
 	
-	public List<AnIndividual> getIndividualsForPreviousLastGeneration() {
-		return generation.get(iterationsMade-1);
+	public Set<AnIndividual> getIndividualsForPreviousLastGeneration() {
+		return offspringGeneration.get(iterationsMade-1);
 	}
 	
-	public List<AnIndividual> getIndividualsForLastGeneration() {
-		return generation.get(iterationsMade);
+	public Set<AnIndividual> getIndividualsForLastGeneration() {
+		return offspringGeneration.get(iterationsMade);
 	}
 	
 	/**
@@ -668,7 +669,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * Generate the next generation using specific selection, crossover and mutation operators.
 	 * @return
 	 */
-	protected abstract Map<AGenome,List<AnIndividual>> prepareNextGeneration();
+	protected abstract Map<AGenome,Set<AnIndividual>> prepareNextGeneration();
 
 	@Override
 	/**
@@ -694,7 +695,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			final GeneticExplorationOneGeneration algoFinished = (GeneticExplorationOneGeneration)progress.getAlgoExecution();
 			
 			// retrieve the different results of the evaluation of the generation: fitness, values explored, and targets
-			List<AnIndividual> individuals = algoFinished.getComputedIndividuals();
+			Set<AnIndividual> individuals = algoFinished.getComputedIndividuals();
+
 //			final Map<AnIndividual,Double[]> resultFitness = algoFinished.getComputedFitness(); // (this is already a copy)
 //			final Map<AnIndividual,Object[]> resultValues = algoFinished.getComputedValues(); // (this is already a copy)
 //			final Map<AnIndividual,Object[]> resultTargets = algoFinished.getComputedTargets(); // (this is already a copy)
