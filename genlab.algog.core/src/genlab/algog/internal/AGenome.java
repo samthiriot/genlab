@@ -1,8 +1,10 @@
 package genlab.algog.internal;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import cern.jet.random.Uniform;
 
@@ -28,41 +30,39 @@ public class AGenome {
 		return genes;
 	}
 	
-	protected Object[] generateARandomGenome(Uniform uniform) {
+	protected AnIndividual generateARandomGenome(Uniform uniform) {
 		
-		
-		Object[] values = new Object[genes.length];
+		Object[] ind = new Object[genes.length];
 		
 		for (int i=0; i<genes.length; i++) {
 			
 			AGene<?> gene = genes[i];
-			values[i] = gene.generateRandomnly(uniform);
-					
+			ind[i] = gene.generateRandomnly(uniform);
 		}
 		
-		return values;
+		return new AnIndividual(this, ind);//new Object[genes.length];;
 		
 	}
 	
-	public Object[][] generateInitialGeneration(Uniform uniform, int populationSize) {
+	public List<AnIndividual> generateInitialGeneration(Uniform uniform, int populationSize) {
 		
 
-		Object[][] population = new Object[populationSize][];
+		List<AnIndividual> population = new ArrayList<AnIndividual>(populationSize);//new Object[populationSize][];
 				
 		for (int n=0; n<populationSize; n++) {
-			population[n] = generateARandomGenome(uniform);
+			population.add(generateARandomGenome(uniform));
 		}
 		
 		return population;
 	}
 	
 	
-	public void printToStream(PrintStream ps, Object[][] pop) {
+	public void printToStream(PrintStream ps, List<AnIndividual> pop) {
 		
 		ps.println(Arrays.toString(genes));
-		for (int n=0; n<pop.length; n++) {
-			Object[] genome = pop[n];
-			ps.println(Arrays.toString(genome));
+		for (int n=0; n<pop.size(); n++) {
+			AnIndividual ind = pop.get(n);
+			ps.println(Arrays.toString(ind.genes));
 		}
 	}
 	

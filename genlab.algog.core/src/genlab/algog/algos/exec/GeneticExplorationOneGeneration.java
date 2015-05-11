@@ -17,9 +17,11 @@ import genlab.core.model.instance.IConnection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * The executable task which evaluates one complete generation of a genetic algorithm.
@@ -36,7 +38,7 @@ public class GeneticExplorationOneGeneration
 	
 	private final String name;
 	
-	private final Map<AGenome,Object[][]> generationToEvaluate;
+	private final Map<AGenome,List<AnIndividual>> generationToEvaluate;
 	private Map<AGenome, Collection<IAlgoInstance>> genome2algoInstance;
 	private final Map<AGenome, List<IAlgoInstance>> genome2fitnessOutput;
 	private final Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance;
@@ -51,11 +53,11 @@ public class GeneticExplorationOneGeneration
 	private Iterator<AGenome> currentComputationIteratorProcessedGenome = null;
 	private AGenome currentGenome = null;
 	private int currentIndexIndividual = 0;
-	private Object[] currentIndividual = null;
+	private AnIndividual currentIndividual = null;
 	private AnIndividual currentIndiv = null;
 
 	private final Object lockerResults = new Object();
-	private List<AnIndividual> computedIndividuals = new ArrayList<AnIndividual>();
+	private Set<AnIndividual> computedIndividuals = new HashSet<AnIndividual>();
 //	private Map<AnIndividual,Double[]> computedFitness = new HashMap<AnIndividual, Double[]>();
 //	private Map<AnIndividual,Object[]> computedValues = new HashMap<AnIndividual, Object[]>();
 //	private Map<AnIndividual,Object[]> computedTargets = new HashMap<AnIndividual, Object[]>();
@@ -73,7 +75,7 @@ public class GeneticExplorationOneGeneration
 	public GeneticExplorationOneGeneration(
 			IExecution exec,
 			GeneticExplorationAlgoContainerInstance algoInst,
-			Map<AGenome,Object[][]> generationToEvaluate,
+			Map<AGenome,List<AnIndividual>> generationToEvaluate,
 			Map<AGenome, Collection<IAlgoInstance>> genome2algoInstance,
 			Map<AGenome, List<IAlgoInstance>> map,
 			Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance,
@@ -105,8 +107,8 @@ public class GeneticExplorationOneGeneration
 		
 		// compute the count of iterations to do
 		totalIterationsToDo = 0;
-		for (Object[][] popToCompute : generationToEvaluate.values()) {
-			totalIterationsToDo += popToCompute.length;
+		for (List<AnIndividual> popToCompute : generationToEvaluate.values()) {
+			totalIterationsToDo += popToCompute.size();
 		}
 		progress.setProgressTotal(totalIterationsToDo);
 		
@@ -150,7 +152,7 @@ public class GeneticExplorationOneGeneration
 			Collection<IAlgoInstance> algoInstancesToRun = genome2algoInstance.get(currentGenome);
 			List<IAlgoInstance> fitnessOutput = genome2fitnessOutput.get(currentGenome);
 
-			currentIndiv = new AnIndividual(currentGenome, currentIndividual);
+			currentIndiv = currentIndividual;
 			
 			resExec = new GeneticExplorationAlgoIndividualRun(
 					exec, 
@@ -195,16 +197,16 @@ public class GeneticExplorationOneGeneration
 		}
 		
 		// retrieve current population
-		Object[][] currentPopulation = generationToEvaluate.get(currentGenome);
+		List<AnIndividual> currentPopulation = generationToEvaluate.get(currentGenome);
 		
 		// if we finished the current population, then shift to the next genome !
-		if (currentIndexIndividual == currentPopulation.length) {
+		if (currentIndexIndividual == currentPopulation.size()) {
 			currentGenome = currentComputationIteratorProcessedGenome.next();
 			currentIndexIndividual = 0;
 			currentPopulation = generationToEvaluate.get(currentGenome);
 		}
 		
-		currentIndividual = currentPopulation[currentIndexIndividual];
+		currentIndividual = currentPopulation.get(currentIndexIndividual);
 		
 		totalIterationsDone++;
 	}

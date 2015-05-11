@@ -257,11 +257,11 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 				
 	}
 
-	protected Object[][] generateInitialPopulation(AGenome genome, int popsize) {
+	protected List<AnIndividual> generateInitialPopulation(AGenome genome, int popsize) {
 
 		// TODO generation of the population with better init !
 		
-		Object[][] population;
+		List<AnIndividual> population;
 		
 		messages.infoUser("generating the initial population ("+popsize+" individuals) for genome "+genome.name, getClass());
 		population = genome.generateInitialGeneration(uniform, popsize);
@@ -281,7 +281,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * Step "construct population" of the genetic algo. Called before each 
 	 * @return
 	 */
-	protected abstract Map<AGenome,Object[][]> generateInitialPopulation();
+	protected abstract Map<AGenome,List<AnIndividual>> generateInitialPopulation();
 	
 	
 	/**
@@ -292,7 +292,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * Returns an execution for one iteration, that is for one generation.
 	 * @return
 	 */
-	protected GeneticExplorationOneGeneration createExecutableForGeneration(Map<AGenome,Object[][]> generationToEvaluate) {
+	protected GeneticExplorationOneGeneration createExecutableForGeneration(Map<AGenome,List<AnIndividual>> generationToEvaluate) {
 		
 		// one iteration means: create one container to run the evaluation of this whole population
 		// in other words, we are a supervisor which will contain a supervisor which contains population evaluations.
@@ -668,7 +668,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * Generate the next generation using specific selection, crossover and mutation operators.
 	 * @return
 	 */
-	protected abstract Map<AGenome,Object[][]> prepareNextGeneration();
+	protected abstract Map<AGenome,List<AnIndividual>> prepareNextGeneration();
 
 	@Override
 	/**

@@ -1,8 +1,7 @@
 package genlab.algog.internal;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
+
 
 public class AnIndividual implements Comparable<AnIndividual> {
 
@@ -21,15 +20,26 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	/** Crowded distance */
 	public Double crowdedDistance;
 	
+	public static int lastId = 1;
+	
+	public final int id;
+	
 	public AnIndividual(AGenome genome, Object[] genes) {
 		super();
+		
+		this.id = lastId++;
+		
 		this.genome = genome;
 		this.genes = genes;
 		this.fitness = new Double[genome.getGenes().length];
 		this.targets = new Object[genome.getGenes().length];
 		this.values = new Object[genome.getGenes().length];
-		this.rank = -1;
+		this.rank = Integer.MAX_VALUE;
 		this.crowdedDistance = -1d;
+	}
+	
+	public AnIndividual(AnIndividual ind) {
+		this(ind.genome, ind.genes);
 	}
 
 	@Override
@@ -62,11 +72,15 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	
 	@Override
 	public String toString() {
-		return genome+" "+this.genesToString();
+		return "["+id+"] "+genome+" "+this.genesToString()+" => "+valuesToString();
+	}
+	
+	public String toMiniString() {
+		return "["+hashCode()+", "+Arrays.toString(genes)+", "+rank+", "+crowdedDistance+"]";
 	}
 	
 	public String genesToString() {
-		return genome.getGenes().toString();
+		return genome.readableValues(this.genes);
 	}
 	
 	public String fitnessToString() {

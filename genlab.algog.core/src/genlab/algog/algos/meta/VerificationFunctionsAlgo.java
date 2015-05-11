@@ -158,9 +158,9 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 						case BNH:
 							violatesConstraint = 
 								(
-									(Math.pow(x - 5, 2) + Math.pow(y, 2)) > 25
+									(StrictMath.pow(x - 5, 2) + StrictMath.pow(y, 2)) > 25
 								) || (
-									(Math.pow(x-8, 2) + Math.pow(y+3, 2)) < 7.7		
+									(StrictMath.pow(x-8, 2) + StrictMath.pow(y+3, 2)) < 7.7		
 								);
 							violatesSearchDomain =
 									(x < 0) || (x > 5) ||
@@ -169,7 +169,7 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 						case SRN:
 							violatesConstraint =
 								(
-									(Math.pow(x, 2) + Math.pow(y, 2) - 225) > 0
+									(StrictMath.pow(x, 2) + StrictMath.pow(y, 2) - 225) > 0
 								) || (
 									(x - 3*y + 10) > 0
 								);
@@ -180,9 +180,9 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 						case CTP1:
 							violatesConstraint =
 								(
-									(((1+y) * Math.exp(-x/(1+y))) / ( 0.858*Math.exp(-0.541*x) )) < 1
+									(((1+y) * StrictMath.exp(-x/(1+y))) / ( 0.858*StrictMath.exp(-0.541*x) )) < 1
 								) || (
-									(((1+y) * Math.exp(-x/(1+y))) / ( 0.728*Math.exp(-0.295*x) )) < 1
+									(((1+y) * StrictMath.exp(-x/(1+y))) / ( 0.728*StrictMath.exp(-0.295*x) )) < 1
 								);
 							violatesSearchDomain =
 									(x < 0) || (x > 1) ||
@@ -190,18 +190,18 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 							break;
 						case CTP2:
 							double g, theta, a, b, c, d, e, exp1, exp2;
-							theta = -0.2d*Math.PI;
+							theta = -0.2d*StrictMath.PI;
 						    a = 0.2;
 						    b = 10.0;
 						    c = 1.0;
 						    d = 6.0;
 						    e = 1.0;
 						    g = 1 + y;
-						    exp1 = (g*(1 - Math.sqrt(x/g))-e)*Math.cos(theta) - x*Math.sin(theta);
-						    exp2 = (g*(1 - Math.sqrt(x/g))-e)*Math.sin(theta) + x*Math.cos(theta);
-						    exp2 = b*Math.PI*Math.pow(exp2,c);
-						    exp2 = Math.abs(Math.sin(exp2));
-						    exp2 = a*Math.pow(exp2,d);
+						    exp1 = (g*(1 - StrictMath.sqrt(x/g))-e)*StrictMath.cos(theta) - x*StrictMath.sin(theta);
+						    exp2 = (g*(1 - StrictMath.sqrt(x/g))-e)*StrictMath.sin(theta) + x*StrictMath.cos(theta);
+						    exp2 = b*StrictMath.PI*StrictMath.pow(exp2,c);
+						    exp2 = StrictMath.abs(StrictMath.sin(exp2));
+						    exp2 = a*StrictMath.pow(exp2,d);
 						    
 						    violatesConstraint = ( (exp1/exp2) < 1 );
 							violatesSearchDomain =
@@ -211,8 +211,8 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 						case POL:
 							violatesConstraint = false; // no constraint
 							violatesSearchDomain =
-									(x < -Math.PI) || (x > Math.PI) ||
-									(y < -Math.PI) || (y > Math.PI);
+									(x < -StrictMath.PI) || (x > StrictMath.PI) ||
+									(y < -StrictMath.PI) || (y > StrictMath.PI);
 							break;
 						case TNK:
 							if( y==0 ) {
@@ -220,14 +220,14 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 							}else {
 								violatesConstraint = 
 								(
-									(Math.pow(x, 2) + Math.pow(y, 2) - 0.1*Math.cos( 16*Math.atan(x/y) ) - 1) < 0
+									(StrictMath.pow(x, 2) + StrictMath.pow(y, 2) - 0.1*StrictMath.cos( 16*StrictMath.atan(x/y) ) - 1) < 0
 								) || (
-									(2*Math.pow(x-0.5, 2) + 2*Math.pow(y-0.5, 2)) > 1
+									(2*StrictMath.pow(x-0.5, 2) + 2*StrictMath.pow(y-0.5, 2)) > 1
 								);
 							}
 							violatesSearchDomain =
-									(x < 0) || (x > Math.PI) ||
-									(y < 0) || (y > Math.PI);
+									(x < 0) || (x > StrictMath.PI) ||
+									(y < 0) || (y > StrictMath.PI);
 							break;
 						case CONSTR_EX:
 							violatesConstraint = 
@@ -261,31 +261,31 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 					Double f2 = null;
 					switch (testedFunction) {
 						case BNH:
-							f1 = 4*Math.pow(x, 2)+4*Math.pow(y, 2);
-							f2 = Math.pow(x - 5,  2) + Math.pow(y - 5, 2);
+							f1 = 4*StrictMath.pow(x, 2)+4*StrictMath.pow(y, 2);
+							f2 = StrictMath.pow(x - 5,  2) + StrictMath.pow(y - 5, 2);
 							break;
 						case SRN:
-							f1 = Math.pow(x-2, 2) + Math.pow(y-1, 2) + 2;
-							f2 = 9*x + Math.pow(y-1, 2);
+							f1 = StrictMath.pow(x-2, 2) + StrictMath.pow(y-1, 2) + 2;
+							f2 = 9*x + StrictMath.pow(y-1, 2);
 							break;
 						case CTP1:
 							f1 = x;
-							f2 = (1+y) * Math.exp(-x/(1+y));
+							f2 = (1+y) * StrictMath.exp(-x/(1+y));
 							break;
 						case CTP2:
 						    double g = 1 + y;
 						    f1 = x;
-						    f2 = g*(1 - Math.sqrt(x/g));
+						    f2 = g*(1 - StrictMath.sqrt(x/g));
 							break;
 						case POL:
 						    double a1, a2, b1, b2;
-						    a1 = 0.5*Math.sin(1) - 2.0*Math.cos(1) + Math.sin(2) - 1.5*Math.cos(2);
-						    a2 = 1.5*Math.sin(1) - Math.cos(1) + 2*Math.sin(2) - 0.5*Math.cos(2);
-						    b1 = 0.5*Math.sin(x) - 2*Math.cos(x) + Math.sin(y) - 1.5*Math.cos(y);
-						    b2 = 1.5*Math.sin(x) - Math.cos(x) + 2*Math.sin(y) - 0.5*Math.cos(y);
+						    a1 = 0.5*StrictMath.sin(1) - 2.0*StrictMath.cos(1) + StrictMath.sin(2) - 1.5*StrictMath.cos(2);
+						    a2 = 1.5*StrictMath.sin(1) - StrictMath.cos(1) + 2*StrictMath.sin(2) - 0.5*StrictMath.cos(2);
+						    b1 = 0.5*StrictMath.sin(x) - 2*StrictMath.cos(x) + StrictMath.sin(y) - 1.5*StrictMath.cos(y);
+						    b2 = 1.5*StrictMath.sin(x) - StrictMath.cos(x) + 2*StrictMath.sin(y) - 0.5*StrictMath.cos(y);
 						    
-							f1 = 1 + Math.pow(a1-b1, 2) + Math.pow(a2-b2, 2);
-							f2 = Math.pow(x+3, 2) + Math.pow(y+1, 2);
+							f1 = 1 + StrictMath.pow(a1-b1, 2) + StrictMath.pow(a2-b2, 2);
+							f2 = StrictMath.pow(x+3, 2) + StrictMath.pow(y+1, 2);
 							break;
 						case TNK:
 							f1 = x;
