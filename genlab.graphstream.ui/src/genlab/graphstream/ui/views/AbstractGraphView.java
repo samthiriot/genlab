@@ -361,9 +361,7 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 	public void dispose() {
 		
 		messages.traceTech("disposing this view...", getClass());
-		
-		System.err.println("DISPOSING ABSTRACT GRAPH VIEW");
-		
+				
 		if (gsViewer != null) {
 			gsViewer.disableAutoLayout();
 			gsViewer.close();
@@ -378,9 +376,7 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		if (hostSwtComposite != null && !hostSwtComposite.isDisposed()) {
 			hostSwtComposite.dispose();
 		}
-		
-		System.err.println("done");
-		
+				
 		super.dispose();
 	}
 
@@ -411,7 +407,6 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 	public void partClosed(IWorkbenchPartReference partRef) {
 		
 		if (gsViewer != null) {
-			System.err.println("CLOSING ABSTRACT GRAPH VIEW");
 			gsViewer.disableAutoLayout();
 		}
 		
