@@ -583,13 +583,14 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					offspringGeneration.get(iterationId)
 					);
 			
+			/*
 			storeIndividualsData(
 					tab, 
 					titleIteration, iterationId, titleGenome, 
 					genome2fitnessColumns, genome2geneColumns, 
 					parentGeneration.get(iterationId)
 					);
-			
+			*/
 				
 		}
 		
