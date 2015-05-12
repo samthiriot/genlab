@@ -6,7 +6,6 @@ import genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo;
 import genlab.algog.internal.ADoubleGene;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
-import genlab.algog.internal.ANumericGene;
 import genlab.algog.internal.AnIndividual;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ComputationResult;
@@ -27,8 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import cern.jet.random.Uniform;
 
 
 /**
@@ -512,9 +509,6 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		for( Integer iterationId : generationWFirstPF.keySet() ) {
 			// for each iteration
 			final Set<AnIndividual> indivs = generationWFirstPF.get(iterationId);
-//			final Map<AnIndividual,Double[]> generationFitness = getIndividualWFitnessFor2LastGenerations(iterationId);
-//			final Map<AnIndividual,Object[]> indiv2value = getIndividualWValuesFor2LastGenerations(iterationId);
-//			final Map<AnIndividual,Object[]> indiv2target = getIndividualWTargetFor2LastGenerations(iterationId);
 			
 			storeIndividualsData(
 				tab, 
@@ -846,6 +840,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	@Override
 	protected Map<AGenome,Set<AnIndividual>> prepareNextGeneration() {
 		
+		exportContinuousOutput();
+
 		String s = "So... at iteration "+iterationsMade+":\n";
 		
 		// get Q(t) and P(t)
@@ -871,7 +867,6 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		// P(t+1)
 		INextGeneration selectedIndividuals = selectIndividuals();
 		Map<AGenome,Set<AnIndividual>> selectedGenomeWPopulation = selectedIndividuals.getAllIndividuals();
-		int countPeople = 0;
 		
 		messages.infoUser("Selected for "+selectedGenomeWPopulation.size()+" genome(s) a total of "+selectedIndividuals.getTotalOfIndividualsAllGenomes()+" parents", getClass());
 		
@@ -935,8 +930,6 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			messages.infoUser(_message.toString(), getClass());
 		}
 
-		messages.warnUser( "Loss: " + ((paramPopulationSize*2)-countPeople) + " individual(s), thus " + Math.round((paramPopulationSize-countPeople)*100/paramPopulationSize) + "% of the population will must be regenerated", getClass());
-
 		// TODO if the population is not big enough, recreate some novel individuals
 //		if( countPeople<paramPopulationSize*2 ) {
 //			
@@ -973,7 +966,6 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		
 		messages.infoTech(s, getClass());
 		
-		exportContinuousOutput();
 		
 		return novelGenomeWPopulation;
 	}
