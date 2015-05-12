@@ -30,7 +30,6 @@ import java.util.Map;
 public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecution implements ICleanableTask {
 
 	private final Collection<IAlgoInstance> algoInstancesToRun;
-	private final int individualId;
 	private final Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance;
 	private final Map <IConnection,Object> inputConnection2value;
 	private final List<IAlgoInstance> fitnessOutput;
@@ -49,14 +48,12 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 			Map <IConnection,Object> inputConnection2value,
 			Collection<IAlgoInstance> algoInstancesToRun,
 			List<IAlgoInstance> fitnessOutput2,
-			AnIndividual individual,
-			int individualId
+			AnIndividual individual
 			) {
 		
 		super(exec, algoInst, new ComputationProgressWithSteps());
 				
 		this.algoInstancesToRun = algoInstancesToRun;
-		this.individualId = individualId;
 		this.individual = individual;
 		this.gene2geneAlgoInstance = gene2geneAlgoInstance;
 		this.inputConnection2value = inputConnection2value;
@@ -282,13 +279,9 @@ public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecut
 		return individual; 
 	}
 	
-	public final int getIndividualId() {
-		return individualId;
-	}
-	
 	@Override
 	public String getName() {
-		return "ind "+individualId+" / "+individual.genome.name;
+		return individual.genome.name;
 	}
 	
 

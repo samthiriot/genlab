@@ -146,7 +146,7 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 				// retrieve parameters and inputs
 				final Integer idxParam = (Integer)algoInst.getValueForParameter(PARAM_FUNCTION);
 				final EAvailableFunctions testedFunction = EAvailableFunctions.values()[idxParam];
-				
+				String s = "";
 				final double x = (Double) getInputValueForInput(INPUT_X);
 				final double y = (Double) getInputValueForInput(INPUT_Y);
 				
@@ -176,6 +176,7 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 							violatesSearchDomain =
 									(x < -20) || (x > 20) ||
 									(y < -20) || (y > 20);
+							s+="SRN;"+x+";"+y+";"+violatesConstraint+":"+violatesSearchDomain;
 							break;
 						case CTP1:
 							violatesConstraint =
@@ -245,12 +246,12 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 					}
 					
 					// if constraint is violated, then fail
-					if (violatesConstraint) {
+					if (violatesConstraint) {//System.out.println(s);
 						messages.infoUser("constraint violated for function "+testedFunction, getClass());
 						progress.setComputationState(ComputationState.FINISHED_FAILURE);
 						return;
 					}
-					if (violatesSearchDomain) {
+					if (violatesSearchDomain) {//System.out.println(s);
 						messages.errorUser("out of search domain for function "+testedFunction+" x="+x+", y="+y+"; please correct the search domain", getClass());
 						progress.setComputationState(ComputationState.FINISHED_FAILURE);
 						return;
@@ -267,6 +268,7 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 						case SRN:
 							f1 = StrictMath.pow(x-2, 2) + StrictMath.pow(y-1, 2) + 2;
 							f2 = 9*x + StrictMath.pow(y-1, 2);
+							s+=";"+f1+";"+f2;
 							break;
 						case CTP1:
 							f1 = x;
@@ -300,7 +302,7 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 					}
 					
 					res.setResult(OUTPUT_F1, f1);
-					res.setResult(OUTPUT_F2, f2);
+					res.setResult(OUTPUT_F2, f2);//System.out.println(s);
 					
 					progress.setComputationState(ComputationState.FINISHED_OK);
 					

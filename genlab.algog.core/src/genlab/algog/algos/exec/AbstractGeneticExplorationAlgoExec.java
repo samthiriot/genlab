@@ -331,6 +331,15 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 */
 	protected void displayOnStream(PrintStream ps, int generationId) {
 		
+		for ( AnIndividual individual : parentGeneration.get(generationId) ) {
+			ps.print(individual.fitness);
+			ps.print("\t");
+			ps.print(individual.genome);
+			ps.print("\t");
+			ps.print(Arrays.toString(individual.genes));
+			ps.println();
+		}
+		
 		for ( AnIndividual individual : offspringGeneration.get(generationId) ) {
 			ps.print(individual.fitness);
 			ps.print("\t");
@@ -574,6 +583,13 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					offspringGeneration.get(iterationId)
 					);
 			
+			storeIndividualsData(
+					tab, 
+					titleIteration, iterationId, titleGenome, 
+					genome2fitnessColumns, genome2geneColumns, 
+					parentGeneration.get(iterationId)
+					);
+			
 				
 		}
 		
@@ -626,9 +642,9 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		
 	}
 	
-	public Set<AnIndividual> getIndividualsForPreviousLastGeneration() {
-		return offspringGeneration.get(iterationsMade-1);
-	}
+//	public Set<AnIndividual> getIndividualsForPreviousLastGeneration() {
+//		return offspringGeneration.get(iterationsMade-1);
+//	}
 	
 	public Set<AnIndividual> getIndividualsForLastGeneration() {
 		return offspringGeneration.get(iterationsMade);

@@ -3,6 +3,7 @@ package genlab.algog.algos.exec;
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
 import genlab.algog.algos.meta.GeneticExplorationAlgoConstants;
 import genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo;
+import genlab.algog.internal.ADoubleGene;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
 import genlab.algog.internal.ANumericGene;
@@ -26,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import cern.jet.random.Uniform;
 
 
 /**
@@ -628,6 +631,96 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		
 		return children;
 	}
+
+	/**
+	 * Create two children by the N points crossover operator
+	 * @param genome
+	 * @param nCuts
+	 * @param parent1
+	 * @param parent2
+	 * @return
+	 */
+	protected final List<AnIndividual> crossoverSBX(final AGenome genome, AnIndividual parent1, AnIndividual parent2) {
+		
+		List<AnIndividual> children = new ArrayList<AnIndividual>(2);
+		AnIndividual child1 = new AnIndividual(genome, new Object[genome.getGenes().length]);//new Object[genome.getGenes().length];
+		AnIndividual child2 = new AnIndividual(genome, new Object[genome.getGenes().length]);//new Object[genome.getGenes().length];
+		
+		for( int i=0 ; i<genome.getGenes().length ; i++ ) {
+			if( uniform.nextDoubleFromTo(0, 1)<0.5 ) {
+				Double geneP1 = (Double)parent1.genes[i];
+				Double geneP2 = (Double)parent2.genes[i];
+                ADoubleGene dg = (ADoubleGene)(genome.getGenes()[i]);
+				double rand;
+                double y1, y2, yl, yu;
+                double c1, c2;
+                double alpha, beta, betaq;
+
+                if( StrictMath.abs(geneP1-geneP2)>Double.MIN_VALUE ) {
+                    if( geneP1<geneP2 ) {
+                        y1 = geneP1;
+                        y2 = geneP2;
+                    }else {
+                        y1 = geneP2;
+                        y2 = geneP1;
+                    }
+                    
+                    yl = dg.min;
+                    yu = dg.max;
+                    rand = uniform.nextDoubleFromTo(0, 1);
+                    beta = 1.0 + (2.0*(y1-yl)/(y2-y1));
+                    alpha = 2.0 - StrictMath.pow( beta , -(dg.eta_c+1.0) );
+                    
+                    if( rand<=(1.0/alpha) ) {
+                        betaq = StrictMath.pow( (rand*alpha) , (1.0/(dg.eta_c+1.0)) );
+                    }else {
+                        betaq = StrictMath.pow( (1.0/(2.0-rand*alpha)) , (1.0/(dg.eta_c+1.0)) );
+                    }
+                    
+                    c1 = 0.5*((y1+y2)-betaq*(y2-y1));
+                    beta = 1.0 + (2.0*(yu-y2)/(y2-y1));
+                    alpha = 2.0 - StrictMath.pow( beta , -(dg.eta_c+1.0) );
+                    
+                    if( rand<=(1.0/alpha) ) {
+                        betaq = StrictMath.pow( (rand*alpha) , (1.0/(dg.eta_c+1.0)) );
+                    }else {
+                        betaq = StrictMath.pow( (1.0/(2.0-rand*alpha)) , (1.0/(dg.eta_c+1.0)) );
+                    }
+                    
+                    c2 = 0.5*((y1+y2)+betaq*(y2-y1));
+                    
+                    if( c1<yl ) c1 = yl;
+                    if( c2<yl ) c2 = yl;
+                    if( c1>yu ) c1 = yu;
+                    if( c2>yu ) c2 = yu;
+                    
+                    if( uniform.nextDoubleFromTo(0, 1)<=0.5 ) {
+                        child1.genes[i] = c2;
+                        child2.genes[i] = c1;
+                    }else {
+                        child1.genes[i] = c1;
+                        child2.genes[i] = c2;
+                    }
+                }else {
+                    if( uniform.nextDoubleFromTo(0, 1)<=0.5 ) {
+                        child1.genes[i] = geneP1;
+                        child2.genes[i] = geneP2;
+                    }else {
+                        child1.genes[i] = geneP2;
+                        child2.genes[i] = geneP1;
+                    }
+                }
+			}else {
+				child1.genes[i] = parent1.genes[i];
+				child2.genes[i] = parent2.genes[i];
+			}
+		}
+	
+		children.add(child1);
+		children.add(child2);
+		
+		return children;
+	}
 	
 	/**
 	 * Crowded Tournament Selection operator
@@ -716,7 +809,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 
 			if( genome.crossoverProbability==1.0 || uniform.nextDoubleFromTo(0.0, 1.0)<=genome.crossoverProbability ) {
 				// TODO use a parameter for crossover method
-				List<AnIndividual> novelIndividuals = crossoverNPoints(genome, NCUTS, p1, p2);
+//				List<AnIndividual> novelIndividuals = crossoverNPoints(genome, NCUTS, p1, p2);
+				List<AnIndividual> novelIndividuals = crossoverSBX(genome, p1, p2);
 				countCrossover++;
 
 				_message.append("\nCrossover between ")
@@ -785,9 +879,10 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		// stats on the count of mutation (to be returned to the user)
 		Map<AGene<?>,Integer> statsGeneWCountMutations = new HashMap<AGene<?>, Integer>();
 		
+		AGenome t_genome;
 
 		// for each genome
-		for( AGenome genome : selectedGenomeWPopulation.keySet() ) {
+		for( AGenome genome : selectedGenomeWPopulation.keySet() ) {t_genome=genome;
 			// add parents to generation
 //			List<AnIndividual> p = new ArrayList(selectedGenomeWPopulation.get(genome));
 //			generation.put(iterationsMade+1, p);

@@ -52,7 +52,9 @@ public class GeneticExplorationOneGeneration
 	private final Object lockerParameters = new Object();
 	private Iterator<AGenome> currentComputationIteratorProcessedGenome = null;
 	private AGenome currentGenome = null;
-	private int currentIndexIndividual = 0;
+	private Iterator<AnIndividual> currentIteratorIndividual;
+//	private int currentIndexIndividual = 0;
+	private List<Integer> listOfIndex = null;
 	private AnIndividual currentIndividual = null;
 	private AnIndividual currentIndiv = null;
 
@@ -93,6 +95,8 @@ public class GeneticExplorationOneGeneration
 		this.genome2algoInstance = genome2algoInstance;
 		this.gene2geneAlgoInstance = gene2geneAlgoInstance;
 		this.inputConnection2value = inputConnection2value;
+		
+		this.listOfIndex = new ArrayList<Integer>();
 		
 		this.autoUpdateProgressFromChildren = false;
 		// we don't want to die if a subprocess has a problem; we will assume the fitness is infinite instead.
@@ -148,7 +152,7 @@ public class GeneticExplorationOneGeneration
 			nextIteration();
 
 			// create exec
-			messages.traceTech("creating the executable for the exploration of individual: "+currentIndexIndividual+" of genome "+currentGenome, getClass());
+			messages.traceTech("creating the executable for the exploration of individual: "+currentIndiv+" of genome "+currentGenome, getClass());
 			Collection<IAlgoInstance> algoInstancesToRun = genome2algoInstance.get(currentGenome);
 			List<IAlgoInstance> fitnessOutput = genome2fitnessOutput.get(currentGenome);
 
@@ -161,8 +165,7 @@ public class GeneticExplorationOneGeneration
 					inputConnection2value,
 					algoInstancesToRun,
 					fitnessOutput,
-					currentIndiv, 
-					currentIndexIndividual
+					currentIndiv
 					);	
 			resExec.setParent(this);
 			//addTask(resExec);
@@ -178,7 +181,7 @@ public class GeneticExplorationOneGeneration
 	}
 	
 	/**
-	 * Shifts to the next iteration. After this call, {@link #currentGenome} and {@link #currentIndexIndividual}
+	 * Shifts to the next iteration. After this call, {@link #currentGenome} and {@link #currentIteratorIndividual}
 	 * will be set to valid values.
 	 */
 	protected void nextIteration() {
@@ -189,25 +192,24 @@ public class GeneticExplorationOneGeneration
 			// init
 			currentComputationIteratorProcessedGenome = generationToEvaluate.keySet().iterator();
 			currentGenome = currentComputationIteratorProcessedGenome.next();
-			currentIndexIndividual = 0;
+			currentIteratorIndividual = generationToEvaluate.get(currentGenome).iterator();
 		} else {
 		
 			// shift to the next individual
-			currentIndexIndividual++;
+//			currentIteratorIndividual.next();
 		}
 		
 		// retrieve current population
-		Set<AnIndividual> currentPopulation = generationToEvaluate.get(currentGenome);
+//		Set<AnIndividual> currentPopulation = generationToEvaluate.get(currentGenome);
 		
 		// if we finished the current population, then shift to the next genome !
-		if (currentIndexIndividual == currentPopulation.size()) {
+		if (!currentIteratorIndividual.hasNext()) {
 			currentGenome = currentComputationIteratorProcessedGenome.next();
-			currentIndexIndividual = 0;
-			currentPopulation = generationToEvaluate.get(currentGenome);
+			currentIteratorIndividual = generationToEvaluate.get(currentGenome).iterator();
+//			currentPopulation = generationToEvaluate.get(currentGenome);
 		}
 		
-		List<AnIndividual> cp = new ArrayList<AnIndividual>(currentPopulation);
-		currentIndividual = cp.get(currentIndexIndividual);
+		currentIndividual = currentIteratorIndividual.next();
 		
 		totalIterationsDone++;
 	}
@@ -293,7 +295,7 @@ public class GeneticExplorationOneGeneration
 
 	@Override
 	protected String getSuffixForCurrentIteration() {
-		return " "+totalIterationsDone+"/"+totalIterationsToDo+" ("+currentGenome+" ind "+currentIndexIndividual+")";
+		return " "+totalIterationsDone+"/"+totalIterationsToDo+" ("+currentGenome+" ind "+currentIndiv+")";
 	}
 	
 	@Override
