@@ -4,7 +4,6 @@ import genlab.algog.algos.meta.AbstractGeneAlgo;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AnIndividual;
 import genlab.core.commons.ProgramException;
-import genlab.core.exec.IAlgoExecutionRemotable;
 import genlab.core.exec.ICleanableTask;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractContainerExecution;

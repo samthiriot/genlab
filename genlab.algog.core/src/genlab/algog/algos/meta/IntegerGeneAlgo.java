@@ -1,12 +1,6 @@
 package genlab.algog.algos.meta;
 
-import genlab.algog.algos.instance.GeneInstance;
-import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.instance.IInputOutputInstance;
-import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.InputOutput;
-import genlab.core.model.meta.basics.flowtypes.ExistingFlowTypes;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.parameters.IntParameter;
 
