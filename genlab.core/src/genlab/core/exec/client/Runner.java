@@ -99,6 +99,7 @@ public class Runner extends Thread implements IRunner {
 	 */
 	protected final BlockingQueue<IAlgoExecutionRemotable> readyToComputeRemotable = new LinkedBlockingQueue<IAlgoExecutionRemotable>();
 
+	protected final Object lockerBothQueues = new Object();
 	
 	/**
 	 * The number of threads used currently. Based on the number of thread displayed by tasks, 
@@ -126,7 +127,8 @@ public class Runner extends Thread implements IRunner {
 			WorkingRunnerThread t = new WorkingRunnerThread(
 					"gl_worker_local_"+i, 
 					readyToComputeWithThreads,
-					readyToComputeRemotable
+					readyToComputeRemotable,
+					lockerBothQueues
 					);
 			addWorkingThread(t);
 		}
@@ -136,6 +138,7 @@ public class Runner extends Thread implements IRunner {
 			WorkingRunnerThread t = new WorkingRunnerThread(
 					"gl_workcontroller_local_"+i, 
 					readyToComputeNoThread,
+					null,
 					null
 					);
 			t.start();
@@ -193,6 +196,7 @@ public class Runner extends Thread implements IRunner {
 							new WorkingRunnerThread(
 									"gl_workcontroller_local_"+threadsPoolTaskNoThread.size(), 
 									readyToComputeNoThread,
+									null,
 									null
 									)
 							);
@@ -203,9 +207,17 @@ public class Runner extends Thread implements IRunner {
 		} else if (exec instanceof IAlgoExecutionRemotable) {
 			// if it can be executable remotely, here is its target
 			readyToComputeRemotable.add((IAlgoExecutionRemotable) exec);
+			// warn the threads waiting on this queue they might pick something
+			synchronized (lockerBothQueues) {
+				lockerBothQueues.notify();	
+			}
 		} else {
 			// execute locally only
 			readyToComputeWithThreads.add(exec);
+			// warn the threads waiting on this queue they might pick something
+			synchronized (lockerBothQueues) {
+				lockerBothQueues.notify();	
+			}
 		}
 	}
 	
