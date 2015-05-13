@@ -272,7 +272,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			
 			final Double aDistance = individuals.get( individuals.lastIndexOf(o1) ).crowdedDistance;
 			final Double bDistance = individuals.get( individuals.lastIndexOf(o2) ).crowdedDistance;
-			return Double.compare(aDistance, bDistance);
+			return -Double.compare(aDistance, bDistance);
 		}
 	}
 	
