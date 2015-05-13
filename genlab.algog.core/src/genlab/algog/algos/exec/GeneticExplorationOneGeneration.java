@@ -212,7 +212,9 @@ public class GeneticExplorationOneGeneration
 		// store results
 		synchronized (lockerResults) {
 			
-			this.computedIndividuals.add(indiv);
+			if (this.computedIndividuals.add(indiv)) {
+				progress.incProgressMade();
+			}
 			/*if (!this.computedIndividuals.add(indiv)) {
 				messages.warnTech("we received an individual which was already evaluated: "+indiv, getClass());
 			}*/
@@ -242,9 +244,6 @@ public class GeneticExplorationOneGeneration
 				
 		// process them
 		computeResultsForIndividual(indivRun);
-		
-		// update our progress
-		progress.incProgressMade();
 		
 		//messages.infoTech("computed "+computedIndividuals.size()+" over "+totalIterationsToDo, getClass());
 		if (computedIndividuals.size() == totalIterationsToDo) {
