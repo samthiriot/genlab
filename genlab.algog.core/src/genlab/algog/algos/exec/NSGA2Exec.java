@@ -288,9 +288,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		
 		int l = population.size();
 		int objectivesCount = indivs.get(0).fitness.length;
-//		Map<AnIndividual,Double> individualWDistance = new HashMap<AnIndividual, Double>(population.size());
-//		List<AnIndividual> sortedPop = new ArrayList<AnIndividual>(population);
-		
+
 		// set distance to 0
 		for( AnIndividual i : population ) {
 			i.crowdedDistance = 0d;
@@ -299,8 +297,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		for (int m=0; m<objectivesCount; m++) {			
 			Collections.sort(indivs, new ComparatorFitness(m, indivs));
 			
-			final double minFitness = indivs.get(0).fitness[m];//individualWFitness.get(sortedPop.get(0))[m];
-			final double maxFitness = indivs.get(l-1).fitness[m];//individualWFitness.get(sortedPop.get(l-1))[m];
+			final double minFitness = indivs.get(0).fitness[m];
+			final double maxFitness = indivs.get(l-1).fitness[m];
 			final double diffFitness = maxFitness - minFitness;
 			
 			// ignore the individuals which were not evaluated (no data for comparison !)
@@ -309,16 +307,11 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 
 			indivs.get(0).crowdedDistance = Double.POSITIVE_INFINITY;
 			indivs.get(l-1).crowdedDistance = Double.POSITIVE_INFINITY;
-//			individualWDistance.put(sortedPop.get(0), Double.POSITIVE_INFINITY);
-//			individualWDistance.put(sortedPop.get(l-1), Double.POSITIVE_INFINITY);
 			
 			for( int i=1 ; i<l-2 ; i++ ) {
 				Double d = indivs.get(i).crowdedDistance;
-				//Double d = individualWDistance.get(sortedPop.get(i));
 				d += ( indivs.get(i+1).fitness[m] - indivs.get(i-1).fitness[m] ) / diffFitness;
-				//d += (individualWFitness.get(sortedPop.get(i+1))[m] - individualWFitness.get(sortedPop.get(i-1))[m] ) / diffFitness;
 				indivs.get(i).crowdedDistance = d;
-				//individualWDistance.put(sortedPop.get(i), d);
 			}
 		}
 	}
