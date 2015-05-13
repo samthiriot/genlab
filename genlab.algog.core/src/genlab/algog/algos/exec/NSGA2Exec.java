@@ -380,6 +380,41 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		return offsprings;
 	}
 	
+	private void doubleCheckRegressions() {
+		
+		Set<AnIndividual> iterationBefore = generationWFirstPF.get(iterationsMade-1);
+		Set<AnIndividual> iterationLast = generationWFirstPF.get(iterationsMade);
+		
+		if (iterationBefore == null || iterationLast == null)
+			return;
+		
+		HashSet<AnIndividual> individualsLost = new HashSet<AnIndividual>(iterationBefore);
+		individualsLost.removeAll(iterationLast);
+		
+		for (AnIndividual individualLost : individualsLost) {
+			
+			// analyze why we lost this individual
+			
+			// build the set of individuals which are dominating this lost individual
+			Set<AnIndividual> individualsDominatingLostGuy = new HashSet<AnIndividual>();
+			for (AnIndividual individualsNew : iterationLast) {
+				if (dominates(individualsNew.fitness, individualLost.fitness)) {
+					individualsDominatingLostGuy.add(individualsNew);
+				}
+			}
+			if (individualsDominatingLostGuy.size() == 0) {
+				messages.errorTech("individual "+individualLost+" was lost even if he was not dominated :-(", getClass());
+			} /*else {
+				messages.infoTech("individual "+individualLost+" was lost because he's dominated by "+individualsDominatingLostGuy.size()+" guys: "+individualsDominatingLostGuy, getClass());
+			}*/
+			
+			// you might add debug trace here or breakpoint to understand why an individual was lost.
+			
+		}
+		
+		
+	}
+	
 	public Set<AnIndividual> getIndividualsForTwoLastGenerations() {
 		Set<AnIndividual> result = new HashSet<AnIndividual>(parentGeneration.get(iterationsMade));
 		
@@ -880,6 +915,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		
 		// build domination ranking through the two last generations: P(t) and Q(t)
 		fastNonDominatedSort();
+		
+		doubleCheckRegressions();
 		
 		s += "\nFirst Pareto Front\n";
 		for( AnIndividual ind : generationWFirstPF.get(iterationsMade) ) {
