@@ -4,12 +4,16 @@ import genlab.core.commons.UniqueTimestamp;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class Execution implements IExecution {
+public class Execution implements IExecution, Externalizable {
 
 	private final ListOfMessages messages;
 	
@@ -20,6 +24,7 @@ public class Execution implements IExecution {
 	private Map<String, Object> key2value = new HashMap<String, Object>(30);
 	
 	private IRunner runner = null;
+	
 	
 	public Execution(IRunner runner) {
 		
@@ -119,6 +124,40 @@ public class Execution implements IExecution {
 	@Override
 	public void setRunner(IRunner r) {
 		this.runner = r;
+	}
+
+	/**
+	 * For serialization only
+	 */
+	public Execution() {
+		
+		// init stamp 
+		stamp = new UniqueTimestamp();
+		
+		// create messages 
+		messages = new ListOfMessages();
+
+		// and register them !
+		ListsOfMessages.registerListOfMessages(getId(), messages);
+		
+	}
+	
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		
+		out.writeBoolean(forceExecution);
+		out.writeObject(key2value);
+		
+	}
+	
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException,
+			ClassNotFoundException {
+
+		forceExecution = in.readBoolean();
+		key2value = (Map<String, Object>) in.readObject();
+			
 	}
 
 

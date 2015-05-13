@@ -3,8 +3,8 @@ package genlab.testing.commons;
 import genlab.core.commons.UniqueTimestamp;
 import genlab.core.exec.Execution;
 import genlab.core.exec.IRunner;
-import genlab.core.exec.LocalComputationNode;
 import genlab.core.exec.TasksManager;
+import genlab.core.exec.client.ComputationNodes;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.ExecutionHooks;
 import genlab.core.model.exec.IAlgoExecution;
@@ -111,7 +111,7 @@ public abstract class BasicTestWorkflow {
 		
 		
 		// execute it
-		IRunner r = LocalComputationNode.getSingleton().getRunner();
+		IRunner r = ComputationNodes.getSingleton().getRunner();
 
 		Execution exec = new Execution(r);
 		exec.setExecutionForced(true);

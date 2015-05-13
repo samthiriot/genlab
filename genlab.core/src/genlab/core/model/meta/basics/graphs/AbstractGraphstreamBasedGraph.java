@@ -4,6 +4,10 @@ import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,16 +34,16 @@ import org.graphstream.stream.GraphReplay;
  * @author Samuel Thiriot
  *
  */
-public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
+public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Externalizable {
 
-	protected final Graph gsGraph;
+	protected Graph gsGraph;
 	
 	@SuppressWarnings("rawtypes")
-	protected final Map<String,Class> edgeAttributes2type = new HashMap<String, Class>();
+	protected Map<String,Class> edgeAttributes2type = new HashMap<String, Class>();
 	@SuppressWarnings("rawtypes")
-	protected final Map<String,Class> vertexAttributes2type = new HashMap<String, Class>();	
+	protected Map<String,Class> vertexAttributes2type = new HashMap<String, Class>();	
 	@SuppressWarnings("rawtypes")
-	protected final Map<String,Class> graphAttribute2type = new HashMap<String, Class>();
+	protected Map<String,Class> graphAttribute2type = new HashMap<String, Class>();
 	
 	public static final String KEY_TECHNICAL_INFO_COUNT_CLONES = "core / count of graphs cloned";
 	public static final String KEY_TECHNICAL_INFO_COUNT_CREATED = "core / count of graphs created";
@@ -792,7 +796,26 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph {
 	}
 
 	
+	public AbstractGraphstreamBasedGraph() {
+		gsGraph = null;
+	}
 	
-	
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeObject(gsGraph);
+		out.writeObject(graphAttribute2type);
+		out.writeObject(edgeAttributes2type);
+		out.writeObject(vertexAttributes2type);
+		
+	}
+	@Override
+	public void readExternal(ObjectInput in) throws IOException,
+			ClassNotFoundException {
+
+		gsGraph = (Graph) in.readObject();
+		graphAttribute2type = (Map<String, Class>) in.readObject();
+		edgeAttributes2type = (Map<String, Class>) in.readObject();
+		vertexAttributes2type = (Map<String, Class>) in.readObject();
+	}
 
 }

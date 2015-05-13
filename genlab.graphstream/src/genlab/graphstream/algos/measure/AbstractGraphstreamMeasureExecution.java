@@ -1,7 +1,6 @@
 package genlab.graphstream.algos.measure;
 
 import genlab.core.exec.IExecution;
-import genlab.core.model.exec.AbstractAlgoExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
@@ -18,8 +17,7 @@ import java.util.Map;
 
 import org.graphstream.graph.Graph;
 
-public abstract class AbstractGraphstreamMeasureExecution extends
-	AbstractAlgoExecutionOneshot {
+public abstract class AbstractGraphstreamMeasureExecution extends AbstractAlgoExecutionOneshot {
 	
 	protected boolean cancelled = false;
 
@@ -35,8 +33,13 @@ public abstract class AbstractGraphstreamMeasureExecution extends
 				);
 		
 
-	
 	}
+	
+	/**
+	 * for serialization only
+	 */
+	public AbstractGraphstreamMeasureExecution() { }
+
 
 	/**
 	 * Receives as parameters a progress (to be used to define the progress if possible),

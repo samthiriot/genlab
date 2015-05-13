@@ -19,6 +19,13 @@ public class ConnectionExec extends AbstractConnectionExec<IAlgoExecution, IAlgo
 
 	protected boolean disposed = false;
 	
+	/**
+	 * for serialization only
+	 */
+	public ConnectionExec() {
+		super();
+	}
+
 	public ConnectionExec(IConnection c, IAlgoExecution from, IAlgoExecutionOneshot to, boolean check) {
 
 		super(c, from, to);

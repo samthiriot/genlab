@@ -27,7 +27,9 @@ import java.util.Map;
  * @author Samuel Thiriot
  *
  */
-public class GeneticExplorationAlgoIndividualRun extends AbstractContainerExecution implements ICleanableTask {
+public class GeneticExplorationAlgoIndividualRun 
+									extends AbstractContainerExecution 
+									implements ICleanableTask {
 
 	private final Collection<IAlgoInstance> algoInstancesToRun;
 	private final Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance;

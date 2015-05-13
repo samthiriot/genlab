@@ -1,8 +1,9 @@
 package genlab.graphstream.ui.views;
 
+import org.graphstream.ui.view.Viewer;
+
 import genlab.core.usermachineinteraction.GLLogger;
 
-import org.graphstream.ui.swingViewer.Viewer;
 
 /**
  * @see http://www.eclipse.org/articles/Article-Swing-SWT-Integration/index.html

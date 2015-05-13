@@ -19,6 +19,10 @@ import genlab.core.model.instance.IConnection;
  */
 public class ConnectionExecFromSupervisorToChild extends AbstractConnectionExec<AbstractContainerExecutionSupervisor,IReduceAlgoExecution> {
 
+	/**
+	 * Serialization only
+	 */
+	public ConnectionExecFromSupervisorToChild(){}
 	
 	public ConnectionExecFromSupervisorToChild(IConnection c, AbstractContainerExecutionSupervisor from, IReduceAlgoExecution to) {
 		

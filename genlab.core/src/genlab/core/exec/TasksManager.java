@@ -4,7 +4,6 @@ import genlab.core.commons.ProgramException;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 /**

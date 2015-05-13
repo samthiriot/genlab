@@ -1,16 +1,11 @@
 package genlab.igraph.algos.generation;
 
-import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
 import genlab.core.parameters.BooleanParameter;
-import genlab.core.usermachineinteraction.ListOfMessages;
-import genlab.igraph.commons.GenlabProgressCallback;
-import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphLibrary;
 
 public class ForestFireGeneratorAlgo extends AbstractIGraphGenerator {
 
@@ -87,60 +82,7 @@ public class ForestFireGeneratorAlgo extends AbstractIGraphGenerator {
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {
 		
-		return new AbstractIGraphGeneratorExec(execution, algoInstance) {
-			
-			@Override
-			public long getTimeout() {
-				return 1000;
-			}
-			
-			@Override
-			protected IGraphGraph generateGraph(IGraphLibrary lib,
-					ListOfMessages messages) {
-				
-				//GenlabProgressCallback callback = new GenlabProgressCallback(progress);
-				//GenlabProgressCallback.keepStrongReference(callback);
-				try {
-					//lib.installProgressCallback(callback);
-					
-					Integer N = (Integer)getInputValueForInput(INPUT_N);
-					//System.err.println("N "+N);
-					Double fwProb = (Double)getInputValueForInput(INPUT_fw_prob);
-					if (fwProb == 0.0)
-						throw new WrongParametersException(INPUT_fw_prob+" should be > 0");
-						
-					//System.err.println("fw "+fwProb);
-
-					Double bwFactor = (Double)getInputValueForInput(INPUT_bw_factor);
-					//System.err.println("bwFactor "+bwFactor);
-
-					Integer pambs = (Integer)getInputValueForInput(INPUT_pambs);
-					//System.err.println("pambs "+pambs);
-					if (pambs == 0)
-						throw new WrongParametersException(INPUT_pambs+" should be > 0");
-					
-					IGraphGraph g = lib.generateForestFire(
-							N, 
-							fwProb, 
-							bwFactor, 
-							pambs, 
-							(Boolean)algoInst.getValueForParameter(PARAM_DIRECTED.getId())
-							);
-					
-					boolean simplifyMultiple = (Boolean)algoInst.getValueForParameter(PARAM_SIMPLIFY_MULTI.getId());
-					boolean simplifyLoops = (Boolean)algoInst.getValueForParameter(PARAM_SIMPLIFY_LOOPS.getId());
-					if (simplifyMultiple || simplifyLoops) {
-						lib.simplifyGraph(g, simplifyMultiple, simplifyLoops);
-		
-					}
-					
-					return g;
-				} finally {
-					//lib.uninstallProgressCallback();
-					//GenlabProgressCallback.removeStrongReference(callback);
-				}
-			}
-		};
+		return new ForestFireGeneratorExec(execution, algoInstance);
 	}
 
 }

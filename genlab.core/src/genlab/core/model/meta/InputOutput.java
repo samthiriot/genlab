@@ -137,5 +137,21 @@ public class InputOutput<JavaType> implements IInputOutput<JavaType> {
 		return facultative;
 	}
 
+	@Override
+	public boolean equals(Object arg0) {
+		try {
+			return id.equals(((InputOutput<JavaType>)arg0).id);
+		} catch (ClassCastException e) {
+			return false;
+		}
+		
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
+	}
+
+	
 
 }

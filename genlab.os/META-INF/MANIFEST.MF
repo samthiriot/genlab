@@ -8,6 +8,6 @@ Bundle-Vendor: Samuel Thiriot
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  genlab.core;bundle-version="0.0.1",
- org.junit;bundle-version="4.11.0"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+ org.junit
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy

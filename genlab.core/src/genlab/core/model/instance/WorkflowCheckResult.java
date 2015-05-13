@@ -1,6 +1,5 @@
 package genlab.core.model.instance;
 
-import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.IListOfMessagesListener;
 import genlab.core.usermachineinteraction.ITextMessage;
 import genlab.core.usermachineinteraction.ListOfMessages;
@@ -47,7 +46,10 @@ public class WorkflowCheckResult implements IListOfMessagesListener {
 	
 	public boolean isReady() {
 				
-		return highestLevel.compareTo(MessageLevel.ERROR) <= 0;
+		// first wait; or we might miss something
+		messages.waitUntilMessagesQueueConsumed();
+		
+		return highestLevel.compareTo(MessageLevel.ERROR) < 0;
 	}
 	
 }

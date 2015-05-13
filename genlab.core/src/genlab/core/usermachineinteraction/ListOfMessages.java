@@ -5,6 +5,7 @@ import genlab.core.commons.WrongParametersException;
 import genlab.core.model.exec.ComputationState;
 
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,7 +33,7 @@ import org.apache.log4j.Priority;
  *
  */
 @SuppressWarnings("rawtypes")
-public class ListOfMessages implements Iterable<ITextMessage> {
+public class ListOfMessages implements Iterable<ITextMessage>, Serializable {
 
 	/**
 	 * 
@@ -75,7 +76,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	/**
 	 * Stores the messages as soon as received. Then they will be added to the sorted space;
 	 */
-	protected BlockingQueue<ITextMessage> receivedMessages = new LinkedBlockingQueue<ITextMessage>(QUEUE_SIZE);
+	protected transient BlockingQueue<ITextMessage> receivedMessages = new LinkedBlockingQueue<ITextMessage>(QUEUE_SIZE);
 
 	
 	/**
@@ -83,16 +84,16 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 */
 	private TreeSet<ITextMessage> sortedMessages = new TreeSet<ITextMessage>();
 
-	private LinkedList<IListOfMessagesListener> listeners = new LinkedList<IListOfMessagesListener>();
+	private transient LinkedList<IListOfMessagesListener> listeners = new LinkedList<IListOfMessagesListener>();
 	
-	private long countMessagesCanBeDeleted = 0;
+	private transient long countMessagesCanBeDeleted = 0;
 	
-	protected final ReceiveMessagesThread queueConsumerThread;
+	protected transient final ReceiveMessagesThread queueConsumerThread;
 
 	/**
 	 * true if received one message (even if it was cleaned) or level error.
 	 */
-	protected boolean containedAnError = false;
+	protected transient boolean containedAnError = false;
 	
 	protected static final Map<MessageLevel,Priority> messageLevel2log4jPriority = new HashMap<MessageLevel, Priority>(){{
 		put(MessageLevel.TRACE, Priority.DEBUG);
@@ -405,7 +406,7 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 * Waits until all the messages are processed and stored.
 	 * Remember that once a message was added, it takes time before being added.
 	 */
-	protected void waitUntilMessagesQueueConsumed() {
+	public void waitUntilMessagesQueueConsumed() {
 		if (queueConsumerThread != null)
 			queueConsumerThread.waitUntilEndOfQueue();
 	}
@@ -429,10 +430,12 @@ public class ListOfMessages implements Iterable<ITextMessage> {
 	 */
 	public boolean addAll(Iterable<ITextMessage> others) {
 
+		
 		for (ITextMessage m : others) {
 			
 			try {
-				receivedMessages.put(m);
+				if (m.getLevel().shouldDisplay(filterIgnoreBelow))
+					receivedMessages.put(m);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

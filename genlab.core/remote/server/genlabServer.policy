@@ -1,0 +1,3 @@
+grant codeBase "file:/local00/home/B12772/workspaceGenlab/genlab/" {
+    permission java.security.AllPermission;
+};

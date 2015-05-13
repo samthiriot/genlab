@@ -4,12 +4,16 @@ import genlab.core.exec.IExecution;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.HashSet;
 import java.util.Set;
 
 public abstract class AbstractAlgoExecutionOneshot 
 									extends AbstractAlgoExecution
-									implements IAlgoExecutionOneshot {
+									implements IAlgoExecutionOneshot, Externalizable {
 
 	
 	protected Set<IInputOutputInstance> inputsNotAvailable = null;
@@ -102,6 +106,38 @@ public abstract class AbstractAlgoExecutionOneshot
 		
 		// super clean
 		super.clean();
+	}
+	
+
+	/**
+	 * For serialization only
+	 */
+	public AbstractAlgoExecutionOneshot() {}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		super.writeExternal(out);
+		{ 
+			String[] l = new String[inputsNotAvailable.size()];
+			int i = 0;
+			for (IInputOutputInstance io: inputsNotAvailable) {
+				l[i++] = io.getId();
+			}
+			out.writeObject(l);
+		}
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		super.readExternal(in);
+		{ 
+			String[] l = (String[]) in.readObject();
+			inputsNotAvailable = new HashSet<IInputOutputInstance>(algoInst.getInputInstances().size());
+			for (String i: l) {
+				inputsNotAvailable.add(algoInst.getInputInstanceForInput(i));
+			}
+		}
+		initComputationState();
 	}
 
 }

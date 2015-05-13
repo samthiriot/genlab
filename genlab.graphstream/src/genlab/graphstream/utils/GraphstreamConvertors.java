@@ -1,6 +1,5 @@
 package genlab.graphstream.utils;
 
-import genlab.core.GenLab;
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.model.meta.basics.graphs.GraphDirectionality;

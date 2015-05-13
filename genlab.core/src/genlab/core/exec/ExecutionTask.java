@@ -2,15 +2,18 @@ package genlab.core.exec;
 
 
 import genlab.core.commons.LoopGraphException;
-import genlab.core.commons.WrongParametersException;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-public abstract class ExecutionTask implements IExecutionTask {
+public abstract class ExecutionTask implements IExecutionTask, Externalizable {
 
 	/**
 	 * lazy construction
@@ -130,6 +133,23 @@ public abstract class ExecutionTask implements IExecutionTask {
 	public boolean isCleanable() {
 	
 		return true;
+	}
+	
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		
+		// TODO usefull ?
+		//out.writeObject(prerequires);
+		
+		
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		
+		//prerequires = (HashSet<ITask>) in.readObject();
+		
 	}
 
 }

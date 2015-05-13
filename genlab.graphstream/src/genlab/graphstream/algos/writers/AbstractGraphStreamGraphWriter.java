@@ -3,19 +3,14 @@ package genlab.graphstream.algos.writers;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.instance.IInputOutputInstance;
-import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
-import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.FileFlowType;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
-import genlab.graphstream.Activator;
 import genlab.graphstream.algos.GraphStreamAlgo;
 
 import java.io.File;
-import java.util.Map;
 
 import org.graphstream.stream.file.FileSink;
 

@@ -16,11 +16,11 @@ Require-Bundle: genlab.core,
  org.eclipse.ui.intro;bundle-version="3.4.200",
  org.eclipse.equinox.util;bundle-version="1.0.400",
  org.eclipse.ui.forms;bundle-version="3.5.200",
- org.eclipse.debug.core;bundle-version="3.8.0",
- org.eclipse.debug.ui;bundle-version="3.9.0",
- org.eclipse.ui.externaltools;bundle-version="3.2.200",
- org.eclipse.e4.ui.model.workbench;bundle-version="1.0.1"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+ org.eclipse.debug.core,
+ org.eclipse.debug.ui,
+ org.eclipse.ui.externaltools,
+ org.eclipse.e4.ui.model.workbench
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: genlab.gui,
  genlab.gui.actions,

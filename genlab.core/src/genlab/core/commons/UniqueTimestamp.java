@@ -1,5 +1,11 @@
 package genlab.core.commons;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.Serializable;
+
 /**
  * provides tuples (timestamp, id) that are really unique (meaning, 
  * if the timestamp is the same, there is another id that makes it unique)
@@ -9,10 +15,10 @@ package genlab.core.commons;
  * @author Samuel THiriot
  *
  */
-public class UniqueTimestamp implements Comparable<UniqueTimestamp> {
+public class UniqueTimestamp implements Comparable<UniqueTimestamp>, Externalizable {
 
-	public final long timestamp;
-	public final int id;
+	public long timestamp;
+	public int id;
 	
 	protected Object mutexTimestamp = new Object();
 
@@ -57,6 +63,23 @@ public class UniqueTimestamp implements Comparable<UniqueTimestamp> {
 
 	public String toString() {
 		return timestamp+"_"+id;
+	}
+
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException,
+			ClassNotFoundException {
+		timestamp = in.readLong();
+		id = in.readInt();
+		
+		mutexTimestamp = new Object();
+	}
+
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeLong(timestamp);
+		out.writeInt(id);
 	}
 	
 

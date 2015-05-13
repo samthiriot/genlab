@@ -2,9 +2,11 @@ package genlab.core.usermachineinteraction;
 
 import genlab.core.commons.UniqueTimestamp;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class TextMessage implements ITextMessage {
+@SuppressWarnings("serial")
+public class TextMessage implements ITextMessage, Serializable {
 
 	public final static String LINE_SEPARATOR = System.getProperty("line.separator");
 	
