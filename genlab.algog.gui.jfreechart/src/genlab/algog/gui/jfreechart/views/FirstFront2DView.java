@@ -151,11 +151,11 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 		parent.setLayout(new FillLayout());
 		form = toolkit.createScrolledForm(parent);
 		RowLayout layout = new RowLayout(SWT.VERTICAL);
-		layout.justify = true;
+		//layout.justify = true;
 		form.getBody().setLayout(layout);
 
 
-		labelIteration = toolkit.createLabel(form.getBody(), "no data displayed yet                            ");
+		labelIteration = toolkit.createLabel(form.getBody(), "no data displayed yet                                             ");
 
 		
 		messages.traceTech("init the jfreechart dataset...", getClass());

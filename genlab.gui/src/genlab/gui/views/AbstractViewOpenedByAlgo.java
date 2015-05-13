@@ -92,7 +92,6 @@ public abstract class AbstractViewOpenedByAlgo<ClassObjectToDisplay extends Obje
 			@Override
 			public void run() {
 				
-				
 				try {
 					if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
 						TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID_REFRESH_ASYNC);
