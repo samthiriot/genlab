@@ -5,9 +5,9 @@ import cern.jet.random.Uniform;
 public class ADoubleGene extends ANumericGene<Double> {
 
 	/** value of distribution index for mutation */
-	public final double eta_m = 1.0;
+	public final double eta_m = 20.0;
 	/** value of distribution index for crossover */
-	public final double eta_c = 1.0;
+	public final double eta_c = 20.0;
 
 	public ADoubleGene(String name,double mutationProba, Double min, Double max) {
 		super(name, mutationProba, min, max);
