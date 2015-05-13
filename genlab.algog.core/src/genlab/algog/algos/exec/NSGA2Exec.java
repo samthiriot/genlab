@@ -846,6 +846,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	@Override
 	protected Map<AGenome,Set<AnIndividual>> prepareNextGeneration() {
 		
+		exportContinuousOutput();
+		
 		String s = "So... at iteration "+iterationsMade+":\n";
 		
 		// get Q(t) and P(t)
@@ -972,8 +974,6 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		}
 		
 		messages.infoTech(s, getClass());
-		
-		exportContinuousOutput();
 		
 		return novelGenomeWPopulation;
 	}
