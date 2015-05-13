@@ -1,13 +1,15 @@
 package genlab.algog.algos.exec;
 
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
+import genlab.algog.algos.meta.ECrossoverMethod;
 import genlab.algog.algos.meta.GeneticExplorationAlgoConstants;
 import genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo;
+import genlab.algog.algos.meta.VerificationFunctionsAlgo.EAvailableFunctions;
 import genlab.algog.internal.ADoubleGene;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
-import genlab.algog.internal.ANumericGene;
 import genlab.algog.internal.AnIndividual;
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -27,8 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import cern.jet.random.Uniform;
 
 
 /**
@@ -53,6 +53,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 
 	protected AnIndividual ourBestFriend = null;
 	
+	protected final ECrossoverMethod paramCrossover;
+	
 	/**
 	 * Constructor
 	 * @param exec
@@ -60,8 +62,15 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	 */
 	public NSGA2Exec(IExecution exec, GeneticExplorationAlgoContainerInstance algoInst) {
 		super(exec, algoInst);
+		
 		// initializes the map of, for each iteration, the first pareto front
 		generationWFirstPF = new LinkedHashMap<Integer,Set<AnIndividual>>(paramStopMaxIterations);
+		
+		// load parameter
+		final Integer idxParamCrossover = (Integer)algoInst.getValueForParameter(NSGA2GeneticExplorationAlgo.PARAM_CROSSOVER);
+		paramCrossover = ECrossoverMethod.values()[idxParamCrossover];
+	
+		messages.infoUser("will use for crossover the operator "+paramCrossover.label, getClass());
 	}
 
 	/**
@@ -263,7 +272,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			
 			final Double aDistance = individuals.get( individuals.lastIndexOf(o1) ).crowdedDistance;
 			final Double bDistance = individuals.get( individuals.lastIndexOf(o2) ).crowdedDistance;
-			return Double.compare(aDistance, bDistance);
+			return -Double.compare(aDistance, bDistance);
 		}
 	}
 	
@@ -279,9 +288,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		
 		int l = population.size();
 		int objectivesCount = indivs.get(0).fitness.length;
-//		Map<AnIndividual,Double> individualWDistance = new HashMap<AnIndividual, Double>(population.size());
-//		List<AnIndividual> sortedPop = new ArrayList<AnIndividual>(population);
-		
+
 		// set distance to 0
 		for( AnIndividual i : population ) {
 			i.crowdedDistance = 0d;
@@ -290,8 +297,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		for (int m=0; m<objectivesCount; m++) {			
 			Collections.sort(indivs, new ComparatorFitness(m, indivs));
 			
-			final double minFitness = indivs.get(0).fitness[m];//individualWFitness.get(sortedPop.get(0))[m];
-			final double maxFitness = indivs.get(l-1).fitness[m];//individualWFitness.get(sortedPop.get(l-1))[m];
+			final double minFitness = indivs.get(0).fitness[m];
+			final double maxFitness = indivs.get(l-1).fitness[m];
 			final double diffFitness = maxFitness - minFitness;
 			
 			// ignore the individuals which were not evaluated (no data for comparison !)
@@ -300,16 +307,11 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 
 			indivs.get(0).crowdedDistance = Double.POSITIVE_INFINITY;
 			indivs.get(l-1).crowdedDistance = Double.POSITIVE_INFINITY;
-//			individualWDistance.put(sortedPop.get(0), Double.POSITIVE_INFINITY);
-//			individualWDistance.put(sortedPop.get(l-1), Double.POSITIVE_INFINITY);
 			
 			for( int i=1 ; i<l-2 ; i++ ) {
 				Double d = indivs.get(i).crowdedDistance;
-				//Double d = individualWDistance.get(sortedPop.get(i));
 				d += ( indivs.get(i+1).fitness[m] - indivs.get(i-1).fitness[m] ) / diffFitness;
-				//d += (individualWFitness.get(sortedPop.get(i+1))[m] - individualWFitness.get(sortedPop.get(i-1))[m] ) / diffFitness;
 				indivs.get(i).crowdedDistance = d;
-				//individualWDistance.put(sortedPop.get(i), d);
 			}
 		}
 	}
@@ -369,6 +371,41 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		}
 		
 		return offsprings;
+	}
+	
+	private void doubleCheckRegressions() {
+		
+		Set<AnIndividual> iterationBefore = generationWFirstPF.get(iterationsMade-1);
+		Set<AnIndividual> iterationLast = generationWFirstPF.get(iterationsMade);
+		
+		if (iterationBefore == null || iterationLast == null)
+			return;
+		
+		HashSet<AnIndividual> individualsLost = new HashSet<AnIndividual>(iterationBefore);
+		individualsLost.removeAll(iterationLast);
+		
+		for (AnIndividual individualLost : individualsLost) {
+			
+			// analyze why we lost this individual
+			
+			// build the set of individuals which are dominating this lost individual
+			Set<AnIndividual> individualsDominatingLostGuy = new HashSet<AnIndividual>();
+			for (AnIndividual individualsNew : iterationLast) {
+				if (dominates(individualsNew.fitness, individualLost.fitness)) {
+					individualsDominatingLostGuy.add(individualsNew);
+				}
+			}
+			if (individualsDominatingLostGuy.size() == 0) {
+				messages.errorTech("individual "+individualLost+" was lost even if he was not dominated :-(", getClass());
+			} /*else {
+				messages.infoTech("individual "+individualLost+" was lost because he's dominated by "+individualsDominatingLostGuy.size()+" guys: "+individualsDominatingLostGuy, getClass());
+			}*/
+			
+			// you might add debug trace here or breakpoint to understand why an individual was lost.
+			
+		}
+		
+		
 	}
 	
 	public Set<AnIndividual> getIndividualsForTwoLastGenerations() {
@@ -512,9 +549,6 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		for( Integer iterationId : generationWFirstPF.keySet() ) {
 			// for each iteration
 			final Set<AnIndividual> indivs = generationWFirstPF.get(iterationId);
-//			final Map<AnIndividual,Double[]> generationFitness = getIndividualWFitnessFor2LastGenerations(iterationId);
-//			final Map<AnIndividual,Object[]> indiv2value = getIndividualWValuesFor2LastGenerations(iterationId);
-//			final Map<AnIndividual,Object[]> indiv2target = getIndividualWTargetFor2LastGenerations(iterationId);
 			
 			storeIndividualsData(
 				tab, 
@@ -808,9 +842,19 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			AnIndividual p2 = crowdedTournamentSelection(selectedPopIndex.get(index3), selectedPopIndex.get(index4), parents);
 
 			if( genome.crossoverProbability==1.0 || uniform.nextDoubleFromTo(0.0, 1.0)<=genome.crossoverProbability ) {
-				// TODO use a parameter for crossover method
-//				List<AnIndividual> novelIndividuals = crossoverNPoints(genome, NCUTS, p1, p2);
-				List<AnIndividual> novelIndividuals = crossoverSBX(genome, p1, p2);
+				
+				List<AnIndividual> novelIndividuals = null;
+				switch (paramCrossover) {
+				case N_POINTS:
+					novelIndividuals = crossoverNPoints(genome, NCUTS, p1, p2);
+					break;
+				case SBX:
+					novelIndividuals = crossoverSBX(genome, p1, p2);
+					break;
+				default:
+					throw new ProgramException("unknown crossover method: "+paramCrossover);
+				}
+				
 				countCrossover++;
 
 				_message.append("\nCrossover between ")
@@ -865,6 +909,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		// build domination ranking through the two last generations: P(t) and Q(t)
 		fastNonDominatedSort();
 		
+		doubleCheckRegressions();
+		
 		s += "\nFirst Pareto Front\n";
 		for( AnIndividual ind : generationWFirstPF.get(iterationsMade) ) {
 			s += ind.toMiniString();
@@ -873,7 +919,6 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		// P(t+1)
 		INextGeneration selectedIndividuals = selectIndividuals();
 		Map<AGenome,Set<AnIndividual>> selectedGenomeWPopulation = selectedIndividuals.getAllIndividuals();
-		int countPeople = 0;
 		
 		messages.infoUser("Selected for "+selectedGenomeWPopulation.size()+" genome(s) a total of "+selectedIndividuals.getTotalOfIndividualsAllGenomes()+" parents", getClass());
 		
@@ -937,8 +982,6 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			messages.infoUser(_message.toString(), getClass());
 		}
 
-		messages.warnUser( "Loss: " + ((paramPopulationSize*2)-countPeople) + " individual(s), thus " + Math.round((paramPopulationSize-countPeople)*100/paramPopulationSize) + "% of the population will must be regenerated", getClass());
-
 		// TODO if the population is not big enough, recreate some novel individuals
 //		if( countPeople<paramPopulationSize*2 ) {
 //			
@@ -974,6 +1017,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		}
 		
 		messages.infoTech(s, getClass());
+		
 		
 		return novelGenomeWPopulation;
 	}

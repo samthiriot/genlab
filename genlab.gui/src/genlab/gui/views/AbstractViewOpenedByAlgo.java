@@ -91,17 +91,21 @@ public abstract class AbstractViewOpenedByAlgo<ClassObjectToDisplay extends Obje
 			
 			@Override
 			public void run() {
-				if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
-					TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID_REFRESH_ASYNC);
 				
-				refreshDisplaySync();
-				
-				if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
-					TestResponsivity.singleton.notifySWTThreadUserEndsRunnable(SWT_THREAD_USER_ID_REFRESH_ASYNC);
-				
-				updateOngoing = false;
-				shouldBeRefreshed = false;
+				try {
+					if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+						TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID_REFRESH_ASYNC);
+					
+					refreshDisplaySync();
+					
+					if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
+						TestResponsivity.singleton.notifySWTThreadUserEndsRunnable(SWT_THREAD_USER_ID_REFRESH_ASYNC);
+					
+					shouldBeRefreshed = false;
 
+				} finally {
+					updateOngoing = false;	
+				}
 			}
 		});
 
@@ -116,6 +120,8 @@ public abstract class AbstractViewOpenedByAlgo<ClassObjectToDisplay extends Obje
 	public final void receiveData(ClassObjectToDisplay toDisplay) {
 
 		lastVersionDataToDisplay = toDisplay;
+
+		shouldBeRefreshed = true;
 
 		if (this.getSite().getPage().isPartVisible(this)) {
 			refreshDataAsync();

@@ -47,6 +47,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.jws.Oneway;
+
 import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
 import cern.jet.random.engine.RandomEngine;
@@ -313,6 +315,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 				);
 		
 		execOneGeneration.setParent(this);
+		execOneGeneration.getProgress().addListener(this);
 		
 		messages.traceTech("init links to this executable", getClass());
 		execOneGeneration.initInputs(instance2execForSubtasks);
@@ -583,13 +586,14 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					offspringGeneration.get(iterationId)
 					);
 			
+			/*
 			storeIndividualsData(
 					tab, 
 					titleIteration, iterationId, titleGenome, 
 					genome2fitnessColumns, genome2geneColumns, 
 					parentGeneration.get(iterationId)
 					);
-			
+			*/
 				
 		}
 		
@@ -713,6 +717,9 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			// retrieve the different results of the evaluation of the generation: fitness, values explored, and targets
 			Set<AnIndividual> individuals = algoFinished.getComputedIndividuals();
 
+			if (individuals.size() != paramPopulationSize) {
+				this.messages.errorUser("at iteration "+iterationsMade+", retrieved only "+individuals.size()+" instead of the "+paramPopulationSize+" expected", getClass());
+			}
 //			final Map<AnIndividual,Double[]> resultFitness = algoFinished.getComputedFitness(); // (this is already a copy)
 //			final Map<AnIndividual,Object[]> resultValues = algoFinished.getComputedValues(); // (this is already a copy)
 //			final Map<AnIndividual,Object[]> resultTargets = algoFinished.getComputedTargets(); // (this is already a copy)

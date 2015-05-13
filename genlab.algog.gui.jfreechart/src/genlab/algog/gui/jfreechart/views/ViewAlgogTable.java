@@ -157,8 +157,24 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 		final String columnValue = goalMetadata.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_VALUE);
 		// TODO fitness ? final String columnFitness = goalMetadata.get(GeneticExplorationAlgo.TABLE_COLUMN_METADATA_VALUE_FITNESS);
 		final String columnTarget = goalMetadata.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GOAL_METADATA_VALUE_TARGET);
-		final float targetValue = ((Number)lastVersionDataToDisplay.getValue(0, columnTarget)).floatValue();
 		
+		// find the value for this target (it is available only for an individual which succedeed, so maybe 
+		// it's not in the first row ... or even in no row !
+		float targetValue;
+		{
+			Number valueTarget = null;
+			for (int i=0; i<lastVersionDataToDisplay.getRowsCount(); i++) {
+				valueTarget = (Number)lastVersionDataToDisplay.getValue(i, columnTarget);
+				if (valueTarget != null)
+					break;
+			}
+			// maybe no individual was computed with sucess; in this case there is no target transmitted, 
+			// => cancel the display
+			if (valueTarget == null) {
+				return widgetCreated;
+			}
+			targetValue = valueTarget.floatValue();
+		}
 		final FastScatterPlotWithLines plot = ((FastScatterPlotWithLines)goal2chart.get(goal).getPlot());
 		plot.setNotify(false);
 		

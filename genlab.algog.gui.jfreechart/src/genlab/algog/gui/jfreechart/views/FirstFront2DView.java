@@ -91,9 +91,10 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 			
 			// search for the first row to display
 			final String columnIteration = (String) lastVersionDataToDisplay.getTableMetaData(GeneticExplorationAlgoConstants.TABLE_METADATA_KEY_COLTITLE_ITERATION);
-			final Integer iterationToDisplay = (Integer)lastVersionDataToDisplay.getValue(lastVersionDataToDisplay.getRowsCount()-1, columnIteration);
+			final int lastRowIdx = lastVersionDataToDisplay.getRowsCount()-1;
+			final Integer iterationToDisplay = (Integer)lastVersionDataToDisplay.getValue(lastRowIdx, columnIteration);
 			// search for the first line to display
-			int currentRow = lastVersionDataToDisplay.getRowsCount()-1;
+			int currentRow = lastRowIdx;
 			
 			Integer currentRowIteration = null;
 			do {
@@ -130,7 +131,7 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 				currentRowIteration = (Integer)lastVersionDataToDisplay.getValue(currentRow, columnIteration);
 			} while (currentRow > 0 && currentRowIteration == iterationToDisplay);
 			
-			labelIteration.setText("results for iteration "+iterationToDisplay+" ("+(lastVersionDataToDisplay.getRowsCount()-currentRow-1)+" Pareto efficient solutions)   ");
+			labelIteration.setText("results for iteration "+iterationToDisplay+" ("+(lastRowIdx-currentRow)+" Pareto efficient solutions)   ");
 
 		} finally {
 			serie.setNotify(true);
@@ -149,11 +150,12 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 		toolkit = new FormToolkit(parent.getDisplay());
 		parent.setLayout(new FillLayout());
 		form = toolkit.createScrolledForm(parent);
-		Layout layout = new RowLayout(SWT.VERTICAL);
+		RowLayout layout = new RowLayout(SWT.VERTICAL);
+		//layout.justify = true;
 		form.getBody().setLayout(layout);
 
 
-		labelIteration = toolkit.createLabel(form.getBody(), "not data displayed yet");
+		labelIteration = toolkit.createLabel(form.getBody(), "no data displayed yet                                             ");
 
 		
 		messages.traceTech("init the jfreechart dataset...", getClass());

@@ -16,6 +16,7 @@ import genlab.core.model.instance.IConnection;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,7 +45,7 @@ public class GeneticExplorationOneGeneration
 	private final Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance;
 	
 	private int totalIterationsToDo = 0;
-	private int totalIterationsDone = 0;
+	private int totalIterationsSubmitted = 0;
 
 	/**
 	 * Stores the iterator over genomes, the place for the next computation
@@ -53,16 +54,10 @@ public class GeneticExplorationOneGeneration
 	private Iterator<AGenome> currentComputationIteratorProcessedGenome = null;
 	private AGenome currentGenome = null;
 	private Iterator<AnIndividual> currentIteratorIndividual;
-//	private int currentIndexIndividual = 0;
-	private List<Integer> listOfIndex = null;
 	private AnIndividual currentIndividual = null;
-	private AnIndividual currentIndiv = null;
 
 	private final Object lockerResults = new Object();
 	private Set<AnIndividual> computedIndividuals = new HashSet<AnIndividual>();
-//	private Map<AnIndividual,Double[]> computedFitness = new HashMap<AnIndividual, Double[]>();
-//	private Map<AnIndividual,Object[]> computedValues = new HashMap<AnIndividual, Object[]>();
-//	private Map<AnIndividual,Object[]> computedTargets = new HashMap<AnIndividual, Object[]>();
 
 	
 	private final Map <IConnection,Object> inputConnection2value;
@@ -95,9 +90,7 @@ public class GeneticExplorationOneGeneration
 		this.genome2algoInstance = genome2algoInstance;
 		this.gene2geneAlgoInstance = gene2geneAlgoInstance;
 		this.inputConnection2value = inputConnection2value;
-		
-		this.listOfIndex = new ArrayList<Integer>();
-		
+				
 		this.autoUpdateProgressFromChildren = false;
 		// we don't want to die if a subprocess has a problem; we will assume the fitness is infinite instead.
 		this.ignoreCancelFromChildren = true;
@@ -117,7 +110,7 @@ public class GeneticExplorationOneGeneration
 		progress.setProgressTotal(totalIterationsToDo);
 		
 		messages.debugTech("this generation requires "+totalIterationsToDo+" iterations", getClass());
-		totalIterationsDone = 0;
+		totalIterationsSubmitted = 0;
 		
 		
 	}
@@ -130,7 +123,7 @@ public class GeneticExplorationOneGeneration
 
 	@Override
 	protected boolean shouldContinueRun() {
-		return totalIterationsDone<totalIterationsToDo;
+		return totalIterationsSubmitted<totalIterationsToDo;
 	}
 
 	@Override
@@ -152,11 +145,9 @@ public class GeneticExplorationOneGeneration
 			nextIteration();
 
 			// create exec
-			messages.traceTech("creating the executable for the exploration of individual: "+currentIndiv+" of genome "+currentGenome, getClass());
+			messages.traceTech("creating the executable for the exploration of individual: "+currentIndividual+" of genome "+currentGenome, getClass());
 			Collection<IAlgoInstance> algoInstancesToRun = genome2algoInstance.get(currentGenome);
 			List<IAlgoInstance> fitnessOutput = genome2fitnessOutput.get(currentGenome);
-
-			currentIndiv = currentIndividual;
 			
 			resExec = new GeneticExplorationAlgoIndividualRun(
 					exec, 
@@ -165,7 +156,7 @@ public class GeneticExplorationOneGeneration
 					inputConnection2value,
 					algoInstancesToRun,
 					fitnessOutput,
-					currentIndiv
+					currentIndividual
 					);	
 			resExec.setParent(this);
 			//addTask(resExec);
@@ -211,34 +202,22 @@ public class GeneticExplorationOneGeneration
 		
 		currentIndividual = currentIteratorIndividual.next();
 		
-		totalIterationsDone++;
+		totalIterationsSubmitted++;
 	}
 	
 	protected void computeResultsForIndividual(GeneticExplorationAlgoIndividualRun indivRun) {
 
-//		List<AFitnessBoard> fitnessBoard = indivRun.getFitnessBoard();
-//		final Double[] resultFitness = indivRun.getResultFitness();
-//		final Object[] resultTargets = indivRun.getResultTargets();
-//		final Object[] resultValues = indivRun.getResultValues();
-		
 		AnIndividual indiv = indivRun.getIndividual();
-//		int individualId = indivRun.getIndividualId();
-
-		//messages.debugUser("computed fitness "+Arrays.toString(resultFitness)+" for individual "+individualId+" of genome "+indiv.genome, getClass());
 
 		// store results
 		synchronized (lockerResults) {
 			
-//			if (resultFitness != null)
-//				computedFitness.put(indiv, resultFitness);
-//			if (resultTargets != null)
-//				computedTargets.put(indiv, resultTargets);
-//			if (resultValues != null)
-//				computedValues.put(indiv, resultValues);
-			
-//			indiv.setFitnessBoard(fitnessBoard);
-			
-			this.computedIndividuals.add(indiv);
+			if (this.computedIndividuals.add(indiv)) {
+				progress.incProgressMade();
+			}
+			/*if (!this.computedIndividuals.add(indiv)) {
+				messages.warnTech("we received an individual which was already evaluated: "+indiv, getClass());
+			}*/
 
 		}
 		
@@ -260,42 +239,27 @@ public class GeneticExplorationOneGeneration
 		if (!(progress.getAlgoExecution() instanceof GeneticExplorationAlgoIndividualRun))
 			throw new ProgramException("should not receive messages from other than individual tests");
 		
-		// update our progress according to children
-		switch (progress.getComputationState()) {
-		case FINISHED_FAILURE:
-			// don't care (failures accepted)
-			//this.progress.setComputationState(ComputationState.FINISHED_FAILURE);
-			//cancel(); // kill other tasks
-			break; // don't use this result
-			
-		case FINISHED_CANCEL:
-			// don't care (failures accepted) 
-			// this.progress.setComputationState(ComputationState.FINISHED_CANCEL);
-			cancel(); // kill other tasks
-			return; // don't use this result
-			
-		case FINISHED_OK:
-			// don't care 
-			break;
-		default:
-			throw new ProgramException("unknown computation status with property 'finished': "+progress.getComputationState());
-		}
-		
 		// retrieve results
 		GeneticExplorationAlgoIndividualRun indivRun = (GeneticExplorationAlgoIndividualRun)progress.getAlgoExecution();
 				
+		// process them
 		computeResultsForIndividual(indivRun);
 		
-		// update our progress
-		progress.incProgressMade();
+		//messages.infoTech("computed "+computedIndividuals.size()+" over "+totalIterationsToDo, getClass());
+		if (computedIndividuals.size() == totalIterationsToDo) {
+
+			//messages.traceTech("all subs terminated; should transmit results", getClass());
+			this.progress.setComputationState(ComputationState.FINISHED_OK);
+		}
 		
-		super.computationStateChanged(progress);
+		// do not enter the complicated generic management in our simple case !
+		// super.computationStateChanged(progress);
 	}
 
 
 	@Override
 	protected String getSuffixForCurrentIteration() {
-		return " "+totalIterationsDone+"/"+totalIterationsToDo+" ("+currentGenome+" ind "+currentIndiv+")";
+		return " "+totalIterationsSubmitted+"/"+totalIterationsToDo+" ("+currentGenome+" ind "+currentIndividual+")";
 	}
 	
 	@Override
@@ -315,7 +279,7 @@ public class GeneticExplorationOneGeneration
 				throw new ProgramException("asked for a fitness for an exploration which did not terminated yet");
 				
 				
-			return new HashSet<AnIndividual>(this.computedIndividuals);
+			return Collections.unmodifiableSet(this.computedIndividuals);
 		}
 	}
 	
