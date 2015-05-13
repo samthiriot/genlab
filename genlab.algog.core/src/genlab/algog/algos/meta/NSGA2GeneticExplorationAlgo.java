@@ -8,6 +8,7 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
+import genlab.core.parameters.ListParameter;
 
 public class NSGA2GeneticExplorationAlgo extends AbstractGeneticExplorationAlgo {
 
@@ -16,6 +17,14 @@ public class NSGA2GeneticExplorationAlgo extends AbstractGeneticExplorationAlgo 
 			"out_table_paretofronts", 
 			"pareto fronts", 
 			"a table containing all the pareto fronts for each iteration"
+			);
+
+	public static final ListParameter PARAM_CROSSOVER = new ListParameter(
+			"param_crossover", 
+			"crossover", 
+			"method for crossover",
+			0,
+			ECrossoverMethod.getLabelsAsList()
 			);
 	
 	static {
@@ -31,6 +40,8 @@ public class NSGA2GeneticExplorationAlgo extends AbstractGeneticExplorationAlgo 
 				);
 		
 		outputs.add(OUTPUT_TABLE_PARETO);
+		
+		registerParameter(PARAM_CROSSOVER);
 		
 	}
 

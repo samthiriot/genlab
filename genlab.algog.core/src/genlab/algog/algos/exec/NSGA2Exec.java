@@ -1,12 +1,15 @@
 package genlab.algog.algos.exec;
 
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
+import genlab.algog.algos.meta.ECrossoverMethod;
 import genlab.algog.algos.meta.GeneticExplorationAlgoConstants;
 import genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo;
+import genlab.algog.algos.meta.VerificationFunctionsAlgo.EAvailableFunctions;
 import genlab.algog.internal.ADoubleGene;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AGenome;
 import genlab.algog.internal.AnIndividual;
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
@@ -50,6 +53,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 
 	protected AnIndividual ourBestFriend = null;
 	
+	protected final ECrossoverMethod paramCrossover;
+	
 	/**
 	 * Constructor
 	 * @param exec
@@ -57,8 +62,15 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	 */
 	public NSGA2Exec(IExecution exec, GeneticExplorationAlgoContainerInstance algoInst) {
 		super(exec, algoInst);
+		
 		// initializes the map of, for each iteration, the first pareto front
 		generationWFirstPF = new LinkedHashMap<Integer,Set<AnIndividual>>(paramStopMaxIterations);
+		
+		// load parameter
+		final Integer idxParamCrossover = (Integer)algoInst.getValueForParameter(NSGA2GeneticExplorationAlgo.PARAM_CROSSOVER);
+		paramCrossover = ECrossoverMethod.values()[idxParamCrossover];
+	
+		messages.infoUser("will use for crossover the operator "+paramCrossover.label, getClass());
 	}
 
 	/**
@@ -802,9 +814,19 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			AnIndividual p2 = crowdedTournamentSelection(selectedPopIndex.get(index3), selectedPopIndex.get(index4), parents);
 
 			if( genome.crossoverProbability==1.0 || uniform.nextDoubleFromTo(0.0, 1.0)<=genome.crossoverProbability ) {
-				// TODO use a parameter for crossover method
-//				List<AnIndividual> novelIndividuals = crossoverNPoints(genome, NCUTS, p1, p2);
-				List<AnIndividual> novelIndividuals = crossoverSBX(genome, p1, p2);
+				
+				List<AnIndividual> novelIndividuals = null;
+				switch (paramCrossover) {
+				case N_POINTS:
+					novelIndividuals = crossoverNPoints(genome, NCUTS, p1, p2);
+					break;
+				case SBX:
+					novelIndividuals = crossoverSBX(genome, p1, p2);
+					break;
+				default:
+					throw new ProgramException("unknown crossover method: "+paramCrossover);
+				}
+				
 				countCrossover++;
 
 				_message.append("\nCrossover between ")
