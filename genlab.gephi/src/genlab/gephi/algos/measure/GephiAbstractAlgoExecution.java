@@ -80,7 +80,6 @@ public abstract class GephiAbstractAlgoExecution extends AbstractAlgoExecutionOn
 			// decode parameters
 			final IGenlabGraph glGraph = (IGenlabGraph) getInputValueForInput(GephiAbstractAlgo.INPUT_GRAPH);
 			
-			
 			final GephiGraph gephiGraph = GephiConvertors.loadIntoAGephiWorkspace(
 					glGraph, 
 					result.getMessages(), 

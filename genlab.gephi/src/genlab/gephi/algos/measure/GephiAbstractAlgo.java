@@ -35,4 +35,5 @@ public abstract class GephiAbstractAlgo extends BasicAlgo {
 		return Activator.getDefault().getBundle();
 	}
 	
+	
 }
