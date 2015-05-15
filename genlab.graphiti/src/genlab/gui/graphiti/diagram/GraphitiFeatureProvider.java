@@ -25,6 +25,7 @@ import genlab.gui.graphiti.features.CreateDomainObjectConnectionConnectionFeatur
 import genlab.gui.graphiti.features.CreateIAlgoInstanceFeature;
 import genlab.gui.graphiti.features.DeleteConnectionFeature;
 import genlab.gui.graphiti.features.DeleteIAlgoInstanceFeature;
+import genlab.gui.graphiti.features.EncaspulateNSGA2DiagramFeature;
 import genlab.gui.graphiti.features.LayoutConstFeature;
 import genlab.gui.graphiti.features.LayoutIAlgoContainerFeature;
 import genlab.gui.graphiti.features.LayoutIAlgoFeature;
@@ -114,6 +115,8 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 
 	protected BasicLayoutDiagramFeature customBasicLayoutFeature = new BasicLayoutDiagramFeature(this);
 	protected BeautifyDiagramFeature customBeautifyFeature = new BeautifyDiagramFeature(this);
+	protected EncaspulateNSGA2DiagramFeature customEncapsule = new EncaspulateNSGA2DiagramFeature(this);
+	
 	
 	public static GraphitiFeatureProvider getOrCreateFor(IDiagramTypeProvider dtp) {
 		GraphitiFeatureProvider res = type2provider.get(dtp);
@@ -221,6 +224,7 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 		retList.add(customViewInfo);
 		retList.add(customBasicLayoutFeature);
 		retList.add(customBeautifyFeature);
+		retList.add(customEncapsule);
 		
 		return retList.toArray(new ICustomFeature[retList.size()]);
 	}
