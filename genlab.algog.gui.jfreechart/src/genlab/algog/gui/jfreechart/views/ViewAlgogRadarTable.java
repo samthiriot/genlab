@@ -376,7 +376,7 @@ public final class ViewAlgogRadarTable
 	
 	public void loadDataFromTable() {
 		
-		if (lastVersionDataToDisplay == null)
+		if (lastVersionDataToDisplay == null || lastVersionDataToDisplay.isEmpty())
 			return;
 		
 		if (compositeCharts.isDisposed())
