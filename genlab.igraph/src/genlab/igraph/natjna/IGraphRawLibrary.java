@@ -268,7 +268,7 @@ public class IGraphRawLibrary {
 			Native.register(LIB_UNDECORATED_NAME);
 			*/
 			isAvailable = true;
-		} catch (RuntimeException e) {
+		} catch (Throwable e) {
 			// failure; but maybe it was already available ? 
 			GLLogger.errorTech("unable to initialize igraph: "+e.getMessage(), IGraphRawLibrary.class, e);
 			isAvailable = false;
