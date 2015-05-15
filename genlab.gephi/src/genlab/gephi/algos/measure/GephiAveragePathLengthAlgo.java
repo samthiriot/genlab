@@ -84,6 +84,7 @@ public class GephiAveragePathLengthAlgo extends GephiAbstractAlgo {
 					GephiGraph gephiGraph,
 					IGenlabGraph genlabGraph) {
 				
+				
 				final String param_betweeness_attribute = "betweeness";
 				
 				Map<IInputOutput<?>, Object> results = new HashMap<IInputOutput<?>, Object>();

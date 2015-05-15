@@ -60,6 +60,13 @@ public abstract class GephiAbstractAlgoExecution extends AbstractAlgoExecutionOn
 		progress.setProgressTotal(1);
 		progress.setComputationState(ComputationState.STARTED);
 		
+		messages.warnUser(
+				"the underlying Gephi implementation used by this algorithm ("+algoInst.getName()+") "
+						+ "is known to be buggy and consume all ressources; "
+						+ "you should replace this algorithm by an equivalent algorithm from another library", 
+						getClass()
+						);
+
 		ComputationResult result = new ComputationResult(algoInst, progress, exec.getListOfMessages());
 		setResult(result);
 
