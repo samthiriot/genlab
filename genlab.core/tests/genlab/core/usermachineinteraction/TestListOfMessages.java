@@ -25,7 +25,7 @@ public class TestListOfMessages {
 		
 		final int messagesToAdd = 10000;
 		
-		ListOfMessages msgs = new ListOfMessages(null, Integer.MAX_VALUE, Integer.MAX_VALUE/2);
+		ListOfMessages msgs = new ListOfMessages(null, null, Integer.MAX_VALUE, Integer.MAX_VALUE/2);
 		
 		for (int i=0; i<messagesToAdd; i++) {
 			
@@ -51,7 +51,7 @@ public class TestListOfMessages {
 		final int toAddPerThread = 5000;
 		final int nbThreads = 10;
 		
-		final ListOfMessages msgs = new ListOfMessages(null, toAddPerThread*nbThreads + 3000);
+		final ListOfMessages msgs = new ListOfMessages(null, null, toAddPerThread*nbThreads + 3000);
 		
 		
 		class ThreadAddManyMessages extends Thread {

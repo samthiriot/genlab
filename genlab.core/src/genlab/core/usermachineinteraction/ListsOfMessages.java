@@ -15,7 +15,7 @@ public class ListsOfMessages {
 
 	private static Map<IGenLabExecution,ListOfMessages> execution2listOfMessages = new HashMap<IGenLabExecution, ListOfMessages>();
 	
-	private static ListOfMessages applicationListOfMessage = new ListOfMessages(MessageLevel.WARNING, 1000);
+	private static ListOfMessages applicationListOfMessage = new ListOfMessages(MessageLevel.WARNING, MessageLevel.WARNING, 1000);
 
 	private static Map<String,ListOfMessages> id2listOfMessages = new HashMap<String, ListOfMessages>(50);
 	

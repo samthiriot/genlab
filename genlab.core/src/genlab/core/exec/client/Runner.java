@@ -227,7 +227,7 @@ public class Runner extends Thread implements IRunner {
 	@Override
 	public void addTask(IAlgoExecution exec) {
 		
-		messagesRun.debugTech("adding task: "+exec+" (state "+exec.getProgress().getComputationState()+")", getClass());
+		messagesRun.traceTech("adding task: "+exec+" (state "+exec.getProgress().getComputationState()+")", getClass());
 		
 		synchronized (all) {
 			
@@ -292,7 +292,7 @@ public class Runner extends Thread implements IRunner {
 
 	protected Collection<IAlgoExecution> detectRoots() {
 		
-		messagesRun.debugTech("detecting the roots of tasks", getClass());
+		messagesRun.traceTech("detecting the roots of tasks", getClass());
 		
 		LinkedList<IAlgoExecution> res = new LinkedList<IAlgoExecution>();
 		

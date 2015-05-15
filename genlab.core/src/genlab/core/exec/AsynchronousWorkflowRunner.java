@@ -66,7 +66,10 @@ public class AsynchronousWorkflowRunner implements Runnable {
 			Execution exec = new Execution(r);
 			exec.setExecutionForced(forceExec);
 			exec.getListOfMessages().addAll(checkInfo.messages);
-			exec.getListOfMessages().setFilterIgnoreBelow(MessageLevel.WARNING);
+			exec.getListOfMessages().setFilterIgnoreBelow(
+					ListsOfMessages.getGenlabMessages().getFilterIgnoreBelowDevelopers(), 
+					ListsOfMessages.getGenlabMessages().getFilterIgnoreBelowUsers() 
+					);
 	
 			System.err.println("create exec");
 			ExecutionHooks.singleton.notifyParentTaskAdded(exec);	// TODO something clean...

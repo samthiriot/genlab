@@ -710,15 +710,27 @@
       </page>
       <page
             category="org.genlab.preferences.pages.genlab"
-            class="genlab.gui.preferences.RunnerPreferencePage"
+            class="genlab.gui.preferences.LocalRunnerPreferencePage"
             id="org.genlab.preferences.pages.localrunner"
             name="Local runner">
+      </page>
+      <page
+            category="org.genlab.preferences.pages.genlab"
+            class="genlab.gui.preferences.LocalServerPreferencePage"
+            id="org.genlab.preferences.pages.localserver"
+            name="Server">
+      </page>
+      <page
+            category="org.genlab.preferences.pages.genlab"
+            class="genlab.gui.preferences.LoggingPreferencePage"
+            id="org.genlab.preferences.pages.logging"
+            name="Messages">
       </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
       <scope
-            class="genlab.gui.preferences.RunnerPreferencePage"
+            class="genlab.gui.preferences.LocalRunnerPreferencePage"
             name="RunPreferencePage">
       </scope>
       <initializer
