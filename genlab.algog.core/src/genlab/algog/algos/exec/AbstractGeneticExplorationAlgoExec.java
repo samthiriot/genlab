@@ -714,41 +714,48 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			// retrieve the algorithm which finished, that is the exploration of one generation 
 			final GeneticExplorationOneGeneration algoFinished = (GeneticExplorationOneGeneration)progress.getAlgoExecution();
 			
-			// retrieve the different results of the evaluation of the generation: fitness, values explored, and targets
-			Set<AnIndividual> individuals = algoFinished.getComputedIndividuals();
-
-			if (individuals.size() != paramPopulationSize) {
-				this.messages.errorUser("at iteration "+iterationsMade+", retrieved only "+individuals.size()+" instead of the "+paramPopulationSize+" expected", getClass());
+			try {
+				// retrieve the different results of the evaluation of the generation: fitness, values explored, and targets
+				Set<AnIndividual> individuals = algoFinished.getComputedIndividuals();
+	
+				if (individuals.size() != paramPopulationSize) {
+					this.messages.errorUser("at iteration "+iterationsMade+", retrieved only "+individuals.size()+" instead of the "+paramPopulationSize+" expected", getClass());
+				}
+	//			final Map<AnIndividual,Double[]> resultFitness = algoFinished.getComputedFitness(); // (this is already a copy)
+	//			final Map<AnIndividual,Object[]> resultValues = algoFinished.getComputedValues(); // (this is already a copy)
+	//			final Map<AnIndividual,Object[]> resultTargets = algoFinished.getComputedTargets(); // (this is already a copy)
+	
+				
+				// now use these results: store them ! 
+				manageResultsForCurrentGeneration(individuals);
+				
+				// give the JVM some time and recommand a memory analysis (its good time for doing it !) 
+				Runtime.getRuntime().gc();
+				Thread.yield();
+				
+				// if the evaluation of the algorithm is done yet, then finish the process
+				if (!shouldContinueExploration()) {
+					manageEndOfExploration();
+					return;
+				}
+				
+				// one more time, maybe the user asked for cancelling, in this case don't start a novel iteration !
+				if (opportunityCancel())
+					return;
+				
+				// prepare next iteration: create the next generation, and pack it as an executable
+				GeneticExplorationOneGeneration execFirstGen = createExecutableForGeneration(prepareNextGeneration());
+				
+				// start the evaluation of the next population, by adding the novel subtask to our set of children tasks
+				messages.infoUser("starting the evaluation of generation "+iterationsMade, getClass());
+				addTask(execFirstGen);
+				
+				iterationsMade++;
+				
+			} catch (Exception e) {
+				messages.errorTech("error during the end of generation "+iterationsMade, getClass(), e);
+				progress.setComputationState(ComputationState.FINISHED_FAILURE);
 			}
-//			final Map<AnIndividual,Double[]> resultFitness = algoFinished.getComputedFitness(); // (this is already a copy)
-//			final Map<AnIndividual,Object[]> resultValues = algoFinished.getComputedValues(); // (this is already a copy)
-//			final Map<AnIndividual,Object[]> resultTargets = algoFinished.getComputedTargets(); // (this is already a copy)
-
-			// now use these results: store them ! 
-			manageResultsForCurrentGeneration(individuals);
-			
-			// give the JVM some time and recommand a memory analysis (its good time for doing it !) 
-			Runtime.getRuntime().gc();
-			Thread.yield();
-			
-			// if the evaluation of the algorithm is done yet, then finish the process
-			if (!shouldContinueExploration()) {
-				manageEndOfExploration();
-				return;
-			}
-			
-			// one more time, maybe the user asked for cancelling, in this case don't start a novel iteration !
-			if (opportunityCancel())
-				return;
-			
-			// prepare next iteration: create the next generation, and pack it as an executable
-			GeneticExplorationOneGeneration execFirstGen = createExecutableForGeneration(prepareNextGeneration());
-			
-			// start the evaluation of the next population, by adding the novel subtask to our set of children tasks
-			messages.infoUser("starting the evaluation of generation "+iterationsMade, getClass());
-			addTask(execFirstGen);
-			
-			iterationsMade++;
 		}
 		
 
