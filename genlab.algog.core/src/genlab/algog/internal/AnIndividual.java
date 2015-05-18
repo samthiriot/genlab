@@ -49,13 +49,13 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	}
 	
 	/**
-	 * if one fitness isn't computed then this individual is not feasible
+	 * if one value isn't computed then this individual is not feasible
 	 * @return true if feasible, false else
 	 */
 	public Boolean isFeasible() {
 		
-		for( Double fitness : this.fitness ) {
-			if( fitness==null )
+		for( Object value : this.values ) {
+			if( value==null )
 				return false;
 		}
 		

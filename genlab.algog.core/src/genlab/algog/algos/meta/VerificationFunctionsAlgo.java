@@ -61,7 +61,6 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 		TNK ("TNK (Tanaka)"),
 		CONSTR_EX ("Constr-Ex problem"),
 		SRN ("SRN (Chakong and Haimes)")
-		
 		;
 		
 		public final String label;
@@ -152,7 +151,6 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 				// retrieve parameters and inputs
 				final Integer idxParam = (Integer)algoInst.getValueForParameter(PARAM_FUNCTION);
 				final EAvailableFunctions testedFunction = EAvailableFunctions.values()[idxParam];
-				String s = "";
 				final double x = (Double) getInputValueForInput(INPUT_X);
 				final double y = (Double) getInputValueForInput(INPUT_Y);
 
@@ -521,21 +519,14 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 						default:
 							throw new ProgramException("unknown test function "+testedFunction);
 					}
-					s+="o;"+x+";"+y+";"+violatesConstraint+":"+violatesSearchDomain;
 										
 					// if constraint is violated, then fail
 					if (violatesConstraint) {
-						//System.out.println(s);
-						
-						
 						messages.infoUser("constraint violated for function "+testedFunction, getClass());
 						progress.setComputationState(ComputationState.FINISHED_FAILURE);
 						return;
 					}
 					if (violatesSearchDomain) {
-						//System.out.println(s);
-						
-						
 						messages.errorUser("out of search domain for function "+testedFunction+" x="+x+", y="+y+"; please correct the search domain", getClass());
 						progress.setComputationState(ComputationState.FINISHED_FAILURE);
 						return;
@@ -592,13 +583,6 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 					
 					res.setResult(OUTPUT_F1, f1);
 					res.setResult(OUTPUT_F2, f2);
-					
-					
-
-					s+=";"+f1+";"+f2;
-					//System.out.println(s);
-					
-					
 					
 					progress.setComputationState(ComputationState.FINISHED_OK);
 					
