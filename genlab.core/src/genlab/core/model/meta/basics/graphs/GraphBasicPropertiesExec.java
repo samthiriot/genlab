@@ -1,6 +1,5 @@
 package genlab.core.model.meta.basics.graphs;
 
-import genlab.core.exec.IAlgoExecutionRemotable;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
@@ -10,8 +9,7 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.basics.algos.GraphBasicPropertiesAlgo;
 
 public class GraphBasicPropertiesExec 
-									extends AbstractAlgoExecutionOneshot 
-									implements IAlgoExecutionRemotable {
+									extends AbstractAlgoExecutionOneshot {
 
 	public GraphBasicPropertiesExec(final IExecution execution,
 									final AlgoInstance algoInstance) {
