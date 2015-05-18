@@ -31,6 +31,10 @@
  */
 package org.graphstream.graph.implementations;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.security.AccessControlException;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -43,7 +47,8 @@ import org.graphstream.graph.Node;
  * Nodes used with {@link AdjacencyListGraph}
  * 
  */
-public class AdjacencyListNode extends AbstractNode {
+public class AdjacencyListNode extends AbstractNode implements Externalizable {
+	
 	protected static final int INITIAL_EDGE_CAPACITY;
 	protected static final double GROWTH_FACTOR = 1.1;
 
@@ -282,5 +287,38 @@ public class AdjacencyListNode extends AbstractNode {
 	@Override
 	public <T extends Edge> Iterator<T> getLeavingEdgeIterator() {
 		return new EdgeIterator<T>(O_EDGE);
+	}
+	
+
+	protected AdjacencyListNode() {
+		
+	}
+	
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+				
+		// don't backup graph; caller will have to restore graph
+		super.writeExternal(out);
+		
+		out.writeInt(degree);
+		out.writeInt(ioStart);
+		out.writeInt(oStart);
+	
+		out.writeObject(edges);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException,
+			ClassNotFoundException {
+		
+		super.readExternal(in);
+		
+		degree = in.readInt();
+		ioStart = in.readInt();
+		oStart = in.readInt();
+		
+		edges = (AbstractEdge[]) in.readObject();
+		
 	}
 }

@@ -31,6 +31,10 @@
  */
 package org.graphstream.graph.implementations;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.HashSet;
@@ -61,7 +65,7 @@ import org.graphstream.stream.SourceBase;
  * graph. This class has a low memory overhead (one reference as field).
  * </p>
  */
-public abstract class AbstractNode extends AbstractElement implements Node {
+public abstract class AbstractNode extends AbstractElement implements Node, Externalizable {
 
 	// *** Fields ***
 
@@ -595,5 +599,28 @@ public abstract class AbstractNode extends AbstractElement implements Node {
 	 */
 	public boolean isIncidentEdge(Edge e) {
 		return e.getSourceNode() == this || e.getTargetNode() == this;
+	}
+	
+
+	protected AbstractNode() {
+		
+	}
+
+	protected void _setGraph(AbstractGraph g) {
+		this.graph = g;
+	}
+	
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+				
+		// don't backup graph; caller will have to restore graph
+		super.writeExternal(out);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException,
+			ClassNotFoundException {
+		
+		super.readExternal(in);
 	}
 }

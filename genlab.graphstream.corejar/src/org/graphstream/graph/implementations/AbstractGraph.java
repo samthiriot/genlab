@@ -31,6 +31,16 @@
  */
 package org.graphstream.graph.implementations;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.AbstractCollection;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.UUID;
+
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.EdgeFactory;
 import org.graphstream.graph.EdgeRejectedException;
@@ -1050,5 +1060,40 @@ public abstract class AbstractGraph extends AbstractElement implements Graph,
 								edge.getAttribute(key));
 			}
 		}
+	}
+
+
+	public AbstractGraph() {
+		this(UUID.randomUUID().toString());
+		listeners = new GraphListeners(this);
+
+	}
+
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		
+		super.writeExternal(out);
+		
+		out.writeBoolean(strictChecking);
+		out.writeBoolean(autoCreate);
+		out.writeDouble(step);
+		out.writeBoolean(nullAttributesAreErrors);
+		out.writeLong(replayId);
+		
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException,
+			ClassNotFoundException {
+		
+		super.readExternal(in);
+		
+		strictChecking = in.readBoolean();
+		autoCreate = in.readBoolean();
+		step = in.readDouble();
+		nullAttributesAreErrors = in.readBoolean();
+		replayId = in.readLong();	
+		
 	}
 }

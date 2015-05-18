@@ -31,6 +31,12 @@
  */
 package org.graphstream.graph.implementations;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.Serializable;
+
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
 import org.graphstream.stream.SourceBase.ElementType;
@@ -160,5 +166,39 @@ public class AbstractEdge extends AbstractElement implements Edge {
 
 	public boolean isLoop() {
 		return source == target;
+	}
+	
+
+	protected AbstractEdge() {
+		
+	}
+
+	protected void _setGraph(AbstractGraph g) {
+		this.graph = g;
+	}
+	
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+				
+		// don't backup graph; caller will have to restore graph
+		super.writeExternal(out);
+		
+		out.writeBoolean(directed);
+		out.writeObject(source);
+		out.writeObject(target);
+		
+		
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException,
+			ClassNotFoundException {
+		
+		super.readExternal(in);
+		
+		directed = in.readBoolean();
+		source = (AbstractNode) in.readObject();
+		target = (AbstractNode) in.readObject();
+		
 	}
 }

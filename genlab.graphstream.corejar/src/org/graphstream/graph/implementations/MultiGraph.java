@@ -31,6 +31,13 @@
  */
 package org.graphstream.graph.implementations;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.Serializable;
+import java.util.UUID;
+
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.NodeFactory;
 
@@ -38,7 +45,7 @@ import org.graphstream.graph.NodeFactory;
  * A graph implementation that supports multiple edges between two nodes.
  */
 
-public class MultiGraph extends AdjacencyListGraph {
+public class MultiGraph extends AdjacencyListGraph implements Externalizable {
 
 	/**
 	 * Creates an empty graph.
@@ -100,4 +107,13 @@ public class MultiGraph extends AdjacencyListGraph {
 	public MultiGraph(String id) {
 		this(id, true, false);
 	}
+
+	/*
+	 * For serialization
+	 */
+	public MultiGraph() {
+		this(UUID.randomUUID().toString());
+	}
+
+	
 }
