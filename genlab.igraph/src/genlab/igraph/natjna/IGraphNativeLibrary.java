@@ -475,10 +475,18 @@ public class IGraphNativeLibrary {
 	 */
 	public void setSeed(long seed) {
 		
-		Pointer p = IGraphRawLibrary.igraph_rng_default();
-		int res = IGraphRawLibrary.igraph_rng_seed(p, new NativeLong(seed));
-		checkIGraphResult(res);
+		long valueToUse = seed;
+		if (NativeLong.SIZE < 8) {
+			valueToUse = (new Long(seed)).intValue();
+			if ((valueToUse < seed) && (listOfMessages != null) ) {
+				listOfMessages.warnUser("due to the limited encoding capabilities on this system (32bits), the seed was truncated", getClass());
+			}
+		}		
 		
+		Pointer p = IGraphRawLibrary.igraph_rng_default();
+		int res = IGraphRawLibrary.igraph_rng_seed(p, new NativeLong(valueToUse));
+		checkIGraphResult(res);
+	
 	}
 
 	public IGraphGraph copyGraph(IGraphGraph original) {

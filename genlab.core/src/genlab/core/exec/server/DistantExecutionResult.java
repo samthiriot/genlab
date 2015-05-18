@@ -24,8 +24,12 @@ public class DistantExecutionResult implements Serializable {
 		this.messages = computationResult.getMessages();
 		
 		id2result = new HashMap<String, Object>();
-		for (IInputOutputInstance o: computationResult.getResults().keySet()) {
-			id2result.put(o.getMeta().getId(), computationResult.getResults().get(o));
+		try {
+			for (IInputOutputInstance o: computationResult.getResults().keySet()) {
+				id2result.put(o.getMeta().getId(), computationResult.getResults().get(o));
+			}
+		} catch (NullPointerException e) {
+			// ignore, it was signaled elsewhere
 		}
 		
 		
