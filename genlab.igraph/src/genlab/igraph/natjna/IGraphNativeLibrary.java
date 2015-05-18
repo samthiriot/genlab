@@ -358,7 +358,7 @@ public class IGraphNativeLibrary {
 		
 		IGraphGraph result = new IGraphGraph(this, g, false);
 		
-		result.setMultiGraph(true); // looks like the algo never generates double links
+		result.setMultiGraph(allowMultiple); // looks like the algo never generates double links
 
 		return result;
 	}
