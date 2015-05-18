@@ -33,4 +33,11 @@ public enum MessageLevel {
 		return this.compareTo(filter) >= 0;
 	}
 	
+	public static String[] getAsStrings() {
+		String[] res = new String[values().length];
+		for (int i=0; i<res.length; i++) {
+			res[i] = values()[i].name();
+		}
+		return res;
+	}
 }

@@ -329,7 +329,8 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 				plot.addHorizontalLine(max.floatValue(), "max", Color.BLUE);
 			}
 
-			plot.setRange(yLowest, yHighest);
+			if (!Double.isInfinite(yHighest) && !Double.isInfinite(yLowest))
+				plot.setRange(yLowest, yHighest);
 			
 			
 		} finally {

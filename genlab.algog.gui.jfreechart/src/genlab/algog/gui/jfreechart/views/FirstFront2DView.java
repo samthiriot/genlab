@@ -72,7 +72,7 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 	
 	public void loadDataFromTable() {
 		
-		if (lastVersionDataToDisplay == null)
+		if (lastVersionDataToDisplay == null  || lastVersionDataToDisplay.isEmpty())
 			return;
 		
 		try {
@@ -95,6 +95,7 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 			final Integer iterationToDisplay = (Integer)lastVersionDataToDisplay.getValue(lastRowIdx, columnIteration);
 			// search for the first line to display
 			int currentRow = lastRowIdx;
+			
 			
 			Integer currentRowIteration = null;
 			do {

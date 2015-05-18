@@ -1,17 +1,15 @@
 package genlab.gui.preferences;
 
+import genlab.gui.Activator;
+
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingDeque;
-
-import genlab.gui.Activator;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
@@ -26,20 +24,34 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
  * @author Samuel Thiriot
  *
  */
-public class RunnerPreferencePage 
+public class LocalServerPreferencePage 
 				extends FieldEditorPreferencePage 
 				implements IWorkbenchPreferencePage {
 
-	public static final String PAGE_ID = "org.genlab.preferences.pages.localrunner";
+	public static final String PAGE_ID = "org.genlab.preferences.pages.localserver";
 	
-	public static final String KEY_MAX_CPUS = PAGE_ID+".max_cpus";
 	public static final String KEY_START_SERVER = PAGE_ID+".start_server";
 	public static final String KEY_START_SERVER_PORT = PAGE_ID+".start_server_port";
 	public static final String KEY_START_SERVER_INTERFACE = PAGE_ID+".start_server_interface";
 
-	public static final String KEY_SERVERS = PAGE_ID+".servers";
 
+	public LocalServerPreferencePage() {
+	}
+
+
+	@Override
+	public void init(IWorkbench workbench) {
+		
+	    setPreferenceStore(Activator.getDefault().getPreferenceStore());
+	    setDescription("Settings for the server for publishing this computer on the local network and share it with another local computer.");
+
+	}
 	
+	/**
+	 * Lists the names of network interfaces of interest on the machine.
+	 * Used to build the set of choices in the preference page.
+	 * @return
+	 */
 	public static List<String> listInterfacesNamesOnMachine() {
 		
 		List<String> res = new LinkedList<String>();
@@ -83,6 +95,10 @@ public class RunnerPreferencePage
 		return res;
 	}
 	
+	/**
+	 * Returns the list of interface names as an array of displayable names
+	 * @return
+	 */
 	public static String[][] getArrayInterfacesNamesOnMachine() {
 		
 		List<String> l = listInterfacesNamesOnMachine();
@@ -96,31 +112,10 @@ public class RunnerPreferencePage
 		return res;
 	}
 	
-	public RunnerPreferencePage() {
-	}
-
-
-	@Override
-	public void init(IWorkbench workbench) {
-		
-	    setPreferenceStore(Activator.getDefault().getPreferenceStore());
-	    setDescription("Settings for the local runner, that is the process in charge of managing the execution of workflows on your local computer.");
-
-	}
 
 	@Override
 	protected void createFieldEditors() {
-		
-		{
-			IntegerFieldEditor cpusEditor = new IntegerFieldEditor(
-					KEY_MAX_CPUS,
-					"Max &CPUs to use", 
-					getFieldEditorParent()
-					);
-			
-			cpusEditor.setValidRange(1, Runtime.getRuntime().availableProcessors()*4);
-			addField(cpusEditor);
-		}
+
 		{
 			BooleanFieldEditor startServerEditor = new BooleanFieldEditor(
 					KEY_START_SERVER, 
@@ -149,15 +144,6 @@ public class RunnerPreferencePage
 					);
 			addField(interfaceServerEditor);
 		}
-		{
-			HostsListFieldEditor list = new HostsListFieldEditor(
-					KEY_SERVERS, 
-					"connect to these GenLab servers to delegate computations", 
-					getFieldEditorParent()
-					);
-			addField(list);
-		}
 	}
 
-	// TODO  performOk, performApply, performDefaults, performCancel
 }

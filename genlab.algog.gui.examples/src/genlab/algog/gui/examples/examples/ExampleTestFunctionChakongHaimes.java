@@ -86,7 +86,7 @@ public class ExampleTestFunctionChakongHaimes implements IGenlabExample {
 		verificationFunctionInstance.setContainer(nsgaInstance);
 		verificationFunctionInstance.setValueForParameter(
 				VerificationFunctionsAlgo.PARAM_FUNCTION, 
-				VerificationFunctionsAlgo.EAvailableFunctions.CHAKONG_HAIMES.ordinal()
+				VerificationFunctionsAlgo.EAvailableFunctions.SRN.ordinal()
 				);
 		
 		nsgaInstance.addChildren(verificationFunctionInstance);

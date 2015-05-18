@@ -298,17 +298,21 @@ public class GenlabTable implements IGenlabTable, IDumpableToText {
 	}
 
 	@Override
-	public Object getValue(int rowId, String columnId) {
-		return content.get(rowId)[columnId2idx.get(columnId)];
+	public final Object getValue(int rowId, String columnId) {
+		final int idx = columnId2idx.get(columnId);
+		if (idx >= 0)
+			return content.get(rowId)[idx];
+		else
+			return null;
 	}
 	
 	@Override
-	public Object getValue(int rowId, int columnIdx) {
+	public final Object getValue(int rowId, int columnIdx) {
 		return content.get(rowId)[columnIdx];
 	}
 
 	@Override
-	public Object[] getValues(int rowId) {
+	public final Object[] getValues(int rowId) {
 		return content.get(rowId);
 	}
 

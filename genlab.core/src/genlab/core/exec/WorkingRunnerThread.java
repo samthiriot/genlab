@@ -31,19 +31,32 @@ public class WorkingRunnerThread extends Thread {
 	 */
 	private final BlockingQueue<? extends IAlgoExecution> readyToCompute2;
 	
+	/**
+	 * A locker object which is notified when one of the queues is 
+	 * changed, so the thread can wake up and check both
+	 */
+	private final Object lockOfQueues;
+	
 	private final ListOfMessages messages = ListsOfMessages.getGenlabMessages();
 	
 	
 	public WorkingRunnerThread(
 				String name, 
 				BlockingQueue<IAlgoExecution> readyToCompute, 
-				BlockingQueue<? extends IAlgoExecution> readyToCompute2) {
+				BlockingQueue<? extends IAlgoExecution> readyToCompute2,
+				Object lockOfQueues) {
 		
 		super(name);
 		
+		// check parameters
+		assert readyToCompute2 == null || lockOfQueues != null;
+		
+		// store parameters
 		this.readyToCompute = readyToCompute;
 		this.readyToCompute2 = readyToCompute2;
+		this.lockOfQueues = lockOfQueues;
 		
+		// parameters for this Thread
 		setDaemon(true);
 		setPriority(MIN_PRIORITY);
 	}
@@ -60,32 +73,38 @@ public class WorkingRunnerThread extends Thread {
 				// we can only consume from one principal queue
 				// then just wait for it.
 				try {
-					//messages.infoTech(this.getName()+" waiting for a task in the unique queue", getClass());
+					messages.traceTech(this.getName()+" waiting for a task in the unique queue", getClass());
 					exec = readyToCompute.take();
 				} catch (InterruptedException e) {
 					messages.errorTech("catched an exception when trying to fetch a task: "+e.getMessage(), getClass(), e);
 				}
 			} else {
 				// we can consume from 2 queues.
-				do {
-					//messages.infoTech(this.getName()+" searching for a task in the 2 queues", getClass());
+				
+				while (exec == null) {
+					
 					// is there something in the first one ? 
 					exec = readyToCompute.poll();
 					// or in another place ?
 					if (exec == null) { 
 						exec = readyToCompute2.poll();
 					}
-					// if there is nothing, loop until something comes.
-					//messages.infoTech(this.getName()+" sleeping", getClass());
-					try {
-						Thread.sleep(10);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					// or wait !
+					if (exec == null) { 
+						// wait for something to be available on one queue
+						synchronized (this.lockOfQueues) {
+							try {
+								this.lockOfQueues.wait();
+							} catch (InterruptedException e) {
+								messages.errorTech("catched an exception when waiting for a task: "+e.getMessage(), getClass(), e);
+							}	
+						}
 					}
-				} while (exec == null);
+						
+				}
 				
 			}
+			
 			
 			// and run this task
 			messages.debugTech(getName()+" running task: "+exec.getName(), getClass());
