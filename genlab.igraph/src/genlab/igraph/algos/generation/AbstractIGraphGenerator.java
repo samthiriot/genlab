@@ -6,7 +6,7 @@ import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.basics.flowtypes.GraphInOut;
 import genlab.core.parameters.RNGSeedParameter;
 import genlab.igraph.Activator;
-import genlab.igraph.natjna.IGraphRawLibrary;
+import genlab.igraph.commons.IgraphLibFactory;
 
 import org.osgi.framework.Bundle;
 
@@ -62,7 +62,7 @@ public abstract class AbstractIGraphGenerator extends BasicAlgo {
 
 	@Override
 	public boolean isAvailable() {
-		return IGraphRawLibrary.isAvailable;
+		return IgraphLibFactory.isIGraphAvailable();
 	}
 	
 }

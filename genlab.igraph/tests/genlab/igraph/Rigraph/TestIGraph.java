@@ -1,4 +1,4 @@
-package genlab.igraph.implementations.Rigraph;
+package genlab.igraph.Rigraph;
 
 import static org.junit.Assert.fail;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;

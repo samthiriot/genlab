@@ -1,4 +1,4 @@
-package genlab.igraph.implementations.natjna;
+package genlab.igraph.natjna;
 
 import static org.junit.Assert.*;
 import genlab.igraph.natjna.IGraphGraph;

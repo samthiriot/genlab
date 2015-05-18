@@ -1,4 +1,4 @@
-package genlab.igraph.implementations.natjna;
+package genlab.igraph.natjna;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;

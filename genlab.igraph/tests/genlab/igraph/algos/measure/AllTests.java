@@ -9,7 +9,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses(
 		{ 
-			// TODO reinstall TestCentrality.class,
 			TestAveragePathLength.class,
 			TestComponentCount.class,
 			TestDiameter.class,

@@ -1,10 +1,12 @@
 package genlab.igraph.Rigraph;
 
+import static org.junit.Assert.fail;
 import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.commons.IGraphLibImplementation;
 import genlab.r.rsession.Genlab2RSession;
@@ -13,9 +15,76 @@ import org.math.R.Rsession;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPLogical;
 import org.rosuda.REngine.REXPMismatchException;
+import org.rosuda.REngine.Rserve.RSession;
 
 public class RIGraphLibImplementation implements IGraphLibImplementation {
 
+	
+	protected static Boolean isAvailable = null;
+	
+	/**
+	 * Ensures it is possible to load the igraph package
+	 * @return
+	 */
+	protected static boolean ensureIgraphCanBeLoaded() {
+		Rsession r = null;
+		try {
+			r = Genlab2RSession.pickOneSessionFromPool();
+			
+			boolean res = r.isPackageInstalled("igraph", null);
+			
+			if (!res) {
+				GLLogger.tipUser("the connection with R is working, but R/igraph library is not installed. Please install it with install.packages(igraph)", RIGraphLibImplementation.class);
+				return false;
+			} else {
+				
+				String versionStr = null;
+				
+				// try to get version n1
+				try {
+					r.loadPackage("igraph");
+					REXP version = r.eval("igraph.version()");
+					if (version != null)
+						versionStr = version.asString();
+				} catch (REXPMismatchException e) {
+					// not working ? 
+				}
+				
+				if (versionStr == null) {
+					try {
+						REXP version = r.eval("packageDescription(\"igraph\")$Version");
+						versionStr = version.asString();
+					} catch (REXPMismatchException e) {
+						// not working ? 
+					}
+				}
+				
+				GLLogger.infoUser("Can use the R/igraph library "+versionStr, RIGraphLibImplementation.class);
+				return true;
+			}
+			// TODO test version ?
+		} catch (Exception e) {
+			GLLogger.errorTech("Unable to connect to R/igraph: "+e.getLocalizedMessage(), RIGraphLibImplementation.class, e);
+			return false;
+		} finally {
+			if (r != null)
+				Genlab2RSession.returnSessionFromPool(r);
+		}
+	}
+	
+	public static boolean isAvailable() {
+		if (isAvailable == null) {
+			
+			if (!Genlab2RSession.isRAvailable()) {
+				isAvailable = false;
+				GLLogger.tipUser("the R/igraph library is not available, because the connection with R is not available. Configure it to use the numerous features of igraph", RIGraphLibImplementation.class); 
+			} else {
+				isAvailable = ensureIgraphCanBeLoaded();
+			}
+		}
+		return isAvailable;
+	}
+	
 	public RIGraphLibImplementation() {
 		// TODO Auto-generated constructor stub
 	}

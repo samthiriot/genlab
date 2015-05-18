@@ -244,17 +244,18 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 
 				String valueStr = value == null ? "": ((Long)value).toString();
 
-				Text txt = toolkit.createText(form.getBody(), valueStr);
+				final Text txt = toolkit.createText(form.getBody(), valueStr);
 				
 				txt.addVerifyListener(new VerifyListener() {  
 				    @Override  
 				    public void verifyText(VerifyEvent e) {
-				        if (e.text == "") {
+				    	String totalText = txt.getText()+e.text;
+				        if (totalText == "") {
 				        	e.doit = true;
 				        	return;
 				        }
 				    	try {
-				    		long v = Long.parseLong(e.text);
+				    		long v = Long.parseLong(totalText);
 				    		e.doit = (v >= p.getMinValue() && v < p.getMaxValue());  
 				        } catch(NumberFormatException ex){  
 				            e.doit = false;  
@@ -262,7 +263,7 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				    }  
 				});
 				
-				txt.setText(value.toString());
+				txt.setText(valueStr);
 				
 				createdWidget = txt;
 				txt.addModifyListener(this);
@@ -480,7 +481,7 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 		}
 		
 		// TODO depends of the type !
-		if (param instanceof StringBasedParameter) {
+		if (param instanceof StringBasedParameter || param instanceof RNGSeedParameter) {
 			String value = ((Text)e.widget).getText();
 			algo.setValueForParameter(param.getId(), param.parseFromString(value));
 		} else {

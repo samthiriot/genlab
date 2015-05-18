@@ -4,6 +4,7 @@ import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.igraph.Rigraph.RIGraph2Genlab;
 import genlab.igraph.algos.generation.lcffamous.FamousLCFGraphs;
+import genlab.igraph.commons.IgraphLibFactory;
 import genlab.igraph.natjna.IGraphNativeLibrary;
 import genlab.igraph.natjna.IGraphRawLibrary;
 
@@ -35,20 +36,11 @@ public class Activator extends Plugin implements BundleActivator, IGenlabPlugin 
 		plugin = this;
 
 		GLLogger.infoTech("initializing the igraph plugin for genlab...", getClass());
-
-		GLLogger.debugTech("checking the availability of the native library...", getClass());
-
-		if (!IGraphRawLibrary.isAvailable) {
-			GLLogger.warnTech("unable to load the native igraph library; features will be missing", getClass());
-			// TODO warn user as well
-			// TODO deactivate all the igraph algorithms
-			return;
-		} 
 		
-		IGraphNativeLibrary lib = new IGraphNativeLibrary();
-		GLLogger.infoUser("will use the igraph library "+lib.getVersionString(), getClass());
 
-				
+		IgraphLibFactory.isIGraphAvailable();
+
+		
 		// declare the LCF algos
 		bundleContext.addBundleListener(new BundleListener() {
 			

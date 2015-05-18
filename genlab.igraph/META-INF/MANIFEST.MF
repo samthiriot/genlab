@@ -62,6 +62,6 @@ Export-Package: genlab.igraph,
  genlab.igraph.algos.measure,
  genlab.igraph.algos.transform,
  genlab.igraph.commons,
- genlab.igraph.implementations.natjna
+ genlab.igraph.natjna
 Bundle-ClassPath: .,
  ext/native/
