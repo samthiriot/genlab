@@ -1155,5 +1155,12 @@ public class ListOfMessages implements Iterable<ITextMessage>, Serializable {
 		return filterIgnoreBelowForUser;
 	}
 	
+	/**
+	 * "stops" this list of messages; it will not be able to receive messages
+	 * anymore, even if it's keeping its current messages
+	 */
+	public void stop() {
+		queueConsumerThread.cancel();
+	}
 }
 
