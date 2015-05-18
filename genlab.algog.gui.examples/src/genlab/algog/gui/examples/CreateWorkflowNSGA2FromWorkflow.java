@@ -175,7 +175,7 @@ public class CreateWorkflowNSGA2FromWorkflow {
 			NSGA2GeneticExplorationAlgo algo = new NSGA2GeneticExplorationAlgo();
 			nsga2instance = (IAlgoContainerInstance)algo.createInstance(workflowRes);
 			workflowRes.addAlgoInstance(nsga2instance);
-			nsga2instance.setValueForParameter(NSGA2GeneticExplorationAlgo.PARAM_CROSSOVER, ECrossoverMethod.N_POINTS.toString());
+			nsga2instance.setValueForParameter(NSGA2GeneticExplorationAlgo.PARAM_CROSSOVER, ECrossoverMethod.N_POINTS.ordinal());
 		}
 		
 		// copy all the selected elements from the original workflow to the target one

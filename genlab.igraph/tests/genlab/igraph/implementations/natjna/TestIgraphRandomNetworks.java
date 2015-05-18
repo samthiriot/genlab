@@ -1,8 +1,10 @@
-package genlab.igraph.natjna;
+package genlab.igraph.implementations.natjna;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import genlab.igraph.natjna.IGraphGraph;
+import genlab.igraph.natjna.IGraphNativeLibrary;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -15,7 +17,7 @@ public class TestIgraphRandomNetworks {
 	@Test
 	public void testTwoWSoneLibDifferent() {
 		
-		IGraphLibrary lib1 = new IGraphLibrary();
+		IGraphNativeLibrary lib1 = new IGraphNativeLibrary();
 
 		IGraphGraph g1 = null;
 		IGraphGraph g2 = null;
@@ -44,7 +46,7 @@ public class TestIgraphRandomNetworks {
 	@Test
 	public void testIsoMorphismSameLib() {
 		
-		IGraphLibrary lib1 = new IGraphLibrary();
+		IGraphNativeLibrary lib1 = new IGraphNativeLibrary();
 
 		IGraphGraph g1 = null;
 		IGraphGraph g2 = null;
@@ -72,8 +74,8 @@ public class TestIgraphRandomNetworks {
 	@Test
 	public void testIsoMorphismTwoLibs() {
 		
-		IGraphLibrary lib1 = new IGraphLibrary();
-		IGraphLibrary lib2 = new IGraphLibrary();
+		IGraphNativeLibrary lib1 = new IGraphNativeLibrary();
+		IGraphNativeLibrary lib2 = new IGraphNativeLibrary();
 
 		IGraphGraph g1 = null;
 		IGraphGraph g2 = null;
@@ -105,8 +107,8 @@ public class TestIgraphRandomNetworks {
 	@Test
 	public void testTwoWStwoLibsDifferent() {
 		
-		IGraphLibrary lib1 = new IGraphLibrary();
-		IGraphLibrary lib2 = new IGraphLibrary();
+		IGraphNativeLibrary lib1 = new IGraphNativeLibrary();
+		IGraphNativeLibrary lib2 = new IGraphNativeLibrary();
 		
 		IGraphGraph g1 = lib1.generateWattsStrogatz(1000, 1, 0.1, 2, false, false);
 		IGraphGraph g2 = lib2.generateWattsStrogatz(1000, 1, 0.1, 2, false, false);
@@ -136,7 +138,7 @@ public class TestIgraphRandomNetworks {
 				@Override
 				public void run() {
 					
-					IGraphLibrary lib = new IGraphLibrary();
+					IGraphNativeLibrary lib = new IGraphNativeLibrary();
 					IGraphGraph g = lib.generateWattsStrogatz(GRAPH_SIZE, 1, 0.1, 2, false, false);
 					generatedGraphs.add(g);
 					
@@ -157,7 +159,7 @@ public class TestIgraphRandomNetworks {
 			}
 		}
 		
-		IGraphLibrary lib = new IGraphLibrary();
+		IGraphNativeLibrary lib = new IGraphNativeLibrary();
 
 		System.err.println("threads done. Now checking isomorphism");
 		int countIso = 0;

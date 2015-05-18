@@ -9,7 +9,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses(
 		{ 
 			// TODO restore: genlab.igraph.algos.measure.AllTests.class,
-			genlab.igraph.natjna.AllTests.class
+			genlab.igraph.implementations.natjna.AllTests.class,
+			genlab.igraph.algos.measure.AllTests.class
 			}
 		)
 public class AllTests {

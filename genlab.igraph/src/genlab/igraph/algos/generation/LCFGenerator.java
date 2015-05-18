@@ -4,9 +4,11 @@ import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
+import genlab.igraph.commons.IgraphLibFactory;
 import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphLibrary;
+import genlab.igraph.natjna.IGraphNativeLibrary;
 
 public class LCFGenerator extends AbstractIGraphGenerator {
 
@@ -28,7 +30,8 @@ public class LCFGenerator extends AbstractIGraphGenerator {
 	public LCFGenerator() {
 		super(
 				"LCF generation (igraph", 
-				"LCF is short for Lederberg-Coxeter-Frucht, it is a concise notation for 3-regular Hamiltonian graphs. It consists of three parameters: the number of vertices in the graph, a list of shifts giving additional edges to a cycle backbone, and another integer giving how many times the shifts should be performed."
+				"LCF is short for Lederberg-Coxeter-Frucht, it is a concise notation for 3-regular Hamiltonian graphs. It consists of three parameters: the number of vertices in the graph, a list of shifts giving additional edges to a cycle backbone, and another integer giving how many times the shifts should be performed.",
+				false
 				);
 		
 		inputs.add(INPUT_VERTICES);
@@ -49,14 +52,13 @@ public class LCFGenerator extends AbstractIGraphGenerator {
 			}
 			
 			@Override
-			protected IGraphGraph generateGraph(IGraphLibrary lib,
-					ListOfMessages messages) {
+			protected IGenlabGraph generateGraph() {
 				
 				int count = (Integer)getInputValueForInput(INPUT_VERTICES);
 				
 				LCF lcf = (LCF)algoInst.getValueForParameter(PARAM_LCF.getId());
 				
-				return lib.generateLCF(count, lcf.shifts, lcf.count);
+				return IgraphLibFactory.getImplementation().generateLCF(count, lcf.shifts, lcf.count, this.exec);
 
 			}
 		};

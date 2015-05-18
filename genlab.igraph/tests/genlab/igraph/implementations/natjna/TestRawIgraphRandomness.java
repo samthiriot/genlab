@@ -1,9 +1,10 @@
-package genlab.igraph.natjna;
+package genlab.igraph.implementations.natjna;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import genlab.igraph.natjna.IGraphRawLibrary;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadFactory;

@@ -3,9 +3,8 @@ package genlab.igraph.algos.generation;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.usermachineinteraction.ListOfMessages;
-import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphLibrary;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.igraph.commons.IgraphLibFactory;
 
 public class WattsStrogatzGeneratorExec extends AbstractIGraphGeneratorExec {
 	
@@ -22,8 +21,7 @@ public class WattsStrogatzGeneratorExec extends AbstractIGraphGeneratorExec {
 	}
 	
 	@Override
-	protected IGraphGraph generateGraph(IGraphLibrary lib,
-			ListOfMessages messages) {
+	protected IGenlabGraph generateGraph() {
 
 		
 		int N = (Integer)getInputValueForInput(WattsStrogatzGeneratorAlgo.INPUT_N);
@@ -34,10 +32,12 @@ public class WattsStrogatzGeneratorExec extends AbstractIGraphGeneratorExec {
 			throw new WrongParametersException("nei should be > 0");
 		
 		boolean allowLoops = (Boolean)algoInst.getValueForParameter(WattsStrogatzGeneratorAlgo.PARAM_ALLOW_LOOPS.getId());
-		boolean directed = (Boolean)algoInst.getValueForParameter(WattsStrogatzGeneratorAlgo.PARAM_DIRECTED.getId());
+		boolean allowMultiple = (Boolean)algoInst.getValueForParameter(WattsStrogatzGeneratorAlgo.PARAM_ALLOW_MULTIPLE.getId());
 		int dim = (Integer)algoInst.getValueForParameter(WattsStrogatzGeneratorAlgo.PARAM_DIM.getId());
 								
-		return lib.generateWattsStrogatz(N, dim, p, nei, directed, allowLoops);
+		Long seed = (Long)algoInst.getValueForParameter(AbstractIGraphGenerator.PARAM_SEED);
+
+		return IgraphLibFactory.getImplementation().generateWattsStrogatz(N, dim, p, nei, allowLoops, allowMultiple, this.exec, seed);
 		
 	}
 

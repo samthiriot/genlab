@@ -1,6 +1,8 @@
-package genlab.igraph.natjna;
+package genlab.igraph.implementations.natjna;
 
 import static org.junit.Assert.*;
+import genlab.igraph.natjna.IGraphGraph;
+import genlab.igraph.natjna.IGraphNativeLibrary;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -27,7 +29,7 @@ public class TestIgraphGraphMetrics {
 				@Override
 				public void run() {
 					
-					IGraphLibrary lib = new IGraphLibrary();
+					IGraphNativeLibrary lib = new IGraphNativeLibrary();
 					IGraphGraph g = lib.generateWattsStrogatz(GRAPH_SIZE, 1, 0.1, 2, false, false);
 					Double clusteringLocal = lib.computeGlobalClusteringLocal(g);
 					
@@ -52,7 +54,7 @@ public class TestIgraphGraphMetrics {
 			}
 		}
 		
-		IGraphLibrary lib = new IGraphLibrary();
+		IGraphNativeLibrary lib = new IGraphNativeLibrary();
 
 		System.err.println("threads done. Now checking not equals");
 		int countIdentical = 0;

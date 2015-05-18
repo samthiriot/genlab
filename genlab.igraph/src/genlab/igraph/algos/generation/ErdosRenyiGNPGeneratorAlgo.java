@@ -41,7 +41,8 @@ public class ErdosRenyiGNPGeneratorAlgo extends AbstractIGraphGenerator {
 	public ErdosRenyiGNPGeneratorAlgo() {
 		super(
 				"Erdos Reny G(n,p) (igraph)", 
-				"Generates a random (Erdos-Renyi) graph"
+				"Generates a random (Erdos-Renyi) graph",
+				true
 				);
 		
 		inputs.add(INPUT_N);

@@ -226,7 +226,7 @@ public class FileSourceGraphML extends SourceBase implements FileSource,
 	protected Stack<XMLEvent> events;
 	protected Stack<String> graphId;
 	protected int graphCounter;
-
+	
 	/**
 	 * Build a new source to parse an xml stream in GraphML format.
 	 */
@@ -350,10 +350,18 @@ public class FileSourceGraphML extends SourceBase implements FileSource,
 	protected XMLEvent getNextEvent() throws IOException, XMLStreamException {
 		skipWhiteSpaces();
 
-		if (events.size() > 0)
-			return events.pop();
-
-		return reader.nextEvent();
+		XMLEvent event = null;
+		
+		// ignore comments
+		do {
+			if (events.size() > 0) {
+				event = events.pop();
+			} else {
+				event = reader.nextEvent();	
+			}
+		} while (event.getEventType() == COMMENT);
+		
+		return event;
 	}
 
 	protected void pushback(XMLEvent e) {
@@ -508,8 +516,11 @@ public class FileSourceGraphML extends SourceBase implements FileSource,
 				e = events.pop();
 			else
 				e = reader.nextEvent();
-		} while (isEvent(e, XMLEvent.CHARACTERS, null)
-				&& e.asCharacters().getData().matches("^\\s*$"));
+		} while (
+				(isEvent(e, XMLEvent.CHARACTERS, null)
+				&& e.asCharacters().getData().matches("^\\s*$"))
+				|| e.getEventType()==COMMENT
+				);
 
 		pushback(e);
 	}

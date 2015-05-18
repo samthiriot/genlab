@@ -48,6 +48,8 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Ext
 	public static final String KEY_TECHNICAL_INFO_COUNT_CLONES = "core / count of graphs cloned";
 	public static final String KEY_TECHNICAL_INFO_COUNT_CREATED = "core / count of graphs created";
 	
+	public boolean ignoreGraphAttributeErrors = false;
+	
 	/**
 	 * Please always active strict checking for the graphstream graph.
 	 * @param gsGraph
@@ -361,7 +363,10 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Ext
 		// ensure compliance of parameters
 		Class attributeType = graphAttribute2type.get(attributeId);
 		if (attributeType == null) {
-			throw new WrongParametersException("no graph attribute "+attributeId+" defined for this graph");
+			if (!ignoreGraphAttributeErrors)
+				throw new WrongParametersException("no graph attribute "+attributeId+" defined for this graph");
+			else 
+				return;
 		}
 		if (!attributeType.isInstance(value)) {
 			throw new WrongParametersException("type "+attributeType.getSimpleName()+" is expected for attribute "+attributeId);

@@ -12,6 +12,10 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="genlab.igraph/ext/native/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="ext/native" sourcepath="ext/native"/>
+	<classpathentry exported="true" kind="lib" path="ext/native" sourcepath="ext/native">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="genlab.igraph/ext/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

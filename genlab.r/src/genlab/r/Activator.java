@@ -55,7 +55,13 @@ public class Activator implements BundleActivator, IGenlabPlugin {
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
+		
+		// clean the sessions
+		Genlab2RSession.closeAllSessions();
+				
 		Activator.context = null;
+		
+		
 	}
 
 	public static String getName() {

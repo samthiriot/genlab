@@ -6,7 +6,10 @@ import genlab.core.usermachineinteraction.GLLogger;
 import genlab.igraph.Activator;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
@@ -24,6 +27,10 @@ typedef double igraph_real_t;
 typedef int    igraph_bool_t;
  */
 /**
+ * 
+ * The actual access to the native library. 
+ * Also manages the copying of the native library to a file depending to the local OS and 
+ * its loading through JNA.
  * 
  * For debug: VM option jna.debug_load=true .
  * Allows multi thread access. But problem of random number generator shared (or not ?) between instances.
@@ -105,12 +112,26 @@ public class IGraphRawLibrary {
 			final String thepath = FileUtils.osPath2ressourcePath(originalPath)+libraryName;
 			try {
 				originalDllStream = IGraphRawLibrary.class.getResourceAsStream(thepath);
-				/*
-				originalDllStream = new FileInputStream(					
-						thepath
-						);
-						*/
+				if (originalDllStream == null) {
+					URL url = IGraphRawLibrary.class.getResource(thepath); 
+					if (url != null) originalDllStream = url.openStream(); 
+				}
+				if (originalDllStream == null) 
+					originalDllStream = libraryName.getClass().getResourceAsStream(thepath);
+				if (originalDllStream == null && thepath.startsWith("/"))
+					originalDllStream = IGraphRawLibrary.class.getResourceAsStream(thepath.substring(1));
+				if (originalDllStream == null) {
+					if (thepath.startsWith("/"))
+						originalDllStream = new FileInputStream(thepath.substring(1));
+					else 
+						originalDllStream = new FileInputStream(thepath);
+				}
+					
 			} catch (RuntimeException e) {
+				final String msg = "unable to read the native library from path "+thepath;
+				GLLogger.errorTech(msg, IGraphRawLibrary.class, e);
+				throw new ProgramException(msg, e);
+			} catch (IOException e) {
 				final String msg = "unable to read the native library from path "+thepath;
 				GLLogger.errorTech(msg, IGraphRawLibrary.class, e);
 				throw new ProgramException(msg, e);
@@ -121,7 +142,7 @@ public class IGraphRawLibrary {
 		GLLogger.traceTech("was launched with a plugin context, let's load the resource from the plugin", IGraphRawLibrary.class);
 	
 		if (originalDllStream == null) {
-			final String msg = "unable to find the DLL path: "+libraryName;
+			final String msg = "unable to find the DLL path: "+originalPath+"/"+libraryName;
 			GLLogger.errorTech(msg, IGraphRawLibrary.class);
 			throw new ProgramException(msg);
 		}
@@ -716,7 +737,7 @@ int igraph_k_regular_game(igraph_t *graph,
 	/*
 	 * igraph_vs_t igraph_vss_all(void);
 	 */
-	public static native Pointer igraph_vss_all();
+	public static native InternalVertexSelector igraph_vss_all();
 
 	/*
 	 * int igraph_vs_all(igraph_vs_t *vs);
@@ -759,7 +780,7 @@ int igraph_k_regular_game(igraph_t *graph,
 	public static native int igraph_betweenness(
 			Pointer graph, 
 			InternalVectorStruct res,  
-			InternalVertexSelector vids, 
+			Pointer vids, 
             boolean directed,
             InternalVectorStruct weights, 
             boolean nobigint

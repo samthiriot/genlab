@@ -42,7 +42,8 @@ public class SIIGeneratorAlgo extends AbstractIGraphGenerator {
 	public SIIGeneratorAlgo() {
 		super(
 				"Simple Interconnected Islands(igraph)", 
-				"Creates several islands, each being an Erdos Renyi G(n,p) network, interconnected with links."
+				"Creates several islands, each being an Erdos Renyi G(n,p) network, interconnected with links.",
+				true
 				);
 		
 		inputs.add(INPUT_islands_n);

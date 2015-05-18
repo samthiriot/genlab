@@ -2,9 +2,8 @@ package genlab.igraph.algos.generation;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.usermachineinteraction.ListOfMessages;
-import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphLibrary;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.igraph.commons.IgraphLibFactory;
 
 public class ErdosRenyiGNMGeneratorExec extends AbstractIGraphGeneratorExec {
 
@@ -21,14 +20,15 @@ public class ErdosRenyiGNMGeneratorExec extends AbstractIGraphGeneratorExec {
 	}
 	
 	@Override
-	protected IGraphGraph generateGraph(IGraphLibrary lib,
-			ListOfMessages messages) {
+	protected IGenlabGraph generateGraph() {
 
-		return lib.generateErdosRenyiGNM(
+		return IgraphLibFactory.getImplementation().generateErdosRenyiGNM(
 				(Integer)getInputValueForInput(ErdosRenyiGNMGeneratorAlgo.INPUT_N), 
 				(Double)getInputValueForInput(ErdosRenyiGNMGeneratorAlgo.INPUT_M), 
 				(Boolean)algoInst.getValueForParameter(ErdosRenyiGNMGeneratorAlgo.PARAM_DIRECTED.getId()), 
-				(Boolean)algoInst.getValueForParameter(ErdosRenyiGNMGeneratorAlgo.PARAM_LOOPS.getId())
+				(Boolean)algoInst.getValueForParameter(ErdosRenyiGNMGeneratorAlgo.PARAM_LOOPS.getId()),
+				this.exec,
+				(Long)algoInst.getValueForParameter(AbstractIGraphGenerator.PARAM_SEED)
 				);
 		
 	}

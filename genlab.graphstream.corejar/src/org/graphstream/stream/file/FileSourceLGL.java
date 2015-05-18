@@ -184,7 +184,7 @@ public class FileSourceLGL extends FileSourceBase {
 	@Override
 	public void begin(InputStream stream) throws IOException {
 		super.begin(stream);
-		init();
+		init(); 
 	}
 
 	@Override

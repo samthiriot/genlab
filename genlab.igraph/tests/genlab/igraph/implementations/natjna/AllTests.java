@@ -1,4 +1,4 @@
-package genlab.igraph.natjna;
+package genlab.igraph.implementations.natjna;
 
 import genlab.core.usermachineinteraction.ListOfMessages;
 

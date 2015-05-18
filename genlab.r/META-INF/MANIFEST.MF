@@ -11,7 +11,12 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: genlab.r,
  genlab.r.algorithms,
- genlab.r.execs
+ genlab.r.execs,
+ genlab.r.rsession,
+ org.math.R,
+ org.rosuda.REngine,
+ org.rosuda.REngine.Rserve,
+ org.rosuda.REngine.Rserve.protocol
 Bundle-ClassPath: ext/REngine.jar,
  ext/Rserve.jar,
  ext/Rsession.jar,

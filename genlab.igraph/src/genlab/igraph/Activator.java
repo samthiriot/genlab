@@ -2,8 +2,9 @@ package genlab.igraph;
 
 import genlab.core.IGenlabPlugin;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.igraph.Rigraph.RIGraph2Genlab;
 import genlab.igraph.algos.generation.lcffamous.FamousLCFGraphs;
-import genlab.igraph.natjna.IGraphLibrary;
+import genlab.igraph.natjna.IGraphNativeLibrary;
 import genlab.igraph.natjna.IGraphRawLibrary;
 
 import org.eclipse.core.runtime.Plugin;
@@ -44,7 +45,7 @@ public class Activator extends Plugin implements BundleActivator, IGenlabPlugin 
 			return;
 		} 
 		
-		IGraphLibrary lib = new IGraphLibrary();
+		IGraphNativeLibrary lib = new IGraphNativeLibrary();
 		GLLogger.infoUser("will use the igraph library "+lib.getVersionString(), getClass());
 
 				
@@ -75,6 +76,8 @@ public class Activator extends Plugin implements BundleActivator, IGenlabPlugin 
 	public void stop(BundleContext bundleContext) throws Exception {
 		plugin = null;
 		Activator.context = null;
+		
+		
 	}
 
 	/**

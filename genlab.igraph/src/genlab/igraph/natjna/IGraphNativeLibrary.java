@@ -8,19 +8,23 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 import genlab.igraph.natjna.IGraphRawLibrary.IGraphBarabasiAlgorithm;
 
-import java.util.Arrays;
 import java.util.Iterator;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
 import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
-public class IGraphLibrary {
+/**
+ * An implementation of IGraphLibrary using JNA for a direct connection.
+ * 
+ * @author Samuel Thiriot
+ *
+ */
+public class IGraphNativeLibrary {
 
 	/**
 	 * THE native library to use.
@@ -61,7 +65,7 @@ public class IGraphLibrary {
 	/**
 	 * Creates a novel accessor to a raw (native) igraph library.
 	 */
-	public IGraphLibrary() {
+	public IGraphNativeLibrary() {
 
 		try {
 			
@@ -331,7 +335,7 @@ public class IGraphLibrary {
 		
 	}
 	
-	public IGraphGraph generateWattsStrogatz(int size, int dimension, double proba, int nei, boolean directed, boolean allowLoops) {
+	public IGraphGraph generateWattsStrogatz(int size, int dimension, double proba, int nei, boolean allowLoops, boolean allowMultiple) {
 		
 		final InternalGraphStruct g = createEmptyGraph();
 		
@@ -343,8 +347,8 @@ public class IGraphLibrary {
 				size, 
 				nei, 
 				proba, 
-				directed, 
-				allowLoops
+				allowLoops, 
+				allowMultiple
 				);
 		final long duration = System.currentTimeMillis() - startTime;
 		//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
@@ -352,7 +356,7 @@ public class IGraphLibrary {
 		// detect errors
 		checkIGraphResult(res);
 		
-		IGraphGraph result = new IGraphGraph(this, g, directed);
+		IGraphGraph result = new IGraphGraph(this, g, false);
 		
 		result.setMultiGraph(true); // looks like the algo never generates double links
 
@@ -472,7 +476,7 @@ public class IGraphLibrary {
 	public void setSeed(long seed) {
 		
 		Pointer p = IGraphRawLibrary.igraph_rng_default();
-		int res = IGraphRawLibrary.igraph_rng_seed(p, new NativeLong(seed ));
+		int res = IGraphRawLibrary.igraph_rng_seed(p, new NativeLong(seed));
 		checkIGraphResult(res);
 		
 	}
@@ -908,8 +912,11 @@ public class IGraphLibrary {
 	 * @param g
 	 * @param directed
 	 */
-	public double[] computeNodeBetweeness(IGraphGraph g, boolean directed, double cutoff) {
+	public double[] computeNodeBetweeness(IGraphGraph g, boolean directed) {
 
+		if (true)
+			throw new NotImplementedException("unfortunately, igraph is crashing on this");
+		
 		final long startTime = System.currentTimeMillis();
 		
 		final int verticesCount = IGraphRawLibrary.igraph_vcount(g.getPointer());
@@ -917,22 +924,24 @@ public class IGraphLibrary {
 		//GLLogger.debugTech("calling igraph to initialize vectors...", getClass());
 
 		InternalVectorStruct res = new InternalVectorStruct();
-		IGraphRawLibrary.igraph_vector_init(res, verticesCount);
-		
+		int resA =IGraphRawLibrary.igraph_vector_init(res, verticesCount);
+		checkIGraphResult(resA);
+
+		//InternalVertexSelector vids = IGraphRawLibrary.igraph_vss_all();
+
 		Pointer vids = IGraphRawLibrary.igraph_vss_none();
-		int resA = IGraphRawLibrary.igraph_vss_all(vids);
+		resA = IGraphRawLibrary.igraph_vss_all(vids);
 		checkIGraphResult(resA);
 	
 		try {
 	
-			final int res2 = IGraphRawLibrary.igraph_betweenness_estimate(
+			final int res2 = IGraphRawLibrary.igraph_betweenness(
 					g.getPointer(), 
 					res, 
-					vids, 
+					null, //vids, 
 					directed, 
-					cutoff,
-					(InternalVectorStruct)null, // weights
-					true
+					null, // weights
+					true // ! true here creates a complete failure o_O
 					);
 					
 			
@@ -963,6 +972,10 @@ public class IGraphLibrary {
 	 */
 	public double[] computeNodeBetweenessEstimate(IGraphGraph g, boolean directed, double cutoff) {
 
+
+		if (true)
+			throw new NotImplementedException("unfortunately, igraph is crashing on this");
+		
 		final long startTime = System.currentTimeMillis();
 		
 		final int verticesCount = IGraphRawLibrary.igraph_vcount(g.getPointer());

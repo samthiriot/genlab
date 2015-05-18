@@ -10,7 +10,7 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
 import genlab.igraph.natjna.IGraphEdge;
 import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphLibrary;
+import genlab.igraph.natjna.IGraphNativeLibrary;
 import genlab.igraph.natjna.InternalVectorStruct;
 
 import java.util.Collection;
@@ -131,7 +131,7 @@ public class IGraph2GenLabConvertor {
 	}
 	
 	
-	public static IGraphGraph getIGraphGraphForGenlabGraph(IGenlabGraph genlabGraph, IExecution execution, IGraphLibrary lib) {
+	public static IGraphGraph getIGraphGraphForGenlabGraph(IGenlabGraph genlabGraph, IExecution execution, IGraphNativeLibrary lib) {
 	
 		if (genlabGraph.getVerticesCount() > Integer.MAX_VALUE)
 			throw new WrongParametersException("The network is too large for igraph conversion.");
@@ -379,7 +379,7 @@ public class IGraph2GenLabConvertor {
 		return getIGraphGraphForGenlabGraph(
 				genlabGraph, 
 				execution, 
-				new IGraphLibrary()
+				new IGraphNativeLibrary()
 				);
 
 	}

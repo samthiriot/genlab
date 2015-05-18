@@ -1,6 +1,7 @@
-package genlab.igraph.natjna;
+package genlab.igraph.implementations.natjna;
 
 import static org.junit.Assert.assertNotNull;
+import genlab.igraph.natjna.IGraphNativeLibrary;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -21,7 +22,7 @@ public class AbstractTestIGraphLibrary {
 	/**
 	 * instance to be tested
 	 */
-	protected IGraphLibrary lib = null;
+	protected IGraphNativeLibrary lib = null;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -34,7 +35,7 @@ public class AbstractTestIGraphLibrary {
 	@Before
 	public void setUp() throws Exception {
 		Native.setProtected(true);
-		lib = new IGraphLibrary();
+		lib = new IGraphNativeLibrary();
 	}
 
 	@After

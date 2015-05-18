@@ -7,6 +7,7 @@ import genlab.core.model.meta.basics.flowtypes.BooleanInOut;
 import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
 import genlab.core.parameters.BooleanParameter;
+import genlab.core.parameters.RNGSeedParameter;
 
 public class BarabasiAlbertGeneratorAlgo extends AbstractIGraphGenerator {
 
@@ -65,12 +66,13 @@ public class BarabasiAlbertGeneratorAlgo extends AbstractIGraphGenerator {
 			"allow for loops in generated graphs", 
 			true
 			);
-	
+
 	
 	public BarabasiAlbertGeneratorAlgo() {
 		super(
 				"Barabasi Albert preferential attachement (igraph)", 
-				"Generates a scale-free graph using preferential attachement as encoded in igraph"
+				"Generates a scale-free graph using preferential attachement as encoded in igraph",
+				true
 				);
 		
 		inputs.add(INPUT_N);
@@ -83,6 +85,7 @@ public class BarabasiAlbertGeneratorAlgo extends AbstractIGraphGenerator {
 		
 		registerParameter(PARAM_DIRECTED);
 		registerParameter(PARAM_LOOPS);
+		registerParameter(PARAM_SEED);
 	}
 
 	@Override

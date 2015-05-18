@@ -17,7 +17,6 @@ import org.math.R.Logger;
 import org.math.R.Rsession;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPMismatchException;
-import org.rosuda.REngine.Rserve.RSession;
 
 public class ExecuteRExec extends AbstractAlgoExecutionOneshot {
 
