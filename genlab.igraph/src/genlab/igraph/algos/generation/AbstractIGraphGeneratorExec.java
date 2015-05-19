@@ -10,10 +10,6 @@ import genlab.core.model.exec.ComputationState;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.core.usermachineinteraction.ListOfMessages;
-import genlab.igraph.commons.IGraph2GenLabConvertor;
-import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphNativeLibrary;
 
 public abstract class AbstractIGraphGeneratorExec 	
 										extends AbstractAlgoExecutionOneshot 

@@ -37,6 +37,7 @@ public interface IGenlabGraph {
 	public Map<String,Object> getEdgeAttributes(String vertexId);
 	public Map<String,Object> getGraphAttributes();
 
+	public String addVertex();
 	public void addVertex(String id);
 	public boolean removeVertex(String id);
 	public String getVertex(int index);

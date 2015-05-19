@@ -7,6 +7,7 @@ Bundle-Activator: genlab.graphstream.corejar.Activator
 Require-Bundle: org.eclipse.core.runtime,
  org.junit
 Bundle-ActivationPolicy: lazy
+Eclipse-BundleShape: dir
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Export-Package: genlab.graphstream.corejar,
  org.graphstream.graph,

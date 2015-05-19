@@ -15,6 +15,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.junit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
+Eclipse-BundleShape: dir
 Bundle-NativeCode: ext/native/linux/x86/libigraph.so ; 
  osname=Linux ;
  processor=x86 , 

@@ -7,6 +7,7 @@ import genlab.igraph.Activator;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -111,20 +112,30 @@ public class IGraphRawLibrary {
 			GLLogger.traceTech("was launched without a plugin context, let's load the resource from the default class loader", IGraphRawLibrary.class);
 			final String thepath = FileUtils.osPath2ressourcePath(originalPath)+libraryName;
 			try {
+				// try to load it as a resource stream with different class loaders
 				originalDllStream = IGraphRawLibrary.class.getResourceAsStream(thepath);
+				if (originalDllStream == null)
+					originalDllStream = IGraphRawLibrary.class.getClass().getResourceAsStream(thepath);
+				if (originalDllStream == null)
+					originalDllStream = libraryName.getClass().getResourceAsStream(thepath);
+				// or try to open it as a resource URL
 				if (originalDllStream == null) {
 					URL url = IGraphRawLibrary.class.getResource(thepath); 
 					if (url != null) originalDllStream = url.openStream(); 
 				}
-				if (originalDllStream == null) 
-					originalDllStream = libraryName.getClass().getResourceAsStream(thepath);
+				// or try with a slithly different class loader and path
 				if (originalDllStream == null && thepath.startsWith("/"))
 					originalDllStream = IGraphRawLibrary.class.getResourceAsStream(thepath.substring(1));
+				// or try as a pure file !
 				if (originalDllStream == null) {
+					try {
 					if (thepath.startsWith("/"))
 						originalDllStream = new FileInputStream(thepath.substring(1));
 					else 
 						originalDllStream = new FileInputStream(thepath);
+					} catch (FileNotFoundException e) {
+						GLLogger.warnTech("unable to load library from "+thepath, IGraphRawLibrary.class);
+					}
 				}
 					
 			} catch (RuntimeException e) {

@@ -8,6 +8,7 @@ Bundle-Vendor: Samuel Thiriot
 Require-Bundle: org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
+Eclipse-BundleShape: dir
 Bundle-ClassPath: .,
  ext/jna-4.1.0.jar,
  ext/jna-platform-4.1.0.jar

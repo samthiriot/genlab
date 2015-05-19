@@ -3,7 +3,6 @@
 
 <product name="Genlab" uid="genlab.product.gui" id="genlab.gui.product" application="genlab.gui.application" version="0.9" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -36,10 +35,8 @@
       </win>
    </launcher>
 
-
    <vm>
    </vm>
-
 
    <plugins>
       <plugin id="ar.com.tadp.xml.rinzo.core"/>
@@ -71,6 +68,7 @@
       <plugin id="genlab.jna.corejar"/>
       <plugin id="genlab.jung"/>
       <plugin id="genlab.neo4j"/>
+      <plugin id="genlab.networkOperations"/>
       <plugin id="genlab.os"/>
       <plugin id="genlab.population.yang"/>
       <plugin id="genlab.populations"/>

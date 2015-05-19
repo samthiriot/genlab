@@ -9,6 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.junit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
+Eclipse-BundleShape: dir
 Export-Package: genlab.r,
  genlab.r.algorithms,
  genlab.r.execs,

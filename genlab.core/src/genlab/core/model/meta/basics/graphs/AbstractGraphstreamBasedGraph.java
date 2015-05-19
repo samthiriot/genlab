@@ -111,7 +111,12 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Ext
 	
 	public String addVertex() {
 		
-		String id = Integer.toString(gsGraph.getNodeCount());
+		int idx = gsGraph.getNodeCount();
+		String id = Integer.toString(idx);
+		while (containsVertex(id)) {
+			id = Integer.toString(++idx);
+		} 
+		
 		gsGraph.addNode(id);
 		
 		return id;
