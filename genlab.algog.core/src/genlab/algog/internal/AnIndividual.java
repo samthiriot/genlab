@@ -10,11 +10,11 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	/** Values for each gene defined */
 	public final Object[] genes;
 	/** Fitness for each objective defined */
-	public final Double[] fitness;
+	public Double[] fitness;
 	/** Target values to reach for each objective defined */
-	public final Object[] targets;
+	public Object[] targets;
 	/** Actual value for each objective defined */
-	public final Object[] values;
+	public Object[] values;
 	/** Pareto front ranking */
 	public int rank;
 	/** Crowded distance */
@@ -31,9 +31,9 @@ public class AnIndividual implements Comparable<AnIndividual> {
 		
 		this.genome = genome;
 		this.genes = genes;
-		this.fitness = new Double[genome.getGenes().length];
-		this.targets = new Object[genome.getGenes().length];
-		this.values = new Object[genome.getGenes().length];
+		this.fitness = null;
+		this.targets = null;
+		this.values = null;
 		this.rank = Integer.MAX_VALUE;
 		this.crowdedDistance = -1d;
 	}
@@ -72,7 +72,7 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	
 	@Override
 	public String toString() {
-		return "["+id+"] "+genome+" "+this.genesToString()+" => "+valuesToString();
+		return "["+id+"] "+genome+" "+this.genesToString()+" => "+fitnessToString();
 	}
 	
 	public String toMiniString() {
@@ -84,14 +84,14 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	}
 	
 	public String fitnessToString() {
-		return genome.readableValues( this.fitness );
+		return Arrays.toString(this.fitness);
 	}
 	
 	public String targetsToString() {
-		return genome.readableValues( this.targets );
+		return Arrays.toString(this.targets );
 	}
 	
 	public String valuesToString() {
-		return genome.readableValues( this.values );
+		return Arrays.toString(this.values);
 	}
 }

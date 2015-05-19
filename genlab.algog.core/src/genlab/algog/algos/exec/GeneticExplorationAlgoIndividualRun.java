@@ -3,6 +3,7 @@ package genlab.algog.algos.exec;
 import genlab.algog.algos.meta.AbstractGeneAlgo;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AnIndividual;
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.ICleanableTask;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractContainerExecution;
@@ -35,10 +36,7 @@ public class GeneticExplorationAlgoIndividualRun
 	private final Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance;
 	private final Map <IConnection,Object> inputConnection2value;
 	private final List<IAlgoInstance> fitnessOutput;
-//	private List<AFitnessBoard> fitnessBoard;
-//	private Double[] resultFitness = null;
-//	private Object[] resultValues = null;
-//	private Object[] resultTargets = null;
+
 	
 	private final AnIndividual individual;
 	
@@ -82,13 +80,15 @@ public class GeneticExplorationAlgoIndividualRun
 	@Override
 	protected void hookContainerExecutionFinished(ComputationState state) {
 		
-//		resultFitness = new Double[fitnessOutput.size()];
-//		resultTargets = new Object[fitnessOutput.size()];
-//		resultValues = new Object[fitnessOutput.size()];
+		individual.fitness = new Double[fitnessOutput.size()];
+		individual.targets = new Object[fitnessOutput.size()];
+		individual.values = new Object[fitnessOutput.size()];
 		
 		if (state == ComputationState.FINISHED_FAILURE || state == ComputationState.FINISHED_CANCEL) {
 			// when there is an error, then goal fitness becomes negative infinity.
 			messages.warnUser("the evaluation of this individual led to an error. We assume the space of parameters is not full, and a defined Infinite fitness for this individual", getClass());
+			
+			
 			for (int i=0; i<fitnessOutput.size(); i++) {
 				IAlgoInstance ai = fitnessOutput.get(i);
 				IGoalExec goal = (IGoalExec) instance2execForSubtasks.get(ai);
@@ -96,22 +96,21 @@ public class GeneticExplorationAlgoIndividualRun
 				individual.fitness[i] = Double.POSITIVE_INFINITY;
 				individual.targets[i] = goal.getTarget();
 				individual.values[i] = null;
-//				resultFitness[i] = Double.POSITIVE_INFINITY;
-//				resultTargets[i] = goal.getTarget();
-//				resultValues[i] = null;
-				
+
 			}
 		} else {
+			
 			for (int i=0; i<fitnessOutput.size(); i++) {
+				
 				IAlgoInstance ai = fitnessOutput.get(i);
 				IGoalExec goal = (IGoalExec) instance2execForSubtasks.get(ai);
 				
 				individual.fitness[i] = goal.getFitness();
 				individual.targets[i] = goal.getTarget();
 				individual.values[i] = goal.getActualValue();
-//				resultFitness[i] = goal.getFitness();
-//				resultTargets[i] = goal.getTarget();
-//				resultValues[i] = goal.getActualValue();
+				
+				if (individual.fitness == null)
+					throw new ProgramException("the fitness should never be empty when the execution is finished");
 				
 			}
 		}
@@ -237,46 +236,7 @@ public class GeneticExplorationAlgoIndividualRun
 		
 		
 	}
-	
-//	public AFitnessBoard[] getFitnessBoard() {
-//		
-//		if (!progress.getComputationState().isFinished())
-//			throw new ProgramException("asked for the fitness of an individual run which is not finished yet");
-//		
-//		return individual.fitnessBoard;
-//	}
-//	
-//	public final Double[] getResultFitness() {
-//		
-//		if (!progress.getComputationState().isFinished())
-//			throw new ProgramException("asked for the fitness of an individual run which is not finished yet");
-//
-//		if (progress.getComputationState() == ComputationState.FINISHED_OK)
-//			return individual.getFitnessFromFitnessBoard();
-//		else
-//			return null;//new Double[this.individual.genes.length];
-//	}
-//	
-//	public final Object[] getResultValues() {
-//		
-//		if (!progress.getComputationState().isFinished())
-//			throw new ProgramException("asked for the results of an individual run which is not finished yet");
-//		
-//		if (progress.getComputationState() == ComputationState.FINISHED_OK)
-//			return individual.getValuesFromFitnessBoard();
-//		else
-//			return null;//new Double[this.individual.genes.length];
-//	}
-//	
-//
-//	public final Object[] getResultTargets() {
-//		
-//		if (!progress.getComputationState().isFinished())
-//			throw new ProgramException("asked for the targets of an individual run which is not finished yet");
-//		
-//		return individual.getTargetsFromFitnessBoard();
-//	}
-	
+
 	public final AnIndividual getIndividual() {
 		return individual; 
 	}
