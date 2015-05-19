@@ -128,6 +128,9 @@ public class WorkingRunnerDistanceThread extends Thread {
 
 					messages.debugTech(getName()+" ran task: "+exec.getName(), getClass());
 
+					// might let the other react
+					Thread.yield();
+					
 				}
 
 			} catch (RemoteException e) {
