@@ -154,7 +154,8 @@ public class DistantGenlabServerManager {
 						hostname+":"+port,
 						"worker_distant_"+threads.size(), 
 						runner.readyToComputeRemotable, 
-						runner.readyToComputeWithThreads, 					
+						runner.readyToComputeWithThreads, 		
+						runner.lockerBothQueues,
 						this
 						);
 				threads.add(thread);

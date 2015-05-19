@@ -28,7 +28,8 @@ public class WorkingRunnerDistanceThread extends Thread {
 	
 	private final BlockingQueue<IAlgoExecutionRemotable> readyToCompute;
 	private final BlockingQueue<IAlgoExecution> backupQueue;
-
+	private final Object lockerQueue;
+	
 	private final ListOfMessages messages = ListsOfMessages.getGenlabMessages();
 	
 	private final String serverName;
@@ -44,7 +45,8 @@ public class WorkingRunnerDistanceThread extends Thread {
 						String serverName,
 						String name, 
 						BlockingQueue<IAlgoExecutionRemotable> readyToCompute, 
-						BlockingQueue<IAlgoExecution> backupQueue, 
+						BlockingQueue<IAlgoExecution> backupQueue,
+						Object lockerQueue,
 						DistantGenlabServerManager server) {
 		super(name);
 		
@@ -52,6 +54,7 @@ public class WorkingRunnerDistanceThread extends Thread {
 		this.serverName = serverName;
 		this.readyToCompute = readyToCompute;
 		this.backupQueue = backupQueue;
+		this.lockerQueue = lockerQueue;
 		this.server = server;
 		
 		// configure thread
@@ -65,8 +68,10 @@ public class WorkingRunnerDistanceThread extends Thread {
 		
 		exec.getExecution().getListOfMessages().warnTech("the task "+exec.getName()+" failed during the remote execution; will retry a local run by putting it back in queue ("+backupQueue.size()+" pending)", getClass());
 		backupQueue.add(exec);
-		//exec.getProgress().setComputationState(ComputationState.READY);
-
+		synchronized (lockerQueue) {
+			lockerQueue.notify();	
+		}
+		
 	}
 	
 	@Override
