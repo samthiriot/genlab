@@ -135,8 +135,19 @@ public class IGraphRawLibrary {
 						originalDllStream = new FileInputStream(thepath);
 					} catch (FileNotFoundException e) {
 						GLLogger.warnTech("unable to load library from "+thepath, IGraphRawLibrary.class);
-					}
+					}	
 				}
+				// or maybe this was packaged as a distributed application ?
+				if (originalDllStream == null) {
+					String pathPackaged = "plugins/genlab.igraph_1.0.0/"+(thepath.startsWith("/")?thepath.substring(1):thepath);
+					try {
+						originalDllStream = new FileInputStream(pathPackaged);
+					} catch (FileNotFoundException e) {
+						GLLogger.warnTech("unable to load library from "+pathPackaged, IGraphRawLibrary.class);
+					}
+					
+				}
+					
 					
 			} catch (RuntimeException e) {
 				final String msg = "unable to read the native library from path "+thepath;
