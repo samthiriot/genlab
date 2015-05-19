@@ -84,9 +84,6 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	// for each generation, and each individual, stores the corresponding fitness
 	protected Map<Integer, Set<AnIndividual>> offspringGeneration = new HashMap<Integer, Set<AnIndividual>>();
 	protected Map<Integer, Set<AnIndividual>> parentGeneration = new HashMap<Integer, Set<AnIndividual>>();
-//	protected LinkedHashMap<Integer,Map<AnIndividual,Double[]>> generation2fitness = new LinkedHashMap<Integer, Map<AnIndividual,Double[]>>(500);
-//	protected LinkedHashMap<Integer,Map<AnIndividual,Object[]>> generation2targets = new LinkedHashMap<Integer, Map<AnIndividual,Object[]>>(500);
-//	protected LinkedHashMap<Integer,Map<AnIndividual,Object[]>> generation2values = new LinkedHashMap<Integer, Map<AnIndividual,Object[]>>(500);
 
 	protected final GeneticExplorationAlgoContainerInstance algoInst;
 	
@@ -131,18 +128,12 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * @param resultValues
 	 */
 	protected void manageResultsForCurrentGeneration(Set<AnIndividual> individuals
-//			Map<AnIndividual,Double[]> resultFitness,
-//			Map<AnIndividual,Object[]> resultTargets,
-//			Map<AnIndividual,Object[]> resultValues
 			) {
 		
 		messages.infoUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
 
 		// store it 
 		offspringGeneration.put(iterationsMade, individuals);
-//		generation2fitness.put(iterationsMade, resultFitness);
-//		generation2targets.put(iterationsMade, resultTargets);
-//		generation2values.put(iterationsMade, resultValues);
 
 		
 		this.progress.incProgressMade();
@@ -175,8 +166,6 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					);
 			
 			// retrieve its parameters
-			
-			
 			Collection<AGene<?>> genesForThisGenome = new LinkedList<AGene<?>>();
 			
 			Set<IAlgoInstance> genomeEvaluationAlgos = new HashSet<IAlgoInstance>();
@@ -352,16 +341,6 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			ps.println();
 		}
 
-//			for (Map.Entry<AnIndividual,Double[]> indiv2fitness : generation2fitness.get(generationId).entrySet()) {
-//				
-//				ps.print(indiv2fitness.getValue());
-//				ps.print("\t");
-//				ps.print(indiv2fitness.getKey().genome);
-//				ps.print("\t");
-//				ps.print(Arrays.toString(indiv2fitness.getKey().genes));
-//				ps.println();
-//
-//			}
 	}
 	
 	
@@ -585,15 +564,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					genome2fitnessColumns, genome2geneColumns, 
 					offspringGeneration.get(iterationId)
 					);
-			
-			/*
-			storeIndividualsData(
-					tab, 
-					titleIteration, iterationId, titleGenome, 
-					genome2fitnessColumns, genome2geneColumns, 
-					parentGeneration.get(iterationId)
-					);
-			*/
+	
 				
 		}
 		
