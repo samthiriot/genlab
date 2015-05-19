@@ -387,7 +387,7 @@ public final class ViewAlgogTable extends AbstractViewOpenedByAlgo<GenlabTable> 
 
 	public void loadDataFromTable() {
 		
-		if (lastVersionDataToDisplay == null)
+		if (lastVersionDataToDisplay == null || lastVersionDataToDisplay.isEmpty())
 			return;
 		
 		
