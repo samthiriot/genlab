@@ -8,6 +8,7 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;
 
@@ -81,9 +82,9 @@ public class WorkingRunnerDistanceThread extends Thread {
 		
 			IAlgoExecution exec = null;
 			try {
-				//messages.infoTech(this.getName()+" waiting for a task in the queue", getClass());
+				messages.debugTech(this.getName()+" waiting for a task in the queue", getClass());
 				exec = readyToCompute.take();
-				messages.infoTech("still "+readyToCompute.size()+" tasks pending on our queue", getClass());
+				messages.debugTech("still "+readyToCompute.size()+" tasks pending on our queue", getClass());
 
 			} catch (InterruptedException e) {
 				messages.errorTech("catched an exception from the execution: "+e.getMessage(), getClass(), e);
@@ -94,14 +95,13 @@ public class WorkingRunnerDistanceThread extends Thread {
 				}
 			}
 			// run the task
-			//messages.infoTech(getName()+" running task "+exec.getName()+" in server "+serverName, getClass());
 			try {
 				
 				// execute distantly
 				exec.getProgress().setProgressTotal(1);
 				exec.getProgress().setComputationState(ComputationState.STARTED);
 				
-				messages.infoTech(getName()+" running task: "+exec.getName(), getClass());
+				messages.debugTech(getName()+" running task "+exec.getName()+" in server "+serverName, getClass());
 
 				DistantExecutionResult execResult = server.getDistantServer().executeTask(exec);
 				
@@ -110,8 +110,14 @@ public class WorkingRunnerDistanceThread extends Thread {
 				ComputationResult r = new ComputationResult(
 						exec.getAlgoInstance(), 
 						exec.getProgress(), 
-						execResult.messages
+						exec.getExecution().getListOfMessages()
 						); 
+				// ... the messages
+				r.getMessages().addAll(execResult.messages);
+				// (besides, let's clear the resources for these messages)
+				execResult.messages.stop();
+				execResult.messages.clear();
+				
 				for (String idRes: execResult.id2result.keySet()) {
 					r.setResult(
 							exec.getAlgoInstance().getOutputInstanceForOutput(idRes), 
@@ -123,7 +129,7 @@ public class WorkingRunnerDistanceThread extends Thread {
 					reinsertTaskInBackupQueue(exec);
 					
 				} else {
-					exec.getExecution().getListOfMessages().addAll(r.getMessages());
+					//exec.getExecution().getListOfMessages().addAll(r.getMessages());
 					exec.setResult(r);
 					// the messages
 					//exec.getExecution().getListOfMessages().addAll(execResult.messages);
@@ -131,13 +137,18 @@ public class WorkingRunnerDistanceThread extends Thread {
 					exec.getProgress().setProgressMade(1);
 					exec.getProgress().setComputationState(execResult.computationState);
 
-					messages.debugTech(getName()+" ran task: "+exec.getName(), getClass());
+					messages.debugTech(getName()+" ran task: "+exec.getName()+" on server "+serverName, getClass());
 
 					// might let the other react
 					Thread.yield();
 					
 				}
 
+			} catch(ConnectException e) {
+				messages.warnUser("connection issue while running "+exec.getName()+"; suggesting a reconnection to the server", getClass()); 
+				reinsertTaskInBackupQueue(exec);
+				server.disconnectAndReconnect();
+				return;
 			} catch (RemoteException e) {
 				messages.errorUser("task "+exec.getName()+" raised a distant error:"+e.getMessage(), getClass(), e);
 				reinsertTaskInBackupQueue(exec);
@@ -157,7 +168,7 @@ public class WorkingRunnerDistanceThread extends Thread {
 			
 		}
 		
-		messages.infoTech(getName()+": closing thread.", getClass());
+		messages.debugTech(getName()+": closing thread.", getClass());
 
 	}
 

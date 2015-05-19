@@ -595,12 +595,14 @@ public class ListOfMessages implements Iterable<ITextMessage>, Serializable {
 			sortedMessages.clear();
 			
 		}
-		synchronized (listeners) {
-			for (IListOfMessagesListener l : getListeners()) {
-				l.contentChanged(this);
+		if (listeners != null) {
+			synchronized (listeners) {
+				for (IListOfMessagesListener l : getListeners()) {
+					l.contentChanged(this);
+				}
 			}
 		}
-		
+			
 		containedAnError = false;
 		
 	}
@@ -1160,7 +1162,8 @@ public class ListOfMessages implements Iterable<ITextMessage>, Serializable {
 	 * anymore, even if it's keeping its current messages
 	 */
 	public void stop() {
-		queueConsumerThread.cancel();
+		if (queueConsumerThread != null)
+			queueConsumerThread.cancel();
 	}
 }
 

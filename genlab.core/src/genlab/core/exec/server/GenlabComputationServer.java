@@ -117,6 +117,9 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 			// stop the list of messages, so it's not continuing forever
 			task.getExecution().getListOfMessages().stop();
 			
+			// suggest gc ?!
+			System.gc();
+			
 			return res;
 		} catch (RuntimeException e) {
 			messages.errorTech("error while running distant task "+task.getName()+": "+e.getMessage(), getClass(), e);
