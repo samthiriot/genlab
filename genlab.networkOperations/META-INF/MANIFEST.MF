@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: NetworkOperations
+Bundle-SymbolicName: genlab.networkOperations;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: genlab.networkoperations.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ genlab.core;bundle-version="0.0.1",
+ genlab.random.colt;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Export-Package: genlab.networkoperations.algos,
+ genlab.networkoperations.exec
+Bundle-Vendor: Samuel Thiriot

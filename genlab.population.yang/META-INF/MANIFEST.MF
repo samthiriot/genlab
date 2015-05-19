@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Yang
 Bundle-SymbolicName: genlab.population.yang;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.0
 Bundle-Activator: genlab.population.yang.Activator
 Bundle-Vendor: Samuel Thiriot
 Require-Bundle: org.eclipse.core.runtime,
