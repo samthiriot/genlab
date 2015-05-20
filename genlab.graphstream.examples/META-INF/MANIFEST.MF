@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Examples
 Bundle-SymbolicName: genlab.graphstream.examples;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.0
 Bundle-Activator: genlab.graphstream.examples.Activator
 Require-Bundle: org.eclipse.core.runtime,
  genlab.core;bundle-version="0.0.1"

@@ -9,7 +9,16 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses(
 		{ 
-			TestCentrality.class
+			TestAveragePathLength.class,
+			TestComponentCount.class,
+			TestDiameter.class,
+			TestGiantCluster.class,
+			TestGlobalAverageClustering.class,
+			TestGlobalClustering.class,
+			TestNodeBetweeness.class,
+			TestNodeBetweenessEstimates.class,
+			TestEdgeBetweeness.class,
+			TestEdgeBetweenessEstimate.class
 			}
 		)
 public class AllTests {

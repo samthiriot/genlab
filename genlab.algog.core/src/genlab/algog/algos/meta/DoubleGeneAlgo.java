@@ -1,11 +1,8 @@
 package genlab.algog.algos.meta;
 
 import genlab.core.model.meta.InputOutput;
-import genlab.core.model.meta.basics.flowtypes.BooleanFlowType;
 import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
-import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.parameters.DoubleParameter;
-import genlab.core.parameters.IntParameter;
 
 /**
  * TODO nice visual in graphiti, and a plugable visual interface
@@ -52,6 +49,12 @@ public class DoubleGeneAlgo extends AbstractGeneAlgo {
 		registerParameter(PARAM_MAXIMUM);
 		
 		
+	}
+
+
+	@Override
+	public InputOutput<?> getMainOutput() {
+		return OUTPUT_VALUE;
 	}
 
 

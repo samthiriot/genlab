@@ -26,7 +26,30 @@ public class GenlabFactory {
 		return workflow;
 		
 	}
+
+
 	
+	public static IGenlabWorkflowInstance createWorkflow(
+			IGenlabProject project, 
+			String id,
+			String name, 
+			String desc, 
+			String relativePath) {
+		
+		IGenlabWorkflowInstance workflow = new GenlabWorkflowInstance(id, project, name, desc, relativePath);
+		 
+		if (project != null)
+			project.addWorkflow(workflow);
+		
+		GenlabPersistence.getPersistence().saveProject(project, false);
+		GenlabPersistence.getPersistence().saveWorkflow(workflow);
+
+		WorkflowHooks.getWorkflowHooks().notifyWorkflowCreation(workflow);
+		
+		return workflow;
+		
+	}
+
 	public static IGenlabProject createProject(String absoluteDirectory) {
 		
 		IGenlabProject project = new GenlabProject(absoluteDirectory);

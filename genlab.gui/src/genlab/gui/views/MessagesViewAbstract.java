@@ -498,7 +498,13 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 					ITextMessage message = (ITextMessage)element;
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
-					pw.println(message.getMessage());
+					String msg = message.getMessage();
+					if (msg.length() > 10000) {
+						pw.print(message.getMessage().substring(0, 10000));
+						pw.println("[...]");
+					} else {
+						pw.println(message.getMessage());
+					}
 					if (message.getException() != null)
 						message.getException().printStackTrace(pw);
 					return sw.toString();

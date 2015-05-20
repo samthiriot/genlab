@@ -11,6 +11,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.junit
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
+Eclipse-BundleShape: dir
 Bundle-ClassPath: .,
  ext/gs-algo-1.3.jar
 Export-Package: genlab.graphstream,

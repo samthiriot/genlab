@@ -14,7 +14,7 @@ import com.sun.jna.Pointer;
  */
 public class IGraphGraph implements Iterable<IGraphEdge> {
 
-	public final IGraphLibrary lib;
+	public final IGraphNativeLibrary lib;
 	
 	public final InternalGraphStruct graphStruct;
 	
@@ -43,7 +43,7 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 	public double[] yPositions = null;
 	
 	
-	public IGraphGraph(IGraphLibrary lib, InternalGraphStruct graphStruct, boolean directed) {
+	public IGraphGraph(IGraphNativeLibrary lib, InternalGraphStruct graphStruct, boolean directed) {
 		this.lib = lib;
 		this.graphStruct = graphStruct;
 		this.directed = directed;
@@ -59,7 +59,7 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 	 * @param baseLib
 	 * @param graphStruct
 	 */
-	public IGraphGraph(IGraphLibrary lib, InternalGraphStruct graphStruct, boolean directed, int initSize) {
+	public IGraphGraph(IGraphNativeLibrary lib, InternalGraphStruct graphStruct, boolean directed, int initSize) {
 		this.lib = lib;
 		this.graphStruct = graphStruct;
 		this.directed = directed;
@@ -70,7 +70,7 @@ public class IGraphGraph implements Iterable<IGraphEdge> {
 		
 	}
 	
-	public IGraphGraph(IGraphGraph original, IGraphLibrary lib, InternalGraphStruct graphStruct) {
+	public IGraphGraph(IGraphGraph original, IGraphNativeLibrary lib, InternalGraphStruct graphStruct) {
 		this.lib = lib;
 		this.graphStruct = graphStruct;
 		

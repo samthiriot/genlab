@@ -65,7 +65,8 @@ public class ForestFireGeneratorAlgo extends AbstractIGraphGenerator {
 	public ForestFireGeneratorAlgo() {
 		super(
 				"Forest Fire  (igraph)", 
-				"The forest fire model intends to reproduce the following network characteristics, observed in real networks."
+				"The forest fire model intends to reproduce the following network characteristics, observed in real networks.",
+				true
 				);
 		
 		inputs.add(INPUT_N);

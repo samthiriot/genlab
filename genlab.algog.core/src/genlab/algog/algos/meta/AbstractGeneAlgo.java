@@ -11,9 +11,7 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.InputOutput;
-import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.parameters.DoubleParameter;
-import genlab.core.parameters.IntParameter;
 
 /**
  * TODO nice visual in graphiti, and a plugable visual interface
@@ -22,7 +20,7 @@ import genlab.core.parameters.IntParameter;
  * 
  *
  */
-public class AbstractGeneAlgo extends AbstractGeneticAlgo {
+public abstract class AbstractGeneAlgo extends AbstractGeneticAlgo {
 
 	public static final InputOutput<Genome> INPUT_GENOME = new InputOutput<Genome>(
 			GenomeFlowType.SINGLETON, 
@@ -80,6 +78,12 @@ public class AbstractGeneAlgo extends AbstractGeneticAlgo {
 			IGenlabWorkflowInstance workflow) {
 		return new GeneInstance(this, workflow, id);
 	}
+	
+	/**
+	 * Retusn the output for the value
+	 * @return
+	 */
+	public abstract InputOutput<?> getMainOutput();
 
 	
 }

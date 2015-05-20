@@ -107,13 +107,19 @@ public class GenlabComputationServer implements IGenlabComputationServer {
 			// TODO change that; but required now
 			task.getExecution().setExecutionForced(true);
 			task.run();
-			messages.infoTech("finished task "+task, getClass());
+			messages.infoTech("finished distant task "+task, getClass());
 			// then retrieve results from the task
 			DistantExecutionResult res = new DistantExecutionResult(
 					task.getProgress().getComputationState(),
 					task.getResult()
 					);
 
+			// stop the list of messages, so it's not continuing forever
+			task.getExecution().getListOfMessages().stop();
+			
+			// suggest gc ?!
+			System.gc();
+			
 			return res;
 		} catch (RuntimeException e) {
 			messages.errorTech("error while running distant task "+task.getName()+": "+e.getMessage(), getClass(), e);

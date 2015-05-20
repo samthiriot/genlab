@@ -3,6 +3,7 @@ package genlab.algog.algos.exec;
 import genlab.algog.algos.meta.AbstractGeneAlgo;
 import genlab.algog.internal.AGene;
 import genlab.algog.internal.AnIndividual;
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.ICleanableTask;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractContainerExecution;
@@ -31,15 +32,29 @@ public class GeneticExplorationAlgoIndividualRun
 									extends AbstractContainerExecution 
 									implements ICleanableTask {
 
-	private final Collection<IAlgoInstance> algoInstancesToRun;
-	private final Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance;
-	private final Map <IConnection,Object> inputConnection2value;
-	private final List<IAlgoInstance> fitnessOutput;
-//	private List<AFitnessBoard> fitnessBoard;
-//	private Double[] resultFitness = null;
-//	private Object[] resultValues = null;
-//	private Object[] resultTargets = null;
+	/**
+	 * The set of all the algo instance to run for one individual
+	 */
+	private final Collection<IAlgoInstance> evaluationAlgoInstances;
 	
+	/**
+	 * Associates each gene with the corresponding algorithm instance which created it
+	 */
+	private final Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance;
+	
+	/**
+	 * The list of values received as inputs
+	 */
+	private final Map <IConnection,Object> inputConnection2value;
+	
+	/**
+	 * List of the algorithms which evaluate the fitness (that is, the goals)
+	 */
+	private final List<IAlgoInstance> fitnessAlgoInstances;
+
+	/**
+	 * The individual evaluated
+	 */
 	private final AnIndividual individual;
 	
 	public GeneticExplorationAlgoIndividualRun(
@@ -49,17 +64,17 @@ public class GeneticExplorationAlgoIndividualRun
 			Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance,
 			Map <IConnection,Object> inputConnection2value,
 			Collection<IAlgoInstance> algoInstancesToRun,
-			List<IAlgoInstance> fitnessOutput2,
+			List<IAlgoInstance> fitnessAlgoInstances,
 			AnIndividual individual
 			) {
 		
 		super(exec, algoInst, new ComputationProgressWithSteps());
 				
-		this.algoInstancesToRun = algoInstancesToRun;
+		this.evaluationAlgoInstances = algoInstancesToRun;
 		this.individual = individual;
 		this.gene2geneAlgoInstance = gene2geneAlgoInstance;
 		this.inputConnection2value = inputConnection2value;
-		this.fitnessOutput = fitnessOutput2;
+		this.fitnessAlgoInstances = fitnessAlgoInstances;
 		
 		this.autoUpdateProgressFromChildren = true;
 		this.autoFinishWhenChildrenFinished = true;
@@ -82,36 +97,37 @@ public class GeneticExplorationAlgoIndividualRun
 	@Override
 	protected void hookContainerExecutionFinished(ComputationState state) {
 		
-//		resultFitness = new Double[fitnessOutput.size()];
-//		resultTargets = new Object[fitnessOutput.size()];
-//		resultValues = new Object[fitnessOutput.size()];
+		individual.fitness = new Double[fitnessAlgoInstances.size()];
+		individual.targets = new Object[fitnessAlgoInstances.size()];
+		individual.values = new Object[fitnessAlgoInstances.size()];
 		
 		if (state == ComputationState.FINISHED_FAILURE || state == ComputationState.FINISHED_CANCEL) {
 			// when there is an error, then goal fitness becomes negative infinity.
 			messages.warnUser("the evaluation of this individual led to an error. We assume the space of parameters is not full, and a defined Infinite fitness for this individual", getClass());
-			for (int i=0; i<fitnessOutput.size(); i++) {
-				IAlgoInstance ai = fitnessOutput.get(i);
+			
+			
+			for (int i=0; i<fitnessAlgoInstances.size(); i++) {
+				IAlgoInstance ai = fitnessAlgoInstances.get(i);
 				IGoalExec goal = (IGoalExec) instance2execForSubtasks.get(ai);
 
 				individual.fitness[i] = Double.POSITIVE_INFINITY;
 				individual.targets[i] = goal.getTarget();
 				individual.values[i] = null;
-//				resultFitness[i] = Double.POSITIVE_INFINITY;
-//				resultTargets[i] = goal.getTarget();
-//				resultValues[i] = null;
-				
+
 			}
 		} else {
-			for (int i=0; i<fitnessOutput.size(); i++) {
-				IAlgoInstance ai = fitnessOutput.get(i);
+			
+			for (int i=0; i<fitnessAlgoInstances.size(); i++) {
+				
+				IAlgoInstance ai = fitnessAlgoInstances.get(i);
 				IGoalExec goal = (IGoalExec) instance2execForSubtasks.get(ai);
 				
 				individual.fitness[i] = goal.getFitness();
 				individual.targets[i] = goal.getTarget();
 				individual.values[i] = goal.getActualValue();
-//				resultFitness[i] = goal.getFitness();
-//				resultTargets[i] = goal.getTarget();
-//				resultValues[i] = goal.getActualValue();
+				
+				if (individual.fitness == null)
+					throw new ProgramException("the fitness should never be empty when the execution is finished");
 				
 			}
 		}
@@ -143,7 +159,7 @@ public class GeneticExplorationAlgoIndividualRun
 
 		// prepare the mapping
 		// each gene is mapped with ME
-		for (IAlgoInstance sub: algoInstancesToRun) {
+		for (IAlgoInstance sub: evaluationAlgoInstances) {
 			for (IConnection cIn: sub.getAllIncomingConnections()) {
 				
 				if (cIn.getFrom().getAlgoInstance().getAlgo() instanceof AbstractGeneAlgo) {
@@ -158,20 +174,20 @@ public class GeneticExplorationAlgoIndividualRun
 		
 		
 		messages.traceTech("create sub executables", getClass());
-		for (IAlgoInstance sub: algoInstancesToRun) {
+		for (IAlgoInstance sub: evaluationAlgoInstances) {
 			IAlgoExecution subExec = sub.execute(exec);
 			subExec.setParent(this);
 			instance2execForSubtasks.put(sub, subExec);
 		}
 		
 		messages.traceTech("init links for sub executables", getClass());
-		for (IAlgoInstance sub: algoInstancesToRun) {
+		for (IAlgoInstance sub: evaluationAlgoInstances) {
 			IAlgoExecution subExec = instance2execForSubtasks.get(sub);
 			subExec.initInputs(instance2execForSubtasks);
 		}
 		
 		messages.traceTech("add subtasks", getClass());
-		for (IAlgoInstance sub: algoInstancesToRun) {
+		for (IAlgoInstance sub: evaluationAlgoInstances) {
 			IAlgoExecution subExec = instance2execForSubtasks.get(sub);
 			addTask(subExec);
 		}
@@ -219,7 +235,7 @@ public class GeneticExplorationAlgoIndividualRun
 		}
 		
 		// set the initial values of each child (for gene values)
-		for (IAlgoInstance sub: algoInstancesToRun) {
+		for (IAlgoInstance sub: evaluationAlgoInstances) {
 			for (IConnection cIn: sub.getAllIncomingConnections()) {
 				
 				if (cIn.getFrom().getAlgoInstance().getAlgo() instanceof AbstractGeneAlgo) {
@@ -237,46 +253,7 @@ public class GeneticExplorationAlgoIndividualRun
 		
 		
 	}
-	
-//	public AFitnessBoard[] getFitnessBoard() {
-//		
-//		if (!progress.getComputationState().isFinished())
-//			throw new ProgramException("asked for the fitness of an individual run which is not finished yet");
-//		
-//		return individual.fitnessBoard;
-//	}
-//	
-//	public final Double[] getResultFitness() {
-//		
-//		if (!progress.getComputationState().isFinished())
-//			throw new ProgramException("asked for the fitness of an individual run which is not finished yet");
-//
-//		if (progress.getComputationState() == ComputationState.FINISHED_OK)
-//			return individual.getFitnessFromFitnessBoard();
-//		else
-//			return null;//new Double[this.individual.genes.length];
-//	}
-//	
-//	public final Object[] getResultValues() {
-//		
-//		if (!progress.getComputationState().isFinished())
-//			throw new ProgramException("asked for the results of an individual run which is not finished yet");
-//		
-//		if (progress.getComputationState() == ComputationState.FINISHED_OK)
-//			return individual.getValuesFromFitnessBoard();
-//		else
-//			return null;//new Double[this.individual.genes.length];
-//	}
-//	
-//
-//	public final Object[] getResultTargets() {
-//		
-//		if (!progress.getComputationState().isFinished())
-//			throw new ProgramException("asked for the targets of an individual run which is not finished yet");
-//		
-//		return individual.getTargetsFromFitnessBoard();
-//	}
-	
+
 	public final AnIndividual getIndividual() {
 		return individual; 
 	}

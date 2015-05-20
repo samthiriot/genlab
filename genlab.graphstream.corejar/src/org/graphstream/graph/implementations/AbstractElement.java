@@ -31,6 +31,11 @@
  */
 package org.graphstream.graph.implementations;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+
 import org.graphstream.graph.CompoundAttribute;
 import org.graphstream.graph.Element;
 import org.graphstream.graph.NullAttributeException;
@@ -41,6 +46,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * A base implementation of an element.
@@ -54,7 +60,7 @@ import java.util.Map;
  * 
  * @since 20040910
  */
-public abstract class AbstractElement implements Element {
+public abstract class AbstractElement implements Element, Externalizable {
 	public static enum AttributeChangeEvent {
 		ADD, CHANGE, REMOVE
 	};
@@ -66,7 +72,7 @@ public abstract class AbstractElement implements Element {
 	/**
 	 * Tag of this element.
 	 */
-	protected final String id;
+	protected String id;
 
 	/**
 	 * The index of this element.
@@ -602,5 +608,31 @@ public abstract class AbstractElement implements Element {
 				attributes.remove(attribute);
 			}
 		}
+	}
+
+
+
+	public AbstractElement() {
+		this.id = UUID.randomUUID().toString();
+	}
+	
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+				
+		out.writeUTF(id);
+		out.writeInt(index);
+		out.writeObject(attributes);
+		out.writeObject(attributesBeingRemoved);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException,
+			ClassNotFoundException {
+		
+		id = in.readUTF();
+		index = in.readInt();
+		attributes = (HashMap<String, Object>) in.readObject();
+		attributesBeingRemoved = (ArrayList<String>) in.readObject();
+		
 	}
 }

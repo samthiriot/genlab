@@ -252,7 +252,7 @@ public class FileUtils {
 			try {
 				// the sub lib manages the recursive deletion in all cases (symlinks etc)
 				org.apache.commons.io.FileUtils.deleteDirectory(genlabTmpDirectory);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				GLLogger.warnTech("unable to clear tmp data :-(", FileUtils.class, e);
 			}
 		}

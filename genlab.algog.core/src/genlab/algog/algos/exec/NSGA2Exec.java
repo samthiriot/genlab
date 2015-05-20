@@ -238,8 +238,10 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		@Override
 		public int compare(AnIndividual o1, AnIndividual o2) {
 			
-			final Double fitness1 = individuals.get( individuals.lastIndexOf(o1) ).fitness[m];
-			final Double fitness2 = individuals.get( individuals.lastIndexOf(o2) ).fitness[m];
+			final Double fitness1 = o1.fitness[m]; // individuals.get( individuals.lastIndexOf(o1) ).fitness[m];
+			final Double fitness2 = o2.fitness[m]; // individuals.get( individuals.lastIndexOf(o2) ).fitness[m];
+			if (fitness1 == null || fitness2 == null)
+				throw new ProgramException("trying to compare the fitness of "+o1+" and "+o2+" but it is null");
 			return Double.compare(fitness1, fitness2);
 		}
 	}

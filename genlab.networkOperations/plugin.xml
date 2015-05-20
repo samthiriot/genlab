@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.networkoperations.algos.AddChainsAlgo"
+            id="genlab.networkoperations.algos.AddChainsAlgo">
+      </algo>
+      <algo
+            class="genlab.networkoperations.algos.DensifyLocallyAlgo"
+            id="genlab.networkoperations.algos.DensifyLocallyAlgo">
+      </algo>
+   </extension>
+
+</plugin>

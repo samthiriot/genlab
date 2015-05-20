@@ -121,6 +121,9 @@ public class WorkingRunnerThread extends Thread {
 			}
 			messages.debugTech(getName()+" ran task: "+exec.getName(), getClass());
 			
+			// might let the other react
+			Thread.yield();
+			
 		}
 
 	}

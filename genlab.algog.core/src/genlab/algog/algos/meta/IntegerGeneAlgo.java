@@ -49,4 +49,10 @@ public class IntegerGeneAlgo extends AbstractGeneAlgo {
 		
 	}
 
+
+	@Override
+	public InputOutput<?> getMainOutput() {
+		return OUTPUT_VALUE;
+	}
+
 }

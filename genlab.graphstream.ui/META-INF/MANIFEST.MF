@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Graphstream UI
 Bundle-SymbolicName: genlab.graphstream.ui;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.0
 Bundle-Activator: genlab.graphstream.ui.Activator
 Bundle-Vendor: Samuel Thiriot
 Require-Bundle: org.eclipse.ui,

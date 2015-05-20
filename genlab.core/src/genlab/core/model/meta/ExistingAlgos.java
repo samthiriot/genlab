@@ -4,6 +4,7 @@ import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -154,5 +155,18 @@ public final class ExistingAlgos {
 		return name2displayAlgo.values();
 	}
 	
+	public Collection<IAlgo> getAlgosForCategory(AlgoCategory category) {
+		
+		final String matchedId = category.getTotalId();
+		
+		Collection<IAlgo> res = new LinkedList<IAlgo>();
+		for (IAlgo algo: id2algos.values()) {
+			
+			if (algo.getCategoryId().equals(matchedId)) 
+				res.add(algo);
+		}
+		
+		return res;
+	}
 	
  }

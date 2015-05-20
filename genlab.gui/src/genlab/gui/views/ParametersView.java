@@ -9,6 +9,7 @@ import genlab.core.parameters.FileParameter;
 import genlab.core.parameters.IntParameter;
 import genlab.core.parameters.ListParameter;
 import genlab.core.parameters.Parameter;
+import genlab.core.parameters.RNGSeedParameter;
 import genlab.core.parameters.StringBasedParameter;
 import genlab.core.parameters.TextParameter;
 import genlab.core.projects.GenlabProject;
@@ -26,6 +27,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -172,7 +175,11 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				ListParameter p = (ListParameter)param;
 				Combo combo = new Combo(form.getBody(), SWT.READ_ONLY);
 				combo.setItems(p.getItemsAsArray());
-				combo.select((Integer)value);
+				try {
+					combo.select((Integer)value);
+				} catch (RuntimeException e) {
+					combo.select((Integer) param.getDefaultValue());
+				}
 				combo.setEnabled(true);
 
 				createdWidget = combo;
@@ -230,6 +237,36 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				toolkit.adapt(sp, true, true);
 				
 				sp.addSelectionListener(this);
+				
+			} else if (param instanceof RNGSeedParameter) {
+				
+				final RNGSeedParameter p = (RNGSeedParameter)param;
+
+				String valueStr = value == null ? "": ((Long)value).toString();
+
+				final Text txt = toolkit.createText(form.getBody(), valueStr);
+				
+				txt.addVerifyListener(new VerifyListener() {  
+				    @Override  
+				    public void verifyText(VerifyEvent e) {
+				    	String totalText = txt.getText()+e.text;
+				        if (totalText == "") {
+				        	e.doit = true;
+				        	return;
+				        }
+				    	try {
+				    		long v = Long.parseLong(totalText);
+				    		e.doit = (v >= p.getMinValue() && v < p.getMaxValue());  
+				        } catch(NumberFormatException ex){  
+				            e.doit = false;  
+				        }  
+				    }  
+				});
+				
+				txt.setText(valueStr);
+				
+				createdWidget = txt;
+				txt.addModifyListener(this);
 				
 			} else if (param instanceof TextParameter) {
 				
@@ -306,6 +343,7 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 						
 					}
 				});
+				
 				
 			} else {
 
@@ -404,6 +442,12 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 			if (value == null)
 				return;
 			algo.setValueForParameter(param.getId(), value);
+		} else if (param instanceof RNGSeedParameter) {
+			String value = ((Text)e.widget).getText().trim();
+			algo.setValueForParameter(
+					param.getId(), 
+					value.isEmpty()?null:Long.parseLong(value)
+					);
 		} else if (param instanceof BooleanParameter) {
 			Boolean value = ((Button)e.widget).getSelection();
 			algo.setValueForParameter(param.getId(), value);
@@ -437,7 +481,7 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 		}
 		
 		// TODO depends of the type !
-		if (param instanceof StringBasedParameter) {
+		if (param instanceof StringBasedParameter || param instanceof RNGSeedParameter) {
 			String value = ((Text)e.widget).getText();
 			algo.setValueForParameter(param.getId(), param.parseFromString(value));
 		} else {

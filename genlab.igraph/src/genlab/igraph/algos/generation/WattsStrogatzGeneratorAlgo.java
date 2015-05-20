@@ -38,10 +38,10 @@ public class WattsStrogatzGeneratorAlgo extends AbstractIGraphGenerator {
 			false
 			);
 	
-	public static final BooleanParameter PARAM_DIRECTED = new BooleanParameter(
-			"param_directed", 
-			"directed", 
-			"generate a directed graph", 
+	public static final BooleanParameter PARAM_ALLOW_MULTIPLE = new BooleanParameter(
+			"param_allow_mulitple", 
+			"allow multiple", 
+			"accepts multiple edges", 
 			false
 			);
 	
@@ -56,7 +56,8 @@ public class WattsStrogatzGeneratorAlgo extends AbstractIGraphGenerator {
 	public WattsStrogatzGeneratorAlgo() {
 		super(
 				"Watts-Strogatz beta generator (igraph)", 
-				"This function generates a graph according to the Watts-Strogatz model of small-world networks. The graph is obtained by creating a circular undirected lattice and then rewire the edges randomly with a constant probability."
+				"This function generates a graph according to the Watts-Strogatz model of small-world networks. The graph is obtained by creating a circular undirected lattice and then rewire the edges randomly with a constant probability.",
+				true
 				);
 		
 		inputs.add(INPUT_N);
@@ -65,7 +66,7 @@ public class WattsStrogatzGeneratorAlgo extends AbstractIGraphGenerator {
 		
 		registerParameter(PARAM_ALLOW_LOOPS);
 		registerParameter(PARAM_DIM);
-		registerParameter(PARAM_DIRECTED);
+		registerParameter(PARAM_ALLOW_MULTIPLE);
 		
 	}
 

@@ -7,12 +7,14 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.ExistingAlgos;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.algos.generation.AbstractIGraphGenerator;
 import genlab.igraph.algos.generation.AbstractIGraphGeneratorExec;
 import genlab.igraph.algos.generation.LCF;
+import genlab.igraph.commons.IgraphLibFactory;
 import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphLibrary;
+import genlab.igraph.natjna.IGraphNativeLibrary;
 import genlab.igraph.natjna.IGraphRawLibrary;
 
 /**
@@ -31,7 +33,8 @@ public class AbstractLCFFamousGraph extends AbstractIGraphGenerator {
 		super(
 				graphName + "(igraph)", 
 				"LCF graph noted "+lcf.toString()+"; "+description,
-				ExistingAlgoCategories.STATIC_GRAPHS_LCF
+				ExistingAlgoCategories.STATIC_GRAPHS_LCF,
+				false
 				);
 				
 		this.countVertices = countVertices;
@@ -70,10 +73,9 @@ public class AbstractLCFFamousGraph extends AbstractIGraphGenerator {
 			}
 			
 			@Override
-			protected IGraphGraph generateGraph(IGraphLibrary lib,
-					ListOfMessages messages) {
+			protected IGenlabGraph generateGraph() {
 												
-				return lib.generateLCF(countVertices, lcf.shifts, lcf.count);
+				return IgraphLibFactory.getImplementation().generateLCF(countVertices, lcf.shifts, lcf.count, this.exec);
 
 			}
 		};

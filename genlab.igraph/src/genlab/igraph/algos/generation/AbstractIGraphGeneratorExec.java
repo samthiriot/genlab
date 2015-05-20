@@ -10,10 +10,6 @@ import genlab.core.model.exec.ComputationState;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.core.usermachineinteraction.ListOfMessages;
-import genlab.igraph.commons.IGraph2GenLabConvertor;
-import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphLibrary;
 
 public abstract class AbstractIGraphGeneratorExec 	
 										extends AbstractAlgoExecutionOneshot 
@@ -37,10 +33,12 @@ public abstract class AbstractIGraphGeneratorExec
 	 */
 	public AbstractIGraphGeneratorExec(){}
 	
-	protected abstract IGraphGraph generateGraph(
-			IGraphLibrary lib,
-			ListOfMessages messages
-			);
+	/**
+	 * Should be overriden to do the right call(s) to 
+	 * actually generate the graph.
+	 * @return
+	 */
+	protected abstract IGenlabGraph generateGraph();
 
 
 	@Override
@@ -60,32 +58,13 @@ public abstract class AbstractIGraphGeneratorExec
 			result.getMessages().debugUser("nobody is using the result of this computation; it will not be computed at all.", getClass());
 		
 		} else {
-		
-			// decode parameters
-			
-			IGraphLibrary lib = new IGraphLibrary();
-					
-			IGraphGraph igraphGraph = null;
-					
+										
 			try {
 				
-				result.getMessages().debugUser("using the igraph native library version "+lib.getVersionString(), getClass());
-				
-				// ask the lib to transmit its information as the result of OUR computations
-				lib.setListOfMessages(result.getMessages());
-				
 				// generate
-				igraphGraph = generateGraph(lib, messages);
+				IGenlabGraph genlabGraph = generateGraph();
 				
-				IGenlabGraph genlabGraph = IGraph2GenLabConvertor.getGenlabGraphForIgraph(igraphGraph, exec);
-
 				result.setResult(AbstractIGraphGenerator.OUTPUT_GRAPH, genlabGraph);
-
-				messages.warnUser("please note that the random number generator of igraph is shared between all igraph process; "
-						+ "thus randomness of this network is somewhat dependant of these other processes. "
-						+ "It is not possible to replay exactly this stochastic process.", 
-						getClass()
-						); 
 				
 				progress.setProgressMade(1);
 				progress.setComputationState(ComputationState.FINISHED_OK);
@@ -104,13 +83,7 @@ public abstract class AbstractIGraphGeneratorExec
 				progress.setComputationState(ComputationState.FINISHED_FAILURE);
 				//throw new ProgramException("error during the igraph call: "+e.getMessage(), e);
 				
-			} finally {
-				// clear memory
-				lib.clearGraphMemory(igraphGraph);
-				lib.setListOfMessages(null);
-
-			}
-			
+			} 
 			
 		}
 		

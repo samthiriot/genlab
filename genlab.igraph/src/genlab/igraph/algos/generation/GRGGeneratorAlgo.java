@@ -35,7 +35,8 @@ public class GRGGeneratorAlgo extends AbstractIGraphGenerator {
 	public GRGGeneratorAlgo() {
 		super(
 				"euclidian generator (igraph)", 
-				"A geometric random graph is created by dropping points (=vertices) randomly to the unit square and then connecting all those pairs which are less than radius apart in Euclidean norm."
+				"A geometric random graph is created by dropping points (=vertices) randomly to the unit square and then connecting all those pairs which are less than radius apart in Euclidean norm.",
+				true
 				);
 		
 		inputs.add(INPUT_NODES);

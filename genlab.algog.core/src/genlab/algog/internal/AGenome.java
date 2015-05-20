@@ -42,7 +42,7 @@ public class AGenome {
 			ind[i] = gene.generateRandomnly(uniform);
 		}
 		
-		return new AnIndividual(this, ind);//new Object[genes.length];;
+		return new AnIndividual(this, ind);
 		
 	}
 	

@@ -44,11 +44,17 @@ public class DistantGenlabServerManager {
 	 */
 	private Set<WorkingRunnerDistanceThread> threads = new HashSet<WorkingRunnerDistanceThread>();
 	
+	
+	
 	public DistantGenlabServerManager(String hostname, int port) {
 
 		this.hostname = hostname;
 		this.port = port;
 		
+	}
+	
+	public String getName() {
+		return this.hostname+":"+this.port;
 	}
 	
 	public IGenlabComputationServer getDistantServer() {
@@ -154,7 +160,8 @@ public class DistantGenlabServerManager {
 						hostname+":"+port,
 						"worker_distant_"+threads.size(), 
 						runner.readyToComputeRemotable, 
-						runner.readyToComputeWithThreads, 					
+						runner.readyToComputeWithThreads, 		
+						runner.lockerBothQueues,
 						this
 						);
 				threads.add(thread);
@@ -182,6 +189,14 @@ public class DistantGenlabServerManager {
 		}
 		threads.clear();
 		state = ManagerState.STOPPED;
+	}
+	
+	/**
+	 * Should be called when connection problems occur.
+	 */
+	public void disconnectAndReconnect() {
+		disconnect();
+		connect();
 	}
 	
 	

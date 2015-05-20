@@ -33,5 +33,10 @@ public class BooleanGeneAlgo extends AbstractGeneAlgo {
 	}
 
 
+	@Override
+	public InputOutput<?> getMainOutput() {
+		return OUTPUT_VALUE;
+	}
+
 	
 }

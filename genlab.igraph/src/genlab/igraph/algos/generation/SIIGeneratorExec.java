@@ -2,9 +2,11 @@ package genlab.igraph.algos.generation;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
+import genlab.igraph.commons.IgraphLibFactory;
 import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphLibrary;
+import genlab.igraph.natjna.IGraphNativeLibrary;
 
 public class SIIGeneratorExec extends AbstractIGraphGeneratorExec {
 
@@ -21,16 +23,17 @@ public class SIIGeneratorExec extends AbstractIGraphGeneratorExec {
 	}
 	
 	@Override
-	protected IGraphGraph generateGraph(IGraphLibrary lib,
-			ListOfMessages messages) {
+	protected IGenlabGraph generateGraph() {
 
-		return lib.generateInterconnectedIslands(
+		return IgraphLibFactory.getImplementation().generateInterconnectedIslands(
 				(Integer)getInputValueForInput(SIIGeneratorAlgo.INPUT_islands_n), 
 				(Integer)getInputValueForInput(SIIGeneratorAlgo.INPUT_islands_size), 
 				(Double)getInputValueForInput(SIIGeneratorAlgo.INPUT_islands_pin), 
 				(Integer)getInputValueForInput(SIIGeneratorAlgo.INPUT_n_inter),
 				true,
-				true
+				true,
+				this.exec,
+				(Long)algoInst.getValueForParameter(AbstractIGraphGenerator.PARAM_SEED)
 				);
 		
 		

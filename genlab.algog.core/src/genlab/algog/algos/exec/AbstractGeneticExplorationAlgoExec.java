@@ -84,9 +84,6 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	// for each generation, and each individual, stores the corresponding fitness
 	protected Map<Integer, Set<AnIndividual>> offspringGeneration = new HashMap<Integer, Set<AnIndividual>>();
 	protected Map<Integer, Set<AnIndividual>> parentGeneration = new HashMap<Integer, Set<AnIndividual>>();
-//	protected LinkedHashMap<Integer,Map<AnIndividual,Double[]>> generation2fitness = new LinkedHashMap<Integer, Map<AnIndividual,Double[]>>(500);
-//	protected LinkedHashMap<Integer,Map<AnIndividual,Object[]>> generation2targets = new LinkedHashMap<Integer, Map<AnIndividual,Object[]>>(500);
-//	protected LinkedHashMap<Integer,Map<AnIndividual,Object[]>> generation2values = new LinkedHashMap<Integer, Map<AnIndividual,Object[]>>(500);
 
 	protected final GeneticExplorationAlgoContainerInstance algoInst;
 	
@@ -131,18 +128,12 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * @param resultValues
 	 */
 	protected void manageResultsForCurrentGeneration(Set<AnIndividual> individuals
-//			Map<AnIndividual,Double[]> resultFitness,
-//			Map<AnIndividual,Object[]> resultTargets,
-//			Map<AnIndividual,Object[]> resultValues
 			) {
 		
 		messages.infoUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
 
 		// store it 
 		offspringGeneration.put(iterationsMade, individuals);
-//		generation2fitness.put(iterationsMade, resultFitness);
-//		generation2targets.put(iterationsMade, resultTargets);
-//		generation2values.put(iterationsMade, resultValues);
 
 		
 		this.progress.incProgressMade();
@@ -175,8 +166,6 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					);
 			
 			// retrieve its parameters
-			
-			
 			Collection<AGene<?>> genesForThisGenome = new LinkedList<AGene<?>>();
 			
 			Set<IAlgoInstance> genomeEvaluationAlgos = new HashSet<IAlgoInstance>();
@@ -352,16 +341,6 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			ps.println();
 		}
 
-//			for (Map.Entry<AnIndividual,Double[]> indiv2fitness : generation2fitness.get(generationId).entrySet()) {
-//				
-//				ps.print(indiv2fitness.getValue());
-//				ps.print("\t");
-//				ps.print(indiv2fitness.getKey().genome);
-//				ps.print("\t");
-//				ps.print(Arrays.toString(indiv2fitness.getKey().genes));
-//				ps.println();
-//
-//			}
 	}
 	
 	
@@ -495,9 +474,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		
 		
 		for (AnIndividual ind : individuals) {
-//			if( ind.isFeasible() ) {
-//				System.out.println("ABCDE "+ind.toMiniString());
-//			}
+			
 			try {
 				int rowId = tab.addRow();
 				tab.setValue(rowId, titleIteration, iterationId);
@@ -578,22 +555,16 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		
 		
 		for (Integer iterationId : offspringGeneration.keySet()) {
-//			System.out.println("AB "+iterationId);
+			
 			// for each iteration
-//			System.out.println("ABC offspring");
+			
 			storeIndividualsData(
 					tab, 
 					titleIteration, iterationId, titleGenome, 
 					genome2fitnessColumns, genome2geneColumns, 
 					offspringGeneration.get(iterationId)
 					);
-//			System.out.println("ABC parents");
-			storeIndividualsData(
-					tab, 
-					titleIteration, iterationId, titleGenome, 
-					genome2fitnessColumns, genome2geneColumns, 
-					parentGeneration.get(iterationId)
-					);
+	
 				
 		}
 		
@@ -714,41 +685,48 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 			// retrieve the algorithm which finished, that is the exploration of one generation 
 			final GeneticExplorationOneGeneration algoFinished = (GeneticExplorationOneGeneration)progress.getAlgoExecution();
 			
-			// retrieve the different results of the evaluation of the generation: fitness, values explored, and targets
-			Set<AnIndividual> individuals = algoFinished.getComputedIndividuals();
-
-			if (individuals.size() != paramPopulationSize) {
-				this.messages.errorUser("at iteration "+iterationsMade+", retrieved only "+individuals.size()+" instead of the "+paramPopulationSize+" expected", getClass());
+			try {
+				// retrieve the different results of the evaluation of the generation: fitness, values explored, and targets
+				Set<AnIndividual> individuals = algoFinished.getComputedIndividuals();
+	
+				if (individuals.size() != paramPopulationSize) {
+					this.messages.errorUser("at iteration "+iterationsMade+", retrieved only "+individuals.size()+" instead of the "+paramPopulationSize+" expected", getClass());
+				}
+	//			final Map<AnIndividual,Double[]> resultFitness = algoFinished.getComputedFitness(); // (this is already a copy)
+	//			final Map<AnIndividual,Object[]> resultValues = algoFinished.getComputedValues(); // (this is already a copy)
+	//			final Map<AnIndividual,Object[]> resultTargets = algoFinished.getComputedTargets(); // (this is already a copy)
+	
+				
+				// now use these results: store them ! 
+				manageResultsForCurrentGeneration(individuals);
+				
+				// give the JVM some time and recommand a memory analysis (its good time for doing it !) 
+				Runtime.getRuntime().gc();
+				Thread.yield();
+				
+				// if the evaluation of the algorithm is done yet, then finish the process
+				if (!shouldContinueExploration()) {
+					manageEndOfExploration();
+					return;
+				}
+				
+				// one more time, maybe the user asked for cancelling, in this case don't start a novel iteration !
+				if (opportunityCancel())
+					return;
+				
+				// prepare next iteration: create the next generation, and pack it as an executable
+				GeneticExplorationOneGeneration execFirstGen = createExecutableForGeneration(prepareNextGeneration());
+				
+				// start the evaluation of the next population, by adding the novel subtask to our set of children tasks
+				messages.infoUser("starting the evaluation of generation "+iterationsMade, getClass());
+				addTask(execFirstGen);
+				
+				iterationsMade++;
+				
+			} catch (Exception e) {
+				messages.errorTech("error during the end of generation "+iterationsMade, getClass(), e);
+				progress.setComputationState(ComputationState.FINISHED_FAILURE);
 			}
-//			final Map<AnIndividual,Double[]> resultFitness = algoFinished.getComputedFitness(); // (this is already a copy)
-//			final Map<AnIndividual,Object[]> resultValues = algoFinished.getComputedValues(); // (this is already a copy)
-//			final Map<AnIndividual,Object[]> resultTargets = algoFinished.getComputedTargets(); // (this is already a copy)
-
-			// now use these results: store them ! 
-			manageResultsForCurrentGeneration(individuals);
-			
-			// give the JVM some time and recommand a memory analysis (its good time for doing it !) 
-			Runtime.getRuntime().gc();
-			Thread.yield();
-			
-			// if the evaluation of the algorithm is done yet, then finish the process
-			if (!shouldContinueExploration()) {
-				manageEndOfExploration();
-				return;
-			}
-			
-			// one more time, maybe the user asked for cancelling, in this case don't start a novel iteration !
-			if (opportunityCancel())
-				return;
-			
-			// prepare next iteration: create the next generation, and pack it as an executable
-			GeneticExplorationOneGeneration execFirstGen = createExecutableForGeneration(prepareNextGeneration());
-			
-			// start the evaluation of the next population, by adding the novel subtask to our set of children tasks
-			messages.infoUser("starting the evaluation of generation "+iterationsMade, getClass());
-			addTask(execFirstGen);
-			
-			iterationsMade++;
 		}
 		
 

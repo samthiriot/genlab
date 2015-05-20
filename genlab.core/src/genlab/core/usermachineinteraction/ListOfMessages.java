@@ -595,12 +595,14 @@ public class ListOfMessages implements Iterable<ITextMessage>, Serializable {
 			sortedMessages.clear();
 			
 		}
-		synchronized (listeners) {
-			for (IListOfMessagesListener l : getListeners()) {
-				l.contentChanged(this);
+		if (listeners != null) {
+			synchronized (listeners) {
+				for (IListOfMessagesListener l : getListeners()) {
+					l.contentChanged(this);
+				}
 			}
 		}
-		
+			
 		containedAnError = false;
 		
 	}
@@ -1155,5 +1157,13 @@ public class ListOfMessages implements Iterable<ITextMessage>, Serializable {
 		return filterIgnoreBelowForUser;
 	}
 	
+	/**
+	 * "stops" this list of messages; it will not be able to receive messages
+	 * anymore, even if it's keeping its current messages
+	 */
+	public void stop() {
+		if (queueConsumerThread != null)
+			queueConsumerThread.cancel();
+	}
 }
 

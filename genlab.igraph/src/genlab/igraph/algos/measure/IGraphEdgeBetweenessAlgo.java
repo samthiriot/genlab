@@ -13,7 +13,7 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.commons.GenlabProgressCallback;
 import genlab.igraph.commons.IGraph2GenLabConvertor;
 import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphLibrary;
+import genlab.igraph.natjna.IGraphNativeLibrary;
 import genlab.igraph.natjna.IGraphRawLibrary;
 import genlab.igraph.natjna.IIGraphProgressCallback;
 
@@ -76,7 +76,7 @@ public class IGraphEdgeBetweenessAlgo extends AbstractIGraphMeasure {
 				
 				Map<IInputOutput<?>, Object> results = new HashMap<IInputOutput<?>, Object>();
 				
-				IGraphLibrary lib = new IGraphLibrary();
+				IGraphNativeLibrary lib = new IGraphNativeLibrary();
 
 				//GenlabProgressCallback callback = new GenlabProgressCallback(progress);
 				//lib.installProgressCallback(callback);

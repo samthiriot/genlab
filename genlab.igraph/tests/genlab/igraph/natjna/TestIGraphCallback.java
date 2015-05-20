@@ -1,6 +1,10 @@
 package genlab.igraph.natjna;
 
 import genlab.igraph.commons.StdoutProgressCallback;
+import genlab.igraph.natjna.IGraphGraph;
+import genlab.igraph.natjna.IGraphNativeLibrary;
+import genlab.igraph.natjna.IGraphRawLibrary;
+import genlab.igraph.natjna.IIGraphProgressCallback;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,7 +63,7 @@ public class TestIGraphCallback {
 		
 		IGraphRawLibrary.igraph_set_progress_handler(t);
 		
-		IGraphLibrary lib = new IGraphLibrary();
+		IGraphNativeLibrary lib = new IGraphNativeLibrary();
 		IGraphGraph g = null;
 		try {
 			g = lib.generateWattsStrogatz(1000, 1, 0.2, 4, false, false);
