@@ -348,7 +348,7 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 									(y < 0) || (y > 1);
 							break;
 						case CTP6:
-							// θ = -0.1π
+							// θ = 0.1π
 							// a = 40
 							// b = 0.5
 							// c = 1
@@ -356,7 +356,7 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 							// e = -2
 							{
 							    double ctp_g = 1 + y;
-							    double ctp_theta = -0.1 * StrictMath.PI;
+							    double ctp_theta = 0.1 * StrictMath.PI;
 							    double ctp_a = 40;
 							    double ctp_b = 0.5;
 							    double ctp_c = 1;

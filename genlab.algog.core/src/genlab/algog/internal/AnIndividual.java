@@ -76,7 +76,11 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	}
 	
 	public String toMiniString() {
-		return "["+hashCode()+", "+Arrays.toString(genes)+", "+rank+", "+crowdedDistance+"]";
+		return "ID "+hashCode()
+				+", GENES "+Arrays.toString(genes)
+				+", VALUES "+Arrays.toString(values)
+				+", TARGETS "+Arrays.toString(targets)
+				+", FITNESS "+Arrays.toString(fitness);
 	}
 	
 	public String genesToString() {

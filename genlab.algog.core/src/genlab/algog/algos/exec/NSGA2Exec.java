@@ -45,7 +45,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	protected final LinkedHashMap<Integer,Set<AnIndividual>> generationWFirstPF;
 	/** number of cuts to make on genes for the crossover operator */
 	public static final int NCUTS = 2;
-	/** have to be a power of 2, default value is 4 */
+	/** have to be a power of 2, default value is TOURNAMENT_DEPTH=4 */
 	public static final int TOURNAMENT_DEPTH = (int)StrictMath.pow(2, 2);
 
 	protected final ECrossoverMethod paramCrossover;
@@ -518,8 +518,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	protected final List<AnIndividual> crossoverNPoints(final AGenome genome, int nCuts, AnIndividual parent1, AnIndividual parent2) {
 		
 		List<AnIndividual> children = new ArrayList<AnIndividual>(2);
-		AnIndividual child1 = new AnIndividual(genome, new Object[genome.getGenes().length]);
-		AnIndividual child2 = new AnIndividual(genome, new Object[genome.getGenes().length]);
+		Object[] g1 = new Object[genome.getGenes().length];
+		Object[] g2 = new Object[genome.getGenes().length];
 		
 		int t = 0;
 		int[] cuts = new int[nCuts];
@@ -534,13 +534,13 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		for( int i=0 ; i<genome.getGenes().length ; i++ ) {
 			// if crossoverOn is true then first child genes are copied from parent2
 			if( crossoverApplied ) {
-				child1.genes[i] = parent2.genes[i];
-				child2.genes[i] = parent1.genes[i];
+				g1[i] = parent2.genes[i];
+				g2[i] = parent1.genes[i];
 			}
 			// else first child genes are copied from parent1
 			else {
-				child1.genes[i] = parent1.genes[i];
-				child2.genes[i] = parent2.genes[i];
+				g1[i] = parent1.genes[i];
+				g2[i] = parent2.genes[i];
 			}
 			
 			if( t<cuts.length && cuts[t]==i ) {
@@ -550,8 +550,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			}
 		}
 	
-		children.add(child1);
-		children.add(child2);
+		children.add(new AnIndividual(genome, g1));
+		children.add(new AnIndividual(genome, g2));
 		
 		return children;
 	}
@@ -567,8 +567,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	protected final List<AnIndividual> crossoverSBX(final AGenome genome, AnIndividual parent1, AnIndividual parent2) {
 		
 		List<AnIndividual> children = new ArrayList<AnIndividual>(2);
-		AnIndividual child1 = new AnIndividual(genome, new Object[genome.getGenes().length]);
-		AnIndividual child2 = new AnIndividual(genome, new Object[genome.getGenes().length]);
+		Object[] g1 = new Object[genome.getGenes().length];
+		Object[] g2 = new Object[genome.getGenes().length];
 		
 		for( int i=0 ; i<genome.getGenes().length ; i++ ) {
 			if( uniform.nextDoubleFromTo(0, 1)<0.5 ) {
@@ -619,29 +619,29 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
                     if( c2>yu ) c2 = yu;
                     
                     if( uniform.nextDoubleFromTo(0, 1)<=0.5 ) {
-                        child1.genes[i] = c2;
-                        child2.genes[i] = c1;
+                        g1[i] = c2;
+                        g2[i] = c1;
                     }else {
-                        child1.genes[i] = c1;
-                        child2.genes[i] = c2;
+                        g1[i] = c1;
+                        g2[i] = c2;
                     }
                 }else {
                     if( uniform.nextDoubleFromTo(0, 1)<=0.5 ) {
-                        child1.genes[i] = geneP1;
-                        child2.genes[i] = geneP2;
+                        g1[i] = geneP1;
+                        g2[i] = geneP2;
                     }else {
-                        child1.genes[i] = geneP2;
-                        child2.genes[i] = geneP1;
+                        g1[i] = geneP2;
+                        g2[i] = geneP1;
                     }
                 }
 			}else {
-				child1.genes[i] = parent1.genes[i];
-				child2.genes[i] = parent2.genes[i];
+				g1[i] = parent1.genes[i];
+				g2[i] = parent2.genes[i];
 			}
 		}
 	
-		children.add(child1);
-		children.add(child2);
+		children.add(new AnIndividual(genome, g1));
+		children.add(new AnIndividual(genome, g2));
 		
 		return children;
 	}
@@ -782,6 +782,35 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		return offspring;
 	}
 	
+	/**
+	 * Send statistics
+	 */
+	public void analyzeGeneration() {
+		
+		int n = pq_at_t0.size();
+		int f = fronts.size();
+		int p = fronts.get(1).size();
+		int g = 0;
+		
+		for( AnIndividual ind : pq_at_t0 ) {
+			if( ind.isFeasible() ) g++;
+		}
+
+		System.out.println("====================");
+		System.out.println("STATS (for generation n°"+iterationsMade+"):");
+		System.out.println(n+" individual(s) in the population");
+		System.out.println(g+" individual(s) have been evaluated with success");
+		System.out.println(f+" front(s) have been computed");
+		System.out.println(p+" individual(s) are in the first Pareto front");
+		for( Integer i : fronts.keySet() ) {
+			System.out.print("\nFront n°"+i+":");
+			for( AnIndividual a : fronts.get(i) ) {
+				System.out.print(" @@@ "+a.toMiniString());
+			}
+		}
+		System.out.println("\n====================");
+	}
+	
 
 	@Override
 	protected Map<AGenome,Set<AnIndividual>> prepareNextGeneration() {
@@ -801,6 +830,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		fastNonDominatedSort();
 		
 		doubleCheckRegressions();
+		
+		analyzeGeneration();
 
 		/*
 		 * P(t+1)

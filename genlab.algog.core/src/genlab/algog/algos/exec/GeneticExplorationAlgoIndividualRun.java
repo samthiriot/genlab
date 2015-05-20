@@ -115,7 +115,7 @@ public class GeneticExplorationAlgoIndividualRun
 				
 			}
 		}
-		
+
 		messages.debugTech("received fitness for "+individual+" => "+individual.fitnessToString(), getClass());
 	}
 	

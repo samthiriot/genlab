@@ -75,7 +75,7 @@ public class AGenome {
 		for (int i=0; i<genes.length; i++) {
 			if (i>0)
 				sb.append(",");
-			sb.append(genes[i].name).append(":").append(ind[i]);
+			sb.append(ind[i]);
 			
 		}
 		sb.append("]");

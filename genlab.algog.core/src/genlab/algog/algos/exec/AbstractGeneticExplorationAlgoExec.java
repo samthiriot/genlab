@@ -495,7 +495,9 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		
 		
 		for (AnIndividual ind : individuals) {
-			
+//			if( ind.isFeasible() ) {
+//				System.out.println("ABCDE "+ind.toMiniString());
+//			}
 			try {
 				int rowId = tab.addRow();
 				tab.setValue(rowId, titleIteration, iterationId);
@@ -576,24 +578,22 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		
 		
 		for (Integer iterationId : offspringGeneration.keySet()) {
-			
+//			System.out.println("AB "+iterationId);
 			// for each iteration
-			
+//			System.out.println("ABC offspring");
 			storeIndividualsData(
 					tab, 
 					titleIteration, iterationId, titleGenome, 
 					genome2fitnessColumns, genome2geneColumns, 
 					offspringGeneration.get(iterationId)
 					);
-			
-			/*
+//			System.out.println("ABC parents");
 			storeIndividualsData(
 					tab, 
 					titleIteration, iterationId, titleGenome, 
 					genome2fitnessColumns, genome2geneColumns, 
 					parentGeneration.get(iterationId)
 					);
-			*/
 				
 		}
 		
