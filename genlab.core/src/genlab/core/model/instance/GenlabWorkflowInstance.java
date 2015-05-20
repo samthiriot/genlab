@@ -64,9 +64,9 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	
 	public GenlabWorkflowInstance(IGenlabProject project, String name, String description, String relativeFilename) {
 		
-		GLLogger.debugTech("creating worklow instance "+id+" "+super.toString(), getClass());
-		
 		this.id = "genlab.workflow."+project.getId()+"."+name;
+		GLLogger.debugTech("creating worklow instance "+id+" "+super.toString(), getClass());
+
 		this.project = project;
 		this.name = name;
 		this.description = description;

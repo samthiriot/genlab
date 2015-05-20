@@ -3,6 +3,7 @@ package genlab.algog.gui.examples;
 import genlab.algog.algos.meta.AbstractGeneAlgo;
 import genlab.algog.algos.meta.ECrossoverMethod;
 import genlab.algog.algos.meta.GenomeAlgo;
+import genlab.algog.algos.meta.GoalAlgo;
 import genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo;
 import genlab.algog.gui.jfreechart.algos.AlgoGPlotAlgo;
 import genlab.algog.gui.jfreechart.algos.AlgoGPlotRadarAlgo;
@@ -18,6 +19,7 @@ import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
+import genlab.core.model.meta.basics.algos.ConstantValueDouble;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
@@ -100,13 +102,36 @@ public class CreateWorkflowNSGA2FromWorkflow {
 		return original2copy;
 	}
 	
-	public static Collection<AbstractGeneAlgo> listExistingGeneAlgos() {
+	/**
+	 * Among the list of all the referenced algos in Genlab (possibly from plugins),
+	 * identify the gene ones
+	 * @return
+	 */
+	private static Collection<AbstractGeneAlgo> listExistingGeneAlgos() {
 		
 		Collection<AbstractGeneAlgo> res = new LinkedList<AbstractGeneAlgo>();
 		
 		for (IAlgo algo : ExistingAlgos.getExistingAlgos().getAlgosForCategory(ExistingAlgoCategories.EXPLORATION_GENETIC_ALGOS)) {
 			if (algo instanceof AbstractGeneAlgo) {
 				res.add((AbstractGeneAlgo)algo);
+			}
+		}
+		
+		return res;
+	}
+
+	/**
+	 * Among the list of all the referenced algos in Genlab (possibly from plugins),
+	 * identify the goal ones
+	 * @return
+	 */
+	private static Collection<GoalAlgo> listExistingGoalAlgos() {
+		
+		Collection<GoalAlgo> res = new LinkedList<GoalAlgo>();
+		
+		for (IAlgo algo : ExistingAlgos.getExistingAlgos().getAlgosForCategory(ExistingAlgoCategories.EXPLORATION_GENETIC_ALGOS)) {
+			if (algo instanceof GoalAlgo) {
+				res.add((GoalAlgo)algo);
 			}
 		}
 		
@@ -120,7 +145,7 @@ public class CreateWorkflowNSGA2FromWorkflow {
 	 * @param input
 	 * @return
 	 */
-	public static AbstractGeneAlgo getGeneAlgoForInput(IInputOutput<?> input) {
+	private static AbstractGeneAlgo getGeneAlgoForInput(IInputOutput<?> input) {
 		
 		AbstractGeneAlgo foundAlgo = null;
 		Integer bestPriority = Integer.MIN_VALUE;
@@ -142,6 +167,37 @@ public class CreateWorkflowNSGA2FromWorkflow {
 		return foundAlgo;
 		
 	}
+	
+	/**
+	 * In the list of goal algos (which might come from an external plugin),
+	 * defines the goal algo having an input compliant with this output 
+	 * which has the higher priority
+	 * @param otuput
+	 * @return
+	 */
+	private static GoalAlgo getGoalAlgoForOutput(IInputOutput<?> output) {
+		
+		GoalAlgo foundAlgo = null;
+		Integer bestPriority = Integer.MIN_VALUE;
+		
+		final Collection<GoalAlgo> candidateAlgos = listExistingGoalAlgos();
+		
+		for (GoalAlgo algoGoal: candidateAlgos) {
+			
+			if (
+					algoGoal.INPUT_VALUE.getType().compliantWith(output.getType())
+					&&
+					algoGoal.getPriorityForIntuitiveCreation() > bestPriority
+					) {
+				foundAlgo = algoGoal;
+				bestPriority = algoGoal.getPriorityForIntuitiveCreation();
+			}
+		}
+		
+		return foundAlgo;
+		
+	}
+	
 	
 	
 	public static IGenlabWorkflowInstance createNSGA2InstanceForWorkflow(
@@ -174,6 +230,7 @@ public class CreateWorkflowNSGA2FromWorkflow {
 		{
 			NSGA2GeneticExplorationAlgo algo = new NSGA2GeneticExplorationAlgo();
 			nsga2instance = (IAlgoContainerInstance)algo.createInstance(workflowRes);
+			nsga2instance.setContainer(workflowRes);
 			workflowRes.addAlgoInstance(nsga2instance);
 			nsga2instance.setValueForParameter(NSGA2GeneticExplorationAlgo.PARAM_CROSSOVER, ECrossoverMethod.N_POINTS.ordinal());
 		}
@@ -200,14 +257,19 @@ public class CreateWorkflowNSGA2FromWorkflow {
 			
 		}
 		
-		// list all the candidate inputs, and creates a gene for them
-		Collection<IAlgoInstance> createdGenes = new LinkedList<IAlgoInstance>();
-		for (IAlgoInstance algoInstOriginal: selectedAlgos) {
-		
-			IAlgoInstance algoInst = original2copy.get(algoInstOriginal);
+		// inputs -> genes
+		{
+			// list all the candidate inputs, and creates a gene for them
+			Collection<IAlgoInstance> createdGenes = new LinkedList<IAlgoInstance>();
+			for (IAlgoInstance algoInstOriginal: selectedAlgos) {
 			
-			for (IInputOutputInstance currentInput: algoInst.getInputInstances()) {
-				if (currentInput.getConnections().isEmpty()) {
+				IAlgoInstance algoInst = original2copy.get(algoInstOriginal);
+				
+				for (IInputOutputInstance currentInput: algoInst.getInputInstances()) {
+					
+					// don't process elements with inputs
+					if (!currentInput.getConnections().isEmpty())
+						continue;
 
 					// find the gene
 					AbstractGeneAlgo algoForGene = getGeneAlgoForInput(currentInput.getMeta());
@@ -216,7 +278,7 @@ public class CreateWorkflowNSGA2FromWorkflow {
 						continue;
 					}
 					
-					GLLogger.debugUser("for input haha "+currentInput+", will use gene "+algoForGene, CreateWorkflowNSGA2FromWorkflow.class);
+					GLLogger.debugUser("for input  "+currentInput+", will use gene "+algoForGene, CreateWorkflowNSGA2FromWorkflow.class);
 					
 					// create an instance
 					IAlgoInstance geneInstance = algoForGene.createInstance(workflowRes);
@@ -236,14 +298,69 @@ public class CreateWorkflowNSGA2FromWorkflow {
 							genomeInstance, GenomeAlgo.OUTPUT_GENOME,
 							geneInstance, AbstractGeneAlgo.INPUT_GENOME
 							);
+					
+				}
+			}
+	
+			// define the mutation probability for genes
+			for (IAlgoInstance geneInstance: createdGenes) {
+				geneInstance.setValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION, 1d/(double)createdGenes.size());
+			}
+			
+		}
+		
+		// outputs -> goals
+		{
+			ConstantValueDouble constantDoubleAlgo = new ConstantValueDouble();
+			
+			// list all the candidate outputs, and creates outputs for them
+			for (IAlgoInstance algoInstOriginal: selectedAlgos) {
+			
+				IAlgoInstance algoInst = original2copy.get(algoInstOriginal);
+				
+				for (IInputOutputInstance currentOutput: algoInst.getOutputInstances()) {
+					
+					if (!currentOutput.getConnections().isEmpty())
+						continue;
+
+					// find the gene
+					GoalAlgo algoForGene = getGoalAlgoForOutput(currentOutput.getMeta());
+					if (algoForGene == null) {
+						GLLogger.warnUser("unable to find a relevant Goal for output "+currentOutput.getMeta().getName()+" of algorithm "+algoInst.getName()+"; you'll have to connect it yourself", CreateWorkflowNSGA2FromWorkflow.class);
+						continue;
+					}
+					
+					IAlgoInstance goalInstance = null;
+					{
+						// create an instance
+						goalInstance = algoForGene.createInstance(workflowRes);
+						goalInstance.setContainer(nsga2instance);
+						nsga2instance.addChildren(goalInstance);
+						workflowRes.addAlgoInstance(goalInstance);
+						
+						// connect the goal to the output
+						workflowRes.connect(
+								algoInst, currentOutput.getMeta(),
+								goalInstance, GoalAlgo.INPUT_VALUE
+								);
+					}
+					
+					
+					{
+						// also create an instance of a constant for this goal
+						IAlgoInstance constantValueInstance = constantDoubleAlgo.createInstance(workflowRes);
+						constantValueInstance.setContainer(nsga2instance);
+						nsga2instance.addChildren(constantValueInstance);
+						workflowRes.addAlgoInstance(constantValueInstance);
+						workflowRes.connect(
+								constantValueInstance, constantDoubleAlgo.getConstantOuput(), 
+								goalInstance, GoalAlgo.INPUT_TARGET
+								);
+					}
 				}
 			}
 		}
 		
-		// define the mutation probability for genes
-		for (IAlgoInstance geneInstance: createdGenes) {
-			geneInstance.setValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION, 1d/(double)createdGenes.size());
-		}
 		
 		// add the standard analysis and display algorithms
 

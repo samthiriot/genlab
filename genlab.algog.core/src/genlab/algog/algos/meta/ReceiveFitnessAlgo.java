@@ -3,7 +3,6 @@ package genlab.algog.algos.meta;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;

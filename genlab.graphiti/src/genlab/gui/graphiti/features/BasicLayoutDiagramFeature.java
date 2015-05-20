@@ -228,13 +228,19 @@ public class BasicLayoutDiagramFeature extends AbstractCustomFeature {
 	 */
 	private CompoundDirectedGraph mapDiagramToGraph() {
 		
+
 		Map<AnchorContainer, Node> shapeToNode = new HashMap<AnchorContainer, Node>();
+
 		
 		Diagram d = getDiagram();
 		CompoundDirectedGraph dg = new CompoundDirectedGraph();
 		EdgeList edgeList = new EdgeList();
 		NodeList nodeList = new NodeList();
 		EList<Shape> children = d.getChildren();
+
+
+		Subgraph top =  new Subgraph("top");
+		nodeList.add(top);
 		
 		LinkedList<Shape> nodesToProcess = new LinkedList<Shape>(children);
 		while (!nodesToProcess.isEmpty()) {
@@ -280,7 +286,7 @@ public class BasicLayoutDiagramFeature extends AbstractCustomFeature {
 						
 				} else {
 					// no parent to find; let's just create the subgraph :-)
-					nodeGraph  = new Subgraph(shape);
+					nodeGraph  = new Subgraph(shape, top);
 					
 				}
 				
@@ -315,7 +321,7 @@ public class BasicLayoutDiagramFeature extends AbstractCustomFeature {
 						
 				} else {
 					// no parent to find; let's just create the subgraph :-)
-					node = new Node(shape);
+					node = new Node(shape, top);
 					
 				}
 				

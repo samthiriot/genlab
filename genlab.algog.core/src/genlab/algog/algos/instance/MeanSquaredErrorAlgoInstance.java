@@ -1,24 +1,17 @@
 package genlab.algog.algos.instance;
 
-import genlab.algog.algos.meta.GenomeAlgo;
 import genlab.algog.algos.meta.MeanSquaredErrorAlgo;
-import genlab.algog.algos.meta.ReceiveFitnessAlgo;
 import genlab.core.commons.ProgramException;
-import genlab.core.commons.WrongParametersException;
-import genlab.core.model.instance.AlgoContainerInstance;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.instance.IWorkflowContentListener;
-import genlab.core.model.instance.WorkflowCheckResult;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IFlowType;
-import genlab.core.model.meta.basics.flowtypes.BooleanFlowType;
 import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
-import genlab.core.parameters.BooleanParameter;
 import genlab.core.parameters.DoubleParameter;
 import genlab.core.parameters.IntParameter;
 import genlab.core.parameters.Parameter;
@@ -26,7 +19,6 @@ import genlab.core.parameters.Parameter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +34,10 @@ public class MeanSquaredErrorAlgoInstance
 							// listens for the updates of the workflow, in order to update the parameters accordingly
 							implements IWorkflowContentListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5395203841733382500L;
 	private transient Map<IConnection,String> connection2parametersId = new HashMap<IConnection, String>();
 	private transient Map<String,Parameter<?>> parameterId2parameter = new HashMap<String, Parameter<?>>();
 

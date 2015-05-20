@@ -1,19 +1,12 @@
 package genlab.algog.algos.meta;
 
-import org.osgi.framework.Bundle;
-
-import genlab.algog.core.Activator;
-import genlab.algog.types.GeneFlowType;
 import genlab.algog.types.Genome;
 import genlab.algog.types.GenomeFlowType;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.InputOutput;
-import genlab.core.model.meta.LoopForAlgo;
-import genlab.core.model.meta.basics.flowtypes.AnythingFlowType;
 import genlab.core.parameters.DoubleParameter;
 
 /**
