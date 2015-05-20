@@ -117,17 +117,12 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	protected void fastNonDominatedSort() {
 		
 		SortedMap<Integer,Collection<AnIndividual>> frontIndexWIndividuals = new TreeMap<Integer, Collection<AnIndividual>>();
-//		Map<AnIndividual, Integer> individualWRank = new HashMap<AnIndividual, Integer>(individualsWFitness.size());
 		Map<AnIndividual,Integer> individualWDominationCount = new HashMap<AnIndividual, Integer>(pq_at_t0.size());
 		Map<AnIndividual,Set<AnIndividual>> individualWDominatedIndividuals = new HashMap<AnIndividual, Set<AnIndividual>>(pq_at_t0.size());
 		Set<AnIndividual> individualsInCurrentFront = new HashSet<AnIndividual>();
 		
 		for( AnIndividual p : pq_at_t0 ) {
 			final Double[] pFitness = p.fitness;
-			
-			// don't even include individuals who have no fitness
-//			if( pFitness==null )
-//				continue; 
 			
 			int dominationCount = 0;
 			Set<AnIndividual> dominatedIndividuals = new HashSet<AnIndividual>(pq_at_t0.size());
@@ -238,8 +233,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		@Override
 		public int compare(AnIndividual o1, AnIndividual o2) {
 			
-			final Double fitness1 = o1.fitness[m]; // individuals.get( individuals.lastIndexOf(o1) ).fitness[m];
-			final Double fitness2 = o2.fitness[m]; // individuals.get( individuals.lastIndexOf(o2) ).fitness[m];
+			final Double fitness1 = o1.fitness[m];
+			final Double fitness2 = o2.fitness[m];
 			if (fitness1 == null || fitness2 == null)
 				throw new ProgramException("trying to compare the fitness of "+o1+" and "+o2+" but it is null");
 			return Double.compare(fitness1, fitness2);
@@ -380,9 +375,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		individualsLost.removeAll(iterationLast);
 		
 		for (AnIndividual individualLost : individualsLost) {
-			
-			// analyze why we lost this individual
-			
+			// analyze why we lost this individual			
 			// build the set of individuals which are dominating this lost individual
 			Set<AnIndividual> individualsDominatingLostGuy = new HashSet<AnIndividual>();
 			for (AnIndividual individualsNew : iterationLast) {
@@ -393,13 +386,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			if (individualsDominatingLostGuy.size() == 0) {
 				s += individualLost+"\n";
 				i++;
-//				messages.errorTech("individual "+individualLost+" was lost even if he was not dominated :-(", getClass());
-			} /*else {
-				messages.infoTech("individual "+individualLost+" was lost because he's dominated by "+individualsDominatingLostGuy.size()+" guys: "+individualsDominatingLostGuy, getClass());
-			}*/
-			
-			// you might add debug trace here or breakpoint to understand why an individual was lost.
-			
+			}
 		}
 		
 		if( s.length()>0 )
@@ -807,7 +794,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		for( Integer i : fronts.keySet() ) {
 			System.out.print("\nFront n°"+i+":");
 			for( AnIndividual a : fronts.get(i) ) {
-				System.out.print(" @@@ "+a.toMiniString());
+				System.out.print(" @@@"+a.toMiniString());
 			}
 		}
 		System.out.println("\n====================");
@@ -833,7 +820,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		
 		doubleCheckRegressions();
 		
-		analyzeGeneration();
+		// analyzeGeneration();
 
 		/*
 		 * P(t+1)
