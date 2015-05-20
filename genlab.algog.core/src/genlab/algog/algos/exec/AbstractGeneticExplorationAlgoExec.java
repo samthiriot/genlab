@@ -82,8 +82,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	protected Map<AGenome, List<IAlgoInstance>> genome2fitnessOutput = new HashMap<AGenome, List<IAlgoInstance>>();
 
 	// for each generation, and each individual, stores the corresponding fitness
-	protected Map<Integer, Set<AnIndividual>> offspringGeneration = new HashMap<Integer, Set<AnIndividual>>();
-	protected Map<Integer, Set<AnIndividual>> parentGeneration = new HashMap<Integer, Set<AnIndividual>>();
+	protected Map<Integer, Set<AnIndividual>> offspringGeneration = new LinkedHashMap<Integer, Set<AnIndividual>>();
+	protected Map<Integer, Set<AnIndividual>> parentGeneration = new LinkedHashMap<Integer, Set<AnIndividual>>();
 
 	protected final GeneticExplorationAlgoContainerInstance algoInst;
 	
@@ -557,7 +557,6 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		for (Integer iterationId : offspringGeneration.keySet()) {
 			
 			// for each iteration
-			
 			storeIndividualsData(
 					tab, 
 					titleIteration, iterationId, titleGenome, 
