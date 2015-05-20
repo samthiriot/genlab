@@ -9,9 +9,9 @@ import cytoscape.randomnetwork.RandomNetworkModel;
 
 public class BarabasiAlbertAlgo extends RandomNetworkGeneratorAlgo {
 
-	public static IntegerInOut INPUT_N = new IntegerInOut("in_N", "N", "number of vertices to create", 100);
-	public static IntegerInOut INPUT_M = new IntegerInOut("in_m", "m", "number of edges to add at each iteration", 2);
-	public static IntegerInOut INPUT_PINIT = new IntegerInOut("in_pinit", "pinit", "number of nodes in the seed network", 5);
+	public static IntegerInOut INPUT_N = new IntegerInOut("in_N", "N", "number of vertices to create", 100, 1);
+	public static IntegerInOut INPUT_M = new IntegerInOut("in_m", "m", "number of edges to add at each iteration", 2, 1);
+	public static IntegerInOut INPUT_PINIT = new IntegerInOut("in_pinit", "pinit", "number of nodes in the seed network", 5, 1);
 	
 	public BarabasiAlbertAlgo() {
 		super(

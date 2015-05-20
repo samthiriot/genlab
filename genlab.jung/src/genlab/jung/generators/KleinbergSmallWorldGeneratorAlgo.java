@@ -22,21 +22,24 @@ public class KleinbergSmallWorldGeneratorAlgo extends AbstractJungGeneratorAlgo 
 			"in_rowcount", 
 			"rows count", 
 			"number of rows in the initial lattice",
-			15
+			15,
+			1
 			);
 	
 	public final static IntegerInOut INPUT_COLCOUNT = new IntegerInOut(
 			"in_colcount", 
 			"columns count", 
 			"number of columns in the initial lattice",
-			15
+			15,
+			1
 			);
 	
 	public final static DoubleInOut INPUT_CLUSTERING = new DoubleInOut(
 			"in_clustering", 
 			"clustering", 
 			"clustering exponent",
-			0.15
+			0.15,
+			0.0
 			);
 	
 	public final static BooleanParameter PARAM_TORUS = new BooleanParameter(

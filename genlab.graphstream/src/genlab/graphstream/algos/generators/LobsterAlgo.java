@@ -14,21 +14,24 @@ public class LobsterAlgo extends GraphStreamGeneratorAlgo {
 			"in_N", 
 			"N", 
 			"number of vertices in the generated graph",
-			200
+			200,
+			0
 	);
 	
 	public static final IntegerInOut INPUT_MAXDISTANCE = new IntegerInOut(
 			"in_max_distance", 
 			"max distance", 
 			"maximum distance to the root path",
-			20
+			20,
+			0
 	);
 	
 	public static final IntegerInOut INPUT_MAXDEGREE = new IntegerInOut(
 			"in_max_degree", 
 			"max degree", 
 			"maximum degree in the graph",
-			20
+			20,
+			0
 	);
 	
 	public LobsterAlgo() {

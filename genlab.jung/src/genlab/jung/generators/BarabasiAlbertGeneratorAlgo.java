@@ -23,21 +23,24 @@ public class BarabasiAlbertGeneratorAlgo extends AbstractJungGeneratorAlgo {
 			"in_iterations", 
 			"iterations", 
 			"number of iterations",
-			100
+			100,
+			0
 			);
 	
 	public final static IntegerInOut INPUT_INITVERTICES = new IntegerInOut(
 			"in_numvertices", 
 			"initial vertices", 
 			"number of initial vertices",
-			5
+			5,
+			1
 			);
 	
 	public final static IntegerInOut INPUT_NUMEDGES = new IntegerInOut(
 			"in_edgescount", 
 			"m", 
 			"edges to add at each iteration",
-			2
+			2,
+			1
 			);
 	
 	

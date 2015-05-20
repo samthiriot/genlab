@@ -5,10 +5,7 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
-import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.commons.IgraphLibFactory;
-import genlab.igraph.natjna.IGraphGraph;
-import genlab.igraph.natjna.IGraphNativeLibrary;
 
 public class LCFGenerator extends AbstractIGraphGenerator {
 
@@ -16,7 +13,8 @@ public class LCFGenerator extends AbstractIGraphGenerator {
 			"in_vertices", 
 			"N", 
 			"number of vertices to create",
-			200
+			200,
+			0
 			);
 	
 	public static final LCFParameter PARAM_LCF = new LCFParameter(

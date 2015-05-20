@@ -20,21 +20,24 @@ public class EppsteinPowerLawGeneratorAlgo extends AbstractJungGeneratorAlgo {
 			"in_numvertices", 
 			"num vertices", 
 			"number of vertices",
-			200
+			200,
+			0
 			);
 	
 	public final static IntegerInOut INPUT_NUMEDGES = new IntegerInOut(
 			"in_edgescount", 
 			"edges count", 
 			"number of edges",
-			400
+			400,
+			0
 			);
 	
 	public final static IntegerInOut INPUT_R = new IntegerInOut(
 			"in_R", 
 			"r", 
 			"the number of iterations to use; the larger the value the better the graph's degree distribution will approximate a power-law",
-			50
+			50,
+			0
 			);
 	
 	public EppsteinPowerLawGeneratorAlgo() {

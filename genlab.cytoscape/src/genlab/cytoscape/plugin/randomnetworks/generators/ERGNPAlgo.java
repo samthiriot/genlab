@@ -3,15 +3,15 @@ package genlab.cytoscape.plugin.randomnetworks.generators;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
+import genlab.core.model.meta.basics.flowtypes.ProbabilityInOut;
 import cytoscape.randomnetwork.ErdosRenyiModel;
 import cytoscape.randomnetwork.RandomNetworkModel;
 
 public class ERGNPAlgo extends RandomNetworkGeneratorAlgo {
 
-	public static IntegerInOut INPUT_N = new IntegerInOut("in_N", "N", "number of vertices to create", 200);
-	public static DoubleInOut INPUT_P = new DoubleInOut("in_p", "p", "probability to create edges", 0.15);
+	public static IntegerInOut INPUT_N = new IntegerInOut("in_N", "N", "number of vertices to create", 200, 0);
+	public static ProbabilityInOut INPUT_P = new ProbabilityInOut("in_p", "p", "probability to create edges", 0.15);
 	
 
 	public ERGNPAlgo() {

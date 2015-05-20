@@ -72,7 +72,7 @@ public class GoalInstance extends AlgoInstance implements IWorkflowContentListen
 			return;
 		
 		// adapt my parameters to the target ones
-		adaptMyselfToTarget(c.getTo());
+		adaptMyselfToTarget(c.getFrom());
 		
 		
 	}

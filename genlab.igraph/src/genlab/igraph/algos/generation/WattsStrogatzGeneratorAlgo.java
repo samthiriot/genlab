@@ -3,8 +3,8 @@ package genlab.igraph.algos.generation;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
+import genlab.core.model.meta.basics.flowtypes.ProbabilityInOut;
 import genlab.core.parameters.BooleanParameter;
 import genlab.core.parameters.IntParameter;
 
@@ -14,17 +14,19 @@ public class WattsStrogatzGeneratorAlgo extends AbstractIGraphGenerator {
 			"in_N", 
 			"N", 
 			"number of vertices to create",
-			200
+			200,
+			0
 			);
 	
 	public static final IntegerInOut INPUT_NEI = new IntegerInOut(
 			"in_NEI", 
 			"nei", 
 			"size of the neighborhood for each vertex",
-			4
+			4,
+			0
 			);
 	
-	public static final DoubleInOut INPUT_P = new DoubleInOut(
+	public static final ProbabilityInOut INPUT_P = new ProbabilityInOut(
 			"in_p", 
 			"p", 
 			"rewiring probability",
@@ -49,7 +51,8 @@ public class WattsStrogatzGeneratorAlgo extends AbstractIGraphGenerator {
 			"param_dim", 
 			"dimensions", 
 			"The size of the lattice along each dimension.", 
-			new Integer(1)
+			new Integer(1),
+			1
 			);
 	
 	

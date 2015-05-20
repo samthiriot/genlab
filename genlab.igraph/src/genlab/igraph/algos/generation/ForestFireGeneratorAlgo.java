@@ -3,8 +3,8 @@ package genlab.igraph.algos.generation;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
+import genlab.core.model.meta.basics.flowtypes.ProbabilityInOut;
 import genlab.core.parameters.BooleanParameter;
 
 public class ForestFireGeneratorAlgo extends AbstractIGraphGenerator {
@@ -13,17 +13,18 @@ public class ForestFireGeneratorAlgo extends AbstractIGraphGenerator {
 			"in_N", 
 			"N", 
 			"Number of vertices to create",
-			200
+			200, 
+			0
 			);
 	
-	public static final DoubleInOut INPUT_fw_prob = new DoubleInOut(
+	public static final ProbabilityInOut INPUT_fw_prob = new ProbabilityInOut(
 			"in_fw_prob", 
 			"fw_prob", 
 			"The forward burning probability.",
 			0.3
 			);
 	
-	public static final DoubleInOut INPUT_bw_factor = new DoubleInOut(
+	public static final ProbabilityInOut INPUT_bw_factor = new ProbabilityInOut(
 			"in_bw_factor", 
 			"bw_factor", 
 			"The backward burning ratio. The backward burning probability is calculated as bw.factor*fw.prob .",
@@ -35,7 +36,8 @@ public class ForestFireGeneratorAlgo extends AbstractIGraphGenerator {
 			"in_pambs", 
 			"pambs", 
 			"The number of ambassador vertices.",
-			2
+			2,
+			1
 			);
 	
 	public static final BooleanParameter PARAM_DIRECTED = new BooleanParameter(

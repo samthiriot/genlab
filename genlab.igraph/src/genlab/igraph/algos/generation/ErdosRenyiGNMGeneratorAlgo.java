@@ -13,14 +13,16 @@ public class ErdosRenyiGNMGeneratorAlgo extends AbstractIGraphGenerator {
 			"in_N", 
 			"N", 
 			"Number of vertices to create",
-			200
+			200,
+			0
 			);
 	
 	public static final DoubleInOut INPUT_M = new DoubleInOut(
 			"in_M", 
 			"m", 
 			"number of edges to create",
-			400.0
+			400.0,
+			0.0
 			);
 	
 	public static final BooleanParameter PARAM_DIRECTED = new BooleanParameter(
