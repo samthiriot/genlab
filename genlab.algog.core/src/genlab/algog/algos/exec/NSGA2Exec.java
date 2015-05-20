@@ -560,73 +560,9 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		Object[] g2 = new Object[genome.getGenes().length];
 		
 		for( int i=0 ; i<genome.getGenes().length ; i++ ) {
-			if( uniform.nextDoubleFromTo(0, 1)<0.5 ) {
-				Double geneP1 = (Double)parent1.genes[i];
-				Double geneP2 = (Double)parent2.genes[i];
-                ADoubleGene dg = (ADoubleGene)(genome.getGenes()[i]);
-				double rand;
-                double y1, y2, yl, yu;
-                double c1, c2;
-                double alpha, beta, betaq;
-
-                if( StrictMath.abs(geneP1-geneP2)>Double.MIN_VALUE ) {
-                    if( geneP1<geneP2 ) {
-                        y1 = geneP1;
-                        y2 = geneP2;
-                    }else {
-                        y1 = geneP2;
-                        y2 = geneP1;
-                    }
-                    
-                    yl = dg.min;
-                    yu = dg.max;
-                    rand = uniform.nextDoubleFromTo(0, 1);
-                    beta = 1.0 + (2.0*(y1-yl)/(y2-y1));
-                    alpha = 2.0 - StrictMath.pow( beta , -(dg.eta_c+1.0) );
-                    
-                    if( rand<=(1.0/alpha) ) {
-                        betaq = StrictMath.pow( (rand*alpha) , (1.0/(dg.eta_c+1.0)) );
-                    }else {
-                        betaq = StrictMath.pow( (1.0/(2.0-rand*alpha)) , (1.0/(dg.eta_c+1.0)) );
-                    }
-                    
-                    c1 = 0.5*((y1+y2)-betaq*(y2-y1));
-                    beta = 1.0 + (2.0*(yu-y2)/(y2-y1));
-                    alpha = 2.0 - StrictMath.pow( beta , -(dg.eta_c+1.0) );
-                    
-                    if( rand<=(1.0/alpha) ) {
-                        betaq = StrictMath.pow( (rand*alpha) , (1.0/(dg.eta_c+1.0)) );
-                    }else {
-                        betaq = StrictMath.pow( (1.0/(2.0-rand*alpha)) , (1.0/(dg.eta_c+1.0)) );
-                    }
-                    
-                    c2 = 0.5*((y1+y2)+betaq*(y2-y1));
-                    
-                    if( c1<yl ) c1 = yl;
-                    if( c2<yl ) c2 = yl;
-                    if( c1>yu ) c1 = yu;
-                    if( c2>yu ) c2 = yu;
-                    
-                    if( uniform.nextDoubleFromTo(0, 1)<=0.5 ) {
-                        g1[i] = c2;
-                        g2[i] = c1;
-                    }else {
-                        g1[i] = c1;
-                        g2[i] = c2;
-                    }
-                }else {
-                    if( uniform.nextDoubleFromTo(0, 1)<=0.5 ) {
-                        g1[i] = geneP1;
-                        g2[i] = geneP2;
-                    }else {
-                        g1[i] = geneP2;
-                        g2[i] = geneP1;
-                    }
-                }
-			}else {
-				g1[i] = parent1.genes[i];
-				g2[i] = parent2.genes[i];
-			}
+			Object[] genes = genome.getGenes()[i].crossoverSBX(uniform, parent1.genes[i], parent2.genes[i]);
+			g1[i] = genes[0];
+			g2[i] = genes[1];
 		}
 	
 		children.add(new AnIndividual(genome, g1));
@@ -820,7 +756,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		
 		doubleCheckRegressions();
 		
-		// analyzeGeneration();
+		analyzeGeneration();
 
 		/*
 		 * P(t+1)
