@@ -39,7 +39,7 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	}
 	
 	public AnIndividual(AnIndividual ind) {
-		this(ind.genome, ind.genes);
+		this(ind.genome, ind.genes.clone());
 	}
 
 	@Override
