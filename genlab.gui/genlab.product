@@ -48,6 +48,7 @@
       <plugin id="genlab.algog.core"/>
       <plugin id="genlab.algog.gui.examples"/>
       <plugin id="genlab.algog.gui.jfreechart"/>
+      <plugin id="genlab.algog.gui.misc"/>
       <plugin id="genlab.arithmetics"/>
       <plugin id="genlab.bayesianInference"/>
       <plugin id="genlab.bayesianInference.smile"/>
