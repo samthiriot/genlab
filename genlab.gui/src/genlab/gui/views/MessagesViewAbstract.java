@@ -499,8 +499,8 @@ public abstract class MessagesViewAbstract extends ViewPart  {
 					StringWriter sw = new StringWriter();
 					PrintWriter pw = new PrintWriter(sw);
 					String msg = message.getMessage();
-					if (msg.length() > 10000) {
-						pw.print(message.getMessage().substring(0, 10000));
+					if (msg.length() > 3000) {
+						pw.print(message.getMessage().substring(0, 3000));
 						pw.println("[...]");
 					} else {
 						pw.println(message.getMessage());

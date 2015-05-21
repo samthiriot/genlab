@@ -162,16 +162,6 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			}
 		}
 		
-		messages.infoUser("For the "+iterationsMade+". generation, the Pareto front contains "+individualsInCurrentFront.size()+": "+individualsInCurrentFront.toString(), getClass());
-		
-		StringBuffer _message = new StringBuffer();
-		
-		_message.append("1. domination front (")
-			.append(individualsInCurrentFront.size())
-			.append("):\n")
-			.append(frontToString(individualsInCurrentFront))
-			.append("\n");
-
 		// save the first domination front
 		generationWFirstPF.put(iterationsMade, individualsInCurrentFront);
 		frontIndexWIndividuals.put(1, individualsInCurrentFront);
@@ -201,19 +191,11 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			
 			if( !nextFront.isEmpty() ) {
 				frontIndexWIndividuals.put(frontIndex, nextFront);
-				_message.append(frontIndex)
-					.append(". domination front (")
-					.append(nextFront.size())
-					.append("): ")
-					.append(frontToString(nextFront))
-					.append("\n");
 			}
 		}
 		
 		// we don't always compute the fronts, but when we do: brace yourself
 		this.fronts = frontIndexWIndividuals;
-		
-		messages.infoUser("There are "+frontIndexWIndividuals.size()+" Pareto domination fronts: "+_message.toString(), getClass());
 	}
 	
 	/**
@@ -469,16 +451,12 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		
 		for( AnIndividual i : novelPopulation ) {
 			AGene<?>[] genes = genome.getGenes();
+			String debugIndivBefore = Arrays.toString(i.genes);
 
 			for (int j=0; j<genes.length; j++) {
 				if (uniform.nextDoubleFromTo(0.0, 1.0) <= genes[j].getMutationProbability()) {
-					String debugIndivBefore = Arrays.toString(i.genes);
 					
 					i.genes[j] = genes[j].mutate(uniform, i.genes[j]);
-					
-					_message.append("\nMutate individual n°").append(i)
-						.append(" from ").append(debugIndivBefore)
-						.append(" to ").append(Arrays.toString(i.genes));
 					
 					// stats on mutation
 					Integer count = statsGeneWCountMutations.get(genes[j]);
@@ -491,6 +469,10 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 					countMutations++;
 				}
 			}
+			
+			_message.append("\nMutate individual n°").append(i.hashCode())
+				.append(" from ").append(debugIndivBefore)
+				.append(" to ").append(Arrays.toString(i.genes));
 		}
 		
 		messages.infoTech("Mutations ("+countMutations+")"+_message.toString(), getClass());
@@ -679,9 +661,9 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 				countCrossover++;
 
 				_message.append("\nCrossover between ")
-					.append(Arrays.toString(p1.genes))
+					.append(p1)
 					.append(" and ")
-					.append(Arrays.toString(p2.genes))
+					.append(p2)
 					.append(" : ");
 
 				offspring.add(novelIndividuals.get(0));
@@ -691,7 +673,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 				
 				offspring.add(novelIndividuals.get(1));
 				
-				_message.append(Arrays.toString(novelIndividuals.get(0).genes)).append(" and ").append(Arrays.toString(novelIndividuals.get(1).genes));
+				_message.append(novelIndividuals.get(0)).append(" and ").append(novelIndividuals.get(1));
 			}else {
 				offspring.add(new AnIndividual(p1));
 				
@@ -712,6 +694,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	 */
 	public void analyzeGeneration() {
 		
+		StringBuffer msg = new StringBuffer("Statistics (for generation "+iterationsMade+"):");
 		int n = pq_at_t0.size();
 		int f = fronts.size();
 		int p = fronts.get(1).size();
@@ -721,19 +704,20 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			if( ind.isFeasible() ) g++;
 		}
 
-		System.out.println("====================");
-		System.out.println("STATS (for generation n°"+iterationsMade+"):");
-		System.out.println(n+" individual(s) in the population");
-		System.out.println(g+" individual(s) have been evaluated with success");
-		System.out.println(f+" front(s) have been computed");
-		System.out.println(p+" individual(s) are in the first Pareto front");
+		msg
+		.append("\n"+n+" individual(s) in the population")
+		.append("\n"+g+" individual(s) have been evaluated with success")
+		.append("\n"+f+" front(s) have been computed")
+		.append("\n"+p+" individual(s) are in the first Pareto front\n")
+		;
 		for( Integer i : fronts.keySet() ) {
-			System.out.print("\nFront n°"+i+":");
+			msg.append("\nFront "+i+"("+fronts.get(i).size()+"):\n");
 			for( AnIndividual a : fronts.get(i) ) {
-				System.out.print(" @@@"+a.toMiniString());
+				msg.append(" -- "+a.toMiniString());
 			}
 		}
-		System.out.println("\n====================");
+		
+		messages.infoUser(msg.toString(), getClass());
 	}
 	
 
