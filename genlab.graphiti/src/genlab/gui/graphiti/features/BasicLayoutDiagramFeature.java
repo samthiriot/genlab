@@ -98,7 +98,7 @@ public class BasicLayoutDiagramFeature extends AbstractCustomFeature {
 				
 			// create the draw2d version of the graph 
 			final CompoundDirectedGraph graph = mapDiagramToGraph();
-			graph.setDefaultPadding(new Insets(PADDING));
+			graph.setDefaultPadding(new Insets(8, 40, 8, 40));
 			graph.setDirection(PositionConstants.EAST);
 						
 			// run layout	
