@@ -554,24 +554,20 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		final Map<AGenome,String[]> genome2geneColumns = declareColumnsForGenes(tab);
 		
 		storeIndividualsData(
-				tab, 
-				titleIteration, 0, titleGenome, 
-				genome2fitnessColumns, genome2geneColumns, 
-				parentGeneration.get(0)
-				);
+			tab, 
+			titleIteration, 0, titleGenome, 
+			genome2fitnessColumns, genome2geneColumns, 
+			parentGeneration.get(0)
+		);
 		
-		// for each iteration
 		for (Integer iterationId : offspringGeneration.keySet()) {
-			
 			// for each iteration
 			storeIndividualsData(
-					tab, 
-					titleIteration, iterationId, titleGenome, 
-					genome2fitnessColumns, genome2geneColumns, 
-					offspringGeneration.get(iterationId)
-					);
-	
-				
+				tab, 
+				titleIteration, iterationId, titleGenome, 
+				genome2fitnessColumns, genome2geneColumns, 
+				offspringGeneration.get(iterationId)
+			);
 		}
 		
 		return tab;

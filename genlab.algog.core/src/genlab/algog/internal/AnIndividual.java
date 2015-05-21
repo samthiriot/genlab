@@ -72,7 +72,7 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	
 	@Override
 	public String toString() {
-		return "["+id+"] "+genome+" "+this.genesToString()+" => "+fitnessToString();
+		return hashCode()+" "+Arrays.toString(genes);
 	}
 	
 	public String toMiniString() {
