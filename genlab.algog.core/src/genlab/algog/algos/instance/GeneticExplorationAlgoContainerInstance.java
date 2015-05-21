@@ -20,6 +20,12 @@ import java.util.Set;
 public class GeneticExplorationAlgoContainerInstance extends
 		AlgoContainerInstance {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1463474263307513492L;
+
+
 	public GeneticExplorationAlgoContainerInstance(IAlgoContainer algo,
 			IGenlabWorkflowInstance workflow) {
 		super(algo, workflow);

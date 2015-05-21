@@ -96,15 +96,15 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 		System.err.println("project : "+project);
 		
 		workflow = GenlabPersistence.getPersistence().getWorkflowForFilename(filename);
-		System.err.println(workflow);
+
+		// register the workflow so we can map its keys and so on
+		GenLabIndependenceSolver.singleton.registerWorkflow(workflow);
 
 		// OR, just start to match objects ???
 		GraphitiFeatureProvider dfp = (GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider();
 
 		Genlab2GraphitiUtils.linkInTransaction(dfp, getDiagramTypeProvider().getDiagram(), workflow);
 		
-		// TODO remove ???
-		GenLabIndependenceSolver.singleton.registerWorkflow(workflow);
 		
 		((GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider()).associateWorkflowWithThisProvider(workflow);
 		

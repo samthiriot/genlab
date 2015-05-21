@@ -40,8 +40,10 @@ public class GenLabIndependenceSolver implements IIndependenceSolver {
 		
 		final String id = workflow.getId();
 		
-		if (id2workflow.containsKey(workflow))
+		if (id2workflow.containsKey(workflow)) {
+			GLLogger.warnTech("ignoring received workflow "+id, getClass());
 			return;
+		}
 		
 		GLLogger.debugTech("received workflow "+id, getClass());
 		id2workflow.put(id, workflow);
@@ -94,12 +96,15 @@ public class GenLabIndependenceSolver implements IIndependenceSolver {
 		
 		// attempt to find a possible workflow parent
 		IGenlabWorkflowInstance workflow = null;
+		int lengthKeyFound = 0;
+		// trick: take the longest, not the first one, especially if one workflow name/path/id is built from the previous one and a prefix... 
 		for (String possibleKey : id2workflow.keySet()) {
-			if (key.startsWith(possibleKey)) {
+			
+			if (key.startsWith(possibleKey) && possibleKey.length() > lengthKeyFound) {
+				lengthKeyFound = possibleKey.length();
 				workflow = id2workflow.get(possibleKey);
-				break;
 			}
-			// let's assume this is the good workflow ! 
+
 		}
 		
 		if (workflow == null) {
@@ -108,18 +113,16 @@ public class GenLabIndependenceSolver implements IIndependenceSolver {
 		}
 		
 		// maybe this is an algo instance or object into the workflow ? 
-		if (o == null) {
 			
-			// let's search into this workflow
-			o = workflow.getAlgoInstanceForId(key);
+		// let's search into this workflow
+		o = workflow.getAlgoInstanceForId(key);
 	
-		
-		}
-		
 		// or, maybe this is another resource into the workflow ? 
 		// ... like an input output ?
 		// TODO to be optimized !
 		if (o == null)
+			
+			
 			loopAlgos: for (IAlgoInstance a : workflow.getAlgoInstances()) {
 				for (IInputOutputInstance io : a.getInputInstances()) {
 					if (io.getId().equals(key)) {
@@ -145,8 +148,9 @@ public class GenLabIndependenceSolver implements IIndependenceSolver {
 				}
 			}
 		
-		if (o == null)
+		if (o == null) {
 			GLLogger.warnTech("unable to find mapping for key "+key, getClass());
+		}
 		
 		return o;
 		

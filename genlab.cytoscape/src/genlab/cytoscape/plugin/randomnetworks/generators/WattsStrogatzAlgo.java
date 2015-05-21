@@ -5,14 +5,15 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
+import genlab.core.model.meta.basics.flowtypes.ProbabilityInOut;
 import cytoscape.randomnetwork.RandomNetworkModel;
 import cytoscape.randomnetwork.WattsStrogatzModel;
 
 public class WattsStrogatzAlgo extends RandomNetworkGeneratorAlgo {
 
-	public static IntegerInOut INPUT_N = new IntegerInOut("in_N", "N", "number of vertices to create", 200);
-	public static IntegerInOut INPUT_DEGREE = new IntegerInOut("in_degree", "degree", "degree of each vertex", 2);
-	public static DoubleInOut INPUT_P = new DoubleInOut("in_p", "p", "rewiring probability", 0.05);
+	public static IntegerInOut INPUT_N = new IntegerInOut("in_N", "N", "number of vertices to create", 200, 0);
+	public static IntegerInOut INPUT_DEGREE = new IntegerInOut("in_degree", "degree", "degree of each vertex", 2, 0);
+	public static ProbabilityInOut INPUT_P = new ProbabilityInOut("in_p", "p", "rewiring probability", 0.05);
 	
 
 	public WattsStrogatzAlgo() {

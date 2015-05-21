@@ -22,7 +22,8 @@ public class GraphAddRandomEdges extends AbstractBasicAlgoRandomEdges {
 			"in_count", 
 			"count", 
 			"number of edges to add",
-			10
+			10,
+			0
 			);
 			
 	public GraphAddRandomEdges() {

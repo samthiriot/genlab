@@ -1,7 +1,15 @@
 package genlab.algog.algos.meta;
 
+import genlab.algog.algos.instance.DoubleGeneInstance;
+import genlab.algog.algos.instance.GeneInstance;
+import genlab.algog.algos.instance.IntegerGeneInstance;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
+import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
+import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
 import genlab.core.parameters.DoubleParameter;
 
 /**
@@ -57,6 +65,18 @@ public class DoubleGeneAlgo extends AbstractGeneAlgo {
 		return OUTPUT_VALUE;
 	}
 
+	
+	@Override
+	public IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
+		return new DoubleGeneInstance(this, workflow);
+	}
 
+
+	@Override
+	public IAlgoInstance createInstance(String id,
+			IGenlabWorkflowInstance workflow) {
+		return new DoubleGeneInstance(this, workflow, id);
+		
+	}
 	
 }

@@ -16,7 +16,8 @@ public class RewireGraph extends AbstractIGraphTransform {
 			"in_count", 
 			"count", 
 			"number of edges to rewire",
-			10
+			10,
+			0
 			);
 	
 	public RewireGraph() {

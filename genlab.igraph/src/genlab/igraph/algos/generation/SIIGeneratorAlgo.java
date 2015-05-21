@@ -3,8 +3,8 @@ package genlab.igraph.algos.generation;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
+import genlab.core.model.meta.basics.flowtypes.ProbabilityInOut;
 
 public class SIIGeneratorAlgo extends AbstractIGraphGenerator {
 
@@ -12,17 +12,19 @@ public class SIIGeneratorAlgo extends AbstractIGraphGenerator {
 			"in_islands_n", 
 			"islands_n", 
 			"Number of islands to create",
-			5
+			5,
+			1
 			);
 	
 	public static final IntegerInOut INPUT_islands_size = new IntegerInOut(
 			"in_islands_size", 
 			"islands_size", 
 			"The size of each island.",
-			20
+			20,
+			0
 			);
 	
-	public static final DoubleInOut INPUT_islands_pin = new DoubleInOut(
+	public static final ProbabilityInOut INPUT_islands_pin = new ProbabilityInOut(
 			"in_islands_pin", 
 			"islands_pin", 
 			"Probability to create links within islands.",
@@ -34,7 +36,8 @@ public class SIIGeneratorAlgo extends AbstractIGraphGenerator {
 			"in_n_inter", 
 			"n_inter", 
 			"Number of links between islands.",
-			1
+			1,
+			0
 			);
 	
 	

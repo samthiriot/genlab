@@ -239,7 +239,7 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		this.messages = messages;
 		this.progress = progress;
 		
-		if (glGraph.getEdgesCount() > 5000 || glGraph.getVerticesCount() > 1000) {
+		if (glGraph.getEdgesCount() > 10000 || glGraph.getVerticesCount() > 3000) {
 			messages.warnUser("the graph is too big to be displayed", getClass());
 			return;
 		}

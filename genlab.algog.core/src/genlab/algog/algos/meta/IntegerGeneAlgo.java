@@ -1,7 +1,13 @@
 package genlab.algog.algos.meta;
 
+import genlab.algog.algos.instance.GeneInstance;
+import genlab.algog.algos.instance.IntegerGeneInstance;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
+import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
 import genlab.core.parameters.IntParameter;
 
 /**
@@ -53,6 +59,21 @@ public class IntegerGeneAlgo extends AbstractGeneAlgo {
 	@Override
 	public InputOutput<?> getMainOutput() {
 		return OUTPUT_VALUE;
+	}
+	
+	
+	
+	@Override
+	public IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
+		return new IntegerGeneInstance(this, workflow);
+	}
+
+
+	@Override
+	public IAlgoInstance createInstance(String id,
+			IGenlabWorkflowInstance workflow) {
+		return new IntegerGeneInstance(this, workflow, id);
+		
 	}
 
 }

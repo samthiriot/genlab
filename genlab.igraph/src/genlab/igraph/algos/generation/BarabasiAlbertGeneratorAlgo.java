@@ -6,8 +6,8 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.basics.flowtypes.BooleanInOut;
 import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
+import genlab.core.model.meta.basics.flowtypes.ProbabilityInOut;
 import genlab.core.parameters.BooleanParameter;
-import genlab.core.parameters.RNGSeedParameter;
 
 public class BarabasiAlbertGeneratorAlgo extends AbstractIGraphGenerator {
 
@@ -15,14 +15,16 @@ public class BarabasiAlbertGeneratorAlgo extends AbstractIGraphGenerator {
 			"in_N", 
 			"N", 
 			"Number of vertices to create",
-			200
+			200,
+			0
 			);
 	
 	public static final IntegerInOut INPUT_M = new IntegerInOut(
 			"in_M", 
 			"M", 
 			"number of nodes to add at each step",
-			1
+			1,
+			0
 			);
 	
 	public static final DoubleInOut INPUT_POWER = new DoubleInOut(
@@ -46,7 +48,7 @@ public class BarabasiAlbertGeneratorAlgo extends AbstractIGraphGenerator {
 			false
 			);
 	
-	public static final DoubleInOut INPUT_A = new DoubleInOut(
+	public static final ProbabilityInOut INPUT_A = new ProbabilityInOut(
 			"in_a", 
 			"A", 
 			"The probability that a vertex is cited is proportional to d^power+A",

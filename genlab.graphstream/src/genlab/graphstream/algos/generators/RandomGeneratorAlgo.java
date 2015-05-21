@@ -2,8 +2,8 @@ package genlab.graphstream.algos.generators;
 
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.InputOutput;
-import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
+import genlab.core.model.meta.basics.flowtypes.ProbabilityInOut;
 
 import org.graphstream.algorithm.generator.BaseGenerator;
 import org.graphstream.algorithm.generator.RandomGenerator;
@@ -18,7 +18,7 @@ public class RandomGeneratorAlgo extends GraphStreamGeneratorAlgo {
 			200
 	);
 	
-	public final static DoubleInOut INPUT_k = new DoubleInOut(
+	public final static ProbabilityInOut INPUT_k = new ProbabilityInOut(
 			"in_k", 
 			"k", 
 			"average degree in the generated graph",

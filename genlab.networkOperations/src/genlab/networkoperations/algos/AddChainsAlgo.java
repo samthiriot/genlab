@@ -28,14 +28,16 @@ public class AddChainsAlgo extends BasicAlgo {
 			"in_length", 
 			"length", 
 			"the length of chains to create",
-			50
+			50,
+			0
 			);
 	
 	public static final IntegerInOut INPUT_COUNT = new IntegerInOut(
 			"in_count", 
 			"count", 
 			"how many chains to create",
-			1
+			1,
+			0
 			);
 	
 

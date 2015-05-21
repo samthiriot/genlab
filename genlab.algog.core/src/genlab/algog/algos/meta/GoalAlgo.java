@@ -1,11 +1,13 @@
 package genlab.algog.algos.meta;
 
 import genlab.algog.algos.exec.GoalExec;
-import genlab.algog.algos.exec.IGoalExec;
+import genlab.algog.algos.instance.GoalInstance;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.NumberFlowType;
@@ -76,6 +78,17 @@ public class GoalAlgo extends AbstractGeneticAlgo  {
 	public boolean canBeContainedInto(IAlgoContainer algoContainer) {
 		// genes can only be contained into genetic exploration algos
 		return (algoContainer instanceof AbstractGeneticExplorationAlgo);
+	}
+
+	@Override
+	public IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
+		return new GoalInstance(this, workflow);
+	}
+
+	@Override
+	public IAlgoInstance createInstance(String id,
+			IGenlabWorkflowInstance workflow) {
+		return new GoalInstance(this, workflow, id);
 	}
 
 

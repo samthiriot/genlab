@@ -3,8 +3,8 @@ package genlab.igraph.algos.generation;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
+import genlab.core.model.meta.basics.flowtypes.ProbabilityInOut;
 import genlab.core.parameters.BooleanParameter;
 
 public class ErdosRenyiGNPGeneratorAlgo extends AbstractIGraphGenerator {
@@ -13,10 +13,11 @@ public class ErdosRenyiGNPGeneratorAlgo extends AbstractIGraphGenerator {
 			"in_N", 
 			"N", 
 			"Number of vertices to create",
-			200
+			200,
+			0
 			);
 	
-	public static final DoubleInOut INPUT_P = new DoubleInOut(
+	public static final ProbabilityInOut INPUT_P = new ProbabilityInOut(
 			"in_P", 
 			"P", 
 			"The probability to create a link.",

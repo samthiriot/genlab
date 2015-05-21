@@ -1,14 +1,13 @@
 package genlab.algog.algos.instance;
 
+import genlab.algog.algos.meta.GoalAlgo;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.instance.IWorkflowContentListener;
-import genlab.core.model.instance.WorkflowCheckResult;
 import genlab.core.model.meta.IAlgo;
-import genlab.core.parameters.Parameter;
 
 /**
  * 
@@ -18,17 +17,21 @@ import genlab.core.parameters.Parameter;
  * @author Samuel Thiriot
  *
  */
-@SuppressWarnings("serial")
-public class GeneInstance extends AlgoInstance implements IWorkflowContentListener {
+public class GoalInstance extends AlgoInstance implements IWorkflowContentListener {
 
-	public GeneInstance(IAlgo algo, IGenlabWorkflowInstance workflow, String id) {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8903247183168984087L;
+
+	public GoalInstance(IAlgo algo, IGenlabWorkflowInstance workflow, String id) {
 		super(algo, workflow, id);
 		
 		if (workflow != null)
 			workflow.addListener(this);
 	}
 
-	public GeneInstance(IAlgo algo, IGenlabWorkflowInstance workflow) {
+	public GoalInstance(IAlgo algo, IGenlabWorkflowInstance workflow) {
 		super(algo, workflow);
 
 		if (workflow != null)
@@ -45,32 +48,15 @@ public class GeneInstance extends AlgoInstance implements IWorkflowContentListen
 			workflow.addListener(this);
 	}
 
-	@Override
-	public void checkForRun(WorkflowCheckResult res) {
-		super.checkForRun(res);
-		
-		boolean paramAtDefault = false;
-		for (Parameter<?> param : getAlgo().getParameters()) {
-			
-			if (isParameterAtDefaultValue(param.getId())) {
-				res.messages.warnUser("for gene "+name+", the parameter "+param.getName()+" was not tuned.", getClass());
-				paramAtDefault = true;
-			}
-		}
-		if (paramAtDefault)
-			res.messages.warnUser("the parameters of genes have a strong impact on the efficiency of genetic algorithms. You should use these parameters to restrict the search space as much as possible.", getClass());
-		
-	}
-
 	/**
 	 * Adapt the parameters of this gene based on the input it was connected to.
 	 * May be override for smart things, like min, max.
 	 * @param input
 	 */
-	protected void adaptMyselfToTarget(IInputOutputInstance input) {
+	protected void adaptMyselfToTarget(IInputOutputInstance output) {
 		
 		// adapt the name to the target
-		setName("gene "+input.getMeta().getName());
+		setName("goal "+output.getMeta().getName());
 		
 	}
 	
@@ -80,11 +66,13 @@ public class GeneInstance extends AlgoInstance implements IWorkflowContentListen
 		// if the connection comes from me, then adapt my parameters
 		// to the element I'm connected to.
 		
-		if (c.getFrom().getAlgoInstance() != this)
+		if (c.getTo().getAlgoInstance() != this)
+			return;
+		if (c.getTo().getMeta() != GoalAlgo.INPUT_VALUE)
 			return;
 		
 		// adapt my parameters to the target ones
-		adaptMyselfToTarget(c.getTo());
+		adaptMyselfToTarget(c.getFrom());
 		
 		
 	}

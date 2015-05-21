@@ -22,7 +22,8 @@ public class GraphRewireAlgo extends AbstractBasicAlgoRandomEdges {
 			"in_count", 
 			"count", 
 			"number of edges to rewire",
-			10
+			10,
+			0
 			);
 			
 	public GraphRewireAlgo() {

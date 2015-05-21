@@ -76,6 +76,12 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 				getClass()
 				);
 		
+
+		// register the workflow so we can map its keys and so on
+		// this call is a bit redondant but solves problems of race conditions with the GUI 
+		GenLabIndependenceSolver.singleton.registerWorkflow(workflow);
+
+		
 		Genlab2GraphitiUtils.createDiagram(
 				workflow, 
 				GenLab2eclipseUtils.getEclipseProjectForGenlabProject(workflow.getProject())

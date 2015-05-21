@@ -3,16 +3,14 @@ package genlab.networkoperations.algos;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.meta.AlgoCategory;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
-import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
+import genlab.core.model.meta.basics.flowtypes.ProbabilityInOut;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.parameters.RNGSeedParameter;
-import genlab.networkoperations.exec.AddChainsExec;
 import genlab.networkoperations.exec.DensityLocallyExec;
 
 // TODO doc !
@@ -38,17 +36,19 @@ public class DensifyLocallyAlgo extends BasicAlgo {
 			"in_maxlinks", 
 			"max edges", 
 			"maximum number of edges to create per place",
-			40
+			40,
+			0
 			);
 	
 	public static final IntegerInOut INPUT_HORIZON = new IntegerInOut(
 			"in_horizon", 
 			"horizon", 
 			"how far to look at neighboors",
-			2
+			2,
+			0
 			);
 	
-	public static final DoubleInOut INPUT_PCLOSURE = new DoubleInOut(
+	public static final ProbabilityInOut INPUT_PCLOSURE = new ProbabilityInOut(
 			"in_closure", 
 			"closure", 
 			"the probability to close empty triads",

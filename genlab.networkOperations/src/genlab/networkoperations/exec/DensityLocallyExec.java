@@ -82,8 +82,7 @@ public class DensityLocallyExec extends AbstractAlgoExecutionOneshot {
 			
 			String originalVertexId = inGraph.getVertex(
 					uniform.nextIntFromTo(
-							0, (int)inGraph.getVerticesCount()
-							)
+							0, (int)inGraph.getVerticesCount()-1							)
 					);
 			
 			//System.err.println("processing place "+placeIdx+"/"+places+": "+originalVertexId);

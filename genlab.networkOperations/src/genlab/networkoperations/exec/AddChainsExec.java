@@ -81,7 +81,7 @@ public class AddChainsExec extends AbstractAlgoExecutionOneshot {
 				previousVertexId = outGraph.addVertex();
 			} else {
 				// choose one randomly
-				int idxNode = uniform.nextIntFromTo(0, (int)inGraph.getVerticesCount());
+				int idxNode = uniform.nextIntFromTo(0, (int)inGraph.getVerticesCount()-1);
 				previousVertexId = inGraph.getVertex(idxNode);
 			}
 			
