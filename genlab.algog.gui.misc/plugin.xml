@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.algog.gui.misc.algos.PlotPhenotypeAlgo"
+            id="genlab.algog.gui.misc.algos.PlotPhenotypeAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            category="genlab.gui.views.categorygenlab"
+            class="genlab.algog.gui.misc.algos.views.PlotPhenotypeView"
+            id="genlab.algog.gui.misc.algos.views.PlotPhenotypeView"
+            name="phenotypes"
+            restorable="false">
+      </view>
+   </extension>
+
+</plugin>
