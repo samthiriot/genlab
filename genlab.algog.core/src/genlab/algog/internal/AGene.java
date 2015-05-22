@@ -13,6 +13,8 @@ public abstract class AGene<TypeName> {
 
 	public final String name;
 	public final double mutationProba;
+	public static final Double INF = StrictMath.pow(10, 14);
+	public static final Double EPS = StrictMath.pow(10, -14);
 	/** value of distribution index for mutation */
 	public final double eta_m = 20.0;
 	/** value of distribution index for crossover */

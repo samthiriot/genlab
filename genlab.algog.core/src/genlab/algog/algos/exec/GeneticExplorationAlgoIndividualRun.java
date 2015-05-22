@@ -110,7 +110,7 @@ public class GeneticExplorationAlgoIndividualRun
 				IAlgoInstance ai = fitnessAlgoInstances.get(i);
 				IGoalExec goal = (IGoalExec) instance2execForSubtasks.get(ai);
 
-				individual.fitness[i] = Double.POSITIVE_INFINITY;
+				individual.fitness[i] = StrictMath.pow(10,  14);
 				individual.targets[i] = goal.getTarget();
 				individual.values[i] = null;
 

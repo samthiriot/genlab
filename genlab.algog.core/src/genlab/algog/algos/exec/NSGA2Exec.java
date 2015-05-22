@@ -14,6 +14,7 @@ import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 
+import java.awt.print.Paper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,7 +40,7 @@ import java.util.TreeMap;
 public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	
 	/** for the last generation associates each rank with its individuals */
-	protected SortedMap<Integer,Collection<AnIndividual>> fronts = null;
+	protected SortedMap<Integer,Set<AnIndividual>> fronts = null;
 	protected Set<AnIndividual> pq_at_t0 = null;
 	/** for each generation, stores the first pareto front */
 	protected final LinkedHashMap<Integer,Set<AnIndividual>> generationWFirstPF;
@@ -47,6 +48,9 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	public static final int NCUTS = 2;
 	/** have to be a power of 2, default value is TOURNAMENT_DEPTH=4 */
 	public static final int TOURNAMENT_DEPTH = (int)StrictMath.pow(2, 2);
+
+	public static final Double INF = StrictMath.pow(10, 14);
+	public static final Double EPS = StrictMath.pow(10, -14);
 
 	protected final ECrossoverMethod paramCrossover;
 	
@@ -116,7 +120,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	 */
 	protected void fastNonDominatedSort() {
 		
-		SortedMap<Integer,Collection<AnIndividual>> frontIndexWIndividuals = new TreeMap<Integer, Collection<AnIndividual>>();
+		SortedMap<Integer,Set<AnIndividual>> frontIndexWIndividuals = new TreeMap<Integer, Set<AnIndividual>>();
 		Map<AnIndividual,Integer> individualWDominationCount = new HashMap<AnIndividual, Integer>(pq_at_t0.size());
 		Map<AnIndividual,Set<AnIndividual>> individualWDominatedIndividuals = new HashMap<AnIndividual, Set<AnIndividual>>(pq_at_t0.size());
 		Set<AnIndividual> individualsInCurrentFront = new HashSet<AnIndividual>();
@@ -215,8 +219,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		@Override
 		public int compare(AnIndividual o1, AnIndividual o2) {
 			
-			final Double fitness1 = o1.fitness[m];
-			final Double fitness2 = o2.fitness[m];
+			final Double fitness1 = individuals.get( individuals.lastIndexOf(o1) ).fitness[m];
+			final Double fitness2 = individuals.get( individuals.lastIndexOf(o2) ).fitness[m];
 			if (fitness1 == null || fitness2 == null)
 				throw new ProgramException("trying to compare the fitness of "+o1+" and "+o2+" but it is null");
 			return Double.compare(fitness1, fitness2);
@@ -250,15 +254,15 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	 * @param individualWFitness
 	 * @return
 	 */
-	protected void calculateCrowdingDistance(Collection<AnIndividual> population) {
+	protected void calculateCrowdingDistance(Set<AnIndividual> population) {
 		
-		List<AnIndividual> indivs = new ArrayList<AnIndividual>(pq_at_t0);
+		List<AnIndividual> indivs = new ArrayList<AnIndividual>(population);
 		
 		int l = population.size();
 		int objectivesCount = indivs.get(0).fitness.length;
 
 		// set distance to 0
-		for( AnIndividual i : population ) {
+		for( AnIndividual i : indivs ) {
 			i.crowdedDistance = 0d;
 		}
 		
@@ -273,8 +277,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			if (Double.isNaN(diffFitness))
 				continue;
 
-			indivs.get(0).crowdedDistance = Double.POSITIVE_INFINITY;
-			indivs.get(l-1).crowdedDistance = Double.POSITIVE_INFINITY;
+			indivs.get(0).crowdedDistance = INF;
+			indivs.get(l-1).crowdedDistance = INF;
 			
 			for( int i=1 ; i<l-2 ; i++ ) {
 				Double d = indivs.get(i).crowdedDistance;
@@ -293,53 +297,61 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	protected Set<AnIndividual> selectParents() {
 		
 		// TODO manage the numerous genomes ! we have there no guarantee to keep all the genomes !
-		Set<AnIndividual> pq_at_t1 = new HashSet<AnIndividual>(paramPopulationSize);
+		Set<AnIndividual> p_at_t1 = new HashSet<AnIndividual>(paramPopulationSize);
 		int lastFrontIndex = 1;
 		
 		// first add as many entire fronts as possible
 		for( Integer frontIdx : fronts.keySet() ) {
-			Collection<AnIndividual> front = fronts.get(frontIdx);
+			Set<AnIndividual> front = fronts.get(frontIdx);
+			
+			// and then we can compute the new crowding distance
+			calculateCrowdingDistance(front);
+			
 			// if we selected enough fronts
-			if (pq_at_t1.size() + front.size() > paramPopulationSize)
+			if (p_at_t1.size() + front.size() > paramPopulationSize)
 				break;
 			
 			messages.infoUser("Keeping (as offspring) the "+front.size()+" individuals of front "+frontIdx, getClass());
-
+						
 			// add all the fronts
-			pq_at_t1.addAll(front);
+			p_at_t1.addAll(new HashSet<AnIndividual>(front));
 			
 			lastFrontIndex++;
 		}
 		
-		int remaining = paramPopulationSize - pq_at_t1.size();
-		
-		if( remaining>0 ) {
-			if( fronts.get(lastFrontIndex)==null || fronts.get(lastFrontIndex).isEmpty() ) {
-				messages.infoUser("No individual to select from front "+lastFrontIndex+" which is empty", getClass());
-			}else {
-				messages.infoUser("Still have to select "+remaining+" offsprings (will select them from the front "+lastFrontIndex+")", getClass());
-				
-				// now complete with only a part of the last front				
-				List<AnIndividual> sortedFront = new ArrayList<AnIndividual>(fronts.get(lastFrontIndex));
-				
-				calculateCrowdingDistance(sortedFront);
-				
-				List<AnIndividual> t_inds = new ArrayList<AnIndividual>(pq_at_t0);
-				Collections.sort(sortedFront, new ComparatorCrowded(t_inds));
-				
-				// add the best ones based on the crowded operator (as long as we do have some offsprings !)
-				for( int i=0 ; i<remaining && i<sortedFront.size() ; i++ ) {
-					// if( sortedFront.get(i).isFeasible() )
-					pq_at_t1.add(sortedFront.get(i));
-				}
-			}
+		if( p_at_t1.size()<paramPopulationSize ) {
+			messages.infoUser("Add "+(paramPopulationSize-p_at_t1.size())+" individuals from the "+lastFrontIndex+". front", getClass());
+			List<AnIndividual> sortedFront = new ArrayList<AnIndividual>(fronts.get(lastFrontIndex));			
+			Collections.sort(sortedFront, new ComparatorCrowded(sortedFront));
+			p_at_t1.addAll( sortedFront.subList( 0 , (paramPopulationSize-p_at_t1.size()) ) );
 		}
 		
-		if( pq_at_t1.size()<paramPopulationSize ) {
-			messages.infoUser("We were not able to select enough individuals from Q(t) and P(t): selected "+pq_at_t1.size()+" for "+paramPopulationSize+" expected", getClass());
+//		int remaining = paramPopulationSize - p_at_t1.size();
+//		
+//		if( remaining>0 ) {
+//			if( fronts.get(lastFrontIndex)==null || fronts.get(lastFrontIndex).isEmpty() ) {
+//				messages.infoUser("No individual to select from front "+lastFrontIndex+" which is empty", getClass());
+//			}else {
+//				messages.infoUser("Still have to select "+remaining+" offsprings (will select them from the front "+lastFrontIndex+")", getClass());
+//				
+//				// now complete with only a part of the last front				
+//				List<AnIndividual> sortedFront = new ArrayList<AnIndividual>(fronts.get(lastFrontIndex));
+//				
+//				Collections.sort(sortedFront, new ComparatorCrowded(sortedFront));
+//				
+//				// add the best ones based on the crowded operator (as long as we do have some offsprings !)
+//				for( int i=0 ; i<remaining && i<sortedFront.size() ; i++ ) {
+//					// if( sortedFront.get(i).isFeasible() )
+//					p_at_t1.add(sortedFront.get(i));
+//				}
+//			}
+//		}
+		
+		if( p_at_t1.size()<paramPopulationSize ) {
+			messages.infoUser("We were not able to select enough individuals from Q(t) and P(t): selected "+p_at_t1.size()+" for "+paramPopulationSize+" expected", getClass());
 		}
 		
-		return pq_at_t1;
+		return p_at_t1;
 	}
 	
 	private void doubleCheckRegressions() {
@@ -614,10 +626,10 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			for( int i=0 ; i<p.size()/2 ; i++ ) {
 				a.add( crowdedTournamentSelection(p.get( 2*i ), p.get( 2*i+1 )) );
 			}
-			recursiveCrowdedTournamentSelection(a);
+			return recursiveCrowdedTournamentSelection(a);
+		}else {
+			return p;
 		}
-		
-		return p;
 	}
 	
 	/**
@@ -633,13 +645,23 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		Set<AnIndividual> offspring = new HashSet<AnIndividual>(populationSize);
 		int countCrossover = 0;		
 		List<AnIndividual> listOfParents = new LinkedList<AnIndividual>(parents);
+		Collections.shuffle(listOfParents);
 
 		StringBuffer _message = new StringBuffer();
 		
 		while( offspring.size()<populationSize ) {
 			
-			Collections.shuffle(listOfParents);
-			List<AnIndividual> twoParents = recursiveCrowdedTournamentSelection(listOfParents.subList(0, TOURNAMENT_DEPTH));
+			int indexFrom = uniform.nextIntFromTo(0, populationSize-TOURNAMENT_DEPTH);
+			int indexTo = indexFrom + TOURNAMENT_DEPTH;
+			List<AnIndividual> subList = listOfParents.subList(indexFrom, indexTo);
+			
+			for( AnIndividual ind : subList ) {
+				System.out.println(ind.toMiniString());
+			}
+			List<AnIndividual> twoParents = recursiveCrowdedTournamentSelection(subList);
+			for( AnIndividual ind : twoParents ) {
+				System.out.println(ind.toMiniString());
+			}System.out.println();
 
 			AnIndividual p1 = twoParents.get(0);
 			AnIndividual p2 = twoParents.get(1);
@@ -666,12 +688,12 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 					.append(p2)
 					.append(" : ");
 
-				offspring.add(novelIndividuals.get(0));
+				offspring.add(new AnIndividual(novelIndividuals.get(0)));
 				
 				if( offspring.size()>populationSize ) 
 					break;
-				
-				offspring.add(novelIndividuals.get(1));
+
+				offspring.add(new AnIndividual(novelIndividuals.get(1)));
 				
 				_message.append(novelIndividuals.get(0)).append(" and ").append(novelIndividuals.get(1));
 			}else {
@@ -729,7 +751,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		/*
 		 * Retrieving Q(t) and P(t)
 		 */
-		this.pq_at_t0 = getIndividualsForTwoLastGenerations();
+		this.pq_at_t0 = new HashSet<AnIndividual>(getIndividualsForTwoLastGenerations());
 		// reset front
 		this.fronts = null;
 		

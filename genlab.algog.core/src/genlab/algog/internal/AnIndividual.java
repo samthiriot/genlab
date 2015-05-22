@@ -21,6 +21,8 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	public Double crowdedDistance;
 	
 	public static int lastId = 1;
+	public static final Double INF = StrictMath.pow(10, 14);
+	public static final Double EPS = StrictMath.pow(10, -14);
 	
 	public final int id;
 	
@@ -35,7 +37,7 @@ public class AnIndividual implements Comparable<AnIndividual> {
 		this.targets = null;
 		this.values = null;
 		this.rank = Integer.MAX_VALUE;
-		this.crowdedDistance = -1d;
+		this.crowdedDistance = -INF;
 	}
 	
 	public AnIndividual(AnIndividual ind) {
@@ -80,7 +82,8 @@ public class AnIndividual implements Comparable<AnIndividual> {
 				+", GENES "+Arrays.toString(genes)
 				+", VALUES "+Arrays.toString(values)
 				+", TARGETS "+Arrays.toString(targets)
-				+", FITNESS "+Arrays.toString(fitness);
+				+", FITNESS "+Arrays.toString(fitness)
+				+", distance "+crowdedDistance;
 	}
 	
 	public String genesToString() {

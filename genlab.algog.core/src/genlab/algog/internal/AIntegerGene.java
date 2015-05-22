@@ -49,7 +49,7 @@ public class AIntegerGene extends ANumericGene<Integer> {
             double c1, c2;
             double alpha, beta, betaq;
 
-            if( StrictMath.abs(gA-gB)>Double.MIN_VALUE ) {
+            if( StrictMath.abs(gA-gB)>EPS ) {
                 if( gA<gB ) {
                     y1 = gA;
                     y2 = gB;
