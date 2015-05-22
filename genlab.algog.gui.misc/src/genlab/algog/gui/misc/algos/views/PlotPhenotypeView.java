@@ -18,6 +18,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -31,6 +32,8 @@ public final class PlotPhenotypeView extends AbstractViewOpenedByAlgo<GenlabTabl
 	
 	private FormToolkit toolkit;
 	private ScrolledForm form;
+	
+
 		
 		
 	public PlotPhenotypeView() {
@@ -55,7 +58,6 @@ public final class PlotPhenotypeView extends AbstractViewOpenedByAlgo<GenlabTabl
 		if (lastVersionDataToDisplay == null || lastVersionDataToDisplay.isEmpty())
 			return;
 		
-	
 		widget.setData(lastVersionDataToDisplay);
 	}
 		
@@ -72,7 +74,9 @@ public final class PlotPhenotypeView extends AbstractViewOpenedByAlgo<GenlabTabl
 		
 		form = toolkit.createScrolledForm(parent);
 		Layout layout = new GridLayout(1, false);
+//		Layout layout = new RowLayout(SWT.VERTICAL);
 		form.getBody().setLayout(layout);
+
 
 		widget = new GenomeWidget(form.getBody(), SWT.NONE);
 		toolkit.adapt(widget);

@@ -13,15 +13,24 @@ import java.util.Map;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ToolTip;
 
 /**
  * TODO tooltip with actual value!
@@ -45,8 +54,10 @@ public class GenomeWidget extends Canvas {
 	
 	protected Integer iterationToDisplay = null;
 	
-	protected int heightLine = 15;
+	protected int heightText = 10;
+	protected final int heightLine = 10;
 	protected int paddingVertical = 2;
+	protected int titleHeight = heightLine;
 	
 	protected final Display display; 
 	
@@ -64,6 +75,12 @@ public class GenomeWidget extends Canvas {
 	protected int requiredHeight = 800;
 	protected int requiredWidth = 400;
 
+	protected int rowLast = 0;
+	protected int rowFirst = 0;
+	protected int widthPerGene;
+    final ToolTip tip;
+
+
 	/**
 	 * Should be called from the SWT thread
 	 * @param red
@@ -77,7 +94,8 @@ public class GenomeWidget extends Canvas {
 		
 		Color color = colors.get(total);
 		if (color == null) {
-			colors.put(total, new Color(display, red, green, blue));
+			color = new Color(display, red, green, blue);
+			colors.put(total, color);
 		}
 		
 		return color;
@@ -106,7 +124,7 @@ public class GenomeWidget extends Canvas {
 		public final double max;
 		public final Color colorStart;
 		public final Color colorEnd;
-		public final double steps = 20;
+		//public final double steps = 40;
 		
 		public Gradient(double min, double max, Color colorStart, Color colorEnd) {
 			super();
@@ -118,8 +136,8 @@ public class GenomeWidget extends Canvas {
 		
 		public Color getColorForValue(double v) {
 			
-            double ratio = v / steps;
-
+            double ratio = (v-min) / (max-min); // TODO steps ? 
+            System.err.println("ratio: "+ratio);
 			int red = (int) (colorEnd.getRed() * ratio + colorStart.getRed() * (1 - ratio));
 			int green = (int) (colorEnd.getGreen() * ratio + colorStart.getGreen() * (1 - ratio));
 			int blue = (int) (colorEnd.getBlue() * ratio + colorStart.getBlue() * (1 - ratio));
@@ -158,7 +176,7 @@ public class GenomeWidget extends Canvas {
 		for (String gene: metadataValues.keySet()) {
 			final Map<String, Object> metadata = (Map<String, Object>) metadataValues.get(gene);
 			final String columnValue = (String)metadata.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GENE_METADATA_KEY_VALUE);
-			geneIdx2columnValue[geneIdx++] = columnValue;
+			geneIdx2columnValue[geneIdx] = columnValue;
 			// create color
 			final Double min = (Double)metadata.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GENE_METADATA_KEY_MIN);
 			final Double max = (Double)metadata.get(GeneticExplorationAlgoConstants.TABLE_COLUMN_GENE_METADATA_KEY_MAX);
@@ -224,6 +242,10 @@ public class GenomeWidget extends Canvas {
 		
 	protected void paintData(GC gc) {
 	
+		// paint background
+		gc.setBackground(getBackground());
+		gc.fillRectangle(getClientArea());
+		
 		// quick exit if nothing to display
 		if (lastVersionDataToDisplay == null || lastVersionDataToDisplay.isEmpty())
 			return;
@@ -234,37 +256,71 @@ public class GenomeWidget extends Canvas {
 				return;
 		}
 		
+		gc.setFont(getFont());
+
+		
 		// identify data to display
 		// search for the index covering the last iteration
 		iterationToDisplay = (Integer)lastVersionDataToDisplay.getValue(lastVersionDataToDisplay.getRowsCount()-1, columnIdForIteration);
-		int currentRow = lastVersionDataToDisplay.getRowsCount()-1;
-		final int rowLast = currentRow;
+		int currentRow = lastVersionDataToDisplay.getRowsCount();
+		rowLast = currentRow-1;
 		Integer currentRowIteration = null;
 		currentRowIteration = (Integer)lastVersionDataToDisplay.getValue(rowLast, columnIdForIteration); 
 		do {
 			currentRow --;
 			currentRowIteration = (Integer)lastVersionDataToDisplay.getValue(currentRow, columnIdForIteration);
-		} while (currentRowIteration == iterationToDisplay);
+		} while (currentRowIteration == iterationToDisplay && currentRow > 0);
 		
-		final int rowFirst = currentRow;
+		rowFirst = currentRow;
 		final int totalToDisplay = rowLast-rowFirst;
 	
 		// compute size
-		requiredHeight = heightLine*totalToDisplay+paddingVertical*(totalToDisplay-1);
+		heightText = (int)Math.ceil(gc.getFontMetrics().getHeight());
+
+		requiredHeight = heightText + heightLine*(totalToDisplay+1) + paddingVertical*totalToDisplay;
+		
 		
 		// resize to this size, thanks
 		if (this.getSize().y != requiredHeight)
 			setSize(this.getSize().x, requiredHeight);
 		
-		// actual paint
-		
-		// paint genes
 		Rectangle clientArea = getClientArea();
-		final int widthPerGene = clientArea.width/geneIdx2columnValue.length;
+		widthPerGene = clientArea.width/geneIdx2columnValue.length;
+		
+		// actual titles
+
+
+		// text iteration
+		gc.setForeground(getForeground());
+		gc.setClipping(0, 0, clientArea.width, heightText);
+		gc.drawText(
+				"iteration "+iterationToDisplay, 
+				0, 
+				0, 
+				true
+				);
+		gc.setClipping((Rectangle)null);
+		
+		/*
+		for (int geneIdx=0; geneIdx<geneIdx2columnValue.length; geneIdx++) {
+			
+			gc.setClipping(widthPerGene*geneIdx, 0, widthPerGene, heightLine);
+			gc.drawText(
+					geneIdx2columnValue[geneIdx], 
+					widthPerGene*geneIdx, 
+					0, 
+					true
+					);
+			
+			
+		}
+		gc.setClipping((Rectangle)null);
+		*/
+		// paint genes
 		int idxLine = 0;
 		for (int dataLineIdx=rowFirst; dataLineIdx<=rowLast; dataLineIdx++) {
 			
-			int top = idxLine*requiredHeight+(idxLine-1)*paddingVertical;
+			int top = heightText + idxLine*heightLine + idxLine*paddingVertical;
 			
 			for (int geneIdx=0; geneIdx<geneIdx2columnValue.length; geneIdx++) {
 			
@@ -272,19 +328,20 @@ public class GenomeWidget extends Canvas {
 				double value;
 				
 				try {
-					value = (Double)lastVersionDataToDisplay.getValue(
-								dataLineIdx, 
-								geneIdx2columnValue[geneIdx]
-							);
+					Object v = lastVersionDataToDisplay.getValue(
+							dataLineIdx, 
+							geneIdx2columnValue[geneIdx]
+						);
+					value = ((Number)v).doubleValue();
 						
 					// set color
 					gc.setBackground(geneIdx2gradient[geneIdx].getColorForValue(value));
 					// fill rectangle
 					gc.fillRectangle(
-							geneIdx, 
+							geneIdx*widthPerGene, 
 							top, 
 							widthPerGene, 
-							requiredHeight
+							heightLine
 							);
 					
 				} catch (Exception e) {
@@ -310,6 +367,10 @@ public class GenomeWidget extends Canvas {
 		
 		display = parent.getDisplay();
 		
+		tip = new ToolTip(parent.getShell(), SWT.BALLOON);
+		tip.setVisible(false);
+		
+		
 		setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 		
 		addDisposeListener(new DisposeListener() {
@@ -326,6 +387,126 @@ public class GenomeWidget extends Canvas {
 				paintData(e.gc);
 			}
 		});
+		addMouseTrackListener(new MouseTrackListener() {
+			
+			@Override
+			public void mouseHover(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExit(MouseEvent e) {
+				System.out.println("mouse exit !");
+				try {
+					tip.setVisible(false);
+				} catch (RuntimeException e2) {
+					e2.printStackTrace();
+				}
+			}
+			
+			@Override
+			public void mouseEnter(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		addMouseMoveListener(new MouseMoveListener() {
+			
+			@Override
+			public void mouseMove(MouseEvent e) {
+				System.out.println("mouse move ! "+e);
+
+				try {
+	            	GenomeWidget actionWidget = (GenomeWidget)e.widget;
+	            	if ((actionWidget == null) || (actionWidget.isDisposed()))
+	            		return;
+	            	
+	                //Point loc = actionWidget.toDisplay(e.x, e.y);
+	            	Point loc = new Point(e.x, e.y);
+	                String[] c = getTooltipForLocation(loc);
+	                if (c == null) {
+	                	tip.setVisible(false);
+	                	return;
+	                }
+	                tip.setLocation(actionWidget.toDisplay(loc));
+	                if (!tip.getText().equals(c[0]) || !tip.getMessage().equals(c[1])) {
+	                	System.out.println("change text !");
+		                tip.setVisible(false);
+	                	tip.setText(c[0]);
+	                	tip.setMessage(c[1]);
+	                	tip.setVisible(true);
+	                }
+            	} catch (RuntimeException e2) {
+            		e2.printStackTrace();
+            	}
+			}
+		});
+		/*
+		addFocusListener(new FocusListener() {
+			
+            @Override
+            public void focusLost(FocusEvent e) {
+                tip.setVisible(false);
+            }
+
+            @Override
+            public void focusGained(FocusEvent e) {
+            	try {
+	            	GenomeWidget actionWidget = (GenomeWidget)e.widget;
+	            	if ((actionWidget == null) || (actionWidget.isDisposed()))
+	            		return;
+	            	
+	                Point loc = actionWidget.toDisplay(actionWidget.getLocation());
+	                String c = getTooltipForLocation(loc);
+	                if (c == null)
+	                	return;
+	                tip.setLocation(loc.x, loc.y);
+	                tip.setText(c);
+	                tip.setVisible(true);
+            	} catch (RuntimeException e2) {
+            		e2.printStackTrace();
+            	}
+            }
+        });*/
+	}
+
+	protected String[] getTooltipForLocation(Point loc) {
+
+		if (lastVersionDataToDisplay == null || lastVersionDataToDisplay.isEmpty() || widthPerGene==0)
+			return null;
+		
+		if (loc.y < heightText)
+			return null;
+		
+		try {
+			int idxLineWidget = (int)Math.floor(
+					((double)(loc.y-heightText-paddingVertical))/((double)(heightLine+paddingVertical))
+					);
+			System.err.println("line widget "+idxLineWidget);
+			int idxLineTable = rowFirst + idxLineWidget;
+			System.err.println("line table "+idxLineTable);
+			
+			int colLineWidget = loc.x/widthPerGene;
+			System.err.println("col widget "+colLineWidget);
+			if (colLineWidget >= geneIdx2columnValue.length)
+				return null;
+			
+			String geneId = geneIdx2columnValue[colLineWidget];
+			System.err.println("gene Id "+geneId);
+			
+			Object v = lastVersionDataToDisplay.getValue(idxLineTable, geneId);;
+			if (v == null)
+				return null;
+			
+			return new String[] {
+				geneId, v.toString()	
+			};
+			
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
