@@ -39,15 +39,15 @@ public class AIntegerGene extends ANumericGene<Integer> {
 
 	@Override
 	public Integer[] crossoverSBX(Uniform U, Object genesA, Object genesB) {
-		
-		Double gA = (Double)genesA;
-		Double gB = (Double)genesB;
+
+		Double gA = ((Integer)genesA).doubleValue();
+		Double gB = ((Integer)genesB).doubleValue();
 		
 		if( U.nextDoubleFromTo(0, 1)<0.5 ) {
-			double rand;
-            double y1, y2, yl, yu;
-            double c1, c2;
-            double alpha, beta, betaq;
+			Double rand;
+			Double y1, y2, yl, yu;
+			Double c1, c2;
+			Double alpha, beta, betaq;
 
             if( StrictMath.abs(gA-gB)>EPS ) {
                 if( gA<gB ) {
@@ -58,8 +58,8 @@ public class AIntegerGene extends ANumericGene<Integer> {
                     y2 = gA;
                 }
                 
-                yl = min;
-                yu = max;
+                yl = min.doubleValue();
+                yu = max.doubleValue();
                 rand = U.nextDoubleFromTo(0, 1);
                 beta = 1.0 + (2.0*(y1-yl)/(y2-y1));
                 alpha = 2.0 - StrictMath.pow( beta , -(eta_c+1.0) );
@@ -88,19 +88,19 @@ public class AIntegerGene extends ANumericGene<Integer> {
                 if( c2>yu ) c2 = yu;
                 
                 if( U.nextDoubleFromTo(0, 1)<=0.5 ) {
-                	return new Integer[]{(int)c2, (int)c1};
+                	return new Integer[]{c2.intValue(), c1.intValue()};
                 }else {
-                	return new Integer[]{(int)c1, (int)c2};
+                	return new Integer[]{c1.intValue(), c2.intValue()};
                 }
             }else {
                 if( U.nextDoubleFromTo(0, 1)<=0.5 ) {
                 	return new Integer[]{(Integer)genesA, (Integer)genesB};
                 }else {
-                	return new Integer[]{(int)genesB, (int)genesA};
+                	return new Integer[]{(Integer)genesB, (Integer)genesA};
                 }
             }
 		}else {
-        	return new Integer[]{(int)genesA, (int)genesB};
+        	return new Integer[]{(Integer)genesA, (Integer)genesB};
 		}
 	}
 }
