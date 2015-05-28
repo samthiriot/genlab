@@ -244,6 +244,9 @@ public final class ComputationProgressWithSteps implements IComputationProgress,
 	
 	protected void dispatchComputationStateChanged() {
 		
+		if (listeners == null)
+			return;
+		
 		LinkedList<IComputationProgressSimpleListener> listenersCopy = null; 
 		
 		synchronized (listeners) {

@@ -318,7 +318,7 @@ public class GenomeWidget extends Canvas {
 		*/
 		// paint genes
 		int idxLine = 0;
-		for (int dataLineIdx=rowFirst; dataLineIdx<=rowLast; dataLineIdx++) {
+		for (int dataLineIdx=rowFirst; dataLineIdx<rowLast; dataLineIdx++) {
 			
 			int top = heightText + idxLine*heightLine + idxLine*paddingVertical;
 			

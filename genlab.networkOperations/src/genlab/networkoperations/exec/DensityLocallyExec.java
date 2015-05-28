@@ -114,7 +114,7 @@ public class DensityLocallyExec extends AbstractAlgoExecutionOneshot {
 				Integer distanceNeighboor2 = currentDistance+2;
 				loopN1: for (String neighboorId : outGraph.getNeighboors(vertexBaseId)) {
 					
-					//System.err.println("processing node R+1 "+neighboorId);
+					System.err.println("processing node R+1 "+neighboorId);
 					// update its distance: me+1, or the lower previous value
 					Integer currentDistanceNeighboor = vertex2distance.get(neighboorId);
 					if (currentDistanceNeighboor == null || currentDistanceNeighboor > distanceNeighboor) {
@@ -130,10 +130,11 @@ public class DensityLocallyExec extends AbstractAlgoExecutionOneshot {
 							)
 						verticesBaseToProcess.add(neighboorId);
 										
-					// list its neighboors 
+					// list its neighboors
+					System.err.print("processing node R+2 ");
 					for (String neighboorId2th : outGraph.getNeighboors(neighboorId)) {
 						
-						//System.err.println("processing node R+2 "+neighboorId2th);
+						System.err.print(neighboorId2th+" ");
 
 						// update its distance: me+2, or the lower previous value
 						Integer currentDistanceNeighboor2 = vertex2distance.get(neighboorId2th);
@@ -162,7 +163,9 @@ public class DensityLocallyExec extends AbstractAlgoExecutionOneshot {
 								break loopVertices;
 						}
 					}
-					
+				
+					System.err.println();
+
 				}
 					
 			

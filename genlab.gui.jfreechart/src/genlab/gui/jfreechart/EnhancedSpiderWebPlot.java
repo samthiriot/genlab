@@ -1160,7 +1160,7 @@ public class EnhancedSpiderWebPlot extends Plot implements Cloneable, Serializab
         }
 
         drawBackground(g2, area);
-        drawOutline(g2, area);
+        //drawOutline(g2, area);
 
         Shape savedClip = g2.getClip();
 
@@ -1235,7 +1235,7 @@ public class EnhancedSpiderWebPlot extends Plot implements Cloneable, Serializab
         }
         g2.setClip(savedClip);
         g2.setComposite(originalComposite);
-        drawOutline(g2, area);
+        //drawOutline(g2, area);
     }
 
     /**

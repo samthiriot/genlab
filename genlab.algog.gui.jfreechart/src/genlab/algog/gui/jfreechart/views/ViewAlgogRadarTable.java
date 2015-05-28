@@ -135,7 +135,7 @@ public final class ViewAlgogRadarTable
 			
 			ChartComposite compositeChart = new ChartComposite(
 					compositeHost, 
-					SWT.NONE, 
+					SWT.BORDER_SOLID, 
 					jfreechart,
 					true // use a buffer
 					);	
