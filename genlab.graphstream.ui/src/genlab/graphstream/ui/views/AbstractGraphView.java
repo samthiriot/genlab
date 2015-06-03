@@ -104,7 +104,7 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		messages.traceTech("init an AWT frame...", getClass());
 		
 		hostSwtComposite = new Composite(parent, SWT.EMBEDDED | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND | SWT.TRANSPARENT );  
-		hostSwtComposite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+		//hostSwtComposite.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 		//hostSwtComposite.setRedraw(true);
 		
 		
@@ -367,6 +367,7 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		
 		messages.traceTech("disposing this view...", getClass());
 				
+		
 		if (gsViewer != null) {
 			gsViewer.disableAutoLayout();
 			gsViewer.close();

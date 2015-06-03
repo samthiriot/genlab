@@ -65,6 +65,7 @@
       <plugin id="genlab.graphstream.ui"/>
       <plugin id="genlab.gui"/>
       <plugin id="genlab.gui.jfreechart"/>
+      <plugin id="genlab.gui.prefuse"/>
       <plugin id="genlab.igraph"/>
       <plugin id="genlab.jna.corejar"/>
       <plugin id="genlab.jung"/>

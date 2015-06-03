@@ -146,6 +146,7 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 		}
 	}
 
+	
 	protected abstract void displayResultsSync(AbstractViewOpenedByAlgo theView);
 
 	

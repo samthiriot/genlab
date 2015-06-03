@@ -104,6 +104,10 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
         
     	public DataUnion() {
     	
+    		//vid = 0;
+    		//vecptr = new InternalVectorStruct();
+    		
+    				
     		ensureAllocated();
 
     	}
@@ -119,7 +123,7 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
     		
     		super.read();        
 
-
+    	    
     	}
         
     }
@@ -134,6 +138,8 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
 		
 		ensureAllocated();
 //	    allocateMemory();
+		
+		type = IGRAPH_VS_ALL;
 
 	}
 	
@@ -151,11 +157,15 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
 
 		String typeStr = null;
 		
+		
 	    switch (type) {
     		
 		case IGRAPH_VS_ALL:
 		case IGRAPH_VS_NONE:
     		// read nothing
+			// TODO ???
+			typeStr = "vecptr";
+
 			//data.setType((String)null);
 			break;
 		
@@ -183,10 +193,12 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
 			
 		}
 	    
-	    if (typeStr != null) {
+	    System.err.println("set type "+typeStr);
+	    
+	    //if (typeStr != null) {
 	    	data.setType(typeStr);
 			data.read();
-	    }
+	    //}
 	}
 	
 	@Override

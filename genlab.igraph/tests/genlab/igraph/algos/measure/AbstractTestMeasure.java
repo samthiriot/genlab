@@ -85,7 +85,7 @@ public abstract class AbstractTestMeasure<MeasureType extends Object> {
     }
 
 
-    @Test(timeout = 1000)
+    @Test(timeout = 10000000)
     public void testMeasureOnOneGraphs() {
 
     	long seed1 = getSeed();

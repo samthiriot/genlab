@@ -307,6 +307,7 @@ public class GenlabPersistence extends AbstractPersistence {
 					project.addWorkflow(workflow);
 				} catch (RuntimeException e) {
 					GLLogger.errorUser("a workflow file was not found: "+relativeWorkflowFilename+"; we will remove the reference of to this file in the projet.", getClass());
+					e.printStackTrace();
 					if (toRemove == null) {
 						toRemove = new LinkedList<String>();
 					}

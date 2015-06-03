@@ -85,7 +85,7 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 	        	writer.endNode();
 	            writer.startNode("value");
 	            writer.addAttribute("class", entry.getValue().getClass().getCanonicalName());
-	            writer.setValue(entry.getValue().toString());
+	            writer.setValue(param.toSaveString(entry.getValue()));
 	            writer.endNode();
 	            writer.endNode();
 	        }
@@ -156,7 +156,7 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 								            className = reader.getAttribute("class");
 								            if (className == null)
 								        		throw new WrongParametersException("A \"class\" attribute is expected for the <value> tags.");
-								        	try {
+								        	try { 
 												Class<?> decodingClass = ctxt.getClass().getClassLoader().loadClass(className);
 												parsedValue = ctxt.convertAnother(reader, decodingClass);
 											} catch (ClassNotFoundException e) {

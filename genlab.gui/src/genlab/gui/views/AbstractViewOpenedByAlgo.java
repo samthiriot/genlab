@@ -2,6 +2,7 @@ package genlab.gui.views;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IParametersListener;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
@@ -233,6 +234,15 @@ public abstract class AbstractViewOpenedByAlgo<ClassObjectToDisplay extends Obje
 
 	@Override
 	public void partClosed(IWorkbenchPartReference partRef) {
+		
+		// just in case: if we are a parameter listener, maybe we were attached to 
+		// the algo instance; if the developer forgets to remove this link, 
+		// the view will never be actually removed. 
+		// then remove the listener
+		if (this instanceof IParametersListener) {
+			algoInstance.removeParametersListener((IParametersListener) this);
+		}
+		
 	}
 
 	@Override

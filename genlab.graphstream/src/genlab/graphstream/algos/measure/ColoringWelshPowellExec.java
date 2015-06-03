@@ -38,7 +38,7 @@ public class ColoringWelshPowellExec extends AbstractGraphstreamMeasureExecution
 		Map<IInputOutput<?>, Object> res = new HashMap<IInputOutput<?>, Object>(5);
 		
 		IGenlabGraph outGraph = genlabGraph.clone("dup");
-		String attributeId = (String)algoInst.getValueForParameter(ColoringWelshPowell.PARAM_ATTRIBUTE_NAME.getId());
+		String attributeId = (String)algoInst.getValueForParameter(ColoringWelshPowell.PARAM_ATTRIBUTE_NAME);
 		
 		if (isUsed(ColoringWelshPowell.OUTPUT_GRAPH) || exec.getExecutionForced()) {
 			

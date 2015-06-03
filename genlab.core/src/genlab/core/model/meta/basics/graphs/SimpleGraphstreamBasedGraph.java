@@ -4,6 +4,9 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 import org.graphstream.graph.implementations.SingleGraph;
 
@@ -16,6 +19,8 @@ import org.graphstream.graph.implementations.SingleGraph;
 public class SimpleGraphstreamBasedGraph extends AbstractGraphstreamBasedGraph implements Externalizable {
 
 	protected GraphDirectionality directionality;
+	
+	protected final Collection<String> linktypes = Collections.unmodifiableCollection(new LinkedList<String>() {{ add("edges"); }});
 	
 	public SimpleGraphstreamBasedGraph(String graphId, GraphDirectionality directionality) {
 		super(new SingleGraph(graphId, true, false));
@@ -58,7 +63,15 @@ public class SimpleGraphstreamBasedGraph extends AbstractGraphstreamBasedGraph i
 
 	}
 
+	@Override
+	public final Collection<String> getEdgeTypes() {
+		return linktypes;
+	}
 
+	@Override
+	public final String getEdgeType(String edgeId) {
+		return "edges";
+	}
 	
 
 }

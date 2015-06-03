@@ -568,6 +568,8 @@ public class IGraphLibImplementationNative implements IGraphLibImplementation {
 			
 			igraphGraph = IGraph2GenLabConvertor.getIGraphGraphForGenlabGraph(g, execution);
 
+			//igraphGraph  = lib.generateEmpty(10, true);
+			
 			// generate
 			return lib.computeNodeBetweeness(igraphGraph, directed);
 			

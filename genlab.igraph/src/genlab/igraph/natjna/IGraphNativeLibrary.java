@@ -384,13 +384,16 @@ public class IGraphNativeLibrary {
 					x,
 					y
 					);
-			final long duration = System.currentTimeMillis() - startTime;
-			//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
-	
 			// detect errors
 			checkIGraphResult(res);
+			res = IGraphRawLibrary.igraph_simplify(g, true, true);
+			checkIGraphResult(res);
+			
+			final long duration = System.currentTimeMillis() - startTime;
+			//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
 			
 			IGraphGraph result = new IGraphGraph(this, g, false);
+			result.multiplex = false; 
 			result.xPositions = x.asDoubleArray(nodes);
 			result.yPositions = y.asDoubleArray(nodes);
 					
@@ -922,8 +925,8 @@ public class IGraphNativeLibrary {
 	 */
 	public double[] computeNodeBetweeness(IGraphGraph g, boolean directed) {
 
-		if (true)
-			throw new NotImplementedException("unfortunately, igraph is crashing on this");
+		//if (true)
+		//	throw new NotImplementedException("unfortunately, igraph is crashing on this");
 		
 		final long startTime = System.currentTimeMillis();
 		
@@ -935,21 +938,23 @@ public class IGraphNativeLibrary {
 		int resA =IGraphRawLibrary.igraph_vector_init(res, verticesCount);
 		checkIGraphResult(resA);
 
-		//InternalVertexSelector vids = IGraphRawLibrary.igraph_vss_all();
+		InternalVertexSelector vids = new InternalVertexSelector();
+		IGraphRawLibrary.igraph_vss_all(vids);
 
-		Pointer vids = IGraphRawLibrary.igraph_vss_none();
-		resA = IGraphRawLibrary.igraph_vss_all(vids);
-		checkIGraphResult(resA);
+		//InternalVertexSelector vids = IGraphRawLibrary.igraph_vss_all();
+//		int 
+		//int resA = IGraphRawLibrary.igraph_vss_all(vids);
+		//checkIGraphResult(resA);
 	
 		try {
 	
 			final int res2 = IGraphRawLibrary.igraph_betweenness(
 					g.getPointer(), 
 					res, 
-					null, //vids, 
-					directed, 
-					null, // weights
-					true // ! true here creates a complete failure o_O
+					vids,
+					directed//, //, 
+					//null //, // weights
+					//false // ! true here creates a complete failure o_O
 					);
 					
 			
@@ -967,7 +972,7 @@ public class IGraphNativeLibrary {
 		
 		} finally {
 			
-			IGraphRawLibrary.igraph_vector_destroy(res);
+			// IGraphRawLibrary.igraph_vector_destroy(res);
 			
 		}
 		

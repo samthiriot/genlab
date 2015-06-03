@@ -1,9 +1,12 @@
 package genlab.core.model.meta.basics.graphs;
 
+import genlab.core.commons.NotImplementedException;
+
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Collection;
 
 import org.graphstream.graph.implementations.MultiGraph;
 
@@ -56,6 +59,13 @@ public class MultiplexGraphstreamBasedGraph extends AbstractGraphstreamBasedGrap
 		super.readExternal(in);
 		directionality = (GraphDirectionality) in.readObject();
 
+	}
+
+	@Override
+	public Collection<String> getEdgeTypes() {
+		// TODO Auto-generated method stub
+		// TODO !!!
+		throw new NotImplementedException("should be implemented, but it is not...");
 	}
 
 

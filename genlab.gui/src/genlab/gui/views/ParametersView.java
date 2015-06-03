@@ -14,12 +14,16 @@ import genlab.core.parameters.StringBasedParameter;
 import genlab.core.parameters.TextParameter;
 import genlab.core.projects.GenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.parameters.ParameterCreatingWidget;
+import genlab.gui.parameters.RGBParameter;
 
 import java.awt.Color;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
@@ -29,6 +33,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -345,7 +350,19 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				});
 				
 				
-			} else {
+			} else if (param instanceof ParameterCreatingWidget) {
+				
+				final ParameterCreatingWidget f = (ParameterCreatingWidget)param;
+				
+				createdWidget = f.createWidget(
+						algo, 
+						value, 
+						form.getBody(),
+						toolkit
+						);
+				
+				
+			}  else {
 
 				GLLogger.errorTech("unable to manage parameter type "+param.getClass().getCanonicalName()+"; the parameter "+param.getName()+" will not be displayed...", getClass());
 				

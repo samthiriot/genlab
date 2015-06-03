@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="genlab.core.algo">
+      <algo
+            class="genlab.gui.prefuse.algos.PrefuseVisuAlgo"
+            id="genlab.gui.prefuse.algos.PrefuseVisuAlgo">
+      </algo>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            category="genlab.gui.views.categorygenlab"
+            class="genlab.gui.prefuse.views.PrefuseVisuView"
+            id="genlab.gui.prefuse.views.PrefuseVisuView"
+            name="Graph view"
+            restorable="false">
+      </view>
+   </extension>
+
+</plugin>

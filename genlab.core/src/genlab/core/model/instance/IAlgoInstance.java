@@ -68,7 +68,7 @@ public interface IAlgoInstance extends IGenlabResource {
 	 */
 	public void delete();
 	
-	public Object getValueForParameter(String name);
+	public Object getValueForParameter(String id);
 	public Object getValueForParameter(Parameter<?> parameter);
 
 	public void setValueForParameter(Parameter<?> parameter, Object value);
@@ -109,6 +109,8 @@ public interface IAlgoInstance extends IGenlabResource {
 	public boolean isContainedInto(IAlgoContainerInstance otherInstance);
 
 	public void _initializeParamChangeName();
+
+	void declareParameter(Parameter<?> p);
 	
 	
 	

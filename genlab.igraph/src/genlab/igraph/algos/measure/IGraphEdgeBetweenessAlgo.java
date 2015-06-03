@@ -34,8 +34,8 @@ public class IGraphEdgeBetweenessAlgo extends AbstractIGraphMeasure {
 	public static final StringParameter PARAM_ATTRIBUTE_NAME = new StringParameter(
 			"attribute_name", 
 			"attribute name", 
-			"the name of the attribute of vertices which will store the value", 
-			"igraph_node_betweeness"
+			"the name of the attribute of edge which will store the value", 
+			"igraph_edge_betweeness"
 			); 
 	
 	
@@ -78,20 +78,14 @@ public class IGraphEdgeBetweenessAlgo extends AbstractIGraphMeasure {
 				
 				IGraphNativeLibrary lib = new IGraphNativeLibrary();
 
-				//GenlabProgressCallback callback = new GenlabProgressCallback(progress);
-				//lib.installProgressCallback(callback);
-				//GenlabProgressCallback.keepStrongReference(callback);
-					
 				try {
 					
-					// TODO actual parameter
-					final String parameterAttribute  = "nodeBetweenessIgraph";
-					final double cutoff = 2.0;
+					final String parameterAttribute  = (String) algoInst.getValueForParameter(PARAM_ATTRIBUTE_NAME);
 					
 					// is connected
 					if (isUsed(OUTPUT_GRAPH)) {
 						
-						double[] nodeBetweennes = lib.computeEdgeBetweenessEstimate(igraphGraph, false, cutoff);
+						double[] nodeBetweennes = lib.computeEdgeBetweeness(igraphGraph, false);
 						
 						IGenlabGraph output = genlabGraph.clone("cloned");
 				/*
@@ -120,9 +114,7 @@ public class IGraphEdgeBetweenessAlgo extends AbstractIGraphMeasure {
 					return results;
 					
 				} finally {
-					//lib.uninstallProgressCallback();
-					//GenlabProgressCallback.removeStrongReference(callback);
-
+				
 				}
 			}
 

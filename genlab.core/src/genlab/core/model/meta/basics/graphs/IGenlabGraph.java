@@ -24,8 +24,6 @@ public interface IGenlabGraph {
 
 	public void declareEdgeAttribute(String attributeId, Class type);
 	public boolean hasEdgeAttribute(String attributeId);
-
-
 	
 	public Collection<String> getDeclaredVertexAttributes();
 	public Map<String,Class> getDeclaredVertexAttributesAndTypes();
@@ -125,6 +123,20 @@ public interface IGenlabGraph {
 	public int getOutDegree(String nodeId);
 
 
+	/**
+	 * If multigraph, will return the set of defined edge types;
+	 * else always "edge"
+	 * @return
+	 */
+	public Collection<String> getEdgeTypes();
+
+	/**
+	 * returns the edge type of the edge
+	 * @param edgeId
+	 * @return
+	 */
+	public String getEdgeType(String edgeId);
+
 	
 	public Collection<String> getEdges();
 	
@@ -136,6 +148,7 @@ public interface IGenlabGraph {
 
 	
 	public void addAll(IGenlabGraph otherGraph, boolean copyGraphAttributes, boolean copyNodeAttributes, boolean copyEdgesAttributes);
+
 
 	
 }
