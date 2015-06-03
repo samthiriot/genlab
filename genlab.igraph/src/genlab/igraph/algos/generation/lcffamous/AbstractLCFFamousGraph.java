@@ -16,6 +16,8 @@ import genlab.igraph.commons.IgraphLibFactory;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphNativeLibrary;
 import genlab.igraph.natjna.IGraphRawLibrary;
+import genlab.igraph.parameters.ChoiceOfImplementationParameter;
+import genlab.igraph.parameters.ChoiceOfImplementationParameter.EIgraphImplementation;
 
 /**
  * Registers itself without extension point
@@ -29,6 +31,8 @@ public class AbstractLCFFamousGraph extends AbstractIGraphGenerator {
 	protected final LCF lcf;
 	public final int countVertices;
 			
+	public static final ChoiceOfImplementationParameter PARAM_IMPLEMENTATION = new ChoiceOfImplementationParameter();
+
 	public AbstractLCFFamousGraph(String graphName, String description, String lcf, String urlInfo, int countVertices) {
 		super(
 				graphName + "(igraph)", 
@@ -39,6 +43,8 @@ public class AbstractLCFFamousGraph extends AbstractIGraphGenerator {
 				
 		this.countVertices = countVertices;
 		this.lcf = LCF.parseFromString(lcf);
+		
+		registerParameter(PARAM_IMPLEMENTATION);
 		
 		// declare algo 
 		ExistingAlgos.getExistingAlgos().declareAlgo(this);
@@ -75,7 +81,9 @@ public class AbstractLCFFamousGraph extends AbstractIGraphGenerator {
 			@Override
 			protected IGenlabGraph generateGraph() {
 												
-				return IgraphLibFactory.getImplementation().generateLCF(countVertices, lcf.shifts, lcf.count, this.exec);
+				 return IgraphLibFactory
+						 .getImplementation((String) algoInst.getValueForParameter(AbstractLCFFamousGraph.PARAM_IMPLEMENTATION))
+						 .generateLCF(countVertices, lcf.shifts, lcf.count, this.exec);
 
 			}
 		};

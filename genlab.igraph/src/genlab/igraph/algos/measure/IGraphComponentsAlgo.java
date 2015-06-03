@@ -42,7 +42,8 @@ public class IGraphComponentsAlgo extends AbstractIGraphMeasure {
 	public IGraphComponentsAlgo() {
 		super(
 				"components (igraph)", 
-				"components processing igraph implementation"
+				"components processing igraph implementation",
+				null // no preference for implementation
 				);
 		outputs.add(OUTPUT_ISCONNECTED);
 		outputs.add(OUTPUT_SIZE_GIANT_CLUSTER);

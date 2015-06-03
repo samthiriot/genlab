@@ -63,6 +63,10 @@
             class="genlab.igraph.algos.generation.BarabasiAlbertGeneratorAlgo"
             id="genlab.igraph.algos.generation.BarabasiAlbertGeneratorAlgo">
       </algo>
+      <algo
+            class="genlab.igraph.algos.measure.IGraphNodeBetweenessAlgo"
+            id="genlab.igraph.algos.measure.IGraphNodeBetweenessAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">

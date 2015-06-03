@@ -6,7 +6,10 @@ import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.igraph.Activator;
+import genlab.igraph.commons.IgraphLibFactory;
 import genlab.igraph.natjna.IGraphRawLibrary;
+import genlab.igraph.parameters.ChoiceOfImplementationParameter;
+import genlab.igraph.parameters.ChoiceOfImplementationParameter.EIgraphImplementation;
 
 import org.osgi.framework.Bundle;
 
@@ -19,10 +22,14 @@ public abstract class AbstractIGraphMeasure extends BasicAlgo {
 			"the graph to analyze"
 	);
 	
+	public static final ChoiceOfImplementationParameter PARAM_IMPLEMENTATION = new ChoiceOfImplementationParameter();
+
+	protected final EIgraphImplementation implementationAcceptedOnly;
 	
 	public AbstractIGraphMeasure(
 			String name, 
-			String description
+			String description,
+			EIgraphImplementation implementationAcceptedOnly
 			) {
 		super(
 				name, 
@@ -32,13 +39,18 @@ public abstract class AbstractIGraphMeasure extends BasicAlgo {
 				"/icons/igraphBig.png"
 				);
 		
+		this.implementationAcceptedOnly = implementationAcceptedOnly;
+		
 		inputs.add(INPUT_GRAPH);
+		
+		registerParameter(PARAM_IMPLEMENTATION);
 	}
 	
 	public AbstractIGraphMeasure(
 			String name, 
 			String description,
-			String categoryId
+			String categoryId,
+			EIgraphImplementation implementationAcceptedOnly
 			) {
 		super(
 				name, 
@@ -48,6 +60,8 @@ public abstract class AbstractIGraphMeasure extends BasicAlgo {
 				"/icons/igraph.gif"
 				);
 		
+		this.implementationAcceptedOnly = implementationAcceptedOnly;
+		
 		inputs.add(INPUT_GRAPH);
 	}
 
@@ -56,6 +70,7 @@ public abstract class AbstractIGraphMeasure extends BasicAlgo {
 		return Activator.getDefault().getBundle();
 	}
 
+	
 	@Override
 	public boolean isAvailable() {
 		return IGraphRawLibrary.isAvailable;

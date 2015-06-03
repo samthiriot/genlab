@@ -7,31 +7,26 @@ import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.parameters.StringParameter;
-import genlab.igraph.algos.generation.lcffamous.AbstractLCFFamousGraph;
 import genlab.igraph.commons.GenlabProgressCallback;
-import genlab.igraph.commons.IgraphLibFactory;
-import genlab.igraph.natjna.IGraphNativeLibrary;
 import genlab.igraph.natjna.IGraphRawLibrary;
 import genlab.igraph.natjna.IIGraphProgressCallback;
-import genlab.igraph.parameters.ChoiceOfImplementationParameter.EIgraphImplementation;
 
 /**
  * Groups everything related to components in the igraph library
  * 
  * TODO warning this is a edge betweeness 
- * TODO extract to an indenpendant class
  * 
  * @author Samuel Thiriot
  *
  */
-public class IGraphEdgeBetweenessAlgo extends AbstractIGraphMeasure {
+public class IGraphNodeBetweenessAlgo extends AbstractIGraphMeasure {
 
 
 	public static final StringParameter PARAM_ATTRIBUTE_NAME = new StringParameter(
 			"attribute_name", 
 			"attribute name", 
-			"the name of the attribute of edges which will store the value", 
-			"igraph_edge_betweeness"
+			"the name of the attribute of vertices which will store the value", 
+			"igraph_node_betweeness"
 			); 
 	
 	
@@ -42,12 +37,13 @@ public class IGraphEdgeBetweenessAlgo extends AbstractIGraphMeasure {
 			"the graph with betweeness"
 	);
 	
+// TODO category centrality measures
 	
-	public IGraphEdgeBetweenessAlgo() {
+	public IGraphNodeBetweenessAlgo() {
 		super(
-				"edge betweeness (igraph)", 
-				"measure edge betweeness centrality using the igraph implementation",
-				null // no preference for the implementation
+				"node betweeness (igraph)", 
+				"measure node betweeness centrality using the igraph implementation",
+				null // no preference for implementation
 				);
 
 		outputs.add(OUTPUT_GRAPH);
@@ -60,7 +56,7 @@ public class IGraphEdgeBetweenessAlgo extends AbstractIGraphMeasure {
 	public IAlgoExecution createExec(IExecution execution,
 			final AlgoInstance algoInstance) {
 		
-		return new IGraphEdgeBetweenessExec(execution, algoInstance, algoInstance);
+		return new IGraphNodeBetweenessExec(execution, algoInstance, algoInstance);
 	}
 
 }

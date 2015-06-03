@@ -4,6 +4,7 @@ import genlab.core.usermachineinteraction.GLLogger;
 import genlab.igraph.Rigraph.RIGraphLibImplementation;
 import genlab.igraph.natjna.IGraphLibImplementationNative;
 import genlab.igraph.natjna.IGraphRawLibrary;
+import genlab.igraph.parameters.ChoiceOfImplementationParameter.EIgraphImplementation;
 
 /**
  * Returns a valid implementation of an IGraph library
@@ -16,7 +17,6 @@ public class IgraphLibFactory {
 	
 	}
 	
-	private static IGraphLibImplementation implementation = null;
 	private static Boolean isIGraphAvailable = null;
 	
 	public static boolean isIGraphAvailable() {
@@ -43,36 +43,56 @@ public class IgraphLibFactory {
 			GLLogger.infoTech("the R/igraph library is available :-)", IgraphLibFactory.class);
 		} 
 		
-		// choose one
-		if (IGraphRawLibrary.isAvailable) {
-			GLLogger.infoTech("we will use the igraph native library for computations; it is quick, but does not enables reproductibility of experiments", IgraphLibFactory.class);
-			implementation = new IGraphLibImplementationNative();
-		} else if (RIGraphLibImplementation.isAvailable()) {
-			GLLogger.infoTech("we will use the igraph R/igraph library for igraph operations", IgraphLibFactory.class);
-			implementation = new RIGraphLibImplementation();
-		} else {
-			GLLogger.errorUser("No igraph installation was detected on this system. Many graph algorithms will not be available. Please install R-cran and the related packages", IgraphLibFactory.class);
-			implementation = null;
-		}
-		isIGraphAvailable = implementation != null;
-
-		
-		return;
+		isIGraphAvailable = IGraphRawLibrary.isAvailable || RIGraphLibImplementation.isAvailable();
 		
 		
 	}
 	
-	public static IGraphLibImplementation getImplementation() {
+	public static IGraphLibImplementation getImplementation(String pref) {
 		
-		if (isIGraphAvailable == null) {
-			loadIgraphImplementation();
-		}
-		if (!isIGraphAvailable) {
-			// TODO meaningfull error message
-			throw new RuntimeException("no igraph implementation is available; please install R and the Rsession package");
-		}
-		return implementation;
+		return getImplementation(EIgraphImplementation.forLabel(pref));
+	}
+	
+	public static IGraphLibImplementation getImplementation(Integer pref) {
 		
+		return getImplementation(EIgraphImplementation.values()[pref]);
+	}
+
+	public static IGraphLibImplementation getImplementation(EIgraphImplementation preference) {
+		
+		if (!isIGraphAvailable())
+			throw new RuntimeException("R is not available on this configuration: neither the native library, nor the R installation is operational");
+		
+		switch (preference) {
+		case JNA_ONLY:
+			if (IGraphRawLibrary.isAvailable)
+				return new IGraphLibImplementationNative();
+			else 
+				throw new RuntimeException("The parameter requires the native library but it is not working on this system; you might change the value of this parameter");
+
+		case R_ONLY:
+			if (RIGraphLibImplementation.isAvailable())
+				return new RIGraphLibImplementation();
+			else 
+				throw new RuntimeException("The parameter requires the R library but it is not working on this system; you might change the value of this parameter");
+			
+		case JNA_OR_R:
+			if (IGraphRawLibrary.isAvailable)
+				return new IGraphLibImplementationNative();
+			else
+				return new RIGraphLibImplementation();
+
+		case R_OR_JNA:
+			if (RIGraphLibImplementation.isAvailable())
+				return new RIGraphLibImplementation();
+			else
+				return new IGraphLibImplementationNative();
+
+		default: 
+			// unreachable
+			return null;
+		}
+
 	}
 
 }
