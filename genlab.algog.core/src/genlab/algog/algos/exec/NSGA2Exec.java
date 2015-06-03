@@ -226,6 +226,29 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			return Double.compare(fitness1, fitness2);
 		}
 	}
+	
+	/**
+	 * Compares two individuals based on the genes
+	 * @author Alan Solon
+	 */
+	protected class ComparatorGenes implements Comparator<AnIndividual> {
+
+		private final int g;
+		private final List<AnIndividual> individuals;
+		
+		public ComparatorGenes(int g, List<AnIndividual> individuals) {
+			this.g = g;
+			this.individuals = individuals;
+		}
+
+		@Override
+		public int compare(AnIndividual o1, AnIndividual o2) {
+			
+			final Double a = (Double)(individuals.get( individuals.lastIndexOf(o1) ).genes[g]);
+			final Double b = (Double)(individuals.get( individuals.lastIndexOf(o2) ).genes[g]);
+			return Double.compare(a, b);
+		}
+	}
 
 	/**
 	 * Compares two individuals based on the crowded stats
@@ -242,9 +265,51 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		@Override
 		public int compare(AnIndividual o1, AnIndividual o2) {
 			
-			final Double aDistance = individuals.get( individuals.lastIndexOf(o1) ).crowdedDistance;
-			final Double bDistance = individuals.get( individuals.lastIndexOf(o2) ).crowdedDistance;
+			final Double aDistance = individuals.get( individuals.lastIndexOf(o1) ).crowdDistance;
+			final Double bDistance = individuals.get( individuals.lastIndexOf(o2) ).crowdDistance;
 			return Double.compare(bDistance, aDistance); // and in this order!
+		}
+	}
+
+	/**
+	 * Compares two individuals based on n1
+	 * @author Alan Solon
+	 */
+	protected class ComparatorN1 implements Comparator<AnIndividual> {
+
+		private final List<AnIndividual> individuals;
+		
+		public ComparatorN1(List<AnIndividual> individuals) {
+			this.individuals = individuals;
+		}
+
+		@Override
+		public int compare(AnIndividual o1, AnIndividual o2) {
+			
+			final Double a = individuals.get( individuals.lastIndexOf(o1) ).crowdDistance;
+			final Double b = individuals.get( individuals.lastIndexOf(o2) ).crowdDistance;
+			return Double.compare(a, b);
+		}
+	}
+
+	/**
+	 * Compares two individuals based on n2
+	 * @author Alan Solon
+	 */
+	protected class ComparatorN2 implements Comparator<AnIndividual> {
+
+		private final List<AnIndividual> individuals;
+		
+		public ComparatorN2(List<AnIndividual> individuals) {
+			this.individuals = individuals;
+		}
+
+		@Override
+		public int compare(AnIndividual o1, AnIndividual o2) {
+			
+			final Double a = individuals.get( individuals.lastIndexOf(o1) ).centerDistance;
+			final Double b = individuals.get( individuals.lastIndexOf(o2) ).centerDistance;
+			return Double.compare(b, a);
 		}
 	}
 	
@@ -263,7 +328,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 
 		// set distance to 0
 		for( AnIndividual i : indivs ) {
-			i.crowdedDistance = 0d;
+			i.crowdDistance = 0d;
 		}
 		
 		for (int m=0; m<objectivesCount; m++) {			
@@ -277,15 +342,115 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			if (Double.isNaN(diffFitness))
 				continue;
 
-			indivs.get(0).crowdedDistance = INF;
-			indivs.get(l-1).crowdedDistance = INF;
+			indivs.get(0).crowdDistance = INF;
+			indivs.get(l-1).crowdDistance = INF;
 			
-			for( int i=1 ; i<l-2 ; i++ ) {
-				Double d = indivs.get(i).crowdedDistance;
+			for( int i=1 ; i<l-1 ; i++ ) {
+				Double d = indivs.get(i).crowdDistance;
 				d += ( indivs.get(i+1).fitness[m] - indivs.get(i-1).fitness[m] ) / diffFitness;
-				indivs.get(i).crowdedDistance = d;
+				indivs.get(i).crowdDistance = d;
 			}
 		}
+	}
+	
+	protected Set<AnIndividual> crowdingDistanceByFitness(int howMany, List<AnIndividual> front) {
+		while( front.size()>howMany ) {
+			int l = front.size();
+			for( AnIndividual i : front ) {
+				i.crowdDistance = 0d;
+				i.centerDistance = 0d;
+			}
+			for( int m=0 ; m<front.get(0).fitness.length ; m++ ) {
+				Collections.sort(front, new ComparatorFitness(m, front));
+
+				final double delta = front.get(l-1).fitness[m] - front.get(0).fitness[m];
+	
+				front.get(0).crowdDistance = INF;
+				front.get(l-1).crowdDistance = INF;
+
+				front.get(0).centerDistance += Math.abs( front.get(0).fitness[m]-front.get(l-1).fitness[m] ) / delta;
+				front.get(l-1).centerDistance += Math.abs( front.get(0).fitness[m]-front.get(l-1).fitness[m] ) / delta;
+	
+				for( int i=1 ; i<l-1 ; i++ ) {
+					front.get(i).crowdDistance += Math.abs( front.get(i-1).fitness[m]-front.get(i+1).fitness[m] ) / delta;
+					
+					// 0 farther from i than n
+					if( Math.abs(front.get(i).fitness[m]-front.get(0).fitness[m]) > Math.abs(front.get(l-1).fitness[m]-front.get(i).fitness[m]) ) {
+						front.get(i).centerDistance += Math.abs( front.get(i).fitness[m]-front.get(0).fitness[m] ) / delta;
+					}else {
+						front.get(i).centerDistance += Math.abs( front.get(l-1).fitness[m]-front.get(i).fitness[m] ) / delta;
+					}
+				}
+			}
+			
+			// call all individual who got the same minimum n1
+			List<AnIndividual> er = new ArrayList<AnIndividual>();
+			Collections.sort(front, new ComparatorN1(front));
+			Double n1 = front.get(0).crowdDistance;
+			for( AnIndividual i : front ) {
+				if( i.crowdDistance-n1<EPS ) {
+					er.add(i);
+				}else {
+					break;
+				}
+			}
+			
+			// among them, select the best n2
+			Collections.sort(er, new ComparatorN2(er));
+			front.remove( er.get(0) );
+		}
+		
+		return new HashSet<AnIndividual>(front);
+	}
+	
+	protected Set<AnIndividual> crowdingDistanceByGenes(int howMany, List<AnIndividual> front) {
+		while( front.size()>howMany ) {
+			int l = front.size();
+			for( AnIndividual i : front ) {
+				i.crowdDistance = 0d;
+				i.centerDistance = 0d;
+			}
+			for( int g=0 ; g<front.get(0).genes.length ; g++ ) {
+				Collections.sort(front, new ComparatorGenes(g, front));
+				
+				final double delta = (Double)(front.get(l-1).genes[g]) - (Double)(front.get(0).genes[g]);
+	
+				front.get(0).crowdDistance = INF;
+				front.get(l-1).crowdDistance = INF;
+
+				front.get(0).centerDistance += Math.abs( (Double)(front.get(0).genes[g])-(Double)(front.get(l-1).genes[g]) ) / delta;
+				front.get(l-1).centerDistance += Math.abs( (Double)(front.get(0).genes[g])-(Double)(front.get(l-1).genes[g]) ) / delta;
+	
+				for( int i=1 ; i<l-1 ; i++ ) {
+					front.get(i).crowdDistance += Math.abs( (Double)(front.get(i-1).genes[g])-(Double)(front.get(i+1).genes[g]) ) / delta;
+					
+					// 0 farther from i than n
+					if( Math.abs((Double)(front.get(i).genes[g])-(Double)(front.get(0).genes[g])) > Math.abs((Double)(front.get(l-1).genes[g])-(Double)(front.get(i).genes[g])) ) {
+						front.get(i).centerDistance += Math.abs( (Double)(front.get(i).genes[g])-(Double)(front.get(0).genes[g]) ) / delta;
+					}else {
+						front.get(i).centerDistance += Math.abs( (Double)(front.get(l-1).genes[g])-(Double)(front.get(i).genes[g]) ) / delta;
+					}
+				}
+			}
+			
+			// call all individual who got the same minimum n1
+			List<AnIndividual> er = new ArrayList<AnIndividual>();
+			Collections.sort(front, new ComparatorN1(front));
+			Double n1 = front.get(0).crowdDistance;
+			for( AnIndividual i : front ) {
+				if( i.crowdDistance-n1<EPS ) {
+					er.add(i);
+				}else {
+					break;
+				}
+			}
+			
+			// among them, select the best n2
+			Collections.sort(er, new ComparatorN2(er));
+			front.remove( er.get(0) );
+		}
+		
+		return new HashSet<AnIndividual>(front);
 	}
 
 	/**
@@ -318,33 +483,22 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			
 			lastFrontIndex++;
 		}
-		
+
 		if( p_at_t1.size()<paramPopulationSize ) {
-			messages.infoUser("Add "+(paramPopulationSize-p_at_t1.size())+" individuals from the "+lastFrontIndex+". front", getClass());
-			List<AnIndividual> sortedFront = new ArrayList<AnIndividual>(fronts.get(lastFrontIndex));			
-			Collections.sort(sortedFront, new ComparatorCrowded(sortedFront));
-			p_at_t1.addAll( sortedFront.subList( 0 , (paramPopulationSize-p_at_t1.size()) ) );
+			List<AnIndividual> front = new ArrayList<AnIndividual>(fronts.get(lastFrontIndex));
+			if( Math.abs(front.get(0).fitness[0]-INF)<EPS ) {
+				p_at_t1.addAll( crowdingDistanceByGenes( (paramPopulationSize-p_at_t1.size()) , front ) );
+			}
+			else {
+				p_at_t1.addAll( crowdingDistanceByFitness( (paramPopulationSize-p_at_t1.size()) , front ) );
+			}
 		}
 		
-//		int remaining = paramPopulationSize - p_at_t1.size();
-//		
-//		if( remaining>0 ) {
-//			if( fronts.get(lastFrontIndex)==null || fronts.get(lastFrontIndex).isEmpty() ) {
-//				messages.infoUser("No individual to select from front "+lastFrontIndex+" which is empty", getClass());
-//			}else {
-//				messages.infoUser("Still have to select "+remaining+" offsprings (will select them from the front "+lastFrontIndex+")", getClass());
-//				
-//				// now complete with only a part of the last front				
-//				List<AnIndividual> sortedFront = new ArrayList<AnIndividual>(fronts.get(lastFrontIndex));
-//				
-//				Collections.sort(sortedFront, new ComparatorCrowded(sortedFront));
-//				
-//				// add the best ones based on the crowded operator (as long as we do have some offsprings !)
-//				for( int i=0 ; i<remaining && i<sortedFront.size() ; i++ ) {
-//					// if( sortedFront.get(i).isFeasible() )
-//					p_at_t1.add(sortedFront.get(i));
-//				}
-//			}
+//		if( p_at_t1.size()<paramPopulationSize ) {
+//			messages.infoUser("Add "+(paramPopulationSize-p_at_t1.size())+" individuals from the "+lastFrontIndex+". front", getClass());
+//			List<AnIndividual> sortedFront = new ArrayList<AnIndividual>(fronts.get(lastFrontIndex));			
+//			Collections.sort(sortedFront, new ComparatorCrowded(sortedFront));
+//			p_at_t1.addAll( sortedFront.subList( 0 , (paramPopulationSize-p_at_t1.size()) ) );
 //		}
 		
 		if( p_at_t1.size()<paramPopulationSize ) {
@@ -601,11 +755,11 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			return ind2;
 		}
 		// else if 1 is most spread than 2
-		else if( ind1.crowdedDistance>ind2.crowdedDistance ) {
+		else if( ind1.crowdDistance>ind2.crowdDistance ) {
 			return ind1;
 		}
 		// else if 2 is most spread than 1
-		else if( ind2.crowdedDistance>ind1.crowdedDistance ) {
+		else if( ind2.crowdDistance>ind1.crowdDistance ) {
 			return ind2;
 		}
 		// else who's the luckier?

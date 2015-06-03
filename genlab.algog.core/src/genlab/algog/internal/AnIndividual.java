@@ -18,7 +18,9 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	/** Pareto front ranking */
 	public int rank;
 	/** Crowded distance */
-	public Double crowdedDistance;
+	public Double crowdDistance;
+	
+	public Double centerDistance;
 	
 	public static int lastId = 1;
 	public static final Double INF = StrictMath.pow(10, 14);
@@ -37,7 +39,9 @@ public class AnIndividual implements Comparable<AnIndividual> {
 		this.targets = null;
 		this.values = null;
 		this.rank = Integer.MAX_VALUE;
-		this.crowdedDistance = -INF;
+		this.crowdDistance = -INF;
+
+		this.centerDistance = 0d;
 	}
 	
 	public AnIndividual(AnIndividual ind) {
@@ -47,7 +51,7 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	@Override
 	public int compareTo(AnIndividual arg0) {
 		
-		return crowdedDistance.compareTo(arg0.crowdedDistance);
+		return crowdDistance.compareTo(arg0.crowdDistance);
 	}
 	
 	/**
@@ -83,7 +87,7 @@ public class AnIndividual implements Comparable<AnIndividual> {
 				+", VALUES "+Arrays.toString(values)
 				+", TARGETS "+Arrays.toString(targets)
 				+", FITNESS "+Arrays.toString(fitness)
-				+", distance "+crowdedDistance;
+				+", distance "+crowdDistance;
 	}
 	
 	public String genesToString() {
