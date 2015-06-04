@@ -845,4 +845,13 @@ public class IGraphLibImplementationNative implements IGraphLibImplementation {
 		}
 	}
 
+	@Override
+	public double[] computeNodeCloseness(IGenlabGraph genlabGraph, IExecution exec) {
+
+		// TODO 
+		throw new NotImplementedException();
+		
+		// return null;
+	}
+
 }

@@ -733,6 +733,48 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		}
 	}
 
+
+
+	@Override
+	public double[] computeNodeCloseness(IGenlabGraph g, IExecution execution) {
+
+		Rsession rsession = null;
+		
+		try {
+			rsession = Genlab2RSession.pickOneSessionFromPool();
+	
+			// load lib
+			if (!rsession.isPackageLoaded("igraph"))
+				rsession.loadPackage("igraph");
+			
+			if (!rsession.isPackageLoaded("igraph"))
+				throw new ProgramException("was unable to load the igraph package in the R session");
+			
+			// create graph
+			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
+			
+			// measure it
+			StringBuffer cmd = new StringBuffer();
+			cmd.append("closeness(g)");
+			
+			REXP rexp = rsession.eval(cmd.toString());
+	
+			return rexp.asDoubles();
+			
+		} catch (REXPMismatchException e) {
+			throw new RuntimeException("error while decoding the result from R"+e.getLocalizedMessage(), e);
+		} finally {
+
+			if (rsession != null) {
+				// reclaim R memory
+				rsession.unset("g");
+				// return the session to the pool
+				Genlab2RSession.returnSessionFromPool(rsession);
+			}
+			
+		}
+	}
+	
 	@Override
 	public double[] computeEdgeBetweeness(IGenlabGraph g, boolean directed,
 			IExecution execution) {

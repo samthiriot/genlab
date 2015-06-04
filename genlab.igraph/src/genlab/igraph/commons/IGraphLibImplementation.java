@@ -100,6 +100,9 @@ public interface IGraphLibImplementation {
 			IGenlabGraph g, boolean directed, double cutoff, 
 			IExecution execution);
 	
+	public double[] computeNodeCloseness(IGenlabGraph genlabGraph, IExecution exec);
+	
+
 	public double[] computeEdgeBetweeness(
 			IGenlabGraph g, boolean directed, 
 			IExecution execution);
@@ -123,6 +126,6 @@ public interface IGraphLibImplementation {
 	public Double computeGlobalClusteringLocal(
 			IGenlabGraph g, 
 			IExecution execution);
-	
 
+	
 }

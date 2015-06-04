@@ -946,7 +946,7 @@ public class IGraphNativeLibrary {
 //		int 
 		//int resA = IGraphRawLibrary.igraph_vss_all(vids);
 		//checkIGraphResult(resA);
-	
+	/*
 		try {
 			System.err.println("go !go ! go");
 			Thread.sleep(10000);

@@ -67,6 +67,10 @@
             class="genlab.igraph.algos.measure.IGraphNodeBetweenessAlgo"
             id="genlab.igraph.algos.measure.IGraphNodeBetweenessAlgo">
       </algo>
+      <algo
+            class="genlab.igraph.algos.measure.IGraphNodeClosenessAlgo"
+            id="genlab.igraph.algos.measure.IGraphNodeClosenessAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
