@@ -775,7 +775,7 @@ int igraph_k_regular_game(igraph_t *graph,
 	/*
 	 * void igraph_vs_destroy(igraph_vs_t *vs);
 	 */
-	public static native void igraph_vs_destroy(Pointer vs);
+	public static native void igraph_vs_destroy(InternalVertexSelector vs);
 	
 	/* TODO not stable :-(
 	 * int igraph_betweenness_estimate(const igraph_t *graph, igraph_vector_t *res, 
@@ -806,6 +806,13 @@ int igraph_k_regular_game(igraph_t *graph,
             boolean directed,
             InternalVectorStruct weights, 
             boolean nobigint
+            );
+	
+	public static native int igraph_betweenness(
+			Pointer graph, 
+			InternalVectorStruct res,  
+			Pointer vids, 
+            boolean directed            
             );
 	
 	/*

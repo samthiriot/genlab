@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -210,16 +211,17 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Ext
 	}
 
 	@Override
-	public Collection<String> getVertices() {
+	public List<String> getVertices() {
 		
 		if (gsGraph.getNodeCount() == 0) // quick exit
 			return Collections.EMPTY_LIST;
 		
-		LinkedList<String> res = new LinkedList<String>();
-		Iterator itNodes = gsGraph.getNodeIterator();
-		while (itNodes.hasNext()) {
-			res.add(((Node)itNodes.next()).getId());
+		List<String> res = new ArrayList<String>(gsGraph.getNodeCount());
+		
+		for (int i=0; i<gsGraph.getNodeCount(); i++) {
+			res.add(gsGraph.getNode(i).getId());
 		}
+		
 		return res;
 				
 	}
@@ -491,10 +493,11 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Ext
 	}
 
 	@Override
-	public Collection<String> getEdges() {
-		Set<String> edgesIds = new HashSet<String>();
-		for (Edge e : gsGraph.getEachEdge()) {
-			edgesIds.add(e.getId());
+	public List<String> getEdges() {
+		
+		List<String> edgesIds = new ArrayList<String>(gsGraph.getEdgeCount());
+		for (int i=0; i<gsGraph.getEdgeCount(); i++) {
+			edgesIds.add(gsGraph.getEdge(i).getId());
 		}
 		return edgesIds;
 	}

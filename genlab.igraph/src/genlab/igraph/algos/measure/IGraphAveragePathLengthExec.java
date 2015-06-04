@@ -7,7 +7,6 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
-import genlab.igraph.natjna.IGraphGraph;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,16 +25,16 @@ public class IGraphAveragePathLengthExec extends AbstractIGraphMeasureExec imple
 	@Override
 	protected Map<IInputOutput<?>, Object> analyzeGraph(
 			IComputationProgress progress, 
-			IGraphGraph igraphGraph,
 			IGenlabGraph genlabGraph,
 			ListOfMessages messages
 			) {
 		
 		Map<IInputOutput<?>, Object> results = new HashMap<IInputOutput<?>, Object>();
+
 		
 		// average path length
 		if (isUsed(IGraphAveragePathLengthAlgo.OUTPUT_AVERAGE_PATH_LENGTH) ||  exec.getExecutionForced()) {
-			double averagePathLength = igraphGraph.lib.computeAveragePathLength(igraphGraph);
+			double averagePathLength = getLibrary().computeAveragePathLength(genlabGraph, exec);
 			results.put(IGraphAveragePathLengthAlgo.OUTPUT_AVERAGE_PATH_LENGTH, averagePathLength);
 		} else {
 			messages.debugUser("the average path length is not used, so it will not be computed", getClass());	
@@ -43,7 +42,7 @@ public class IGraphAveragePathLengthExec extends AbstractIGraphMeasureExec imple
 		
 		// diameter
 		if (isUsed(IGraphAveragePathLengthAlgo.OUTPUT_DIAMETER) ||  exec.getExecutionForced()) {
-			int diameter = igraphGraph.lib.computeDiameter(igraphGraph);
+			int diameter = getLibrary().computeDiameter(genlabGraph, exec);
 			results.put(IGraphAveragePathLengthAlgo.OUTPUT_DIAMETER, diameter);
 		} else {
 			messages.debugUser("the diameter is not used, so it will not be computed", getClass());	

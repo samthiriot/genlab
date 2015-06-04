@@ -7,6 +7,7 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.commons.IgraphLibFactory;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphNativeLibrary;
+import genlab.igraph.parameters.ChoiceOfImplementationParameter.EIgraphImplementation;
 
 public class SIIGeneratorExec extends AbstractIGraphGeneratorExec {
 
@@ -25,7 +26,8 @@ public class SIIGeneratorExec extends AbstractIGraphGeneratorExec {
 	@Override
 	protected IGenlabGraph generateGraph() {
 
-		return IgraphLibFactory.getImplementation().generateInterconnectedIslands(
+		return IgraphLibFactory.getImplementation((Integer) algoInst.getValueForParameter(AbstractIGraphGenerator.PARAM_IMPLEMENTATION))
+				.generateInterconnectedIslands(
 				(Integer)getInputValueForInput(SIIGeneratorAlgo.INPUT_islands_n), 
 				(Integer)getInputValueForInput(SIIGeneratorAlgo.INPUT_islands_size), 
 				(Double)getInputValueForInput(SIIGeneratorAlgo.INPUT_islands_pin), 
