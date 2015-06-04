@@ -7,7 +7,7 @@ import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.cytoscape.plugin.randomnetworks.Converter;
+import genlab.cytoscape.commons.Cytoscape2Genlab;
 import cytoscape.randomnetwork.RandomNetwork;
 import cytoscape.randomnetwork.RandomNetworkModel;
 
@@ -37,7 +37,7 @@ public abstract class RandomNetworkGeneratorAlgoExec extends AbstractAlgoExecuti
 		
 		result.setResult(
 				RandomNetworkGeneratorAlgo.OUTPUT_GRAPH, 
-				Converter.getGenlabGraphForCytoscape(
+				Cytoscape2Genlab.getGenlabGraphForCytoscape(
 						network, 
 						(Boolean)algoInst.getValueForParameter(RandomNetworkGeneratorAlgo.PARAM_DIRECTED.getId())
 						)

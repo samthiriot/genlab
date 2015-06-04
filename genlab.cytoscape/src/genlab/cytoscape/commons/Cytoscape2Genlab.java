@@ -1,4 +1,4 @@
-package genlab.cytoscape.plugin.randomnetworks;
+package genlab.cytoscape.commons;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import cytoscape.randomnetwork.RandomNetwork;
 import cytoscape.util.intr.IntEnumerator;
 
-public class Converter {
+public class Cytoscape2Genlab {
 
 	public static IGenlabGraph getGenlabGraphForCytoscape(RandomNetwork cyNetwork, boolean directed) {
 		
@@ -91,7 +91,7 @@ public class Converter {
 		
 	}
 	
-	private Converter() {
+	private Cytoscape2Genlab() {
 		
 	}
 

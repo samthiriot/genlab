@@ -8,7 +8,7 @@ import genlab.core.model.exec.ComputationState;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
-import genlab.cytoscape.plugin.randomnetworks.Converter;
+import genlab.cytoscape.commons.Cytoscape2Genlab;
 import cytoscape.randomnetwork.RandomNetwork;
 
 public abstract class RandomNetworkAnalyzeExec extends AbstractAlgoExecutionOneshot {
@@ -34,7 +34,7 @@ public abstract class RandomNetworkAnalyzeExec extends AbstractAlgoExecutionOnes
 		
 		final IGenlabGraph glGraph = (IGenlabGraph)getInputValueForInput(RandomNetworkAnalyzerAlgo.INPUT_GRAPH);
 		
-		final RandomNetwork cyNetwork = Converter.getCytoscapeGraphForIGraph(glGraph);
+		final RandomNetwork cyNetwork = Cytoscape2Genlab.getCytoscapeGraphForIGraph(glGraph);
 		
 		analyze(cyNetwork, glGraph.getDirectionality()!=GraphDirectionality.UNDIRECTED);
 		
