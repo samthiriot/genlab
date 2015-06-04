@@ -10,6 +10,7 @@ import genlab.core.parameters.StringParameter;
 import genlab.igraph.commons.GenlabProgressCallback;
 import genlab.igraph.natjna.IGraphRawLibrary;
 import genlab.igraph.natjna.IIGraphProgressCallback;
+import genlab.igraph.parameters.ChoiceOfImplementationParameter.EIgraphImplementation;
 
 /**
  * Groups everything related to components in the igraph library
@@ -43,7 +44,7 @@ public class IGraphNodeBetweenessAlgo extends AbstractIGraphMeasure {
 		super(
 				"node betweeness (igraph)", 
 				"measure node betweeness centrality using the igraph implementation",
-				null // no preference for implementation
+				EIgraphImplementation.R_ONLY // we accept only R for this operation
 				);
 
 		outputs.add(OUTPUT_GRAPH);
