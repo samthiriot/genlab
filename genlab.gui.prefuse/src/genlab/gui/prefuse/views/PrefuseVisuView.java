@@ -78,10 +78,12 @@ import prefuse.visual.VisualItem;
  * 
  * The eclipse View which displays a Prefuse display of the graph. 
  * 
+ * TODO manage multiple attribute with multiple colors
  * TODO manage enumerated datatypes
  * TODO manage edge attributes   
  * TODO add legend
  * TODO add screen capture
+ * TODO fix the layout stop issue
  * 
  * @author Samuel Thiriot
  *
@@ -148,7 +150,7 @@ public class PrefuseVisuView
 	 * Colors for nodes
 	 */
 	private int[] paletteNodeColor = null;
-	private String fieldForNodeColoring = "colorid";
+	private String fieldForNodeColoring = null;
 
 	protected boolean shouldBeRunning = false;
 	/**
@@ -303,14 +305,18 @@ public class PrefuseVisuView
 			if (idxVertexName >= items.length) {
 				// ignore that parameter... nothing defined here.
 				// TODO set up default color
+				fieldForNodeColoring = null;
+				paletteNodeColor = null;
 			} else {
 				// TODO use this vertex for coloring
 				fieldForNodeColoring = items[idxVertexName];
+				
+				// TODO test load color
+				ParamValueContinuum c =  (ParamValueContinuum)algoInstance.getValueForParameter(algoInstance.getId()+".parameters.verticesColor.test");
+				paletteNodeColor = PrefuseUtils.getPalette(c);
+				
 			}
 			
-			// TODO test load color
-			ParamValueContinuum c =  (ParamValueContinuum)algoInstance.getValueForParameter(algoInstance.getId()+".parameters.verticesColor.test");
-			paletteNodeColor = PrefuseUtils.getPalette(c);
 			
 		}
 		
@@ -489,20 +495,20 @@ public class PrefuseVisuView
 		color.add(caEdges2);
 		color.add(saEdges);
 		
-		if (paletteNodeColor == null)  {
-			messages.warnTech("no palette exists for nodes colors; in order to prevent NullPointerExceptions, I create an empty one, but this will not lead me to heaven !", getClass());
-			paletteNodeColor = new int[1];
+		if (fieldForNodeColoring != null) {
+			DataColorAction dcaNodes = new DataColorAction(
+					"graph.nodes", 
+					fieldForNodeColoring,
+					Constants.NUMERICAL,//Constants.NOMINAL, 
+					VisualItem.FILLCOLOR, 
+					paletteNodeColor
+					);
+			//dcaNodes.setScale(Constants.LOG_SCALE);
+			color.add(dcaNodes);
+		} else {
+			color.add(new ColorAction("graph.nodes", VisualItem.FILLCOLOR, ColorLib.rgb(130, 130, 130)));
 		}
-		DataColorAction dcaNodes = new DataColorAction(
-				"graph.nodes", 
-				fieldForNodeColoring,
-				Constants.NUMERICAL,//Constants.NOMINAL, 
-				VisualItem.FILLCOLOR, 
-				paletteNodeColor
-				);
-		dcaNodes.setScale(Constants.LOG_SCALE);
-		color.add(dcaNodes);
-		
+				
 		//color.add(ca);
 
 		StrokeAction sa = new StrokeAction("graph.nodes", new BasicStroke(2));
@@ -880,7 +886,7 @@ public class PrefuseVisuView
 		prefuseGraph.getNodeTable().addColumn("label", String.class, "");
 		prefuseGraph.getNodeTable().addColumn(MyToolTipControl.FIELD, String.class, "");
 		prefuseGraph.getNodeTable().addColumn("colorid", Integer.class, 0);
-		prefuseGraph.getNodeTable().index("colorid");
+		//prefuseGraph.getNodeTable().index("colorid");
 		prefuseGraph.getEdgeTable().addColumn(MultiplexForceDirectedLayout.FIELD, Integer.class, 0);
 		prefuseGraph.getEdgeTable().index(MultiplexForceDirectedLayout.FIELD);
 		prefuseGraph.getEdgeTable().addColumn(MyEdgeRenderer.FIELD_DIRECTED, Boolean.class);
@@ -912,7 +918,7 @@ public class PrefuseVisuView
 			prefuseGraph.getNodeTable().addColumn("label", String.class, "");
 			prefuseGraph.getNodeTable().addColumn(MyToolTipControl.FIELD, String.class, "");
 			prefuseGraph.getNodeTable().addColumn("colorid", Integer.class, 0);
-			prefuseGraph.getNodeTable().index("colorid");
+			//prefuseGraph.getNodeTable().index("colorid");
 			prefuseGraph.getEdgeTable().addColumn(MultiplexForceDirectedLayout.FIELD, Integer.class, 0);
 			prefuseGraph.getEdgeTable().index(MultiplexForceDirectedLayout.FIELD);
 			prefuseGraph.getEdgeTable().addColumn(MyEdgeRenderer.FIELD_DIRECTED, Boolean.class);	

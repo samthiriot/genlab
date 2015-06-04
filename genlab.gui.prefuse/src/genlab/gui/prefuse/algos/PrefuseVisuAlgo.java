@@ -101,5 +101,13 @@ public class PrefuseVisuAlgo extends BasicAlgo {
 			}
 		};
 	}
+	
+
+	@Override
+	public Integer getPriorityForIntuitiveCreation() {
+		// add a bonus, as it is really great
+		return super.getPriorityForIntuitiveCreation()+30;
+	}
+	
 
 }

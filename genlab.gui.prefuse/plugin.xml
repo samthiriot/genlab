@@ -19,5 +19,22 @@
             restorable="false">
       </view>
    </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="genlab.gui.perspectives.RunPerspective">
+         <view
+               closeable="true"
+               id="genlab.gui.prefuse.views.PrefuseVisuView"
+               minimized="false"
+               moveable="true"
+               relationship="stack"
+               relative="genlab.gui.perspectives.RunPerspective.folders.middle"
+               showTitle="true"
+               standalone="false"
+               visible="false">
+         </view>
+      </perspectiveExtension>
+   </extension>
 
 </plugin>
