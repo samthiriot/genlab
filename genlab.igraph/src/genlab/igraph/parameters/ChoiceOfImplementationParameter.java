@@ -43,7 +43,7 @@ public class ChoiceOfImplementationParameter extends ListParameter {
 				"igraph_implementation", 
 				"implementation to use", 
 				"Native is faster but only available on some platforms; R is slower but more cross-platform",
-				3,
+				2,
 				EIgraphImplementation.labelsAsList()
 				);
 
