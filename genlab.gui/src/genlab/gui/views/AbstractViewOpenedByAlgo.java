@@ -239,7 +239,7 @@ public abstract class AbstractViewOpenedByAlgo<ClassObjectToDisplay extends Obje
 		// the algo instance; if the developer forgets to remove this link, 
 		// the view will never be actually removed. 
 		// then remove the listener
-		if (this instanceof IParametersListener) {
+		if ((algoInstance != null) && (this instanceof IParametersListener)) {
 			algoInstance.removeParametersListener((IParametersListener) this);
 		}
 		

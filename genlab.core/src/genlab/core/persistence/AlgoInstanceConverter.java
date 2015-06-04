@@ -157,13 +157,25 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 								            className = reader.getAttribute("class");
 								            if (className == null)
 								        		throw new WrongParametersException("A \"class\" attribute is expected for the <value> tags.");
+								            
+								            Class decodingClass ;
+								            try { 
+												decodingClass = PersistenceUtils.loadFromGenlabBundleClassLoaders(className);
+											} catch (ClassNotFoundException e) {
+												throw new WrongParametersException("unable to load the class \""+className+"\" while reading parameter\""+key+"\"", e);
+											}
+								            
+											parsedValue = ctxt.convertAnother(reader, decodingClass);
+								            /*
 								        	try { 
 												Class<?> decodingClass = ctxt.getClass().getClassLoader().loadClass(className);
 												parsedValue = ctxt.convertAnother(reader, decodingClass);
 											} catch (ClassNotFoundException e) {
-												throw new WrongParametersException("unable to load the class \""+className+"\" while reading parameter\""+key+"\"");
+												e.printStackTrace();
+												throw new WrongParametersException("unable to load the class \""+className+"\" while reading parameter\""+key+"\"", e);
+												
 											}
-								        	
+								        	*/
 							            } else 
 							            	throw new WrongParametersException("only one <value> or <key> tags are expected into <entry>");
 		

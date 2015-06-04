@@ -74,6 +74,18 @@ import prefuse.util.StrokeLib;
 import prefuse.util.display.PaintListener;
 import prefuse.visual.VisualItem;
 
+/**
+ * 
+ * The eclipse View which displays a Prefuse display of the graph. 
+ * 
+ * TODO manage enumerated datatypes
+ * TODO manage edge attributes   
+ * TODO add legend
+ * TODO add screen capture
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class PrefuseVisuView 
 									extends AbstractViewOpenedByAlgo<IGenlabGraph> 
 									implements IGenlabGraphicalView, IPartListener2, IParametersListener {
@@ -129,7 +141,7 @@ public class PrefuseVisuView
 	 */
 	//private LegendMouseClickDetector legendMouseClickDetector; 
 	
-	// protected MyToolTipControl tooltipcontrol = null;
+	protected MyToolTipControl tooltipcontrol = null;
 
 
 	/**
@@ -578,7 +590,7 @@ public class PrefuseVisuView
 		
 		// create the AWT composite
 		final Frame frameAwt = SWT_AWT.new_Frame(hostSwtComposite);
-		//frameAwt.setIgnoreRepaint(true);
+		frameAwt.setIgnoreRepaint(true);
 		try {
 			frameAwt.setUndecorated(true);
 		} catch (RuntimeException e) {
@@ -728,7 +740,7 @@ public class PrefuseVisuView
 
 		
 		// add the tooltip manager 
-		MyToolTipControl tooltipcontrol = new MyToolTipControl();
+		tooltipcontrol = new MyToolTipControl(getSite().getShell());
 		prefuseDisplay.addControlListener(tooltipcontrol);
 	
 		// init tooltip duration
@@ -912,7 +924,12 @@ public class PrefuseVisuView
 		}
 
 		// declare vertex attributes
+		if (prefuseGraph.getNodeTable().getColumn(MyToolTipControl.FIELD) == null) 
+			prefuseGraph.getNodeTable().addColumn(MyToolTipControl.FIELD, String.class, "");
+
 		for (String attributeId: vertexAttributes) {
+			if (prefuseGraph.getNodeTable().getColumn(attributeId) != null)
+				continue;
 			Class type = lastVersionDataToDisplay.getDeclaredVertexAttributesAndTypes().get(attributeId);
 			if (type == Double.class)
 				prefuseGraph.getNodeTable().addColumn(attributeId, double.class);
@@ -941,10 +958,18 @@ public class PrefuseVisuView
 				if (value == null)
 					continue;
 				n.set(attributeId, (double)lastVersionDataToDisplay.getVertexAttributeValue(vertexId, attributeId));
-				System.err.println(vertexId+" / "+attributeId+" = "+lastVersionDataToDisplay.getVertexAttributeValue(vertexId, attributeId));
 			}
 			
-			// TODO tooltip n.setString(MyToolTipControl.FIELD, agent.getHtmlStringRepresentation());
+			// tooltip
+			{
+				StringBuffer sb = new StringBuffer();
+				sb.append("Vertex ").append(vertexId).append(":\n");
+				for (Entry<String,Object> att: lastVersionDataToDisplay.getVertexAttributes(vertexId).entrySet()) {
+					sb.append("- ").append(att.getKey()).append(": ");
+					sb.append(att.getValue()).append("\n");
+				}
+				n.setString(MyToolTipControl.FIELD, sb.toString());
+			}
 			
 		}
 		

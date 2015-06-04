@@ -14,6 +14,9 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: ext/prefuse.jar,
  .
 Export-Package: genlab.gui.prefuse,
+ genlab.gui.prefuse.algos,
+ genlab.gui.prefuse.parameters,
+ genlab.gui.prefuse.views,
  prefuse,
  prefuse.action,
  prefuse.action.animate,
