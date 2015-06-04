@@ -11,7 +11,10 @@ import genlab.gui.actions.ShowParametersAction;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 import genlab.gui.editors.IGenlabGraphicalView;
 import genlab.gui.parameters.RGBParameter;
+import genlab.gui.prefuse.PrefuseUtils;
 import genlab.gui.prefuse.algos.PrefuseVisuAlgo;
+import genlab.gui.prefuse.parameters.ColorContinuumParameter;
+import genlab.gui.prefuse.parameters.ParamValueContinuum;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
 
 import java.awt.BasicStroke;
@@ -33,6 +36,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 import javax.swing.JInternalFrame;
@@ -44,6 +48,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.actions.PartEventAction;
 
 import prefuse.Constants;
 import prefuse.Visualization;
@@ -131,6 +136,7 @@ public class PrefuseVisuView
 	 * Colors for nodes
 	 */
 	private int[] paletteNodeColor = null;
+	private String fieldForNodeColoring = "colorid";
 
 	protected boolean shouldBeRunning = false;
 	/**
@@ -239,6 +245,20 @@ public class PrefuseVisuView
 			
 		}
 		
+		// declare node color
+		{			
+			final String idVertexColor = algoInstance.getId()+".parameters.verticesColor.test";
+			if (!algoInstance.hasParameter(idVertexColor)) {
+				algoInstance.declareParameter(new ColorContinuumParameter(
+						idVertexColor, 
+						"color vertex test", 
+						"choose the color for this vertex", 
+						PrefuseUtils.getContinumCool()
+						)
+				);
+			}
+		}
+
 		// TODO remove useless params ? 
 	}
 	
@@ -273,7 +293,13 @@ public class PrefuseVisuView
 				// TODO set up default color
 			} else {
 				// TODO use this vertex for coloring
+				fieldForNodeColoring = items[idxVertexName];
 			}
+			
+			// TODO test load color
+			ParamValueContinuum c =  (ParamValueContinuum)algoInstance.getValueForParameter(algoInstance.getId()+".parameters.verticesColor.test");
+			paletteNodeColor = PrefuseUtils.getPalette(c);
+			
 		}
 		
 		// load parameters for displaying the link types
@@ -457,12 +483,12 @@ public class PrefuseVisuView
 		}
 		DataColorAction dcaNodes = new DataColorAction(
 				"graph.nodes", 
-				"colorid",
-				Constants.NOMINAL, 
+				fieldForNodeColoring,
+				Constants.NUMERICAL,//Constants.NOMINAL, 
 				VisualItem.FILLCOLOR, 
 				paletteNodeColor
 				);
-		
+		dcaNodes.setScale(Constants.LOG_SCALE);
 		color.add(dcaNodes);
 		
 		//color.add(ca);
@@ -483,7 +509,7 @@ public class PrefuseVisuView
 		color.add(new RepaintAction());
 		vis.removeAction("color");
 		vis.putAction("color", color);
-		if (shouldBeRunning)
+		//if (shouldBeRunning)
 			vis.run("color");
 		
 	}
@@ -858,6 +884,16 @@ public class PrefuseVisuView
 	
 	private void updatePrefuseGraphFromGenlab() {
 		
+		// preprocess: identify the attributes to declare
+		List<String> vertexAttributes = new LinkedList<String>();
+		for (Entry<String,Class> attribute: lastVersionDataToDisplay.getDeclaredVertexAttributesAndTypes().entrySet()) {
+			
+			if (attribute.getValue().equals(Double.class) || attribute.getValue().equals(Integer.class) || attribute.getValue().equals(String.class)) {
+				vertexAttributes.add(attribute.getKey());
+			}
+			
+		}
+		
 		// empty graph first
 		if (prefuseGraph == null) {
 			prefuseGraph = new Graph();
@@ -867,10 +903,24 @@ public class PrefuseVisuView
 			prefuseGraph.getNodeTable().index("colorid");
 			prefuseGraph.getEdgeTable().addColumn(MultiplexForceDirectedLayout.FIELD, Integer.class, 0);
 			prefuseGraph.getEdgeTable().index(MultiplexForceDirectedLayout.FIELD);
-			prefuseGraph.getEdgeTable().addColumn(MyEdgeRenderer.FIELD_DIRECTED, Boolean.class);			
+			prefuseGraph.getEdgeTable().addColumn(MyEdgeRenderer.FIELD_DIRECTED, Boolean.class);	
+			
+						
 		} else {
 			prefuseGraph.clear();
+			
 		}
+
+		// declare vertex attributes
+		for (String attributeId: vertexAttributes) {
+			Class type = lastVersionDataToDisplay.getDeclaredVertexAttributesAndTypes().get(attributeId);
+			if (type == Double.class)
+				prefuseGraph.getNodeTable().addColumn(attributeId, double.class);
+			else
+				prefuseGraph.getNodeTable().addColumn(attributeId, type);
+			
+		}
+		
 		// copy nodes
 		Map<String,Node> glVertexId2prefuseVertex = new HashMap<String,Node>((int) lastVersionDataToDisplay.getVerticesCount());
 		for (String vertexId: lastVersionDataToDisplay.getVertices()) {
@@ -884,7 +934,16 @@ public class PrefuseVisuView
 			
 			// and define its parameters
 			n.setString("label", vertexId);
-			n.set("colorid", 0); // TODO getColorIdForAgent(agent));
+			
+			// copy attributes
+			for (String attributeId: vertexAttributes) {
+				Object value = lastVersionDataToDisplay.getVertexAttributeValue(vertexId, attributeId);
+				if (value == null)
+					continue;
+				n.set(attributeId, (double)lastVersionDataToDisplay.getVertexAttributeValue(vertexId, attributeId));
+				System.err.println(vertexId+" / "+attributeId+" = "+lastVersionDataToDisplay.getVertexAttributeValue(vertexId, attributeId));
+			}
+			
 			// TODO tooltip n.setString(MyToolTipControl.FIELD, agent.getHtmlStringRepresentation());
 			
 		}
@@ -990,8 +1049,11 @@ public class PrefuseVisuView
 	public void partVisible(IWorkbenchPartReference partRef) {
 
 		// TODO restart layout !
-			
+		
 		super.partVisible(partRef);
+		
+		// TODO not ok
+		shouldBeRunning = (partRef.getPartName().equals(this.getPartName()));
 	}
 
 	@Override
@@ -1018,6 +1080,8 @@ public class PrefuseVisuView
 		
 		// stop and restart ? 
 		initActionColor();
+		
+		
 		
 	}
 

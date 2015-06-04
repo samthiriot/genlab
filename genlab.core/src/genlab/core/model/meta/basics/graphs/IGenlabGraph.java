@@ -35,6 +35,8 @@ public interface IGenlabGraph {
 	public Map<String,Object> getVertexAttributes(String vertexId);
 	public Map<String,Object> getEdgeAttributes(String vertexId);
 	public Map<String,Object> getGraphAttributes();
+	public Object getVertexAttributeValue(String vertexId, String attributeName);
+
 
 	public String addVertex();
 	public void addVertex(String id);
@@ -149,6 +151,7 @@ public interface IGenlabGraph {
 
 	
 	public void addAll(IGenlabGraph otherGraph, boolean copyGraphAttributes, boolean copyNodeAttributes, boolean copyEdgesAttributes);
+
 
 
 	

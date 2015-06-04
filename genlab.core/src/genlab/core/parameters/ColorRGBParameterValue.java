@@ -36,6 +36,25 @@ public class ColorRGBParameterValue  {
 		}
 	}
 
+
+	@Override
+	public boolean equals(Object obj) {
+		try {
+			ColorRGBParameterValue other = (ColorRGBParameterValue)obj;
+			return other.b == b && other.g == g && other.r == r; 
+		} catch (ClassCastException e) {
+			return false;
+		}
+	}
 	
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(r).append(",");
+		sb.append(g).append(",");
+		sb.append(b);
+		return sb.toString();
+	}
+
 	
 }

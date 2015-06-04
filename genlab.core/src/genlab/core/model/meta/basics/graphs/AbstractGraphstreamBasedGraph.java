@@ -440,6 +440,17 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Ext
 		
 		return map;
 	}
+	
+	@Override
+	public Object getVertexAttributeValue(String vertexId, String attributeName) {
+		
+		final Node n = gsGraph.getNode(vertexId);
+		if (n == null)
+			throw new WrongParametersException("unknown vertex "+vertexId);
+		
+		return n.getAttribute(attributeName);
+		
+	}
 
 	@Override
 	public Map<String, Object> getEdgeAttributes(String vertexId) {
