@@ -238,6 +238,15 @@ public class ExistingAlgoCategories {
 			"graph isomorphisms", 
 			"graph isomorphisms"
 			);
+	
+
+	public static final AlgoCategory MODELS = new AlgoCategory(
+			null, 
+			"models", 
+			"simulation models", 
+			"simulation models"
+			);
+
 
 	private ExistingAlgoCategories() {
 		declareCategory(PARSER);
@@ -271,6 +280,8 @@ public class ExistingAlgoCategories {
 		
 		declareCategory(COMPARISON);
 		declareCategory(COMPARISON_GRAPHS);
+		
+		declareCategory(MODELS);
 	}
 
 	public AlgoCategory getCategoryForId(String id) {

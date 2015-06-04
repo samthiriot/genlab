@@ -1,12 +1,12 @@
 package genlab.netlogo;
 
+import genlab.core.model.exec.ComputationProgressWithSteps;
+import genlab.core.model.exec.IComputationProgress;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.swing.text.html.HTMLDocument.RunElement;
 
 import org.nlogo.headless.HeadlessWorkspace;
 
@@ -16,26 +16,15 @@ public class RunNetlogoModel {
 		// TODO Auto-generated constructor stub
 	}
 	
-	private static String toNetlogoString(Object v) {
-		
-		if (v instanceof String) {
-			StringBuffer sb = new StringBuffer();
-			sb.append("\"");
-			sb.append(v);
-			sb.append("\"");
-			return sb.toString();
-		}
-		
-		return v.toString();
-	}
-	
+
 	
 	public static Map<String,Object> runNetlogoModel(
 			ListOfMessages messages, 
 			String modelFilename, 
 			Map<String,Object> inputs, 
 			Collection<String> outputs, 
-			int maxIterations
+			int maxIterations,
+			IComputationProgress progress
 			) {
 		
 		// check file does exist
@@ -54,13 +43,15 @@ public class RunNetlogoModel {
 				messages.errorUser(msg, RunNetlogoModel.class, e);
 				throw new RuntimeException(msg, e);
 			}
+			if (progress != null) 
+				progress.incProgressMade(10);
 			
 			// define parameters
 			try {
 				
 				for (String varName : inputs.keySet()) {
 					Object value = inputs.get(varName);
-					String valueStr = toNetlogoString(value);
+					String valueStr = NetlogoUtils.toNetlogoString(value);
 					messages.debugTech("defining variable "+varName+" to "+valueStr, RunNetlogoModel.class);
 					workspace.command("set " + varName+ " " + valueStr);
 				}
@@ -73,6 +64,9 @@ public class RunNetlogoModel {
 				messages.errorUser(msg, RunNetlogoModel.class, e);
 				throw new RuntimeException(msg, e);
 			}
+			if (progress != null) 
+				progress.incProgressMade(10);
+
 				
 			// initialize model
 			try {
@@ -85,6 +79,9 @@ public class RunNetlogoModel {
 				messages.errorUser(msg, RunNetlogoModel.class, e);
 				throw new RuntimeException(msg, e);
 			}
+			if (progress != null) 
+				progress.incProgressMade(50);
+
 			
 			// run the model
 			try {
@@ -98,6 +95,9 @@ public class RunNetlogoModel {
 				messages.errorUser(msg, RunNetlogoModel.class, e);
 				throw new RuntimeException(msg, e);
 			}
+			if (progress != null) 
+				progress.incProgressMade(50);
+
 				
 			// retrieve results
 			try {
@@ -114,12 +114,16 @@ public class RunNetlogoModel {
 				}
 			    
 				
+				results.put("_duration", ticksEnd);
+				if (progress != null) 
+					progress.incProgressMade(10);
+
 				return results;
 			} catch(Exception ex) {
 				ex.printStackTrace();
 				throw new RuntimeException("error in netlogo : "+ex.getMessage(), ex);
 			} 
-		
+
 		} finally {
 			if (workspace != null) {
 				try {

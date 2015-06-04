@@ -37,7 +37,8 @@ public class TestBasicRunModel {
 				"./testdata/models/Virus on a Network.nlogo", 
 				inputs, 
 				requiredOutputs,
-				500
+				500,
+				null
 				);
 		
 		assertTrue(result.get("measure-susceptible") instanceof Double);
