@@ -84,6 +84,7 @@ import prefuse.visual.VisualItem;
  * TODO add legend
  * TODO add screen capture
  * TODO fix the layout stop issue
+ * TODO accept several instances (so fill the parameter in the instance, not in the algo !)
  * 
  * @author Samuel Thiriot
  *
