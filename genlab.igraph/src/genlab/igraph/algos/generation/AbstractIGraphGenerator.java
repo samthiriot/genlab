@@ -7,6 +7,7 @@ import genlab.core.model.meta.basics.flowtypes.GraphInOut;
 import genlab.core.parameters.RNGSeedParameter;
 import genlab.igraph.Activator;
 import genlab.igraph.commons.IgraphLibFactory;
+import genlab.igraph.parameters.ChoiceOfImplementationParameter;
 
 import org.osgi.framework.Bundle;
 
@@ -18,6 +19,7 @@ public abstract class AbstractIGraphGenerator extends BasicAlgo {
 			"the graph generated"
 	);
 	
+	public static final ChoiceOfImplementationParameter PARAM_IMPLEMENTATION = new ChoiceOfImplementationParameter();
 
 	public static final RNGSeedParameter PARAM_SEED = new RNGSeedParameter(
 			"param_seed", 
@@ -50,9 +52,12 @@ public abstract class AbstractIGraphGenerator extends BasicAlgo {
 				);
 		
 		outputs.add(OUTPUT_GRAPH);
+
+		registerParameter(PARAM_IMPLEMENTATION);
 		
 		if (declareParamSeed)
 			registerParameter(PARAM_SEED);
+		
 	}
 
 	@Override

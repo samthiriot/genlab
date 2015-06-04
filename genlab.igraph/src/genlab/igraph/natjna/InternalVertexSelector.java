@@ -1,6 +1,8 @@
 package genlab.igraph.natjna;
 
 import genlab.core.commons.ProgramException;
+import genlab.igraph.natjna.InternalVertexSelector.DataUnion.AdjStructure;
+import genlab.igraph.natjna.InternalVertexSelector.DataUnion.SeqStructure;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,25 +47,34 @@ typedef struct igraph_vs_t {
  */
 public class InternalVertexSelector extends Structure {
 
+    public static class ByValue extends InternalVertexSelector implements Structure.ByValue { }
 
-	public final static int IGRAPH_VS_ALL = 0;
-	public final static int IGRAPH_VS_ADJ = 1;
-	public final static int IGRAPH_VS_NONE = 2;
-	public final static int IGRAPH_VS_1 = 3;
-	public final static int IGRAPH_VS_VECTORPTR = 4;
-	public final static int IGRAPH_VS_VECTOR = 5;
-	public final static int IGRAPH_VS_SEQ = 6;
-	public final static int IGRAPH_VS_NONADJ = 7;
+	public static interface InternalVertexSelectorUnionType {
 	
-    public static class ByReference extends InternalVertexSelector implements Structure.ByReference { }
+		public final static int IGRAPH_VS_ALL = 0;
+		public final static int IGRAPH_VS_ADJ = 1;
+		public final static int IGRAPH_VS_NONE = 2;
+		public final static int IGRAPH_VS_1 = 3;
+		public final static int IGRAPH_VS_VECTORPTR = 4;
+		public final static int IGRAPH_VS_VECTOR = 5;
+		public final static int IGRAPH_VS_SEQ = 6;
+		public final static int IGRAPH_VS_NONADJ = 7;
+		
+	}
+	
 
     public static class DataUnion extends Union {
     	
-        public static class ByReference extends DataUnion implements Structure.ByReference {}
+        public static class ByValue extends DataUnion implements Union.ByValue {}
         
         public static class AdjStructure extends Structure {
         	
-            public static class ByReference extends AdjStructure implements Structure.ByReference { }
+        	public static final int IGRAPH_OUT = 1;
+        	public static final int IGRAPH_IN = 2;
+        	public static final int IGRAPH_ALL = 3;
+        	public static final int IGRAPH_TOTAL = 3;
+        	
+            public static class ByValue extends AdjStructure implements Structure.ByValue { }
 
             public int vid;
             
@@ -83,7 +94,7 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
         
         public static class SeqStructure extends Structure {
         	
-            public static class ByReference extends AdjStructure implements Structure.ByReference { }
+            public static class ByValue extends SeqStructure implements Structure.ByValue { }
 
             public int from;
             public int to;
@@ -97,11 +108,10 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
 
         
         public int vid;
-        public InternalVectorStruct vecptr;
-        
+        public InternalVectorStruct.ByReference vecptr;
         public AdjStructure adj;
         public SeqStructure seq;
-        
+        /*
     	public DataUnion() {
     	
     		//vid = 0;
@@ -117,13 +127,14 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
     		super(p);
     		
     	}
-    	
+    	*/
     	@Override
     	public void read() {
     		
+    		System.err.println("DataUnion.read() 1");
     		super.read();        
+    		System.err.println("DataUnion.read() 2");
 
-    	    
     	}
         
     }
@@ -133,7 +144,12 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
 	public DataUnion data;
 	
 	public InternalVertexSelector() {
+
+		super();
 		
+		System.err.println("InternalVectorSelector() 2");
+
+		/*
 		data = new DataUnion();
 		
 		ensureAllocated();
@@ -147,45 +163,48 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
 		
 		super(p);
 		
-		read();
+		System.err.println("InternalVectorSelector(p) 2");
+
+		
+		// TODO ? read();
 	}
-	
+	/*
 	@Override
 	public void read() {
 		
-		super.read();        
-
-		String typeStr = null;
-		
-		
+		System.err.println("InternalVectorSelector.read() 1");
+		super.readField("type");
+		//super.read();  
+		System.err.println("InternalVectorSelector.read() 2");
+	
 	    switch (type) {
     		
-		case IGRAPH_VS_ALL:
-		case IGRAPH_VS_NONE:
+		case InternalVertexSelectorUnionType.IGRAPH_VS_ALL:
+		case InternalVertexSelectorUnionType.IGRAPH_VS_NONE:
     		// read nothing
-			// TODO ???
-			typeStr = "vecptr";
-
-			//data.setType((String)null);
+			// data.read();
 			break;
 		
-		case IGRAPH_VS_NONADJ:
-    	case IGRAPH_VS_ADJ:
-    		typeStr = "adj";
+		case InternalVertexSelectorUnionType.IGRAPH_VS_NONADJ:
+    	case InternalVertexSelectorUnionType.IGRAPH_VS_ADJ:
+    		data.setType(AdjStructure.class);
+    	    data.read();
 			break;
 		
-		case IGRAPH_VS_1:
-			// read vid
-			typeStr = "vid";
+		case InternalVertexSelectorUnionType.IGRAPH_VS_1:
+			data.setType(int.class);
+		    data.read();
 			break;
 			
-		case IGRAPH_VS_VECTORPTR:
-		case IGRAPH_VS_VECTOR:
-			typeStr = "vecptr";
+		case InternalVertexSelectorUnionType.IGRAPH_VS_VECTORPTR:
+		case InternalVertexSelectorUnionType.IGRAPH_VS_VECTOR:
+			data.setType(InternalVectorStruct.class);
+		    data.read();
 			break;
 			
-		case IGRAPH_VS_SEQ:
-			typeStr = "seq";
+		case InternalVertexSelectorUnionType.IGRAPH_VS_SEQ:
+			data.setType(SeqStructure.class);
+		    data.read();
 			break;
 			
 		default:
@@ -200,6 +219,7 @@ typedef enum { IGRAPH_OUT=1, IGRAPH_IN=2, IGRAPH_ALL=3,
 			data.read();
 	    //}
 	}
+	*/
 	
 	@Override
 	protected List getFieldOrder() {

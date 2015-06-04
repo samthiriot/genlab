@@ -5,6 +5,7 @@ import genlab.core.exec.IExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.igraph.commons.IgraphLibFactory;
+import genlab.igraph.parameters.ChoiceOfImplementationParameter.EIgraphImplementation;
 
 public class ForestFireGeneratorExec extends AbstractIGraphGeneratorExec {
 		
@@ -39,7 +40,8 @@ public class ForestFireGeneratorExec extends AbstractIGraphGeneratorExec {
 		if (pambs == 0)
 			throw new WrongParametersException(ForestFireGeneratorAlgo.INPUT_pambs+" should be > 0");
 		
-		return  IgraphLibFactory.getImplementation().generateForestFire(
+		return IgraphLibFactory.getImplementation((Integer) algoInst.getValueForParameter(AbstractIGraphGenerator.PARAM_IMPLEMENTATION))
+				.generateForestFire(
 				N, 
 				fwProb, 
 				bwFactor, 

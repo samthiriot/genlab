@@ -1,6 +1,7 @@
 package genlab.core.model.meta.basics.graphs;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface IGenlabGraph {
@@ -46,7 +47,7 @@ public interface IGenlabGraph {
 	public void setVertexAttributes(String vertexId, Map<String,Object> values);
 
 	
-	public Collection<String> getVertices();
+	public List<String> getVertices();
 	
 
 	
@@ -138,7 +139,7 @@ public interface IGenlabGraph {
 	public String getEdgeType(String edgeId);
 
 	
-	public Collection<String> getEdges();
+	public List<String> getEdges();
 	
 	/**
 	 * Returns a deep clone where vertices, edges, attributes values were all duplicated.

@@ -8,6 +8,7 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 import genlab.igraph.natjna.IGraphRawLibrary.IGraphBarabasiAlgorithm;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import com.sun.jna.Memory;
@@ -934,8 +935,8 @@ public class IGraphNativeLibrary {
 		
 		//GLLogger.debugTech("calling igraph to initialize vectors...", getClass());
 
-		InternalVectorStruct res = new InternalVectorStruct();
-		int resA =IGraphRawLibrary.igraph_vector_init(res, verticesCount);
+		final InternalVectorStruct res = new InternalVectorStruct();
+		int resA = IGraphRawLibrary.igraph_vector_init(res, verticesCount);
 		checkIGraphResult(resA);
 
 		InternalVertexSelector vids = new InternalVertexSelector();
@@ -947,7 +948,18 @@ public class IGraphNativeLibrary {
 		//checkIGraphResult(resA);
 	
 		try {
-	
+			System.err.println("go !go ! go");
+			Thread.sleep(10000);
+			System.err.println("go...");
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
+		try {
+			
+			System.err.println("betweeness 1");
 			final int res2 = IGraphRawLibrary.igraph_betweenness(
 					g.getPointer(), 
 					res, 
@@ -956,7 +968,7 @@ public class IGraphNativeLibrary {
 					//null //, // weights
 					//false // ! true here creates a complete failure o_O
 					);
-					
+			System.err.println("betweeness 2");
 			
 			final long duration = System.currentTimeMillis() - startTime;
 			//GLLogger.debugTech("back from igraph after "+duration+" ms", getClass());
@@ -966,8 +978,14 @@ public class IGraphNativeLibrary {
 			// process and store results
 			final int resSize = IGraphRawLibrary.igraph_vector_size(res);
 			final double[] resRes = res.asDoubleArray(resSize);
-			//System.err.println("betweeness: "+Arrays.toString(resRes));
+			System.err.println("betweeness: "+Arrays.toString(resRes));
 			// TODO store inside cache
+			
+			// TODO print g again
+			System.err.println(g);
+			System.err.println(vids);
+			System.err.println(res);
+			
 			return resRes;
 		
 		} finally {
@@ -986,8 +1004,8 @@ public class IGraphNativeLibrary {
 	public double[] computeNodeBetweenessEstimate(IGraphGraph g, boolean directed, double cutoff) {
 
 
-		if (true)
-			throw new NotImplementedException("unfortunately, igraph is crashing on this");
+		//if (true)
+		//	throw new NotImplementedException("unfortunately, igraph is crashing on this");
 		
 		final long startTime = System.currentTimeMillis();
 		
@@ -998,7 +1016,7 @@ public class IGraphNativeLibrary {
 		InternalVectorStruct res = new InternalVectorStruct();
 		IGraphRawLibrary.igraph_vector_init(res, verticesCount);
 		
-		Pointer vids = IGraphRawLibrary.igraph_vss_none();
+		final Pointer vids = IGraphRawLibrary.igraph_vss_none();
 		int resA = IGraphRawLibrary.igraph_vss_all(vids);
 		checkIGraphResult(resA);
 	

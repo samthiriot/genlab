@@ -8,7 +8,6 @@ import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
-import genlab.igraph.natjna.IGraphGraph;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +27,6 @@ public class IGraphClusteringExec extends AbstractIGraphMeasureExec implements I
 	@Override
 	protected Map<IInputOutput<?>, Object> analyzeGraph(
 			IComputationProgress progress, 
-			IGraphGraph igraphGraph,
 			IGenlabGraph genlabGraph,
 			ListOfMessages messages
 			) {
@@ -41,7 +39,7 @@ public class IGraphClusteringExec extends AbstractIGraphMeasureExec implements I
 		
 		// global clustering
 		if (isUsed(IGraphClusteringAlgo.OUTPUT_CLUSTERING_GLOBAL) ||  exec.getExecutionForced()) {
-			double clusteringGlobal = igraphGraph.lib.computeGlobalClustering(igraphGraph);
+			double clusteringGlobal = getLibrary().computeGlobalClustering(genlabGraph, exec);
 			results.put(IGraphClusteringAlgo.OUTPUT_CLUSTERING_GLOBAL, clusteringGlobal);
 		} else {
 			messages.debugTech("the global clustering is not used, so it will not be computed", getClass());	
@@ -49,7 +47,7 @@ public class IGraphClusteringExec extends AbstractIGraphMeasureExec implements I
 		
 		// average clustering
 		if (isUsed(IGraphClusteringAlgo.OUTPUT_CLUSTERING_AVERAGE) ||  exec.getExecutionForced()) {
-			double clusteringAvg = igraphGraph.lib.computeGlobalClusteringLocal(igraphGraph);
+			double clusteringAvg = getLibrary().computeGlobalClusteringLocal(genlabGraph, exec);
 			results.put(IGraphClusteringAlgo.OUTPUT_CLUSTERING_AVERAGE, clusteringAvg);
 		} else {
 			messages.debugTech("the average clustering is not used, so it will not be computed", getClass());	

@@ -5,6 +5,7 @@ import genlab.core.exec.IExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.igraph.commons.IgraphLibFactory;
+import genlab.igraph.parameters.ChoiceOfImplementationParameter.EIgraphImplementation;
 
 public class WattsStrogatzGeneratorExec extends AbstractIGraphGeneratorExec {
 	
@@ -37,7 +38,8 @@ public class WattsStrogatzGeneratorExec extends AbstractIGraphGeneratorExec {
 								
 		Long seed = (Long)algoInst.getValueForParameter(AbstractIGraphGenerator.PARAM_SEED);
 
-		return IgraphLibFactory.getImplementation().generateWattsStrogatz(N, dim, p, nei, allowLoops, allowMultiple, this.exec, seed);
+		return IgraphLibFactory.getImplementation((Integer) algoInst.getValueForParameter(AbstractIGraphGenerator.PARAM_IMPLEMENTATION))
+				.generateWattsStrogatz(N, dim, p, nei, allowLoops, allowMultiple, this.exec, seed);
 		
 	}
 

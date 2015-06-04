@@ -19,6 +19,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import com.sun.jna.Native;
+
 /**
  * Tests a metric on random networks. Ensures it can be computed,
  * it changes for different graphs and is similar for the same graphs.
