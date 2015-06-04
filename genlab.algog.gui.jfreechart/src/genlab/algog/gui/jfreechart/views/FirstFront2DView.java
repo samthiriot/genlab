@@ -26,6 +26,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
+import org.jfree.util.ShapeUtilities;
 
 public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> implements IParametersListener {
 
@@ -84,6 +85,8 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 			// update labels
 			chart.getXYPlot().getDomainAxis(0).setLabel(chartXLabel);
 			chart.getXYPlot().getRangeAxis().setLabel(chartYLabel);
+			chart.getXYPlot().getRenderer().setSeriesShape(0, ShapeUtilities.createRegularCross(3, 0));
+			chart.getXYPlot().setBackgroundAlpha(0f);
 			
 			// update data !
 			serie.setNotify(false);
@@ -186,7 +189,7 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 		messages.traceTech("init the chart composite...", getClass());
 
 		final int preferedWidth = 900;
-		final int preferedHeight = 500;
+		final int preferedHeight = 600;
 	
 		compositeChart = new ChartComposite(
 				form.getBody(), 

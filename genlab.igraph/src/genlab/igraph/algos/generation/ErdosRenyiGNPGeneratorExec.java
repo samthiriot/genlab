@@ -7,6 +7,7 @@ import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.commons.IgraphLibFactory;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphNativeLibrary;
+import genlab.igraph.parameters.ChoiceOfImplementationParameter.EIgraphImplementation;
 
 public class ErdosRenyiGNPGeneratorExec extends AbstractIGraphGeneratorExec {
 
@@ -34,7 +35,8 @@ public class ErdosRenyiGNPGeneratorExec extends AbstractIGraphGeneratorExec {
 
 		Long seed = (Long)algoInst.getValueForParameter(AbstractIGraphGenerator.PARAM_SEED);
 
-		return IgraphLibFactory.getImplementation().generateErdosRenyiGNP(nodes, proba, directed, loops, this.exec, seed);
+		return IgraphLibFactory.getImplementation((Integer) algoInst.getValueForParameter(AbstractIGraphGenerator.PARAM_IMPLEMENTATION))
+				.generateErdosRenyiGNP(nodes, proba, directed, loops, this.exec, seed);
 		
 	}
 	

@@ -262,6 +262,45 @@ public class IGraph2GenLabConvertor {
 		
 	}
 	
+
+	/**
+	 * For an output genlab graph, which is the original of the igraphGraph provided,
+	 * take the values provided as parameters, and use them as the attributes' values in the 
+	 * genlab graph.
+	 * @param genlabGraph
+	 * @param igraphGraph
+	 * @param attributeName
+	 * @param attributesValues
+	 */
+	public static void addAttributesToNodesGenlabGraphFromIgraph(
+			IGenlabGraph genlabGraph, 
+			String attributeName,
+			double[] attributesValues
+			) {
+	
+		// check data size
+		if (genlabGraph.getVerticesCount() != attributesValues.length)
+			throw new ProgramException("wrong number of vertices");
+			
+		// declare the resulting parameter
+		genlabGraph.declareVertexAttribute(attributeName, Double.class);
+	
+		// transfert data
+		// assumes the order is the same.
+		int i = 0;
+		for (String vertexId: genlabGraph.getVertices()) {
+			genlabGraph.setVertexAttribute(
+					vertexId,
+					attributeName, 
+					attributesValues[i]
+					);
+			i++;
+		}
+		
+		// done.
+		
+	}
+	
 	/**
 	 * For an output genlab graph, which is the original of the igraphGraph provided,
 	 * take the values provided as parameters, and use them as the attributes' values in the 
@@ -374,6 +413,103 @@ public class IGraph2GenLabConvertor {
 	}
 	
 
+
+	/**
+	 * For an output genlab graph, which is the original of the igraphGraph provided,
+	 * take the values provided as parameters, and use them as the attributes' values in the 
+	 * genlab graph.
+	 * @param genlabGraph
+	 * @param attributeName
+	 * @param attributesValues
+	 */
+	public static void addAttributesToEdgesGenlabGraphFromIgraph(
+			IGenlabGraph genlabGraph, 
+			String attributeName,
+			double[] attributesValues
+			) {
+	
+		// check data size
+		if (genlabGraph.getEdgesCount() != attributesValues.length)
+			throw new ProgramException("wrong number of edges");
+			
+		// declare the resulting parameter
+		genlabGraph.declareEdgeAttribute(attributeName, Double.class);
+		
+		// TODO is the ID of edges unique enough ???
+		
+		// transfert data
+		int i=0;
+		/*
+		if (genlabGraph.isMultiGraph()) {
+			
+			// in the case of multi graphs, we may discover such a situtation:
+			// 0 -- 1
+			// 0 -- 2	// several times !
+			// 0 -- 2   // several times !
+			// 0 -- 3
+			
+			// So to solve this case, we build a black list of edges already processed
+			HashSet<String> alreadyProcessedEdges = new HashSet<String>();
+			
+			for (IGraphEdge edge: genlabGraph.getEdges()) {
+				
+				if (i >= attributesValues.length)
+					throw new ProgramException("wrong number of attributes, they are less numerous ("+i+") than edges in the graph");
+				
+				Collection<String> edgesId = genlabGraph.getEdgesBetween(
+						igraphGraph.getGenlabIdForIGraphNode(edge.node1id),
+						igraphGraph.getGenlabIdForIGraphNode(edge.node2id)
+						);
+				
+				if (edgesId == null || edgesId.isEmpty())
+					throw new ProgramException("unable to find an edge: "+edge.node1id+" "+edge.node2id);
+				
+				// don't reuse the edges already used
+				edgesId.removeAll(alreadyProcessedEdges);			
+				
+				if (edgesId.isEmpty())
+					throw new ProgramException("unable to find an edge: "+edge.node1id+" "+edge.node2id);
+				
+				// and use the first one
+				String edgeId = edgesId.iterator().next();
+				alreadyProcessedEdges.add(edgeId);
+				
+				genlabGraph.setEdgeAttribute(
+						edgeId, 
+						attributeName, 
+						attributesValues[i]
+						);
+								
+				i++;
+				
+			}
+			if (i != attributesValues.length)
+				throw new ProgramException("wrong number of attributes, they are more numerous ("+i+") than edges in the graph");
+			
+			
+		} else {*/
+			
+			for (String edgeId: genlabGraph.getEdges()) {
+				
+				genlabGraph.setEdgeAttribute(
+						edgeId, 
+						attributeName, 
+						attributesValues[i]
+						);
+								
+				i++;
+				
+			}
+			
+			
+		//}
+		
+
+		// done.
+		
+	}
+	
+	
 	public static IGraphGraph getIGraphGraphForGenlabGraph(IGenlabGraph genlabGraph, IExecution execution) {
 		
 		return getIGraphGraphForGenlabGraph(

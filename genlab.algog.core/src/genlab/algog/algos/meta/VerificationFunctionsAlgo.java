@@ -60,7 +60,8 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 		POL ("POL (Poloni)"),
 		TNK ("TNK (Tanaka)"),
 		CONSTR_EX ("Constr-Ex problem"),
-		SRN ("SRN (Chakong and Haimes)")
+		SRN ("SRN (Chakong and Haimes)"),
+		NEO ("test")
 		;
 		
 		public final String label;
@@ -164,6 +165,12 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 					boolean violatesConstraint = false;
 					boolean violatesSearchDomain = false;
 					switch (testedFunction) {
+						case NEO:
+							violatesConstraint = false;
+						violatesSearchDomain =
+								(x < 0) || (x > 1) ||
+								(y < 0) || (y > 1);
+							break;
 						case BNH:
 							violatesConstraint = 
 								(
@@ -536,6 +543,11 @@ public class VerificationFunctionsAlgo extends AbstractGeneticAlgo {
 					Double f1 = null;
 					Double f2 = null;
 					switch (testedFunction) {
+						case NEO:
+							double lambda = 0.0001d;
+							f1 = (1/lambda) * (x-y);
+							f2 = lambda * (y-x);
+							break;
 						case BNH:
 							f1 = 4*StrictMath.pow(x, 2)+4*StrictMath.pow(y, 2);
 							f2 = StrictMath.pow(x - 5,  2) + StrictMath.pow(y - 5, 2);

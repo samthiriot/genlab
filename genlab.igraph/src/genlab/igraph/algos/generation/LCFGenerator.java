@@ -6,6 +6,7 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.igraph.commons.IgraphLibFactory;
+import genlab.igraph.parameters.ChoiceOfImplementationParameter.EIgraphImplementation;
 
 public class LCFGenerator extends AbstractIGraphGenerator {
 
@@ -56,7 +57,8 @@ public class LCFGenerator extends AbstractIGraphGenerator {
 				
 				LCF lcf = (LCF)algoInst.getValueForParameter(PARAM_LCF.getId());
 				
-				return IgraphLibFactory.getImplementation().generateLCF(count, lcf.shifts, lcf.count, this.exec);
+				return IgraphLibFactory.getImplementation((Integer) algoInst.getValueForParameter(AbstractIGraphGenerator.PARAM_IMPLEMENTATION))
+						.generateLCF(count, lcf.shifts, lcf.count, this.exec);
 
 			}
 		};

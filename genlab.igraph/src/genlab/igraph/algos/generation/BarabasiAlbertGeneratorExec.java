@@ -8,6 +8,7 @@ import genlab.igraph.commons.IgraphLibFactory;
 import genlab.igraph.natjna.IGraphGraph;
 import genlab.igraph.natjna.IGraphNativeLibrary;
 import genlab.igraph.natjna.IGraphLibImplementationNative;
+import genlab.igraph.parameters.ChoiceOfImplementationParameter.EIgraphImplementation;
 
 public class BarabasiAlbertGeneratorExec extends AbstractIGraphGeneratorExec {
 
@@ -27,16 +28,17 @@ public class BarabasiAlbertGeneratorExec extends AbstractIGraphGeneratorExec {
 	@Override
 	protected IGenlabGraph generateGraph() {
 
-		return IgraphLibFactory.getImplementation().generateBarabasiAlbert(
-				(Integer)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_N), 
-				(Integer)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_M), 
-				(Double)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_POWER),
-				(Double)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_ZERO_APPEAL),
-				(Boolean)algoInst.getValueForParameter(BarabasiAlbertGeneratorAlgo.PARAM_DIRECTED.getId()),
-				(Boolean)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_OUTPUT_PREF),
-				(Double)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_A), 
-				this.exec,
-				(Long)algoInst.getValueForParameter(AbstractIGraphGenerator.PARAM_SEED)
+		return IgraphLibFactory.getImplementation((Integer) algoInst.getValueForParameter(AbstractIGraphGenerator.PARAM_IMPLEMENTATION))
+				.generateBarabasiAlbert(
+					(Integer)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_N), 
+					(Integer)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_M), 
+					(Double)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_POWER),
+					(Double)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_ZERO_APPEAL),
+					(Boolean)algoInst.getValueForParameter(BarabasiAlbertGeneratorAlgo.PARAM_DIRECTED.getId()),
+					(Boolean)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_OUTPUT_PREF),
+					(Double)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_A), 
+					this.exec,
+					(Long)algoInst.getValueForParameter(AbstractIGraphGenerator.PARAM_SEED)
 				);
 		
 	}
