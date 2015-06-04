@@ -261,8 +261,8 @@ public class AlgoInstance implements IAlgoInstance, Serializable {
 
 	public void setValueForParameter(String name, Object value) {
 		
-		if (!hasParameter(name) && paramChangeName.getName().equals(name))
-			throw new WrongParametersException("wrong parameter "+name+": no parameter found with this name");
+		//if (!hasParameter(name) && paramChangeName.getName().equals(name))
+		//	throw new WrongParametersException("wrong parameter "+name+": no parameter found with this name");
 	
 		if (name.equals(paramChangeName.getId())) {
 			// specific case: rename !

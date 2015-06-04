@@ -85,7 +85,8 @@ public class AlgoInstanceConverter extends Decoder implements Converter {
 	        	writer.endNode();
 	            writer.startNode("value");
 	            writer.addAttribute("class", entry.getValue().getClass().getCanonicalName());
-	            writer.setValue(param.toSaveString(entry.getValue()));
+	            ctxt.convertAnother(entry.getValue());
+	            //writer.setValue(param.toSaveString(entry.getValue()));
 	            writer.endNode();
 	            writer.endNode();
 	        }

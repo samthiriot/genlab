@@ -4,7 +4,9 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IParametersListener;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.parameters.BooleanParameter;
+import genlab.core.parameters.ColorRGBParameterValue;
 import genlab.core.parameters.DoubleParameter;
+import genlab.gui.Utils;
 import genlab.gui.actions.ShowParametersAction;
 import genlab.gui.algos.AbstractOpenViewAlgoExec;
 import genlab.gui.editors.IGenlabGraphicalView;
@@ -73,7 +75,7 @@ public class PrefuseVisuView
 
 	public static final String VIEW_ID = "genlab.gui.prefuse.views.PrefuseVisuView";
 	
-	protected final static RGB defaultRGBColor = new RGB(100, 100, 100);
+	protected final static ColorRGBParameterValue defaultRGBColor = new ColorRGBParameterValue(100, 100, 100);
 	protected final static Double defaultWeight = new Double(0.0000001);
 
 
@@ -182,11 +184,10 @@ public class PrefuseVisuView
 		
 		// ... one can choose the attributes for coloring based on the nodes vertices in the network
 		{
-			// TODO sort by alphanumerical order the attributes !
 			List<String> verticesAttributes = new LinkedList<String>(lastVersionDataToDisplay.getDeclaredVertexAttributes());
 			Collections.sort(verticesAttributes);
 			PrefuseVisuAlgo.PARAM_ATTRIBUTE_VERTEX_COLORING.setItems(verticesAttributes);
-			
+			// TODO ! Non ! should not be shared between many instances o_O
 		}
 		
 		// declare linktypes
@@ -280,7 +281,7 @@ public class PrefuseVisuView
 			
 			final String parameterId = algoInstance.getId()+".parameters.linktypes."+linktypeId;
 			
-			RGB color = (RGB)algoInstance.getValueForParameter(parameterId+".color");
+			ColorRGBParameterValue color1 = (ColorRGBParameterValue)algoInstance.getValueForParameter(parameterId+".color");
 			Boolean weightAuto = (Boolean)algoInstance.getValueForParameter(parameterId+".weightAuto");
 			Double weight = (Double)algoInstance.getValueForParameter(parameterId+".weight");
 			Double thickness = (Double)algoInstance.getValueForParameter(parameterId+".thickness");
@@ -288,14 +289,14 @@ public class PrefuseVisuView
 			LinktypeParameters p = linktype2parameters.get(getOrCreatePrefuseIdxForLinkType(linktypeId));
 			if (p == null) {
 				p = new LinktypeParameters(
-						color, 
+						Utils.getRGB(color1), 
 						thickness, 
 						weightAuto,
 						weightAuto ? null: weight
 						);
 				linktype2parameters.put(getOrCreatePrefuseIdxForLinkType(linktypeId), p);
 			} else {
-				p.color = color;
+				p.color = Utils.getRGB(color1);
 				p.weightAuto = weightAuto;
 				p.weight = weightAuto ? null: weight;
 				p.width = thickness;

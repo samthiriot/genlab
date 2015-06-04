@@ -5,6 +5,7 @@ import java.net.URI;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.parameters.ColorRGBParameterValue;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.editors.IWorkflowEditor;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
@@ -27,6 +28,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
@@ -374,8 +376,19 @@ public class Utils {
 
 	}
 	 */
+	
+	public static RGB getRGB(ColorRGBParameterValue v) {
+		return new RGB(v.r, v.g, v.b);
+	}
+	
+	public static ColorRGBParameterValue getColorRGBParameterValue(RGB v) {
+		return new ColorRGBParameterValue(v.red, v.green, v.blue);
+	}
+	
+	
 	private Utils() {
 	}
+	
 	
 
 }

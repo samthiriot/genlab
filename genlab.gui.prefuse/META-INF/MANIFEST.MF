@@ -6,6 +6,7 @@ Bundle-Version: 1.0.0
 Bundle-Activator: genlab.gui.prefuse.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
+ org.eclipse.ui.forms;bundle-version="3.6.1",
  genlab.core;bundle-version="0.0.1",
  genlab.gui;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

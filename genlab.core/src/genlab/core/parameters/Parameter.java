@@ -58,9 +58,6 @@ public abstract class Parameter<Type extends Object> {
 	
 	public abstract Type parseFromString(String value);
 
-	public String toSaveString(Object value) {
-		return value.toString();
-	}
 		
 	public boolean shouldSave() {
 		return shouldSave;
