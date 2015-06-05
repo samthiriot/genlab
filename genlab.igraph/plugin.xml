@@ -71,6 +71,10 @@
             class="genlab.igraph.algos.measure.IGraphNodeClosenessAlgo"
             id="genlab.igraph.algos.measure.IGraphNodeClosenessAlgo">
       </algo>
+      <algo
+            class="genlab.igraph.algos.measure.IGraphNodeAlphaCentralityAlgo"
+            id="genlab.igraph.algos.measure.IGraphNodeAlphaCentralityAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -296,6 +300,24 @@
          <more_info
                content="igraph official documentation"
                url="http://igraph.org/c/doc/igraph-Generators.html#igraph_barabasi_game">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.measure.IGraphNodeClosenessAlgo"
+            description="Cloness centrality measures how many steps is required to access every other vertex from a given vertex"
+            library_id="genlab.igraph.doc.library.igraph">
+         <more_info
+               content="IGraph documentation"
+               url="http://igraph.org/r/doc/closeness.html">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.measure.IGraphNodeAlphaCentralityAlgo"
+            description="calculates the alpha centrality of some (or all) vertices in a graph. "
+            library_id="genlab.igraph.doc.library.igraph">
+         <more_info
+               content="R documentation"
+               url="http://igraph.org/r/doc/alpha.centrality.html">
          </more_info>
       </docalgo>
    </extension>

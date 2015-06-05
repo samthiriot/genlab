@@ -854,4 +854,10 @@ public class IGraphLibImplementationNative implements IGraphLibImplementation {
 		// return null;
 	}
 
+	@Override
+	public double[] computeNodeAlphaCentrality(IGenlabGraph genlabGraph,
+			IExecution exec) {
+		throw new NotImplementedException();
+	}
+
 }

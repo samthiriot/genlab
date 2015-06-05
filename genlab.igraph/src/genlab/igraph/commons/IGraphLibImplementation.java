@@ -101,7 +101,10 @@ public interface IGraphLibImplementation {
 			IExecution execution);
 	
 	public double[] computeNodeCloseness(IGenlabGraph genlabGraph, IExecution exec);
-	
+
+	public double[] computeNodeAlphaCentrality(IGenlabGraph genlabGraph,
+			IExecution exec);
+
 
 	public double[] computeEdgeBetweeness(
 			IGenlabGraph g, boolean directed, 
