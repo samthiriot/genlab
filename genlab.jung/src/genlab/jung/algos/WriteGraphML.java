@@ -16,6 +16,7 @@ import genlab.core.model.meta.basics.flowtypes.FileFlowType;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.jung.utils.Converters;
+import genlab.jung.utils.JungWriters;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -71,7 +72,7 @@ public class WriteGraphML extends BasicAlgo {
 			@Override
 			public void run() {
 				
-				progress.setProgressTotal(3);
+				progress.setProgressTotal(2);
 				progress.setComputationState(ComputationState.STARTED);
 
 				ComputationResult result = new ComputationResult(algoInst, progress, exec.getListOfMessages());
@@ -89,47 +90,7 @@ public class WriteGraphML extends BasicAlgo {
 					progress.incProgressMade();
 					
 					// transform graph
-					Graph<String,String> jungGraph = Converters.getJungGraphForGenlabGraphReadonly(graph);
-					progress.incProgressMade();
-					
-					// create writer
-					GraphMLWriter<String, String> graphWriter = new GraphMLWriter<String, String>();
-					
-					// TODO graph data !
-					/*for (Entry<String,Object> graphAtt: graph.getGraphAttributes().entrySet()) {
-						graphWriter.addGraphData(
-								graphAtt.getKey(), 
-								null, 
-								"", 
-								new Transformer<String,String>()
-								);
-					}
-					*/
-					
-					// add node attributes
-					for (Entry<String, Class> e : graph.getDeclaredVertexAttributesAndTypes().entrySet()) {
-						
-						final String attributeId = e.getKey();
-						
-					
-						graphWriter.addVertexData(
-								e.getKey(), 
-								null, 
-								"NaN", 
-								new Transformer<String,String>() {
-
-									@Override
-									public String transform(String vertexId) {
-										return graph.getVertexAttributeValue(vertexId, attributeId).toString();
-									}										
-								}
-						);
-					
-						
-					}
-					
-					PrintWriter out = new PrintWriter(tmpFile);
-					graphWriter.save(jungGraph, out);
+					JungWriters.writeGraphAsGraphML(graph, tmpFile);
 					progress.incProgressMade();
 					
 					result.setResult(OUTPUT_FILE, tmpFile);
