@@ -444,5 +444,11 @@ public class AbstractGraphView extends AbstractViewOpenedByAlgo implements IGenl
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public void partActivated(IWorkbenchPartReference partRef) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

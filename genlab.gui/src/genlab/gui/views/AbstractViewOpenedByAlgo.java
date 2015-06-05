@@ -214,9 +214,6 @@ public abstract class AbstractViewOpenedByAlgo<ClassObjectToDisplay extends Obje
 
 	public abstract boolean isDisposed();
 
-	@Override
-	public final void partActivated(IWorkbenchPartReference partRef) {
-	}
 
 	@Override
 	public final void partBroughtToTop(IWorkbenchPartReference partRef) {
@@ -274,6 +271,12 @@ public abstract class AbstractViewOpenedByAlgo<ClassObjectToDisplay extends Obje
 
 	@Override
 	public final void partInputChanged(IWorkbenchPartReference partRef) {
+	}
+
+	@Override
+	public void partActivated(IWorkbenchPartReference partRef) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IWorkbenchPartReference;
 
 /**
  * TODO don't restore this view if the corresponding exec does not exists !
@@ -121,6 +122,12 @@ public class ConsoleView extends AbstractViewOpenedByAlgo {
 
 	@Override
 	protected void refreshDisplaySync() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void partActivated(IWorkbenchPartReference partRef) {
 		// TODO Auto-generated method stub
 		
 	}

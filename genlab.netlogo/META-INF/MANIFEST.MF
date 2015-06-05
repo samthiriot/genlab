@@ -7,7 +7,9 @@ Bundle-Activator: genlab.netlogo.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  genlab.core;bundle-version="0.0.1",
- org.junit
+ org.junit,
+ genlab.graphstream.corejar;bundle-version="1.3.0",
+ genlab.graphstream;bundle-version="0.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Eclipse-BundleShape: dir
@@ -58,4 +60,23 @@ Export-Package: genlab.netlogo,
  org.nlogo.workspace
 Bundle-ClassPath: ext/NetLogo.jar,
  .,
- ext/netlogoExtensions/
+ ext/netlogoExtensions/,
+ ext/asm-all-3.3.1.jar,
+ ext/picocontainer-2.13.6.jar,
+ ext/scala-library.jar,
+ ext/gui/commons-codec-1.6.jar,
+ ext/gui/commons-logging-1.1.1.jar,
+ ext/gui/gluegen-rt-1.1.1.jar,
+ ext/gui/httpclient-4.2.jar,
+ ext/gui/httpcore-4.2.jar,
+ ext/gui/httpmime-4.2.jar,
+ ext/gui/jhotdraw-6.0b1.jar,
+ ext/gui/jmf-2.1.1e.jar,
+ ext/gui/jogl-1.1.1.jar,
+ ext/gui/json-simple-1.1.1.jar,
+ ext/gui/mrjadapter-1.2.jar,
+ ext/gui/parboiled-core-1.0.2.jar,
+ ext/gui/parboiled-java-1.0.2.jar,
+ ext/gui/pegdown-1.1.0.jar,
+ ext/gui/quaqua-7.3.4.jar,
+ ext/gui/swing-layout-7.3.4.jar

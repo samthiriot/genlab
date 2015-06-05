@@ -201,6 +201,8 @@ public class PrefuseVisuView
 	 */
 	private void updateParametersFromContent() {
 		
+		messages.debugTech("updating parameters from graph", getClass());
+
 		// declare node parameters
 		
 		// ... one can choose the attributes for coloring based on the nodes vertices in the network
@@ -289,6 +291,8 @@ public class PrefuseVisuView
 	 * From the algo instance, laod the parameters values
 	 */
 	private void loadParametersFromAlgoInstance() {
+
+		messages.debugTech("reading parameters", getClass());
 
 		// load parameters for quality
 		if (lastVersionDataToDisplay != null && prefuseDisplay != null) {
@@ -433,6 +437,8 @@ public class PrefuseVisuView
 		if (vis == null || lastVersionDataToDisplay == null)
 			return;
 
+		messages.debugTech("init color painting", getClass());
+
 		if (color != null) {
 			color.cancel();
 		}
@@ -535,6 +541,8 @@ public class PrefuseVisuView
 
 	protected void initLayout() {
 
+		messages.debugTech("init layout", getClass());
+
 		if (theLayout == null)
 			theLayout = new MultiplexForceDirectedLayout("graph", linktype2parameters);
 		
@@ -597,7 +605,7 @@ public class PrefuseVisuView
 		
 		// create the AWT composite
 		final Frame frameAwt = SWT_AWT.new_Frame(hostSwtComposite);
-		frameAwt.setIgnoreRepaint(true);
+		//frameAwt.setIgnoreRepaint(true);
 		try {
 			frameAwt.setUndecorated(true);
 		} catch (RuntimeException e) {
@@ -903,6 +911,8 @@ public class PrefuseVisuView
 	
 	private void updatePrefuseGraphFromGenlab() {
 		
+		messages.debugTech("loading graph from Genlab", getClass());
+		
 		// preprocess: identify the attributes to declare
 		List<String> vertexAttributes = new LinkedList<String>();
 		for (Entry<String,Class> attribute: lastVersionDataToDisplay.getDeclaredVertexAttributesAndTypes().entrySet()) {
@@ -1058,6 +1068,9 @@ public class PrefuseVisuView
 	@Override
 	public void partClosed(IWorkbenchPartReference partRef) {
 		
+		if (partRef.getPart(false) != this)
+			return;
+
 		stopNetVisu();
 		
 		super.partClosed(partRef);
@@ -1065,33 +1078,56 @@ public class PrefuseVisuView
 
 	@Override
 	public void partDeactivated(IWorkbenchPartReference partRef) {
-		// TODO stop layout !
+
+
+		if (partRef.getPart(false) != this)
+			return;
+		
+		stopNetVisu();
+		
 		super.partDeactivated(partRef);
+	}
+
+	@Override
+	public final void partActivated(IWorkbenchPartReference partRef) {
+
+		if (partRef.getPart(false) != this)
+			return;
+		
+		startNetVisu();
+		
 	}
 
 
 	@Override
 	public void partHidden(IWorkbenchPartReference partRef) {
 
-		// TODO stop layout !
+		if (partRef.getPart(false) != this)
+			return;
+		
+		stopNetVisu();
+		
 		super.partHidden(partRef);
+
 	}
 
 	@Override
 	public void partVisible(IWorkbenchPartReference partRef) {
 
-		// TODO restart layout !
+		if (partRef.getPart(false) != this)
+			return;
 		
 		super.partVisible(partRef);
 		
-		// TODO not ok
-		shouldBeRunning = (partRef.getPartName().equals(this.getPartName()));
+		startNetVisu();
 	}
 
+	
 	@Override
 	public void dispose() {
 		
-		algoInstance.removeParametersListener(this);
+		if (algoInstance != null)
+			algoInstance.removeParametersListener(this);
 		
 		stopNetVisu();
 		

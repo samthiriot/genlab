@@ -70,6 +70,7 @@
       <plugin id="genlab.jna.corejar"/>
       <plugin id="genlab.jung"/>
       <plugin id="genlab.neo4j"/>
+      <plugin id="genlab.netlogo"/>
       <plugin id="genlab.networkOperations"/>
       <plugin id="genlab.os"/>
       <plugin id="genlab.population.yang"/>
