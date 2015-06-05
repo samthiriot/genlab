@@ -10,6 +10,7 @@ import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
 import genlab.core.model.meta.basics.flowtypes.ProbabilityInOut;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.parameters.BooleanParameter;
 import genlab.core.parameters.IntParameter;
 import genlab.netlogo.exec.SIRModelExec;
 
@@ -85,6 +86,13 @@ public class SIRModelAlgo extends BasicAlgo {
 			1
 			);
 	
+	public static final BooleanParameter PARAM_GUI = new BooleanParameter(
+			"param_gui", 
+			"see GUI", 
+			"see the graphical user interface", 
+			Boolean.FALSE
+			);
+	
 	public SIRModelAlgo() {
 		super(
 				"SIR over network (Netlogo)", 
@@ -106,6 +114,7 @@ public class SIRModelAlgo extends BasicAlgo {
 		outputs.add(OUTPUT_DURATION);
 		
 		registerParameter(PARAM_MAX_STEPS);
+		registerParameter(PARAM_GUI);
 	}
 
 	@Override

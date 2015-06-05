@@ -13,6 +13,7 @@ import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.usermachineinteraction.GLLogger;
 import genlab.netlogo.NetlogoUtils;
 import genlab.netlogo.RunNetlogoModel;
 import genlab.netlogo.algos.SIRModelAlgo;
@@ -54,6 +55,7 @@ public class SIRModelExec extends AbstractAlgoExecutionOneshot {
 			final Double resistance = (Double)getInputValueForInput(SIRModelAlgo.INPUT_RESISTANCE_CHANCE);
 			
 			final Integer maxStep = (Integer) algoInst.getValueForParameter(SIRModelAlgo.PARAM_MAX_STEPS);
+			final Boolean openGui = (Boolean)algoInst.getValueForParameter(SIRModelAlgo.PARAM_GUI);
 			
 			progress.setProgressMade(1);
 	
@@ -69,7 +71,8 @@ public class SIRModelExec extends AbstractAlgoExecutionOneshot {
 			inputs.put("virus-check-frequency", 1);
 			inputs.put("recovery-chance", (int)Math.round(recover*100));
 			inputs.put("gain-resistance-chance", (int)Math.round(resistance*100));
-			
+			inputs.put("is-graphical", openGui.booleanValue());
+
 			// define outputs
 			Collection<String> requiredOutputs = new LinkedList<String>();
 			requiredOutputs.add("measure-susceptible");
@@ -79,7 +82,19 @@ public class SIRModelExec extends AbstractAlgoExecutionOneshot {
 			progress.setProgressMade(3);
 	
 			// run the model
-			Map<String,Object> result = RunNetlogoModel.runNetlogoModel(
+			Map<String,Object> result = null;
+			if (openGui) {
+				GLLogger.warnUser("once open, Netlogo cannot be closed. It will close itself when you close Netlogo. Sorry.", getClass());
+				result = RunNetlogoModel.runNetlogoModelGraphical(
+						messages, 
+						"genlab.netlogo/ressources/models/Virus on a Network.nlogo", 
+						inputs, 
+						requiredOutputs,
+						maxStep,
+						progress
+						);
+			} else {
+				result = RunNetlogoModel.runNetlogoModelHeadless(
 					messages, 
 					"genlab.netlogo/ressources/models/Virus on a Network.nlogo", 
 					inputs, 
@@ -87,7 +102,8 @@ public class SIRModelExec extends AbstractAlgoExecutionOneshot {
 					maxStep,
 					progress
 					);
-			
+				fileNetwork.delete();
+			}
 			// transmit results
 			res.setResult(SIRModelAlgo.OUTPUT_INFECTED, result.get("measure-infected"));
 			res.setResult(SIRModelAlgo.OUTPUT_SUSCEPTIBLE, result.get("measure-susceptible"));

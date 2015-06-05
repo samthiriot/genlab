@@ -8,5 +8,21 @@
 	<classpathentry kind="lib" path="ext/scala-library.jar"/>
 	<classpathentry kind="lib" path="ext/picocontainer-2.13.6.jar"/>
 	<classpathentry kind="lib" path="ext/asm-all-3.3.1.jar"/>
+	<classpathentry kind="lib" path="ext/gui/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="ext/gui/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="ext/gui/gluegen-rt-1.1.1.jar"/>
+	<classpathentry kind="lib" path="ext/gui/jhotdraw-6.0b1.jar"/>
+	<classpathentry kind="lib" path="ext/gui/jmf-2.1.1e.jar"/>
+	<classpathentry kind="lib" path="ext/gui/jogl-1.1.1.jar"/>
+	<classpathentry kind="lib" path="ext/gui/json-simple-1.1.1.jar"/>
+	<classpathentry kind="lib" path="ext/gui/mrjadapter-1.2.jar"/>
+	<classpathentry kind="lib" path="ext/gui/parboiled-core-1.0.2.jar"/>
+	<classpathentry kind="lib" path="ext/gui/parboiled-java-1.0.2.jar"/>
+	<classpathentry kind="lib" path="ext/gui/pegdown-1.1.0.jar"/>
+	<classpathentry kind="lib" path="ext/gui/quaqua-7.3.4.jar"/>
+	<classpathentry kind="lib" path="ext/gui/swing-layout-7.3.4.jar"/>
+	<classpathentry kind="lib" path="ext/gui/httpclient-4.2.jar"/>
+	<classpathentry kind="lib" path="ext/gui/httpcore-4.2.jar"/>
+	<classpathentry kind="lib" path="ext/gui/httpmime-4.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
