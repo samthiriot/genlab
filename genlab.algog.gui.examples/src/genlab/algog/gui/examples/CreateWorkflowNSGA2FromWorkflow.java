@@ -8,6 +8,7 @@ import genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo;
 import genlab.algog.gui.jfreechart.algos.AlgoGPlotAlgo;
 import genlab.algog.gui.jfreechart.algos.AlgoGPlotRadarAlgo;
 import genlab.algog.gui.jfreechart.algos.FirstFront2DAlgo;
+import genlab.algog.gui.misc.algos.PlotPhenotypeAlgo;
 import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.GenlabFactory;
 import genlab.core.model.instance.IAlgoContainerInstance;
@@ -409,12 +410,36 @@ public class CreateWorkflowNSGA2FromWorkflow {
 			workflowRes.addAlgoInstance(plot2DInstance);
 			plot2DInstance.setName("Pareto front");
 
-			plot2DInstance.setName("Pareto fronts");
 			workflowRes.connect(
 					nsga2instance, 
 					NSGA2GeneticExplorationAlgo.OUTPUT_TABLE_PARETO, 
 					plot2DInstance,
 					FirstFront2DAlgo.INPUT_TABLE
+					);
+		}
+		final PlotPhenotypeAlgo plotPhenotypeAlgo = new PlotPhenotypeAlgo();
+		{
+			final IAlgoInstance phenotypeInstance = plotPhenotypeAlgo.createInstance(workflowRes);
+			workflowRes.addAlgoInstance(phenotypeInstance);
+
+			phenotypeInstance.setName("Pareto phenotypes");
+			workflowRes.connect(
+					nsga2instance, 
+					NSGA2GeneticExplorationAlgo.OUTPUT_TABLE_PARETO, 
+					phenotypeInstance,
+					PlotPhenotypeAlgo.INPUT_TABLE
+					);
+		}
+		{
+			final IAlgoInstance phenotypeInstance = plotPhenotypeAlgo.createInstance(workflowRes);
+			workflowRes.addAlgoInstance(phenotypeInstance);
+
+			phenotypeInstance.setName("All phenotypes");
+			workflowRes.connect(
+					nsga2instance, 
+					NSGA2GeneticExplorationAlgo.OUTPUT_TABLE, 
+					phenotypeInstance,
+					PlotPhenotypeAlgo.INPUT_TABLE
 					);
 		}
 		
