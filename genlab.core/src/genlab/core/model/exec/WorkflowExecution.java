@@ -57,21 +57,26 @@ public class WorkflowExecution
 			// first create execution for each direct sub algo
 			
 			for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
-	
+
 				if (sub.getContainer() != null && sub.getContainer() != workflowInstance) {
 					// ignored ! this is contained in something, and this something will be in charge of creating execs
 					
 				} else {
-					messages.traceTech("creating the execution task for algo "+sub, getClass());
-					IAlgoExecution subExec = sub.execute(exec);
 					
-					if (subExec == null)
-						throw new ProgramException("an algorithm was unable to prepare an execution "+sub);
-					
-					instance2execution.put(
-							sub, 
-							subExec
-							);
+					if (sub.isDisabled()) {
+						messages.warnUser("the algorithm "+sub.getName()+" is disabled, so it will not be run", getClass()); 
+					} else {
+						messages.traceTech("creating the execution task for algo "+sub, getClass());
+						IAlgoExecution subExec = sub.execute(exec);
+						
+						if (subExec == null)
+							throw new ProgramException("an algorithm was unable to prepare an execution "+sub);
+						
+						instance2execution.put(
+								sub, 
+								subExec
+								);
+					}
 				}
 			}
 			
@@ -111,6 +116,10 @@ public class WorkflowExecution
 			for (IAlgoInstance sub : workflowInstance.getAlgoInstances()) {
 				
 				IAlgoExecution subExec = instance2execution.get(sub);
+				
+				// maybe we did not created this one ? (notably is disabled)
+				if (subExec == null)
+					continue;
 				
 				if (sub.getContainer() != null && sub.getContainer() != workflowInstance) {
 					// container will manage that itself.
@@ -166,6 +175,10 @@ public class WorkflowExecution
 				
 				IAlgoExecution subExec = instance2execution.get(sub);
 				
+				// maybe we did not created this one ? (notably if disabled)
+				if (subExec == null)
+					continue;
+				
 				if (sub.getContainer() != null && sub.getContainer() != workflowInstance) {
 					// container will manage that itself.
 					
@@ -186,6 +199,9 @@ public class WorkflowExecution
 				
 				if (sub.getAllIncomingConnections().isEmpty()) {
 					IAlgoExecution subExec = instance2execution.get(sub);
+					// maybe we did not created this one ? (notably if disabled)
+					if (subExec == null)
+						continue;
 					subExec.propagateRank(1, new HashSet<ITask>());
 				}
 

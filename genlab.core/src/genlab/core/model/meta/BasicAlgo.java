@@ -4,6 +4,7 @@ import genlab.core.commons.NotImplementedException;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.parameters.BooleanParameter;
 import genlab.core.parameters.Parameter;
 import genlab.core.usermachineinteraction.GLLogger;
 
@@ -36,6 +37,12 @@ public abstract class BasicAlgo implements IAlgo {
 	protected String imageRelativePath = null;
 	protected String imageRelativeBig = null;
 
+	public static final BooleanParameter PARAM_DISABLED = new BooleanParameter(
+			"param_disabled", 
+			"disabled", 
+			"don't run this algorithm even if it is in the workflow", 
+			Boolean.FALSE
+			);
 	
 	public static final String IMAGE_PATH_PLACEHOLDER_SIZE = "[%SIZE%]";
 	
@@ -63,6 +70,8 @@ public abstract class BasicAlgo implements IAlgo {
 		
 		this.imageRelativePath = imagePath;
 		this.imageRelativeBig = imagePathBig;
+		
+		registerParameter(PARAM_DISABLED);
 	}
 	
 	protected String constructId(String name) {
@@ -78,6 +87,9 @@ public abstract class BasicAlgo implements IAlgo {
 			) {
 		
 		this(name, description, null, categoryId, null);
+		
+		registerParameter(PARAM_DISABLED);
+
 	}
 
 	/**

@@ -112,6 +112,6 @@ public interface IAlgoInstance extends IGenlabResource {
 
 	void declareParameter(Parameter<?> p);
 	
-	
+	public boolean isDisabled();
 	
 }

@@ -3,6 +3,7 @@ package genlab.core.model.instance;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
+import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
@@ -493,6 +494,11 @@ public class AlgoInstance implements IAlgoInstance, Serializable {
 		
 		parametersListener.remove(list);
 		
+	}
+
+	@Override
+	public boolean isDisabled() {
+		return (Boolean)getValueForParameter(BasicAlgo.PARAM_DISABLED);
 	}
 
 
