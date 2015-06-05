@@ -10,6 +10,8 @@ import java.io.IOException;
 
 import org.graphstream.stream.file.FileSinkGML;
 
+import scala.annotation.target.getter;
+
 public class NetlogoUtils {
 
 	public static String toNetlogoString(Object v) {
@@ -40,6 +42,24 @@ public class NetlogoUtils {
 		}
 		
 		return tmpFile;
+
+	}
+	
+	public static String findAbsolutePathForRelativePath(String relative) {
+		File f;
+		
+		// find it immediately from the current path
+		f = new File(relative);
+		if (f.exists()) 
+			return f.getAbsolutePath();
+		
+		// load as file in our directory
+		String pathPackaged = "plugins"+File.separator+"genlab.netlogo"+File.separator+relative;
+		f = new File(pathPackaged);
+		if (f.exists())
+			return f.getAbsolutePath();
+		
+		return null;
 
 	}
 	

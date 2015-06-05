@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
@@ -81,13 +82,19 @@ public class SIRModelExec extends AbstractAlgoExecutionOneshot {
 					
 			progress.setProgressMade(3);
 	
+			String fileAbsolute = NetlogoUtils.findAbsolutePathForRelativePath("genlab.netlogo/ressources/models/Virus on a Network.nlogo");
+			
+			if (fileAbsolute == null) {
+				throw new ProgramException("Unable to find file for the Netlogo model");
+			}
+				
 			// run the model
 			Map<String,Object> result = null;
 			if (openGui) {
 				GLLogger.warnUser("once open, Netlogo cannot be closed. It will close itself when you close Netlogo. Sorry.", getClass());
 				result = RunNetlogoModel.runNetlogoModelGraphical(
 						messages, 
-						"genlab.netlogo/ressources/models/Virus on a Network.nlogo", 
+						fileAbsolute, 
 						inputs, 
 						requiredOutputs,
 						maxStep,
