@@ -120,6 +120,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	 */
 	protected void fastNonDominatedSort() {
 		
+		System.err.println("fastNonDominatedSort: in");
 		SortedMap<Integer,Set<AnIndividual>> frontIndexWIndividuals = new TreeMap<Integer, Set<AnIndividual>>();
 		Map<AnIndividual,Integer> individualWDominationCount = new HashMap<AnIndividual, Integer>(pq_at_t0.size());
 		Map<AnIndividual,Set<AnIndividual>> individualWDominatedIndividuals = new HashMap<AnIndividual, Set<AnIndividual>>(pq_at_t0.size());
@@ -200,6 +201,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		
 		// we don't always compute the fronts, but when we do: brace yourself
 		this.fronts = frontIndexWIndividuals;
+		
+		System.err.println("fastNonDominatedSort: out");
 	}
 	
 	/**
@@ -209,18 +212,16 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	protected class ComparatorFitness implements Comparator<AnIndividual> {
 
 		private final int m;
-		private final List<AnIndividual> individuals;
 		
-		public ComparatorFitness(int m, List<AnIndividual> individuals) {
+		public ComparatorFitness(int m) {
 			this.m = m;
-			this.individuals = individuals;
 		}
 
 		@Override
 		public int compare(AnIndividual o1, AnIndividual o2) {
 			
-			final Double fitness1 = individuals.get( individuals.lastIndexOf(o1) ).fitness[m];
-			final Double fitness2 = individuals.get( individuals.lastIndexOf(o2) ).fitness[m];
+			final Double fitness1 = o1.fitness[m];
+			final Double fitness2 = o2.fitness[m];
 			if (fitness1 == null || fitness2 == null)
 				throw new ProgramException("trying to compare the fitness of "+o1+" and "+o2+" but it is null");
 			return Double.compare(fitness1, fitness2);
@@ -234,18 +235,16 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	protected class ComparatorGenes implements Comparator<AnIndividual> {
 
 		private final int g;
-		private final List<AnIndividual> individuals;
 		
-		public ComparatorGenes(int g, List<AnIndividual> individuals) {
+		public ComparatorGenes(int g) {
 			this.g = g;
-			this.individuals = individuals;
 		}
 
 		@Override
 		public int compare(AnIndividual o1, AnIndividual o2) {
 			
-			final Double a = (Double)(individuals.get( individuals.lastIndexOf(o1) ).genes[g]);
-			final Double b = (Double)(individuals.get( individuals.lastIndexOf(o2) ).genes[g]);
+			final Double a = (Double)o1.genes[g];
+			final Double b = (Double)o2.genes[g];
 			return Double.compare(a, b);
 		}
 	}
@@ -256,18 +255,11 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	 */
 	protected class ComparatorCrowded implements Comparator<AnIndividual> {
 
-		private final List<AnIndividual> individuals;
-		
-		public ComparatorCrowded(List<AnIndividual> individuals) {
-			this.individuals = individuals;
-		}
-
 		@Override
 		public int compare(AnIndividual o1, AnIndividual o2) {
 			
-			final Double aDistance = individuals.get( individuals.lastIndexOf(o1) ).crowdDistance;
-			final Double bDistance = individuals.get( individuals.lastIndexOf(o2) ).crowdDistance;
-			return Double.compare(bDistance, aDistance); // and in this order!
+			return Double.compare(o2.crowdDistance, o1.crowdDistance); // and in this order!
+			
 		}
 	}
 
@@ -276,19 +268,11 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	 * @author Alan Solon
 	 */
 	protected class ComparatorN1 implements Comparator<AnIndividual> {
-
-		private final List<AnIndividual> individuals;
 		
-		public ComparatorN1(List<AnIndividual> individuals) {
-			this.individuals = individuals;
-		}
-
 		@Override
 		public int compare(AnIndividual o1, AnIndividual o2) {
 			
-			final Double a = individuals.get( individuals.lastIndexOf(o1) ).crowdDistance;
-			final Double b = individuals.get( individuals.lastIndexOf(o2) ).crowdDistance;
-			return Double.compare(a, b);
+			return Double.compare(o1.crowdDistance, o2.crowdDistance);
 		}
 	}
 
@@ -298,18 +282,11 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	 */
 	protected class ComparatorN2 implements Comparator<AnIndividual> {
 
-		private final List<AnIndividual> individuals;
 		
-		public ComparatorN2(List<AnIndividual> individuals) {
-			this.individuals = individuals;
-		}
-
 		@Override
 		public int compare(AnIndividual o1, AnIndividual o2) {
 			
-			final Double a = individuals.get( individuals.lastIndexOf(o1) ).centerDistance;
-			final Double b = individuals.get( individuals.lastIndexOf(o2) ).centerDistance;
-			return Double.compare(b, a);
+			return Double.compare(o2.centerDistance, o1.centerDistance);
 		}
 	}
 	
@@ -320,7 +297,8 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 	 * @return
 	 */
 	protected void calculateCrowdingDistance(Set<AnIndividual> population) {
-		
+		System.err.println("calculateCrowdingDistance: in");
+
 		List<AnIndividual> indivs = new ArrayList<AnIndividual>(population);
 		
 		int l = population.size();
@@ -332,7 +310,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		}
 		
 		for (int m=0; m<objectivesCount; m++) {			
-			Collections.sort(indivs, new ComparatorFitness(m, indivs));
+			Collections.sort(indivs, new ComparatorFitness(m));
 			
 			final double minFitness = indivs.get(0).fitness[m];
 			final double maxFitness = indivs.get(l-1).fitness[m];
@@ -351,9 +329,12 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 				indivs.get(i).crowdDistance = d;
 			}
 		}
+		System.err.println("calculateCrowdingDistance: out");
+
 	}
 	
 	protected Set<AnIndividual> crowdingDistanceByFitness(int howMany, List<AnIndividual> front) {
+		System.err.println("crowdingDistanceByFitness: in");
 		while( front.size()>howMany ) {
 			int l = front.size();
 			for( AnIndividual i : front ) {
@@ -361,7 +342,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 				i.centerDistance = 0d;
 			}
 			for( int m=0 ; m<front.get(0).fitness.length ; m++ ) {
-				Collections.sort(front, new ComparatorFitness(m, front));
+				Collections.sort(front, new ComparatorFitness(m));
 
 				final double delta = front.get(l-1).fitness[m] - front.get(0).fitness[m];
 	
@@ -385,7 +366,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			
 			// call all individual who got the same minimum n1
 			List<AnIndividual> er = new ArrayList<AnIndividual>();
-			Collections.sort(front, new ComparatorN1(front));
+			Collections.sort(front, new ComparatorN1());
 			Double n1 = front.get(0).crowdDistance;
 			for( AnIndividual i : front ) {
 				if( i.crowdDistance-n1<EPS ) {
@@ -396,14 +377,15 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			}
 			
 			// among them, select the best n2
-			Collections.sort(er, new ComparatorN2(er));
+			Collections.sort(er, new ComparatorN2());
 			front.remove( er.get(0) );
 		}
-		
+		System.err.println("crowdingDistanceByFitness: out");
 		return new HashSet<AnIndividual>(front);
 	}
 	
 	protected Set<AnIndividual> crowdingDistanceByGenes(int howMany, List<AnIndividual> front) {
+		System.err.println("crowdingDistanceByGenes: in");
 		while( front.size()>howMany ) {
 			int l = front.size();
 			for( AnIndividual i : front ) {
@@ -411,7 +393,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 				i.centerDistance = 0d;
 			}
 			for( int g=0 ; g<front.get(0).genes.length ; g++ ) {
-				Collections.sort(front, new ComparatorGenes(g, front));
+				Collections.sort(front, new ComparatorGenes(g));
 				
 				final double delta = (Double)(front.get(l-1).genes[g]) - (Double)(front.get(0).genes[g]);
 	
@@ -435,7 +417,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			
 			// call all individual who got the same minimum n1
 			List<AnIndividual> er = new ArrayList<AnIndividual>();
-			Collections.sort(front, new ComparatorN1(front));
+			Collections.sort(front, new ComparatorN1());
 			Double n1 = front.get(0).crowdDistance;
 			for( AnIndividual i : front ) {
 				if( i.crowdDistance-n1<EPS ) {
@@ -446,10 +428,12 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			}
 			
 			// among them, select the best n2
-			Collections.sort(er, new ComparatorN2(er));
+			Collections.sort(er, new ComparatorN2());
 			front.remove( er.get(0) );
 		}
 		
+		System.err.println("crowdingDistanceByGenes: out");
+
 		return new HashSet<AnIndividual>(front);
 	}
 
