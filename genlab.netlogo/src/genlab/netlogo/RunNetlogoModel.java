@@ -35,14 +35,16 @@ public class RunNetlogoModel {
 		// check file does exist
 		// TODO 
 		
+		System.err.println("threads before workspace: "+Thread.activeCount());
 		HeadlessWorkspace workspace = HeadlessWorkspace.newInstance();
-				
+		System.err.println("threads after workspace: "+Thread.activeCount());		
 		try {
 			
 			// open model
 			try {
 				workspace.open(modelFilename);
-				
+				System.err.println("threads after open: "+Thread.activeCount());		
+
 			} catch (Exception e) {
 				final String msg = "error while running the model: "+e.getMessage();
 				messages.errorUser(msg, RunNetlogoModel.class, e);
@@ -52,15 +54,19 @@ public class RunNetlogoModel {
 				progress.incProgressMade(10);
 			
 			// define parameters
+			StringBuffer sbParameters = new StringBuffer();
 			try {
-				
 				for (String varName : inputs.keySet()) {
 					Object value = inputs.get(varName);
 					String valueStr = NetlogoUtils.toNetlogoString(value);
 					messages.debugTech("defining variable "+varName+" to "+valueStr, RunNetlogoModel.class);
 					workspace.command("set " + varName+ " " + valueStr);
+					if (sbParameters.length() > 0)
+						sbParameters.append(", ");
+					sbParameters.append(varName).append("=").append(valueStr);
 				}
 				
+				messages.debugUser("initialized the model with parameters "+sbParameters.toString(), RunNetlogoModel.class);
 				// TODO seed ?
 				// workspace.command("set random-seed " + args[3]) ;
 				
@@ -75,7 +81,11 @@ public class RunNetlogoModel {
 				
 			// initialize model
 			try {
+				messages.debugUser("setup model...", RunNetlogoModel.class);
 				long timestampStart = System.currentTimeMillis();
+				workspace.command("setup-network-load");
+				System.err.println("threads after setup-networks: "+Thread.activeCount());		
+
 				workspace.command("setup") ;
 				long duration = System.currentTimeMillis() - timestampStart;
 				messages.debugTech("init in "+duration+"ms", RunNetlogoModel.class);
@@ -86,11 +96,13 @@ public class RunNetlogoModel {
 			}
 			if (progress != null) 
 				progress.incProgressMade(50);
+			System.err.println("threads after setup: "+Thread.activeCount());		
 
 			
 			// run the model
 			try {
 				long timestampStart = System.currentTimeMillis();
+				messages.debugUser("run model...", RunNetlogoModel.class);
 				workspace.command("repeat "+maxIterations+" [ go ]") ;
 				long duration = System.currentTimeMillis() - timestampStart;
 				messages.debugTech("run in "+duration+"ms", RunNetlogoModel.class);
@@ -103,10 +115,13 @@ public class RunNetlogoModel {
 			if (progress != null) 
 				progress.incProgressMade(50);
 
-				
+			System.err.println("threads after run: "+Thread.activeCount());		
+
 			// retrieve results
 			try {
 				
+				messages.debugUser("retrieving results...", RunNetlogoModel.class);
+
 				// retrieve last tick
 				Object ticksEnd = workspace.report("ticks");
 				messages.debugTech("finished after "+ticksEnd+" ticks", RunNetlogoModel.class);
@@ -122,6 +137,8 @@ public class RunNetlogoModel {
 				results.put("_duration", ticksEnd);
 				if (progress != null) 
 					progress.incProgressMade(10);
+
+				System.err.println("threads after results: "+Thread.activeCount());		
 
 				return results;
 			} catch(Exception ex) {

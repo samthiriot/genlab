@@ -61,7 +61,7 @@ public class SIRModelExec extends AbstractAlgoExecutionOneshot {
 			progress.setProgressMade(1);
 	
 			// write the graph somewhere so it can be read by netlogo
-			File fileNetwork = NetlogoUtils.writeGraphToNetlogoGML(graph, messages);
+			File fileNetwork = NetlogoUtils.writeGraphToNetlogoGraphML(graph, messages);
 			progress.setProgressMade(2);
 	
 			// define inputs

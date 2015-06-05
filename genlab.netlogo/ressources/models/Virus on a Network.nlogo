@@ -1,19 +1,17 @@
 extensions [nw]
 
-breed [nodes node]
-undirected-link-breed [edges edge]
-
-nodes-own
+turtles-own 
 [
   infected?           ;; if true, the turtle is infectious
   resistant?          ;; if true, the turtle can't be infected
   virus-check-timer   ;; number of ticks since this turtle's last virus-check
+  
 ]
 
 to setup
   clear-all
   setup-network-load
-  ask n-of initial-outbreak-size nodes
+  ask n-of initial-outbreak-size turtles
     [ become-infected ]
   ask links [ set color white ]
   reset-ticks
@@ -21,8 +19,7 @@ end
 
 to setup-network-load
   ;; load the network from the file and also initialize their state
-  nw:load-gml network-filename nodes edges
-  [
+  nw:load-graphml network-filename  [
     ; for visual reasons, we don't put any nodes *too* close to the edges
     setxy (random-xcor * 0.9) (random-ycor * 0.9)
     become-susceptible
@@ -30,18 +27,18 @@ to setup-network-load
   ]
   ;; also layout it for beauty purpose
   
-  if is-graphical [repeat 100 [layout-spring nodes edges 0.8 1 6]]
+  if is-graphical [repeat 100 [layout-spring turtles links 0.8 1 6]]
 end
 
 to setup-nodes
-  set-default-shape nodes "circle"
+  set-default-shape turtles "circle"
  
 end
 
 to go
-  if all? nodes [not infected?]
+  if all? turtles [not infected?]
     [ stop ]
-  ask nodes
+  ask turtles
   [
      set virus-check-timer virus-check-timer + 1
      if virus-check-timer >= virus-check-frequency
@@ -72,26 +69,26 @@ to become-resistant  ;; turtle procedure
 end
 
 to spread-virus
-  ask nodes with [infected?]
+  ask turtles with [infected?]
     [ ask link-neighbors with [not resistant?]
         [ if random-float 100 < virus-spread-chance
             [ become-infected ] ] ]
 end
 
 to-report measure-susceptible
-  report (count nodes with [not infected? and not resistant?]) / (count nodes) * 100
+  report (count turtles with [not infected? and not resistant?]) / (count turtles) * 100
 end
 
 to-report measure-infected
-  report (count nodes with [infected?]) / (count nodes) * 100
+  report (count turtles with [infected?]) / (count turtles) * 100
 end
 
 to-report measure-resistant
-  report (count nodes with [resistant?]) / (count nodes) * 100
+  report (count turtles with [resistant?]) / (count turtles) * 100
 end
 
 to do-virus-checks
-  ask nodes with [infected? and virus-check-timer = 0]
+  ask turtles with [infected? and virus-check-timer = 0]
   [
     if random 100 < recovery-chance
     [
@@ -253,7 +250,7 @@ INPUTBOX
 227
 108
 network-filename
-/tmp/genlab_tmpdata3957665154123591627/netlogo_2496839376195070369.net
+/tmp/genlab_tmp_1701398654074108409.net
 1
 0
 String

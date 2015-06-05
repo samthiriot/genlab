@@ -4,6 +4,7 @@ import genlab.core.commons.FileUtils;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.graphstream.utils.GraphstreamConvertors;
+import genlab.jung.utils.JungWriters;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,19 +28,11 @@ public class NetlogoUtils {
 		return v.toString();
 	}
 	
-	public static File writeGraphToNetlogoGML(IGenlabGraph g, ListOfMessages messages) {
+	public static File writeGraphToNetlogoGraphML(IGenlabGraph g, ListOfMessages messages) {
 
 		File tmpFile = FileUtils.createTmpFile("netlogo_", ".net");
 		
-		FileSinkGML fileSink = new FileSinkGML();
-		try {
-			fileSink.writeAll(
-					GraphstreamConvertors.getGraphstreamGraphFromGenLabGraph(g, messages), 
-					tmpFile.getAbsolutePath()
-					);
-		} catch (IOException e) {
-			throw new RuntimeException("error while writing the network to a file for Netlogo", e);
-		}
+		JungWriters.writeGraphAsGraphML(g, tmpFile);
 		
 		return tmpFile;
 
