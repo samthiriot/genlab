@@ -72,6 +72,5 @@ public class SimpleGraphstreamBasedGraph extends AbstractGraphstreamBasedGraph i
 	public final String getEdgeType(String edgeId) {
 		return "edges";
 	}
-	
 
 }

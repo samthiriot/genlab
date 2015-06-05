@@ -25,7 +25,8 @@ public interface IGenlabGraph {
 
 	public void declareEdgeAttribute(String attributeId, Class type);
 	public boolean hasEdgeAttribute(String attributeId);
-	
+	public Object getEdgeAttributeValue(String vertexId, String attributeId);
+
 	public Collection<String> getDeclaredVertexAttributes();
 	public Map<String,Class> getDeclaredVertexAttributesAndTypes();
 
@@ -151,6 +152,7 @@ public interface IGenlabGraph {
 
 	
 	public void addAll(IGenlabGraph otherGraph, boolean copyGraphAttributes, boolean copyNodeAttributes, boolean copyEdgesAttributes);
+
 
 
 
