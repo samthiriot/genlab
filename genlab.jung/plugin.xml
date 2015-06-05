@@ -19,6 +19,10 @@
             class="genlab.jung.generators.BarabasiAlbertGeneratorAlgo"
             id="genlab.jung.generators.BarabasiAlbertGeneratorAlgo">
       </algo>
+      <algo
+            class="genlab.jung.algos.WriteGraphML"
+            id="genlab.jung.algos.WriteGraphML">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">

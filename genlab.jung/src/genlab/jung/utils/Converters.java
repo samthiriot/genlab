@@ -1,6 +1,7 @@
 package genlab.jung.utils;
 
 import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.Hypergraph;
 import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.GraphFactory;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
@@ -13,6 +14,7 @@ import genlab.core.model.meta.basics.graphs.IGenlabGraph;
  *
  */
 public class Converters {
+
 
 	public static Graph<String, String> getJungGraphForGenlabGraphReadonly(IGenlabGraph g) {
 		return new JungGenlabGraphReadonly(g);

@@ -37,6 +37,7 @@ public abstract class AbstractJungAlgoExec extends AbstractAlgoExecutionOneshot 
 				
 		compute(jungGraph, glGraph, results, progress);
 		
+		
 		setResult(results);
 		progress.setComputationState(ComputationState.FINISHED_OK);
 	}
