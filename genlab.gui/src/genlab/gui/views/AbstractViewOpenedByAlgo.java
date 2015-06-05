@@ -273,4 +273,10 @@ public abstract class AbstractViewOpenedByAlgo<ClassObjectToDisplay extends Obje
 	public final void partInputChanged(IWorkbenchPartReference partRef) {
 	}
 
+	@Override
+	public void partActivated(IWorkbenchPartReference partRef) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

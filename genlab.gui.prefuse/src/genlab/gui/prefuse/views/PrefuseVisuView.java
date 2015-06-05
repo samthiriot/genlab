@@ -1126,7 +1126,8 @@ public class PrefuseVisuView
 	@Override
 	public void dispose() {
 		
-		algoInstance.removeParametersListener(this);
+		if (algoInstance != null)
+			algoInstance.removeParametersListener(this);
 		
 		stopNetVisu();
 		
