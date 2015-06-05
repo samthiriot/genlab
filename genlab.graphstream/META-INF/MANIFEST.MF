@@ -20,4 +20,5 @@ Export-Package: genlab.graphstream,
  genlab.graphstream.algos.measure,
  genlab.graphstream.algos.readers,
  genlab.graphstream.algos.writers,
- genlab.graphstream.utils
+ genlab.graphstream.utils,
+ org.graphstream.algorithm.generator

@@ -91,11 +91,13 @@ public class GraphstreamConvertors {
 			} catch (WrongParametersException e) {
 
 				if (!graph.hasEdgeAttribute(attribute)) {
-					messages.traceTech("the graph had no edge attribute "+attribute+"; we automatically define it", getClass());
+					if (messages != null) 
+						messages.traceTech("the graph had no edge attribute "+attribute+"; we automatically define it", getClass());
 					graph.declareEdgeAttribute(attribute, value.getClass());
 					graph.setEdgeAttribute(edgeId, attribute, value);
 				} else {
-					messages.errorTech("error while attempting to define edge attribute: "+attribute, getClass(), e);
+					if (messages != null)
+						messages.errorTech("error while attempting to define edge attribute: "+attribute, getClass(), e);
 					throw e;
 				}
 			}
@@ -118,11 +120,13 @@ public class GraphstreamConvertors {
 			} catch (WrongParametersException e) {
 
 				if (!graph.hasVertexAttribute(attribute)) {
-					messages.traceTech("the graph had no vertex attribute "+attribute+"; we automatically define it", getClass());
+					if (messages != null)
+						messages.traceTech("the graph had no vertex attribute "+attribute+"; we automatically define it", getClass());
 					graph.declareVertexAttribute(attribute, value.getClass());
 					graph.setVertexAttribute(nodeId, attribute, value);
 				} else {
-					messages.errorTech("error while attempting to define graph attribute: "+attribute, getClass(), e);
+					if (messages != null)
+						messages.errorTech("error while attempting to define graph attribute: "+attribute, getClass(), e);
 					throw e;
 				}
 			}			
@@ -139,11 +143,13 @@ public class GraphstreamConvertors {
 			} catch (WrongParametersException e) {
 
 				if (!graph.hasEdgeAttribute(attribute)) {
-					messages.traceTech("the graph had no edge attribute "+attribute+"; we automatically define it", getClass());
+					if (messages != null)
+						messages.traceTech("the graph had no edge attribute "+attribute+"; we automatically define it", getClass());
 					graph.declareEdgeAttribute(attribute, newValue.getClass());
 					graph.setEdgeAttribute(edgeId, attribute, newValue);
 				} else {
-					messages.errorTech("error while attempting to define edge attribute: "+attribute, getClass(), e);
+					if (messages != null)
+						messages.errorTech("error while attempting to define edge attribute: "+attribute, getClass(), e);
 					throw e;
 				}
 			}
@@ -153,7 +159,8 @@ public class GraphstreamConvertors {
 		@Override
 		public void edgeAttributeRemoved(String sourceId, long timeId,
 				String edgeId, String attribute) {
-			messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
+			if (messages != null)
+				messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
 					"the attribute '"+attribute+"' of an edge was removed"));
 		}
 
@@ -167,11 +174,13 @@ public class GraphstreamConvertors {
 			} catch (WrongParametersException e) {
 
 				if (!graph.hasGraphAttribute(attribute)) {
-					messages.traceTech("the graph had no graph attribute "+attribute+"; we automatically define it", getClass());
+					if (messages != null)
+						messages.traceTech("the graph had no graph attribute "+attribute+"; we automatically define it", getClass());
 					graph.declareGraphAttribute(attribute, newValue.getClass());
 					graph.setGraphAttribute(attribute, newValue);
 				} else {
-					messages.errorTech("error while attempting to define edge graph: "+attribute, getClass(), e);
+					if (messages != null)
+						messages.errorTech("error while attempting to define edge graph: "+attribute, getClass(), e);
 					throw e;
 				}
 			}
@@ -185,7 +194,8 @@ public class GraphstreamConvertors {
 		@Override
 		public void graphAttributeRemoved(String sourceId, long timeId,
 				String attribute) {
-			messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
+			if (messages != null)
+				messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
 					"the attribute '"+attribute+"' of the graph was removed"));
 		}
 
@@ -199,11 +209,13 @@ public class GraphstreamConvertors {
 			} catch (WrongParametersException e) {
 
 				if (!graph.hasVertexAttribute(attribute)) {
-					messages.traceTech("the graph had no vertex attribute "+attribute+"; we automatically define it as "+newValue.getClass(), getClass());
+					if (messages != null)
+						messages.traceTech("the graph had no vertex attribute "+attribute+"; we automatically define it as "+newValue.getClass(), getClass());
 					graph.declareVertexAttribute(attribute, newValue.getClass());
 					graph.setVertexAttribute(nodeId, attribute, newValue);
 				} else {
-					messages.errorTech("error while attempting to define vertex attribute: "+attribute, getClass(), e);
+					if (messages != null)
+						messages.errorTech("error while attempting to define vertex attribute: "+attribute, getClass(), e);
 					throw e;
 				}
 			}
@@ -213,7 +225,8 @@ public class GraphstreamConvertors {
 		@Override
 		public void nodeAttributeRemoved(String sourceId, long timeId,
 				String nodeId, String attribute) {
-			messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
+			if (messages != null)
+				messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
 					"the attribute '"+attribute+"' of a node was removed"));
 		}
 
@@ -224,19 +237,22 @@ public class GraphstreamConvertors {
 
 		@Override
 		public void graphCleared(String sourceId, long timeId) {
-			messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
+			if (messages != null)
+				messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
 					"the graph should have been cleaned"));
 		}
 
 		@Override
 		public void nodeRemoved(String sourceId, long timeId, String nodeId) {
-			messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
+			if (messages != null)
+				messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
 					"a node should have been removed"));
 		}
 
 		@Override
 		public void stepBegins(String sourceId, long timeId, double step) {
-			messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
+			if (messages != null)
+				messages.add(new TextMessage(MessageLevel.WARNING, MessageAudience.USER, getClass(), "an event was ignored during the loading of the graph (the dynamic part of graphs is ignored): " +
 					"new step detected."));
 		}
 		
@@ -252,8 +268,8 @@ public class GraphstreamConvertors {
 	
 	public static IGenlabGraph loadGraphWithGraphstreamFromGeneratorSource(String graphId, BaseGenerator generator, int maxNodes, ListOfMessages messages, boolean countIterations, GraphDirectionality directionality, IGenlabGraphInitializer initializer) {
 
-
-			messages.debugTech("loading the graph from a source into a genlab graph...", GraphstreamConvertors.class);
+			if (messages != null)
+				messages.debugTech("loading the graph from a source into a genlab graph...", GraphstreamConvertors.class);
 		
 			GenLabGraphSink ourSink = new GenLabGraphSink(graphId, messages, directionality, initializer);
 			// TODO ??? ourSink.ignoreVertexAttribute("xy");
@@ -343,7 +359,8 @@ public class GraphstreamConvertors {
 				}
 
 			} catch (EdgeRejectedException e) {
-				messages.add(new TextMessage(
+				if (messages != null)
+					messages.add(new TextMessage(
 						MessageLevel.WARNING, 
 						MessageAudience.USER, 
 						GraphstreamConvertors.class, 
@@ -351,7 +368,8 @@ public class GraphstreamConvertors {
 						e
 						));
 			} catch (IdAlreadyInUseException e) {
-				messages.add(new TextMessage(
+				if (messages != null)
+					messages.add(new TextMessage(
 						MessageLevel.WARNING, 
 						MessageAudience.USER, 
 						GraphstreamConvertors.class, 
@@ -364,7 +382,8 @@ public class GraphstreamConvertors {
 
 		// some basic tests for integrity
 		if (genlabGraph.getVerticesCount() != g.getNodeCount())
-			messages.add(
+			if (messages != null)
+				messages.add(
 					new TextMessage(
 							MessageLevel.WARNING, 
 							MessageAudience.USER, 
@@ -374,7 +393,8 @@ public class GraphstreamConvertors {
 							)
 					);
 		if (genlabGraph.getEdgesCount() != g.getEdgeCount())
-			messages.add(
+			if (messages != null)
+				messages.add(
 					new TextMessage(
 							MessageLevel.WARNING, 
 							MessageAudience.USER,
