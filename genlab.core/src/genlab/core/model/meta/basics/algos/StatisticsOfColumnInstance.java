@@ -26,7 +26,6 @@ public class StatisticsOfColumnInstance extends AlgoInstanceWithParametersDepend
 	@Override
 	protected void declareLocalParameters() {
 		
-		System.err.println("declaring local parameters "+this);
 		if (PARAM_COLUMN == null)
 			PARAM_COLUMN = new ListParameter(
 					"param_column", 
@@ -37,20 +36,6 @@ public class StatisticsOfColumnInstance extends AlgoInstanceWithParametersDepend
 
 	}
 	
-
-	@Override
-	public void setValueForParameter(String name, Object value) {
-		// TODO Auto-generated method stub
-		super.setValueForParameter(name, value);
-	}
-
-	@Override
-	public void setValueForParameter(Parameter<?> parameter, Object value) {
-		// TODO Auto-generated method stub
-		super.setValueForParameter(parameter, value);
-		
-		System.err.println("setting parameter for "+this.getName()+" "+parameter.getName()+" = "+value);
-	}
 
 	@Override
 	protected void adaptParametersToInputs() {

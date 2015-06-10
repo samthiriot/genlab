@@ -33,13 +33,11 @@ public class WorkflowHooks {
 	
 	
 	public void declareListener(IWorkflowListener l) {
-		GLLogger.debugTech("detected new workflow listener: "+l, getClass());
 		if (!listeners.contains(l))
 			listeners.add(l);
 	}
 	
 	public void removeListener(IWorkflowListener l) {
-		System.err.println("removing listener "+l);
 		listeners.remove(l);
 	}
 	public Collection<IWorkflowListener> getListeners() {
