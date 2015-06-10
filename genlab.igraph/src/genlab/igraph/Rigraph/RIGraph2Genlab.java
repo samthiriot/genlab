@@ -9,6 +9,7 @@ import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.graphstream.algos.generators.IGenlabGraphInitializer;
 import genlab.graphstream.utils.GraphstreamConvertors;
+import genlab.r.rsession.Genlab2RSession;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -234,9 +235,7 @@ public class RIGraph2Genlab {
 		
 		// ask R to write the file
 		r.eval(command.toString(), true);
-		
-		if (r.status == Rsession.STATUS_ERROR)
-			throw new RuntimeException("the file was not created as expected");
+		Genlab2RSession.checkStatus(r);
 		
 		
 		
@@ -320,8 +319,10 @@ public class RIGraph2Genlab {
 		int nEdges;
 		try {
 			REXP exp = r.eval("vcount("+variableGraph+")");
+			Genlab2RSession.checkStatus(r);
 			nVertices = exp.asInteger();
 			exp = r.eval("ecount("+variableGraph+")");
+			Genlab2RSession.checkStatus(r);
 			nEdges = exp.asInteger();
 		} catch (REXPMismatchException e) {
 			throw new RuntimeException("error while attempting to get the size of the graph from R", e);

@@ -1,12 +1,13 @@
 package genlab.r.rsession;
 
+import genlab.core.commons.ProgramException;
+import genlab.core.usermachineinteraction.GLLogger;
+
 import java.util.HashSet;
 import java.util.Set;
 
-import genlab.core.commons.NullPrintStream;
-import genlab.core.usermachineinteraction.GLLogger;
-
 import org.math.R.Rsession;
+import org.rosuda.REngine.Rserve.RserveException;
 
 public class Genlab2RSession {
 
@@ -57,17 +58,74 @@ public class Genlab2RSession {
 		
 	}
 	
+	/**
+	 * tests the R session by asking for the R.version.
+	 * Returns true if the command was evaluated with no error.
+	 * @param r
+	 * @return
+	 */
+	public static boolean isWorking(Rsession r) {
+		try {
+			r.eval("R.version");
+			return r.connection.getLastError() == null;
+		} catch (Exception e) {
+			return false;
+		}
+		
+	}
+	
+	/**
+	 * Returns a string with the error if problem, or null
+	 * @param r
+	 * @return
+	 */
+	public static String analyzeLastError(Rsession r) {
+		return r.connection.getLastError();
+	}
+	
+	/**
+	 * If an error happened, throws a ProgramException.
+	 * @param r
+	 * @return
+	 */
+	public static void checkStatus(Rsession r) {
+		
+		if (r.status == Rsession.STATUS_ERROR)
+			throw new RuntimeException("error during the R computation");
+		
+		if (r.connection.getLastError() != null && !r.connection.getLastError().equals("OK"))
+			throw new ProgramException("error during the R computation: R returned "+r.connection.getLastError());
+		
+	}
+	
+	
 	public static Rsession pickOneSessionFromPool() {
 		synchronized (poolLocker) {
 			Rsession res = null;
-			// get or create an available session
-			if (poolAvailable.isEmpty()) {
-				GLLogger.debugTech("all the "+poolRunning.size()+" R sessions are busy; creating another session in pool", Genlab2RSession.class);
-				res = createNewLocalRSession();
-			} else {
-				res = poolAvailable.iterator().next();
-				poolAvailable.remove(res);
-			}
+			
+			while (true) {
+				// get or create an available session
+				if (poolAvailable.isEmpty()) {
+					GLLogger.debugTech("all the "+poolRunning.size()+" R sessions are busy; creating another session in pool", Genlab2RSession.class);
+					res = createNewLocalRSession();
+				} else {
+					res = poolAvailable.iterator().next();
+					poolAvailable.remove(res);
+					// is it still working ?
+					if (!isWorking(res)) {
+						GLLogger.debugTech("this R session is not operational anymore. Will close it and create another one instead.", Genlab2RSession.class);
+						try {
+							res.end();
+						} catch (Exception e) {
+						}
+						res = null;
+					}
+				}
+				
+				if (res != null)
+					break;
+				
+			} 
 			poolRunning.add(res);
 			return res;
 		}

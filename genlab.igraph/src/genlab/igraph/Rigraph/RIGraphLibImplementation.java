@@ -491,7 +491,8 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 			
 			// measure it
 			REXP rexp = rsession.eval("average.path.length(g)");
-	
+			Genlab2RSession.checkStatus(rsession);
+
 			return rexp.asDouble();
 			
 		} catch (REXPMismatchException e) {
@@ -532,7 +533,8 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 			
 			// measure it
 			REXP rexp = rsession.eval("graph.isomorphic(g1,g2)");
-	
+			Genlab2RSession.checkStatus(rsession);
+
 			return ((REXPLogical)rexp).isTRUE()[0];
 			
 		} finally {
@@ -593,7 +595,8 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 			
 			// measure it
 			REXP rexp = rsession.eval("diameter(g)");
-	
+			Genlab2RSession.checkStatus(rsession);
+
 			return rexp.asInteger();
 			
 		} catch (REXPMismatchException e) {
@@ -630,7 +633,8 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 			
 			// measure it
 			REXP rexp = rsession.eval("is.connected(g)");
-	
+			Genlab2RSession.checkStatus(rsession);
+
 			return ((REXPLogical)rexp).isTRUE()[0];
 			
 		} catch (Exception e) {
@@ -673,7 +677,8 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 			cmd.append(directed?"TRUE":"FALSE");
 			cmd.append(")");
 			REXP rexp = rsession.eval(cmd.toString());
-	
+			Genlab2RSession.checkStatus(rsession);
+
 			return rexp.asDoubles();
 			
 		} catch (REXPMismatchException e) {
@@ -716,7 +721,8 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 			cmd.append(", cutoff=").append(cutoff);
 			cmd.append(")");
 			REXP rexp = rsession.eval(cmd.toString());
-	
+			Genlab2RSession.checkStatus(rsession);
+
 			return rexp.asDoubles();
 			
 		} catch (REXPMismatchException e) {
@@ -758,7 +764,8 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 			cmd.append("closeness(g)");
 			
 			REXP rexp = rsession.eval(cmd.toString());
-	
+			Genlab2RSession.checkStatus(rsession);
+
 			return rexp.asDoubles();
 			
 		} catch (REXPMismatchException e) {
@@ -810,7 +817,8 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 			cmd.append("alpha.centrality(g)");
 			
 			REXP rexp = rsession.eval(cmd.toString());
-	
+			Genlab2RSession.checkStatus(rsession);
+
 			return rexp.asDoubles();
 			
 		} catch (REXPMismatchException e) {
@@ -854,7 +862,8 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 			cmd.append(directed?"TRUE":"FALSE");
 			cmd.append(")");
 			REXP rexp = rsession.eval(cmd.toString());
-	
+			Genlab2RSession.checkStatus(rsession);
+
 			return rexp.asDoubles();
 			
 		} catch (REXPMismatchException e) {
@@ -934,7 +943,8 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 			
 			// measure it
 			REXP rexp = rsession.eval("no.clusters(g)");
-	
+			Genlab2RSession.checkStatus(rsession);
+
 			return rexp.asInteger();
 			
 		} catch (REXPMismatchException e) {
@@ -972,7 +982,8 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 			
 			// measure it
 			REXP rexp = rsession.eval("max(clusters(g)$csize)");
-	
+			Genlab2RSession.checkStatus(rsession);
+
 			return rexp.asInteger();
 			
 		} catch (REXPMismatchException e) {
@@ -1010,7 +1021,8 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 			
 			// measure it
 			REXP rexp = rsession.eval("transitivity(g, type=\"global\")");
-	
+			Genlab2RSession.checkStatus(rsession);
+
 			return rexp.asDouble();
 			
 		} catch (REXPMismatchException e) {
@@ -1049,7 +1061,8 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 			
 			// measure it
 			REXP rexp = rsession.eval("transitivity(g, type=\"localaverage\")");
-	
+			Genlab2RSession.checkStatus(rsession);
+
 			return rexp.asDouble();
 			
 		} catch (REXPMismatchException e) {

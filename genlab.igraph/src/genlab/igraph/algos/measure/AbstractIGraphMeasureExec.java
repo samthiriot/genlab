@@ -100,16 +100,19 @@ public abstract class AbstractIGraphMeasureExec extends AbstractAlgoExecutionOne
 					Object value = stats.get(out);
 					result.setResult(out, value);	
 				}
-			} catch (RuntimeException e) {
+				
+
+				
+				progress.setProgressMade(1);
+				progress.setComputationState(ComputationState.FINISHED_OK);
+				
+			} catch (Exception e) {
 				messages.errorTech("the measure of graph properties failed: "+e.getMessage(), getClass(), e);
 				progress.setComputationState(ComputationState.FINISHED_FAILURE);
 				progress.setException(e);
 			} 			
 			
 		}
-		
-		progress.setProgressMade(1);
-		progress.setComputationState(ComputationState.FINISHED_OK);
 
 	}
 	

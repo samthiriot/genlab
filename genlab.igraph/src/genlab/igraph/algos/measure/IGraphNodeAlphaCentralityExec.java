@@ -37,6 +37,7 @@ final class IGraphNodeAlphaCentralityExec extends AbstractIGraphMeasureExec {
 		// is connected
 		if (isUsed(IGraphNodeBetweenessAlgo.OUTPUT_GRAPH)) {
 			
+		
 			double[] nodesBetweennes = getLibrary().computeNodeAlphaCentrality(
 					genlabGraph, 
 					exec
@@ -52,6 +53,7 @@ final class IGraphNodeAlphaCentralityExec extends AbstractIGraphMeasureExec {
 			
 			
 			results.put(IGraphNodeBetweenessAlgo.OUTPUT_GRAPH, output);
+			
 			
 		} else {
 			messages.infoUser("the alpha centrality of the graph is not used, so it will not be computed", getClass());	
