@@ -9,22 +9,20 @@ import genlab.algog.gui.jfreechart.algos.AlgoGPlotAlgo;
 import genlab.algog.gui.jfreechart.algos.AlgoGPlotRadarAlgo;
 import genlab.algog.gui.jfreechart.algos.FirstFront2DAlgo;
 import genlab.algog.gui.misc.algos.PlotPhenotypeAlgo;
-import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.GenlabFactory;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.ExistingAlgos;
+import genlab.core.model.meta.GenlabWorkflow;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.basics.algos.ConstantValueDouble;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -33,75 +31,6 @@ public class CreateWorkflowNSGA2FromWorkflow {
 	private CreateWorkflowNSGA2FromWorkflow() {
 	}
 	
-	/**
-	 * From a workflow, creates a copy of selected algos inside a target algo, 
-	 * and returns the map between previous and present algos
-	 * @param originalWorkflow
-	 * @param selectedAlgos
-	 * @param targetWorkflow
-	 * @param container
-	 * @return
-	 */
-	protected static Map<IAlgoInstance,IAlgoInstance> copyAlgosFromWorkflowToWorkflow(
-			IGenlabWorkflowInstance originalWorkflow,
-			Collection<IAlgoInstance> selectedAlgos,
-			IGenlabWorkflowInstance targetWorkflow,
-			IAlgoContainerInstance container) {
-		
-		// start by duplicating the algo instances
-		Map<IAlgoInstance,IAlgoInstance> original2copy = new HashMap<IAlgoInstance, IAlgoInstance>(selectedAlgos.size());
-		
-		for (IAlgoInstance ai : selectedAlgos) {
-			
-			IAlgoInstance resultInstance = ai.cloneInContext(targetWorkflow);
-			
-			if (container != null) {
-				resultInstance.setContainer(container);
-				container.addChildren(resultInstance);
-			}
-			targetWorkflow.addAlgoInstance(resultInstance);
-			
-			
-			original2copy.put(ai, resultInstance);
-						
-		}
-		
-		// and add the connections
-		for (IAlgoInstance original: original2copy.keySet()) {
-			
-			// add the input connections
-			for (IConnection cInOrig : original.getAllIncomingConnections()) {
-				
-				IAlgoInstance fromOrigin = cInOrig.getFrom().getAlgoInstance();
-				IAlgoInstance fromCopy = original2copy.get(fromOrigin);
-				if (fromCopy == null) {
-					// no copy; this one was not copied, so don't manage this connection
-					continue;
-				}
-				
-				IAlgoInstance toOrigin = cInOrig.getTo().getAlgoInstance();
-				IAlgoInstance toCopy = original2copy.get(toOrigin);
-				if (toCopy == null) {
-					// no copy; this one was not copied, so don't manage this connection
-					continue;
-				}
-				
-				IInputOutputInstance outputInstanceCopy = fromCopy.getOutputInstanceForOutput(cInOrig.getFrom().getMeta());
-				if (outputInstanceCopy == null)
-					throw new ProgramException("unable to find the copy for output "+cInOrig.getFrom().getMeta());
-				
-				IInputOutputInstance inputInstanceCopy = toCopy.getInputInstanceForInput(cInOrig.getTo().getMeta());
-				if (inputInstanceCopy == null)
-					throw new ProgramException("unable to find the copy for input "+cInOrig.getTo().getMeta());
-				
-				IConnection cCopy = targetWorkflow.connect(outputInstanceCopy, inputInstanceCopy);
-			
-			}
-
-		}
-        
-		return original2copy;
-	}
 	
 	/**
 	 * Among the list of all the referenced algos in Genlab (possibly from plugins),
@@ -237,11 +166,12 @@ public class CreateWorkflowNSGA2FromWorkflow {
 		}
 		
 		// copy all the selected elements from the original workflow to the target one
-		Map<IAlgoInstance,IAlgoInstance> original2copy = copyAlgosFromWorkflowToWorkflow(
+		Map<IAlgoInstance,IAlgoInstance> original2copy = GenlabWorkflow.copyAlgosFromWorkflowToWorkflow(
 				originalWorkflow, 
 				selectedAlgos, 
 				workflowRes, 
-				nsga2instance
+				nsga2instance,
+				false // TODO change this after fixing the corresponding bug in NSGA2
 				);
 
 		// add a genome algo instance

@@ -15,6 +15,7 @@ import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import genlab.core.model.meta.basics.flowtypes.TableFlowType;
+import genlab.core.parameters.ListParameter;
 
 public class StatisticsOfColumnAlgo extends BasicAlgo {
 
@@ -104,9 +105,9 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 				// retrieve inputs
 				final IGenlabTable table = (IGenlabTable)getInputValueForInput(INPUT_TABLE);
 				
-				
-				final Integer columnOptionsIdx = (Integer)algoInst.getValueForParameter(StatisticsOfColumnInstance.PARAM_COLUMN);
-				final String columnId = StatisticsOfColumnInstance.PARAM_COLUMN.getLabel(columnOptionsIdx);
+				final ListParameter paramColumn = ((StatisticsOfColumnInstance)algoInst).PARAM_COLUMN;
+				final Integer columnOptionsIdx = (Integer)algoInst.getValueForParameter(paramColumn);
+				final String columnId = paramColumn.getLabel(columnOptionsIdx);
 
 				
 				final boolean computeSTD = isUsed(OUTPUT_STD);

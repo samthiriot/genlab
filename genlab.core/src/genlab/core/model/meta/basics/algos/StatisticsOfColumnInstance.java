@@ -10,11 +10,7 @@ import genlab.core.usermachineinteraction.GLLogger;
 @SuppressWarnings("serial")
 public class StatisticsOfColumnInstance extends AlgoInstanceWithParametersDependantToConnections  {
 
-	public final static ListParameter PARAM_COLUMN = new ListParameter(
-			"param_column", 
-			"column", 
-			"column for which to compute the average"
-			);
+	public ListParameter PARAM_COLUMN;
 	
 	public StatisticsOfColumnInstance(IAlgo algo, IGenlabWorkflowInstance workflow, String id) {
 		super(algo, workflow, id);
@@ -25,11 +21,16 @@ public class StatisticsOfColumnInstance extends AlgoInstanceWithParametersDepend
 		super(algo, workflow);
 		
 	}
-	
-	
 
 	@Override
 	protected void declareLocalParameters() {
+		
+		if (PARAM_COLUMN == null)
+			PARAM_COLUMN = new ListParameter(
+					"param_column", 
+					"column", 
+					"column for which to compute the average"
+					);
 		declareParameter(PARAM_COLUMN);
 
 	}

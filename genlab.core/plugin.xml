@@ -70,6 +70,10 @@
             class="genlab.core.model.meta.basics.algos.StatisticsOfColumnAlgo"
             id="genlab.core.model.meta.basics.algos.AverageOfColumnAlgo">
       </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.SumAlgo"
+            id="genlab.core.model.meta.basics.algos.SumAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
