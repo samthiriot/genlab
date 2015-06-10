@@ -171,6 +171,8 @@ public abstract class AbstractContainerExecutionSupervisor
 		
 		// and we create a version to be transmitted to our subtasks
 		instance2execForSubtasks = new HashMap<IAlgoInstance, IAlgoExecution>(instance2execOriginal.size());
+		
+		
 		for (IConnection c : algoInst.getConnectionsComingFromOutside()) {
 
 			// for each algo exec out of this container, the actual 

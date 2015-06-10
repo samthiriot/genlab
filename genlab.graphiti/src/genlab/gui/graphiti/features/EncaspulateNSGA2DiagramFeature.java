@@ -4,6 +4,7 @@ import genlab.algog.gui.examples.CreateWorkflowNSGA2FromWorkflow;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.WorkflowHooks;
+import genlab.core.model.meta.GenlabWorkflow;
 import genlab.core.persistence.GenlabPersistence;
 
 import java.util.Collection;
@@ -67,7 +68,7 @@ public class EncaspulateNSGA2DiagramFeature extends AbstractCustomFeature {
 		
 		IGenlabWorkflowInstance createdWorkflow = CreateWorkflowNSGA2FromWorkflow.createNSGA2InstanceForWorkflow(
 				originalWorkflow, 
-				selected
+				selected==null?null:GenlabWorkflow.completeSelectionWithChildren(selected)
 				);
 		
 		WorkflowHooks.getWorkflowHooks().notifyWorkflowAutomaticallyDone(createdWorkflow);

@@ -39,6 +39,7 @@ public class WorkflowHooks {
 	}
 	
 	public void removeListener(IWorkflowListener l) {
+		System.err.println("removing listener "+l);
 		listeners.remove(l);
 	}
 	public Collection<IWorkflowListener> getListeners() {
@@ -80,7 +81,7 @@ public class WorkflowHooks {
 	}
 
 	public void notifyWorkflowCreation(IGenlabWorkflowInstance wf) {
-		for (IWorkflowListener l : listeners) {
+		for (IWorkflowListener l : new LinkedList<IWorkflowListener>(listeners)) {
 			try {
 				l.workflowCreation(wf);
 			} catch (RuntimeException e) {
@@ -90,7 +91,7 @@ public class WorkflowHooks {
 	}
 	
 	public void notifyWorkflowChange(IGenlabWorkflowInstance wf) {
-		for (IWorkflowListener l : listeners) {
+		for (IWorkflowListener l : new LinkedList<IWorkflowListener>(listeners)) {
 			try {
 				l.workflowChanged(wf);
 			} catch (RuntimeException e) {
@@ -100,7 +101,7 @@ public class WorkflowHooks {
 	}
 	
 	public void notifyWorkflowSaving(IGenlabWorkflowInstance wf) {
-		for (IWorkflowListener l : listeners) {
+		for (IWorkflowListener l : new LinkedList<IWorkflowListener>(listeners)) {
 			try {
 				l.workflowSaving(wf);
 			} catch (RuntimeException e) {
@@ -110,7 +111,7 @@ public class WorkflowHooks {
 	}
 	
 	public void notifyWorkflowSaved(IGenlabWorkflowInstance wf) {
-		for (IWorkflowListener l : listeners) {
+		for (IWorkflowListener l : new LinkedList<IWorkflowListener>(listeners)) {
 			try {
 				l.workflowSaved(wf);
 			} catch (RuntimeException e) {
@@ -120,7 +121,7 @@ public class WorkflowHooks {
 	}
 	
 	public void notifyWorkflowAutomaticallyDone(IGenlabWorkflowInstance wf) {
-		for (IWorkflowListener l : listeners) {
+		for (IWorkflowListener l : new LinkedList<IWorkflowListener>(listeners)) {
 			try {
 				l.workflowAutomaticallyCreatedAndFinished(wf);
 			} catch (RuntimeException e) {
@@ -131,7 +132,7 @@ public class WorkflowHooks {
 	
 
 	public void notifyWorkflowLoaded(IGenlabWorkflowInstance wf) {
-		for (IWorkflowListener l : listeners) {
+		for (IWorkflowListener l : new LinkedList<IWorkflowListener>(listeners)) {
 			try {
 				l.workflowLoaded(wf);
 			} catch (RuntimeException e) {
@@ -141,7 +142,7 @@ public class WorkflowHooks {
 	}
 	
 	public void notifyProjectSaved(IGenlabProject project) {
-		for (IWorkflowListener l : listeners) {
+		for (IWorkflowListener l : new LinkedList<IWorkflowListener>(listeners)) {
 			try {
 				l.projectSaved(project);
 			} catch (RuntimeException e) {

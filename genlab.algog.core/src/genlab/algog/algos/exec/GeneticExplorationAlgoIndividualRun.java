@@ -148,7 +148,8 @@ public class GeneticExplorationAlgoIndividualRun
 				
 		
 		// and we create a version to be transmitted to our subtasks
-		instance2execForSubtasks = new HashMap<IAlgoInstance, IAlgoExecution>(instance2execOriginal);
+		instance2execForSubtasks = initCreateExecutionsForSubAlgos(evaluationAlgoInstances);
+		//new HashMap<IAlgoInstance, IAlgoExecution>(instance2execOriginal);
 		/*
 		for (IConnection c : algoInst.getConnectionsComingFromOutside()) {
 			// for each algo exec out of this container, the actual 
@@ -173,24 +174,18 @@ public class GeneticExplorationAlgoIndividualRun
 		}
 		
 		
-		messages.traceTech("create sub executables", getClass());
-		for (IAlgoInstance sub: evaluationAlgoInstances) {
-			IAlgoExecution subExec = sub.execute(exec);
-			subExec.setParent(this);
-			instance2execForSubtasks.put(sub, subExec);
-		}
+		initContainerAlgosChildren(evaluationAlgoInstances, instance2execForSubtasks);
 		
-		messages.traceTech("init links for sub executables", getClass());
-		for (IAlgoInstance sub: evaluationAlgoInstances) {
-			IAlgoExecution subExec = instance2execForSubtasks.get(sub);
-			subExec.initInputs(instance2execForSubtasks);
-		}
+		initParentForSubtasks(evaluationAlgoInstances, instance2execForSubtasks);
 		
-		messages.traceTech("add subtasks", getClass());
-		for (IAlgoInstance sub: evaluationAlgoInstances) {
-			IAlgoExecution subExec = instance2execForSubtasks.get(sub);
-			addTask(subExec);
-		}
+		// special case of container algos: for each container exec, assume it represents the 
+		// exec instance for each children.
+		// so all the algos interested in the results of containers' child
+		// will actually listen for the container
+		initContainerAlgosChildren(evaluationAlgoInstances, instance2execForSubtasks);
+		initLinksWithSubExec(instance2execForSubtasks);
+		
+		initAddTasksAsSubtasks(evaluationAlgoInstances, instance2execForSubtasks);
 		
 	
 		progress.setComputationState(ComputationState.READY);
@@ -211,6 +206,8 @@ public class GeneticExplorationAlgoIndividualRun
 	
 	protected IConnectionExecution getExecutableConnectionFor(IConnection cIn) {
 		IAlgoExecution toEx = instance2execForSubtasks.get(cIn.getTo().getAlgoInstance());
+		if (toEx == null)
+			throw new ProgramException("unable to find executable connection for "+cIn);
 		Collection<IConnectionExecution> toExCs = toEx.getConnectionsForInput(cIn.getTo());
 		for (IConnectionExecution cExCurrent : toExCs) {
 			if (cExCurrent.getConnection().equals(cIn)) {
@@ -227,6 +224,7 @@ public class GeneticExplorationAlgoIndividualRun
 		setResult(new ComputationResult(algoInst, progress, messages));
 		
 		// set the initial values of each child (for values coming from outside) 
+		messages.traceTech("forcing input values...", getClass());
 		for (Map.Entry<IConnection,Object> connection2value: inputConnection2value.entrySet()) {
 			
 			IConnectionExecution cEx = getExecutableConnectionFor(connection2value.getKey());
@@ -236,6 +234,7 @@ public class GeneticExplorationAlgoIndividualRun
 		
 		// set the initial values of each child (for gene values)
 		for (IAlgoInstance sub: evaluationAlgoInstances) {
+			messages.traceTech("defining gene values for sub algo "+sub.getName(), getClass());
 			for (IConnection cIn: sub.getAllIncomingConnections()) {
 				
 				if (cIn.getFrom().getAlgoInstance().getAlgo() instanceof AbstractGeneAlgo) {

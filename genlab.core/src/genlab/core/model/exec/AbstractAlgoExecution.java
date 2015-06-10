@@ -122,6 +122,9 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 			final IAlgoExecution fromExec = instance2exec.get(c.getFrom().getAlgoInstance());
 			final IAlgoExecution toExec = instance2exec.get(c.getTo().getAlgoInstance());
 	
+			if (fromExec == null)
+				System.err.println("oops");
+			
 			IConnectionExecution cEx = ExecutableConnectionsFactory.createExecutableConnection(fromExec, toExec, c);
 			
 			

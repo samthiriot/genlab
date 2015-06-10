@@ -7,6 +7,10 @@
             class="genlab.netlogo.algos.SIRModelAlgo"
             id="genlab.netlogo.algos.SIRModelAlgo">
       </algo>
+      <algo
+            class="genlab.netlogo.algos.SIRVaccinesModelAlgo"
+            id="genlab.netlogo.algos.SIRVaccinesModelAlgo">
+      </algo>
    </extension>
 
 </plugin>

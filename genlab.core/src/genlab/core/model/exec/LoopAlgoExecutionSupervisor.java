@@ -63,8 +63,5 @@ public class LoopAlgoExecutionSupervisor extends
 		return " "+iterationsDone+"/"+iterationsTotal;
 	}
 
-	
-
-
 
 }

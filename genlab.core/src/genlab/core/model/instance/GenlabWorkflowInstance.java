@@ -555,11 +555,14 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 			throw new ProgramException("listeners can not be null");
 		if (!listeners.contains(l))
 			listeners.add(l);
+		System.err.println("adding listener "+l);
 	}
 
 	@Override
 	public void removeListener(IWorkflowContentListener l) {
 		listeners.remove(l);
+		System.err.println("removing wlistener "+l);
+
 	}
 
 	@Override

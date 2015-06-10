@@ -137,8 +137,7 @@ public class GenomeWidget extends Canvas {
 		public Color getColorForValue(double v) {
 			
             double ratio = (v-min) / (max-min); // TODO steps ? 
-            System.err.println("ratio: "+ratio);
-			int red = (int) (colorEnd.getRed() * ratio + colorStart.getRed() * (1 - ratio));
+            int red = (int) (colorEnd.getRed() * ratio + colorStart.getRed() * (1 - ratio));
 			int green = (int) (colorEnd.getGreen() * ratio + colorStart.getGreen() * (1 - ratio));
 			int blue = (int) (colorEnd.getBlue() * ratio + colorStart.getBlue() * (1 - ratio));
   			
@@ -332,10 +331,14 @@ public class GenomeWidget extends Canvas {
 							dataLineIdx, 
 							geneIdx2columnValue[geneIdx]
 						);
-					value = ((Number)v).doubleValue();
-						
+					
 					// set color
-					gc.setBackground(geneIdx2gradient[geneIdx].getColorForValue(value));
+					if (v == null)
+						gc.setBackground(getBackground());	
+					else { 
+						value = ((Number)v).doubleValue();
+						gc.setBackground(geneIdx2gradient[geneIdx].getColorForValue(value));
+					}
 					// fill rectangle
 					gc.fillRectangle(
 							geneIdx*widthPerGene, 
@@ -483,17 +486,13 @@ public class GenomeWidget extends Canvas {
 			int idxLineWidget = (int)Math.floor(
 					((double)(loc.y-heightText-paddingVertical))/((double)(heightLine+paddingVertical))
 					);
-			System.err.println("line widget "+idxLineWidget);
 			int idxLineTable = rowFirst + idxLineWidget;
-			System.err.println("line table "+idxLineTable);
 			
 			int colLineWidget = loc.x/widthPerGene;
-			System.err.println("col widget "+colLineWidget);
 			if (colLineWidget >= geneIdx2columnValue.length)
 				return null;
 			
 			String geneId = geneIdx2columnValue[colLineWidget];
-			System.err.println("gene Id "+geneId);
 			
 			Object v = lastVersionDataToDisplay.getValue(idxLineTable, geneId);;
 			if (v == null)

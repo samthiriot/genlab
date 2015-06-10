@@ -103,7 +103,14 @@ public class GeneticExplorationAlgoContainerInstance extends
 		while (!toExplore.isEmpty()) {
 			
 			IAlgoInstance current = toExplore.iterator().next();
+			
 			explored.add(current);
+			
+			// all the parents of this algo have to be processed
+			if (current.getContainer() != this) {
+				toExplore.add(current.getContainer());
+				children.add(current.getContainer());
+			}
 			
 			// all the outputs have to be processed
 			for (IInputOutputInstance outInstance : current.getOutputInstances()) {

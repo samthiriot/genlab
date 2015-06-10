@@ -236,7 +236,8 @@ public class AbstractContainerExecutionIteration
 	public void clean() {
 	
 		// clean local data
-		input2connection.clear();
+		if (input2connection != null)
+			input2connection.clear();
 		
 		// super clean
 		super.clean();

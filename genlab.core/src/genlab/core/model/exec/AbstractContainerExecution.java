@@ -8,6 +8,9 @@ import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -341,5 +344,182 @@ public abstract class AbstractContainerExecution
 		super.clean();
 	}
 	
+
+	/**
+	 * Creates execution tasks for each algo instance provided as parameter
+	 * @param algoInstances
+	 * @return
+	 */
+	protected Map<IAlgoInstance, IAlgoExecution> initCreateExecutionsForSubAlgos(Collection<IAlgoInstance> algoInstances) {
+		
+		Map<IAlgoInstance, IAlgoExecution> instance2execution = new HashMap<IAlgoInstance, IAlgoExecution>(algoInstances.size());
+		
+		for (IAlgoInstance sub : algoInstances) {
+
+			if (sub.getContainer() != null && sub.getContainer() != getAlgoInstance()) 
+				// ignored ! this is contained in something, and this something will be in charge of creating execs
+				continue;
+			
+			if (sub.isDisabled()) {
+				messages.warnUser("the algorithm "+sub.getName()+" is disabled, so it will not be run", getClass()); 
+			} else {
+				messages.traceTech("creating the execution task for algo "+sub, getClass());
+				IAlgoExecution subExec = sub.execute(exec);
+				
+				if (subExec == null)
+					throw new ProgramException("an algorithm was unable to prepare an execution "+sub);
+				
+				instance2execution.put(
+						sub, 
+						subExec
+						);
+			}
+		
+		}
+			
+		
+		return instance2execution;
+	}
+
+	protected void initContainerAlgosChildren(
+								Collection<IAlgoInstance> algoInstances, 
+								Map<IAlgoInstance, IAlgoExecution> instance2execution) {
+
+		messages.traceTech("create sub executables", getClass());
+		
+		// special case of container algos: for each container exec, assume it represents the 
+		// exec instance for each children.
+		// so all the algos interested in the results of containers' child
+		// will actually listen for the container
+		for (IAlgoInstance sub : algoInstances) {
+
+			if (sub.getContainer() != null && sub.getContainer() != this.getAlgoInstance()) {
+				// ignored ! this is contained in something, and this something 
+				instance2execution.put(
+						sub, 
+						instance2execution.get(sub.getContainer())
+						);
+			} 
+		}
+
+	}
 	
+	protected void initDebugExec(
+			Collection<IAlgoInstance> algoInstances, 
+			Map<IAlgoInstance, IAlgoExecution> instance2execution) {
+	
+		StringBuffer sb = new StringBuffer();
+		sb.append("create sub executables for ").append(this.getName()).append(":\n");
+		
+		// special case of container algos: for each container exec, assume it represents the 
+		// exec instance for each children.
+		// so all the algos interested in the results of containers' child
+		// will actually listen for the container
+		for (IAlgoInstance sub : algoInstances) {
+		
+			sb.append("- ").append(sub.getName()).append(" -> ").append(instance2execution.get(sub)).append("\n");
+		}
+		
+		messages.traceTech(sb.toString(), getClass());
+			
+	}
+	
+	protected void initParentForSubtasks(
+							Collection<IAlgoInstance> algoInstances, 
+							Map<IAlgoInstance, IAlgoExecution> instance2execution) {
+		
+		// now add the parent relationship to each task 
+		// (sometimes the parent is a container algo; 
+		//  else it is the workflow that, that is "this")
+		for (IAlgoInstance sub : algoInstances) {
+			
+			IAlgoExecution subExec = instance2execution.get(sub);
+			
+			// maybe we did not created this one ? (notably is disabled)
+			if (subExec == null)
+				continue;
+			
+			if (sub.getContainer() != null && sub.getContainer() != this.getAlgoInstance()) 
+				continue;
+				// container will manage that itself.
+				
+				/* TODO for container exec !
+				// tasks with a container will have a container task
+				IContainerTask subExecContainer = (IContainerTask)instance2execution.get(sub.getContainer());
+				subExec.setParent(subExecContainer);
+				subExecContainer.addTask(subExec);
+				*/
+			
+			// standard: 
+			subExec.setParent(this);
+			
+		}
+	}
+	
+	protected void initLinksWithSubExec(
+					Map<IAlgoInstance, IAlgoExecution> instance2execution) {
+
+		messages.traceTech("init links for sub executables of "+getAlgoInstance().getName(), getClass());
+		
+		// call each algo and ask him to create its executable connections
+		Map<IAlgoInstance, IAlgoExecution> unmodifiableMap = Collections.unmodifiableMap(instance2execution);
+		for (IAlgoExecution exec : new HashSet<IAlgoExecution>(instance2execution.values())) {
+			
+			// maybe it was not created ? 
+			if (exec == null) 
+				continue;
+			
+			if (exec == this)
+				continue;
+			
+			// do not create links for the algos contained elsewhere (this is the responsability of the container)
+			if (exec.getAlgoInstance().getContainer() != null  && (exec.getAlgoInstance().getContainer() != getAlgoInstance()))
+				continue;
+	
+			messages.traceTech("init links for sub "+exec, getClass());
+			exec.initInputs(unmodifiableMap);
+		}
+		
+	}
+	
+	protected void initAddTasksAsSubtasks(
+					Collection<IAlgoInstance> algoInstances, 
+					Map<IAlgoInstance, IAlgoExecution> instance2execution) {
+		
+		// now (and only now), call addSubtask on each task
+		// this will also register the task to the runner !
+		for (IAlgoInstance sub : algoInstances) {
+			
+			IAlgoExecution subExec = instance2execution.get(sub);
+			
+			// maybe we did not created this one ? (notably if disabled)
+			if (subExec == null)
+				continue;
+			
+			//if (sub.getContainer() != null && sub.getContainer() != getAlgoInstance())
+				// container will manage that itself.
+			//	continue;
+			
+			this.addTask(subExec);
+			
+		}
+	}
+	
+	protected void initPropagateRanks(
+			Collection<IAlgoInstance> algoInstances, 
+			Map<IAlgoInstance, IAlgoExecution> instance2execution) {
+		
+		// now propagate ranks, and so detect loops
+		for (IAlgoInstance sub : algoInstances) {
+			
+			if (sub.getAllIncomingConnections().isEmpty()) {
+				IAlgoExecution subExec = instance2execution.get(sub);
+				// maybe we did not created this one ? (notably if disabled)
+				if (subExec == null)
+					continue;
+				subExec.propagateRank(1, new HashSet<ITask>());
+			}
+
+		}
+	}
 }

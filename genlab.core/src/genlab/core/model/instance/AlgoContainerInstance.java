@@ -110,7 +110,7 @@ public class AlgoContainerInstance extends AlgoInstance implements IAlgoContaine
 					
 					IAlgoInstance instanceTo = c.getFrom().getAlgoInstance();
 					
-					if (instanceTo.getContainer() != this)
+					if (instanceTo.getContainer() != this && !instanceTo.isContainedInto(this))
 						res.add(c);
 					
 				}

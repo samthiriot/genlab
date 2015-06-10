@@ -16,6 +16,9 @@ import genlab.core.parameters.Parameter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -176,6 +179,34 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 	}
 
 
+	public static Collection<IAlgoInstance> completeSelectionWithChildren(Collection<IAlgoInstance> selected) {
+		
+		// we at least consider all the ones included there
+		Set<IAlgoInstance> res = new HashSet<IAlgoInstance>();
+		
+		Set<IAlgoInstance> toProcess = new HashSet<IAlgoInstance>();
+		toProcess.addAll(selected);
+		
+		while (!toProcess.isEmpty()) {
+			
+			// pick up one
+			Iterator<IAlgoInstance> it = toProcess.iterator();
+			IAlgoInstance ai = it.next();;
+			it.remove();
+			
+			// add it
+			res.add(ai);
+			
+			// process it
+			if (ai instanceof IAlgoContainerInstance) {
+				IAlgoContainerInstance aic = (IAlgoContainerInstance)ai;
+				toProcess.addAll(aic.getChildren());
+			}
+		}
+		
+		return res;
+	}
+	
 	/**
 	 * From a workflow, creates a copy of selected algos inside a target algo, 
 	 * and returns the map between previous and present algos
@@ -196,26 +227,61 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 		// start by duplicating the algo instances
 		Map<IAlgoInstance,IAlgoInstance> original2copy = new HashMap<IAlgoInstance, IAlgoInstance>(selectedAlgos.size());
 		
-		for (IAlgoInstance ai : selectedAlgos) {
-			
-			IAlgoInstance resultInstance = ai.cloneInContext(targetWorkflow);
-			
-			if ( 
-				// there is a container in which copy everything
-				(container != null) &&
-				// and this is not a constant or the user asked us to also project them inside the container
-				(!keepConstantsInWorkflow || !(resultInstance.getAlgo() instanceof IConstantAlgo))
-				) {
+		// there should be an order: a child should be processed only when its parent was processed.
+		// we do it dumbly: if we cannot process one algo now, we will retry later. 
+		Set<IAlgoInstance> toProcess = new HashSet<IAlgoInstance>(selectedAlgos);
+		Set<IAlgoInstance> toProcessAgain = new HashSet<IAlgoInstance>();
+		
+		do {
+			System.err.println("should process "+toProcess.size()+" algos");
+			while (!toProcess.isEmpty()) {
 				
-				resultInstance.setContainer(container);
-				container.addChildren(resultInstance);
-			}
-			targetWorkflow.addAlgoInstance(resultInstance);
-			
-			
-			original2copy.put(ai, resultInstance);
+				// pick up one
+				Iterator<IAlgoInstance> it = toProcess.iterator();
+				IAlgoInstance ai = it.next();;
+				it.remove();
+				
+				if (ai.getContainer() != null && !original2copy.containsKey(ai.getContainer())) {
+					// we should retry later
+					toProcessAgain.add(ai);
+				} else {
+					
+					IAlgoInstance resultInstance = ai.cloneInContext(targetWorkflow);
+
+					// process it !
+					if ( 
+							// there is a container in which copy everything
+							(container != null) &&
+							// and this is not a constant or the user asked us to also project them inside the container
+							(!keepConstantsInWorkflow || !(resultInstance.getAlgo() instanceof IConstantAlgo))
+							) {
+							
+							// is it a container which was mapped ?
+							if (ai.getContainer() != null) {
+								// there was an original container.
+								// let's retrieve the copy of this container and set it as a container
+								IAlgoContainerInstance aiContainer = (IAlgoContainerInstance) original2copy.get(ai.getContainer());
+								resultInstance.setContainer(aiContainer);
+								aiContainer.addChildren(resultInstance);
+							} else {
+								// else reuse the parent container passed as parameter
+								resultInstance.setContainer(container);
+								container.addChildren(resultInstance);
+							}
+							
+					} /*else {
+						resultInstance.setContainer(targetWorkflow);
+					}*/
+					targetWorkflow.addAlgoInstance(resultInstance);
 						
-		}
+						
+					original2copy.put(ai, resultInstance);
+				}
+			}
+			toProcess.addAll(toProcessAgain);
+			toProcessAgain.clear();
+		} while (!toProcess.isEmpty());
+				
 		
 		// and add the connections
 		for (IAlgoInstance original: original2copy.keySet()) {
@@ -252,6 +318,11 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 		}
         
 		return original2copy;
+	}
+
+	@Override
+	public boolean isAvailable() {
+		return true;
 	}
 	
 

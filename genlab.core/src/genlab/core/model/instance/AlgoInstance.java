@@ -135,8 +135,9 @@ public class AlgoInstance implements IAlgoInstance, Serializable {
 	
 	@Override
 	public void declareParameter(Parameter<?> p) {
-		if (!localParameters.contains(p) && !localParameterId2param.containsKey(p.getId())) {
+		if (!localParameters.contains(p))
 			localParameters.add(p);
+		if (!localParameterId2param.containsKey(p.getId())) {
 			localParameterId2param.put(p.getId(), p);
 		}
 	}
