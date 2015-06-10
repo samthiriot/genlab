@@ -38,6 +38,9 @@ public class WorkflowHooks {
 			listeners.add(l);
 	}
 	
+	public void removeListener(IWorkflowListener l) {
+		listeners.remove(l);
+	}
 	public Collection<IWorkflowListener> getListeners() {
 		return listeners;
 	}
@@ -120,6 +123,17 @@ public class WorkflowHooks {
 		for (IWorkflowListener l : listeners) {
 			try {
 				l.workflowAutomaticallyCreatedAndFinished(wf);
+			} catch (RuntimeException e) {
+				GLLogger.warnTech("in the workflow listener, catched an exception: "+e.getMessage(), getClass(), e);
+			}
+		}
+	}
+	
+
+	public void notifyWorkflowLoaded(IGenlabWorkflowInstance wf) {
+		for (IWorkflowListener l : listeners) {
+			try {
+				l.workflowLoaded(wf);
 			} catch (RuntimeException e) {
 				GLLogger.warnTech("in the workflow listener, catched an exception: "+e.getMessage(), getClass(), e);
 			}

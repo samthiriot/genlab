@@ -47,5 +47,14 @@ public class InputInstance extends InputOutputInstance {
 		// never accept connections to, as this is an input and not an output
 		return false;
 	}
+
+	@Override
+	public IConnection getConnection() {
+		if (acceptMultipleInputs)
+			throw new ProgramException("asked for the one connection of "+this+" but it accepts multiple inputs");
+		if (connections.isEmpty())
+			return null;
+		return connections.iterator().next();
+	}
 	
 }

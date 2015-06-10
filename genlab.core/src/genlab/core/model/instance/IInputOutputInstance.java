@@ -21,6 +21,15 @@ public interface IInputOutputInstance extends IGenlabResource {
 	public Collection<IConnection> getConnections();
 	
 	/**
+	 * returns the unique connection (to be used when the input is accepting only one connection,
+	 * else with throw a ProgramException).
+	 * Returns null if no connection. 
+	 * @return
+	 */
+	public IConnection getConnection();
+
+	
+	/**
 	 * Returns, if any, the constraints on these parameters
 	 * @return
 	 */

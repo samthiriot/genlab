@@ -1,13 +1,22 @@
 package genlab.core.model.meta.basics.algos;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IConnection;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
+import genlab.core.model.meta.IInputOutput;
 import genlab.core.model.meta.IReduceAlgo;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.AnythingFlowType;
+import genlab.core.model.meta.basics.flowtypes.GenlabTable;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import genlab.core.model.meta.basics.flowtypes.TableFlowType;
 
@@ -40,6 +49,23 @@ public class AppendToTableAlgo extends BasicAlgo implements IReduceAlgo {
 		inputs.add(INPUT_ANYTHING);
 		outputs.add(OUTPUT_TABLE);
 	}
+	
+	
+
+	@Override
+	public IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
+		return new AppendToTableInstance(this, workflow);
+	}
+
+
+
+	@Override
+	public IAlgoInstance createInstance(String id,
+			IGenlabWorkflowInstance workflow) {
+		return new AppendToTableInstance(this, workflow, id);
+		}
+
+
 
 	@Override
 	public IAlgoExecution createExec(final IExecution execution,

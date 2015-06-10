@@ -81,4 +81,9 @@ public class WorkflowsListener implements IWorkflowListener {
 		
 	}
 
+	@Override
+	public void workflowLoaded(IGenlabWorkflowInstance instance) {
+		
+	}
+
 }

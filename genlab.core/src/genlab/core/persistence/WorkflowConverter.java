@@ -8,6 +8,7 @@ import genlab.core.model.instance.GenlabWorkflowInstance;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
+import genlab.core.model.instance.WorkflowHooks;
 import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
@@ -248,6 +249,9 @@ public class WorkflowConverter extends Decoder implements Converter {
 				aiContainer.addChildren(aiChild);
 			}
 		}
+		
+		WorkflowHooks.getWorkflowHooks().notifyWorkflowLoaded(workflow);
+		
 		return workflow;
 	}
 

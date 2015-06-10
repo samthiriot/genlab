@@ -28,4 +28,10 @@ public interface IWorkflowListener {
 	 * @param instance
 	 */
 	public void workflowAutomaticallyCreatedAndFinished(IGenlabWorkflowInstance instance);
+
+	/**
+	 * send when a workflow was loaded from persistence
+	 * @param wf
+	 */
+	public void workflowLoaded(IGenlabWorkflowInstance instance);
 }

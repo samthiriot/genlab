@@ -342,7 +342,8 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	@Override
 	public void addConnection(Connection c) {
 		connections.add(c);
-		// TODO check the connection !?
+		c.getFrom().addConnection(c);
+		c.getTo().addConnection(c);
 	}
 
 
@@ -531,6 +532,10 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		if (!connections.remove(c))
 			GLLogger.warnTech("was unable to remove connection "+c, getClass());
 		else {
+
+			c.getFrom().removeConnection(c);
+			c.getTo().removeConnection(c);
+			
 			GLLogger.traceTech("notifying listeners of the removal of this connection..;", getClass());
 			WorkflowHooks.getWorkflowHooks().notifyWorkflowChange(this);
 			for (IWorkflowContentListener l: new LinkedList<IWorkflowContentListener>(listeners)) {
@@ -541,9 +546,6 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 				}
 			}
 		}
-		
-		c.getFrom().removeConnection(c);
-		c.getTo().removeConnection(c);
 		
 	}
 

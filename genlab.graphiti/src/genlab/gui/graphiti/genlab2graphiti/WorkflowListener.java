@@ -402,4 +402,9 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 		
 	}
 
+	@Override
+	public void workflowLoaded(IGenlabWorkflowInstance instance) {
+		
+	}
+
 }

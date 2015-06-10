@@ -28,5 +28,10 @@ public class OutputInstance extends InputOutputInstance {
 		// of course, should be of the same type :-)
 		return meta.getType().compliantWith(to.getMeta().getType());
 	}
+
+	@Override
+	public IConnection getConnection() {
+		throw new ProgramException("cannot ask for the unique connection of an output");
+	}
 	
 }

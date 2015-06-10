@@ -5,6 +5,7 @@ import genlab.core.model.IGenlabResource;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
+import genlab.core.model.meta.InputOutput;
 import genlab.core.parameters.Parameter;
 
 import java.util.Collection;
@@ -113,5 +114,12 @@ public interface IAlgoInstance extends IGenlabResource {
 	void declareParameter(Parameter<?> p);
 	
 	public boolean isDisabled();
+
+	public Collection<Object> getPrecomputedValuesForInput(IInputOutput<?> input);
+
+	public  Object getPrecomputedValueForInput(IInputOutput<?> input);
+
+	public Object getPrecomputedValueForOutput(IInputOutput<?> output);
+
 	
 }

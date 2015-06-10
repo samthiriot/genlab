@@ -86,5 +86,10 @@ public class Connection implements IConnection {
 		return id.hashCode();
 	}
 	
+	@Override
+	public Object getPrecomputedValue() {
+		return from.getAlgoInstance().getPrecomputedValueForOutput(from.getMeta());
+	}
+	
 	
 }

@@ -131,6 +131,14 @@ public class ExistingAlgoCategories {
 			"analysis"
 			);
 	
+
+	public static final AlgoCategory ANALYSIS_TABLE = new AlgoCategory(
+			ANALYSIS, 
+			"tables", 
+			"analyse tables", 
+			"tables"
+			);
+	
 	public static final AlgoCategory ANALYSIS_GRAPH = new AlgoCategory(
 			ANALYSIS, 
 			"graphs", 
@@ -263,6 +271,7 @@ public class ExistingAlgoCategories {
 		declareCategory(WRITER_GRAPH);
 		declareCategory(WRITER_TABLE);
 		declareCategory(ANALYSIS);
+		declareCategory(ANALYSIS_TABLE);
 		declareCategory(ANALYSIS_GRAPH);
 		declareCategory(CONSTANTS);
 		declareCategory(STATIC);

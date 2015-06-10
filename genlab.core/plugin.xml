@@ -66,6 +66,10 @@
             class="genlab.core.model.meta.basics.algos.ConstantValueBoolean"
             id="genlab.core.algo.constants.bool">
       </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.StatisticsOfColumnAlgo"
+            id="genlab.core.model.meta.basics.algos.AverageOfColumnAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">

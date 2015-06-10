@@ -13,5 +13,13 @@ public interface IConnection extends IGenlabResource {
 	 * @return
 	 */
 	public IGenlabWorkflowInstance getWorkflow();
+
+	
+	/**
+	 * compute the precomputed value by asking it to the source algo
+	 * @return
+	 */
+	public Object getPrecomputedValue();
+	
 	
 }

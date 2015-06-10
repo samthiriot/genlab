@@ -7,6 +7,7 @@ import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
+import genlab.core.model.meta.InputOutput;
 import genlab.core.parameters.InstanceNameParameter;
 import genlab.core.parameters.Parameter;
 import genlab.core.usermachineinteraction.MessageLevel;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -221,6 +223,43 @@ public class AlgoInstance implements IAlgoInstance, Serializable {
 		return outputs2outputInstances.get(meta);
 	}
 	
+	
+	/**
+	 * Returns the set of precomputed values for an input.
+	 * To be called when the input is accepting multiple inputs.
+	 * @param input
+	 * @return
+	 */
+	@Override
+	public Collection<Object> getPrecomputedValuesForInput(IInputOutput<?> input) {
+		
+		// retrieve the instance of this input
+		IInputOutputInstance inputInstance = getInputInstanceForInput(input);
+		
+		// for each connection, precompute
+		Collection<Object> res = new ArrayList<Object>();
+		for (IConnection c: inputInstance.getConnections()) {
+			Object precomputedValue = c.getPrecomputedValue();
+			res.add(precomputedValue);
+		}
+		
+		// return that
+		return res;
+	}
+
+	@Override
+	public Object getPrecomputedValueForInput(IInputOutput<?> input) {
+		
+		// retrieve the instance of this input
+		IInputOutputInstance inputInstance = getInputInstanceForInput(input);
+		
+		// precompute
+		IConnection c = inputInstance.getConnection();
+		
+		return c.getPrecomputedValue();
+			
+	}
+
 	public Object getValueForParameter(String name) {
 		
 		if (paramChangeName.getId().equals(name))
@@ -246,6 +285,7 @@ public class AlgoInstance implements IAlgoInstance, Serializable {
 		else
 			return getValueForParameter(param.getId());
 	}
+	
 	
 	public Map<String,Object> getParametersAndValues() {
 		return Collections.unmodifiableMap(parametersKey2value);
@@ -499,6 +539,16 @@ public class AlgoInstance implements IAlgoInstance, Serializable {
 	@Override
 	public boolean isDisabled() {
 		return (Boolean)getValueForParameter(BasicAlgo.PARAM_DISABLED);
+	}
+
+	/**
+	 * Default behaviour is to return nothing.
+	 * Please override to return something meaningfull when possible.
+	 */
+	@Override
+	public Object getPrecomputedValueForOutput(IInputOutput<?> output) {
+
+		return null;
 	}
 
 
