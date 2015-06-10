@@ -241,7 +241,7 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 				IAlgoInstance ai = it.next();;
 				it.remove();
 				
-				if (ai.getContainer() != null && !original2copy.containsKey(ai.getContainer())) {
+				if (ai.getContainer() != null && ai.getContainer()!=originalWorkflow && !original2copy.containsKey(ai.getContainer())) {
 					// we should retry later
 					toProcessAgain.add(ai);
 				} else {
@@ -257,7 +257,7 @@ public class GenlabWorkflow implements IGenlabWorkflow {
 							) {
 							
 							// is it a container which was mapped ?
-							if (ai.getContainer() != null) {
+							if (ai.getContainer() != null && ai.getContainer() != originalWorkflow) {
 								// there was an original container.
 								// let's retrieve the copy of this container and set it as a container
 								IAlgoContainerInstance aiContainer = (IAlgoContainerInstance) original2copy.get(ai.getContainer());
