@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class TestSIRHeadless extends TestModelBehaviour {
 
@@ -23,8 +24,8 @@ public class TestSIRHeadless extends TestModelBehaviour {
 		Map<String,Object> inputs = new HashMap<String, Object>();
 		inputs.put("network-filename", "../../testdata/networks/ws1.net");
 		
-		inputs.put("initial-outbreak-size", 1);
-		inputs.put("virus-spread-chance", 10);
+		inputs.put("initial-outbreak-size", 10);
+		inputs.put("virus-spread-chance", 100);
 		inputs.put("virus-check-frequency", 1);
 		inputs.put("recovery-chance", 10);
 		inputs.put("gain-resistance-chance", 100);
@@ -52,9 +53,15 @@ public class TestSIRHeadless extends TestModelBehaviour {
 	@Override
 	protected void checkResult(Map<String, Object> result) {
 
+		for (Entry<String,Object> e: result.entrySet()) {
+			System.err.println(e.getKey()+" = "+e.getValue());
+		}
 		assertTrue(result.get("measure-susceptible") instanceof Double);
 		assertTrue(result.get("measure-infected") instanceof Double);
 		assertTrue(result.get("measure-resistant") instanceof Double);
+		assertTrue(result.get("_duration") instanceof Double);
+		assertTrue("duration is lower than expected", (Double)result.get("_duration") > 50);
+
 		assertEquals(0.0, result.get("measure-susceptible"));
 		assertEquals(100.0, result.get("measure-resistant"));
 

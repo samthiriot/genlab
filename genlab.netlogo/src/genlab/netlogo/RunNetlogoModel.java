@@ -1,17 +1,22 @@
 package genlab.netlogo;
 
 import genlab.core.model.exec.IComputationProgress;
+import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.JFrame;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+import org.nlogo.api.CompilerException;
+import org.nlogo.api.LogoException;
 import org.nlogo.app.App;
 import org.nlogo.headless.HeadlessWorkspace;
 
@@ -21,8 +26,96 @@ public class RunNetlogoModel {
 		// TODO Auto-generated constructor stub
 	}
 	
+	private static Object poolWorkspacesLocker = new Object();
+	private static Map<String,Set<HeadlessWorkspace>> poolAvailableWorkspacesForModels = new HashMap<String,Set<HeadlessWorkspace>>();
+	private static Map<HeadlessWorkspace, String> poolRunningWorkspacesForModels = new HashMap<HeadlessWorkspace, String>();
 
+	public static HeadlessWorkspace getWorkspaceWithModel(String modelFilename) {
+		
+		HeadlessWorkspace workspace = null;
+		Set<HeadlessWorkspace> workspacesAvailable = null;
+		
+		// check if we have one; if we do, return it immediately (quick)
+		synchronized (poolWorkspacesLocker) {
+			workspacesAvailable = poolAvailableWorkspacesForModels.get(modelFilename);
+			if (workspacesAvailable == null) {
+				// the model was maybe never processed
+				workspacesAvailable = new HashSet<HeadlessWorkspace>();
+				poolAvailableWorkspacesForModels.put(modelFilename, workspacesAvailable);
+			}
+			
+			if (!workspacesAvailable.isEmpty()) {
+				// a workspace is available
+				workspace = workspacesAvailable.iterator().next();
+				workspacesAvailable.remove(workspace);
+				// now we have a workspace
+				poolRunningWorkspacesForModels.put(workspace, modelFilename);
+				GLLogger.debugTech("reusing a Netlogo workspace: "+poolAvailableWorkspacesForModels.size()+" running, "+workspacesAvailable.size()+" available for model "+ modelFilename, RunNetlogoModel.class);	
+		
+				return workspace;
+			}
+			
+		}
+		
+		// looks like no workspace was available,
+		// let's create one (slow) => because it's slow, don't lock everyone for that !
+		GLLogger.debugTech("creating one more Netlogo workspace for model "+modelFilename, RunNetlogoModel.class);
+		// no more workspace available
+		// create a novel one
+		workspace = HeadlessWorkspace.newInstance();
+		// open model
+		try {
+			workspace.open(modelFilename);
+		} catch (Exception e) {
+			final String msg = "error while running the model: "+e.getMessage();
+			throw new RuntimeException(msg, e);
+		}
 	
+		// add it to the pool 
+		synchronized (poolWorkspacesLocker) {
+			// now we have a workspace
+			poolRunningWorkspacesForModels.put(workspace, modelFilename);
+			GLLogger.debugTech("providing a fresh Netlogo workspace: "+poolAvailableWorkspacesForModels.size()+" running, "+workspacesAvailable.size()+" available for model "+ modelFilename, RunNetlogoModel.class);	
+		}
+
+		// and return it
+		return workspace;
+	}
+	
+	public static void returnWorkspace(HeadlessWorkspace workspace) {
+		try {
+			workspace.command("clear-globals");
+		} catch (Exception e) {
+			e.printStackTrace();
+			GLLogger.warnTech("unable to clear netlogo workspace after run: "+e.getMessage(), RunNetlogoModel.class, e);
+		} 
+		
+		synchronized (poolWorkspacesLocker) {
+			String modelFilename = poolRunningWorkspacesForModels.remove(workspace);
+			Set<HeadlessWorkspace> workspacesAvailable = poolAvailableWorkspacesForModels.get(modelFilename); 
+			GLLogger.debugTech("one more Netlogo workspace is available: "+poolAvailableWorkspacesForModels.size()+" running, "+workspacesAvailable.size()+" available for model "+ modelFilename, RunNetlogoModel.class);
+			workspacesAvailable.add(workspace);
+		}
+		
+	}
+	
+	/**
+	 * When a workspace is assumed to be "contaminated" (after an error for instance),
+	 * just drop it: remove it from the pool, dispose it, etc.
+	 * @param workspace
+	 */
+	public static void dropWorkspaceFromPool(HeadlessWorkspace workspace) {
+		GLLogger.warnTech("dropping a Netlogo workspace", RunNetlogoModel.class);
+		synchronized (poolWorkspacesLocker) {
+			poolRunningWorkspacesForModels.remove(workspace);
+		}
+		try {
+			workspace.dispose();
+		} catch (Exception e) {
+			GLLogger.warnTech("error while disposing the netlogo workspace: "+e.getMessage(), RunNetlogoModel.class, e);
+		}
+	}
+
 	public static Map<String,Object> runNetlogoModelHeadless(
 			ListOfMessages messages, 
 			String modelFilename, 
@@ -35,116 +128,116 @@ public class RunNetlogoModel {
 		// check file does exist
 		// TODO 
 		
+		HeadlessWorkspace workspace = getWorkspaceWithModel(modelFilename);
+		/*
 		HeadlessWorkspace workspace = HeadlessWorkspace.newInstance();
+		
+		// open model
+		try {
+			workspace.open(modelFilename);
+			
+		} catch (Exception e) {
+			final String msg = "error while running the model: "+e.getMessage();
+			messages.errorUser(msg, RunNetlogoModel.class, e);
+			throw new RuntimeException(msg, e);
+		}
+		*/
+		if (progress != null) 
+			progress.incProgressMade(10);
+		
+		// define parameters
+		StringBuffer sbParameters = new StringBuffer();
+		try {
+			for (String varName : inputs.keySet()) {
+				Object value = inputs.get(varName);
+				String valueStr = NetlogoUtils.toNetlogoString(value);
+				messages.debugTech("defining variable "+varName+" to "+valueStr, RunNetlogoModel.class);
+				workspace.command("set " + varName+ " " + valueStr);
+				if (sbParameters.length() > 0)
+					sbParameters.append(", ");
+				sbParameters.append(varName).append("=").append(valueStr);
+			}
+			
+			messages.debugUser("initialized the model with parameters "+sbParameters.toString(), RunNetlogoModel.class);
+			// TODO seed ?
+			// workspace.command("set random-seed " + args[3]) ;
+			
+		} catch (Exception e) {
+			final String msg = "error while defining parameters: "+e.getMessage();
+			messages.errorUser(msg, RunNetlogoModel.class, e);
+			throw new RuntimeException(msg, e);
+		}
+		if (progress != null) 
+			progress.incProgressMade(10);
+
+			
+		// initialize model
+		try {
+			messages.debugUser("setup model...", RunNetlogoModel.class);
+			long timestampStart = System.currentTimeMillis();
+			workspace.command("setup-network-load");
+			
+			workspace.command("setup") ;
+			long duration = System.currentTimeMillis() - timestampStart;
+			messages.debugTech("init in "+duration+"ms", RunNetlogoModel.class);
+		} catch (Exception e) {
+			final String msg = "error while initializing the model: "+e.getMessage();
+			messages.errorUser(msg, RunNetlogoModel.class, e);
+			throw new RuntimeException(msg, e);
+		}
+		if (progress != null) 
+			progress.incProgressMade(50);
+		
+		
+		// run the model
+		try {
+			long timestampStart = System.currentTimeMillis();
+			messages.debugUser("run model...", RunNetlogoModel.class);
+			workspace.command("repeat "+maxIterations+" [ go ]") ;
+			long duration = System.currentTimeMillis() - timestampStart;
+			messages.debugTech("run in "+duration+"ms", RunNetlogoModel.class);
+			
+		} catch (Exception e) {
+			final String msg = "error while running the model: "+e.getMessage();
+			messages.errorUser(msg, RunNetlogoModel.class, e);
+			throw new RuntimeException(msg, e);
+		}
+		if (progress != null) 
+			progress.incProgressMade(50);
+
+		// retrieve results
 		try {
 			
-			// open model
-			try {
-				workspace.open(modelFilename);
-				
-			} catch (Exception e) {
-				final String msg = "error while running the model: "+e.getMessage();
-				messages.errorUser(msg, RunNetlogoModel.class, e);
-				throw new RuntimeException(msg, e);
+			messages.debugUser("retrieving results...", RunNetlogoModel.class);
+
+			// retrieve last tick
+			Object ticksEnd = workspace.report("ticks");
+			messages.debugTech("finished after "+ticksEnd+" ticks", RunNetlogoModel.class);
+
+			Map<String,Object> results = new HashMap<String, Object>(outputs.size());
+			for (String outputName: outputs) {
+				Object retrieved = workspace.report(outputName);
+				messages.traceTech("retrieved from the model "+outputName+"= "+retrieved, RunNetlogoModel.class);
+				results.put(outputName, retrieved);
 			}
-			if (progress != null) 
-				progress.incProgressMade(10);
 			
-			// define parameters
-			StringBuffer sbParameters = new StringBuffer();
-			try {
-				for (String varName : inputs.keySet()) {
-					Object value = inputs.get(varName);
-					String valueStr = NetlogoUtils.toNetlogoString(value);
-					messages.debugTech("defining variable "+varName+" to "+valueStr, RunNetlogoModel.class);
-					workspace.command("set " + varName+ " " + valueStr);
-					if (sbParameters.length() > 0)
-						sbParameters.append(", ");
-					sbParameters.append(varName).append("=").append(valueStr);
-				}
-				
-				messages.debugUser("initialized the model with parameters "+sbParameters.toString(), RunNetlogoModel.class);
-				// TODO seed ?
-				// workspace.command("set random-seed " + args[3]) ;
-				
-			} catch (Exception e) {
-				final String msg = "error while defining parameters: "+e.getMessage();
-				messages.errorUser(msg, RunNetlogoModel.class, e);
-				throw new RuntimeException(msg, e);
-			}
+			results.put("_duration", ticksEnd);
 			if (progress != null) 
 				progress.incProgressMade(10);
 
-				
-			// initialize model
-			try {
-				messages.debugUser("setup model...", RunNetlogoModel.class);
-				long timestampStart = System.currentTimeMillis();
-				workspace.command("setup-network-load");
-				
-				workspace.command("setup") ;
-				long duration = System.currentTimeMillis() - timestampStart;
-				messages.debugTech("init in "+duration+"ms", RunNetlogoModel.class);
-			} catch (Exception e) {
-				final String msg = "error while initializing the model: "+e.getMessage();
-				messages.errorUser(msg, RunNetlogoModel.class, e);
-				throw new RuntimeException(msg, e);
-			}
-			if (progress != null) 
-				progress.incProgressMade(50);
-			
-			
-			// run the model
-			try {
-				long timestampStart = System.currentTimeMillis();
-				messages.debugUser("run model...", RunNetlogoModel.class);
-				workspace.command("repeat "+maxIterations+" [ go ]") ;
-				long duration = System.currentTimeMillis() - timestampStart;
-				messages.debugTech("run in "+duration+"ms", RunNetlogoModel.class);
-				
-			} catch (Exception e) {
-				final String msg = "error while running the model: "+e.getMessage();
-				messages.errorUser(msg, RunNetlogoModel.class, e);
-				throw new RuntimeException(msg, e);
-			}
-			if (progress != null) 
-				progress.incProgressMade(50);
+			// return the workspace 
+			returnWorkspace(workspace);
+			return results;
+		} catch(Exception ex) {
+			// don't reuse this workspace
+			if (workspace != null)
+				dropWorkspaceFromPool(workspace);
+			// and transmit error
+			ex.printStackTrace();
+			throw new RuntimeException("error in netlogo : "+ex.getMessage(), ex);
+		} 
 
-			// retrieve results
-			try {
-				
-				messages.debugUser("retrieving results...", RunNetlogoModel.class);
-
-				// retrieve last tick
-				Object ticksEnd = workspace.report("ticks");
-				messages.debugTech("finished after "+ticksEnd+" ticks", RunNetlogoModel.class);
 	
-				Map<String,Object> results = new HashMap<String, Object>(outputs.size());
-				for (String outputName: outputs) {
-					Object retrieved = workspace.report(outputName);
-					messages.traceTech("retrieved from the model "+outputName+"= "+retrieved, RunNetlogoModel.class);
-					results.put(outputName, retrieved);
-				}
-				
-				results.put("_duration", ticksEnd);
-				if (progress != null) 
-					progress.incProgressMade(10);
-
-				return results;
-			} catch(Exception ex) {
-				ex.printStackTrace();
-				throw new RuntimeException("error in netlogo : "+ex.getMessage(), ex);
-			} 
-
-		} finally {
-			if (workspace != null) {
-				try {
-					workspace.dispose();
-				} catch (Exception e) {
-					messages.warnTech("error while disposing the netlogo workspace: "+e.getMessage(), RunNetlogoModel.class, e);
-				}
-			}
-		}
 	}
 	
 
