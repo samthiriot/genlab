@@ -14,8 +14,9 @@ public abstract class ANumericGene<TypeName extends Number> extends AGene<TypeNa
 	public final TypeName min;
 	public final TypeName max;
 	
-	public ANumericGene(String name, double mutationProba, TypeName min, TypeName max) {
-		super(name, mutationProba);
+	
+	public ANumericGene(String name, double mutationProba, TypeName min, TypeName max, Double etam, Double etac) {
+		super(name, mutationProba, etam, etac);
 		this.min = min;
 		this.max = max;
 	}

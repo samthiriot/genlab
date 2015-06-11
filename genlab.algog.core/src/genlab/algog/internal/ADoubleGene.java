@@ -4,8 +4,8 @@ import cern.jet.random.Uniform;
 
 public class ADoubleGene extends ANumericGene<Double> {
 
-	public ADoubleGene(String name,double mutationProba, Double min, Double max) {
-		super(name, mutationProba, min, max);
+	public ADoubleGene(String name, double mutationProba, Double min, Double max, Double etam, Double etac) {
+		super(name, mutationProba, min, max, etam, etac);
 	}
 
 	@Override

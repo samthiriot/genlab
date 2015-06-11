@@ -13,16 +13,20 @@ public abstract class AGene<TypeName> {
 
 	public final String name;
 	public final double mutationProba;
+	
+
 	public static final Double INF = StrictMath.pow(10, 14);
 	public static final Double EPS = StrictMath.pow(10, -14);
 	/** value of distribution index for mutation */
-	public final double eta_m = 20.0;
+	public final double eta_m;
 	/** value of distribution index for crossover */
-	public final double eta_c = 20.0;
+	public final double eta_c;
 	
-	public AGene(String name, double mutationProba) {
+	public AGene(String name, double mutationProba, Double etam, Double etac) {
 		this.name = name;
 		this.mutationProba = mutationProba;
+		this.eta_m = etam;
+		this.eta_c = etac;
 	}
 	
 	public abstract TypeName generateRandomnly(Uniform uniform);

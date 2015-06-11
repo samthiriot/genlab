@@ -43,8 +43,6 @@ public class DoubleGeneAlgo extends AbstractGeneAlgo {
 			new Double(65535)
 			);
 
-	
-	
 	public DoubleGeneAlgo() {
 		super(
 				"double gene", 
@@ -55,8 +53,7 @@ public class DoubleGeneAlgo extends AbstractGeneAlgo {
 
 		registerParameter(PARAM_MINIMUM);
 		registerParameter(PARAM_MAXIMUM);
-		
-		
+
 	}
 
 

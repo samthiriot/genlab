@@ -11,6 +11,7 @@ import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
+import genlab.core.parameters.DoubleParameter;
 import genlab.core.parameters.IntParameter;
 
 import java.util.HashMap;
@@ -43,6 +44,22 @@ public abstract class AbstractGeneticExplorationAlgo extends AlgoContainer {
 			new Integer(100)
 			);
 	
+
+	public static final DoubleParameter PARAM_ETA_MUTATION = new DoubleParameter(
+			"param_eta_m", 
+			"eta_m", "for polynomial mutation, distribution index for mutation / mutation constant", 
+			20.0,
+			0.0
+			);	
+
+	public static final DoubleParameter PARAM_ETA_CROSSOVER = new DoubleParameter(
+			"param_eta_c", 
+			"eta_c", "for SBX crossover, distribution index for crossover", 
+			20.0,
+			0.0
+			);
+	
+	
 	static {
 
 		OUTPUT_TABLE.setIsContinuousOutput(true);
@@ -66,6 +83,9 @@ public abstract class AbstractGeneticExplorationAlgo extends AlgoContainer {
 		
 		registerParameter(PARAM_STOP_MAXITERATIONS);
 		registerParameter(PARAM_SIZE_POPULATION);
+		
+		registerParameter(PARAM_ETA_MUTATION);
+		registerParameter(PARAM_ETA_CROSSOVER);
 	}
 
 

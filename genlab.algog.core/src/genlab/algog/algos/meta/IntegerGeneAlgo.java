@@ -8,6 +8,7 @@ import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.IntegerFlowType;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
+import genlab.core.parameters.DoubleParameter;
 import genlab.core.parameters.IntParameter;
 
 /**

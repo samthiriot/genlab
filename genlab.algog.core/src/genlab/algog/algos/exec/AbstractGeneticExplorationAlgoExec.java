@@ -2,6 +2,7 @@ package genlab.algog.algos.exec;
 
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
 import genlab.algog.algos.meta.AbstractGeneAlgo;
+import genlab.algog.algos.meta.AbstractGeneticAlgo;
 import genlab.algog.algos.meta.AbstractGeneticExplorationAlgo;
 import genlab.algog.algos.meta.BooleanGeneAlgo;
 import genlab.algog.algos.meta.DoubleGeneAlgo;
@@ -149,6 +150,10 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		// build the list of the genomes
 		messages.debugTech("analysis of the content of the genetic algo...", getClass());
 		
+		// load parameters for mutation and crossover
+		final double etam = (Double)algoInst.getValueForParameter(AbstractGeneticExplorationAlgo.PARAM_ETA_MUTATION);
+		final double etac = (Double)algoInst.getValueForParameter(AbstractGeneticExplorationAlgo.PARAM_ETA_CROSSOVER);
+		
 		Set<IAlgoInstance> allGoals = algoInst.collectGoals();
 		
 		for (IAlgoInstance childInstance: algoInst.getChildren()) {
@@ -180,31 +185,37 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 				IAlgo geneAlgo = geneInstance.getAlgo();
 				
 				AGene<?> gene = null;
-				
+								
 				// create its counterpart with the same parameters
 				if (geneAlgo instanceof IntegerGeneAlgo) {
 					
 					gene = new AIntegerGene( 
 							geneInstance.getName(),
-							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION.getId()), 
-							(Integer)geneInstance.getValueForParameter(IntegerGeneAlgo.PARAM_MINIMUM.getId()),
-							(Integer)geneInstance.getValueForParameter(IntegerGeneAlgo.PARAM_MAXIMUM.getId())
+							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION), 
+							(Integer)geneInstance.getValueForParameter(IntegerGeneAlgo.PARAM_MINIMUM),
+							(Integer)geneInstance.getValueForParameter(IntegerGeneAlgo.PARAM_MAXIMUM),
+							etam,
+							etac
 							);
 					
 				} else if (geneAlgo instanceof DoubleGeneAlgo) {
 					
 					gene = new ADoubleGene( 
 							geneInstance.getName(), 
-							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION.getId()),
-							(Double)geneInstance.getValueForParameter(DoubleGeneAlgo.PARAM_MINIMUM.getId()),
-							(Double)geneInstance.getValueForParameter(DoubleGeneAlgo.PARAM_MAXIMUM.getId())
+							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION),
+							(Double)geneInstance.getValueForParameter(DoubleGeneAlgo.PARAM_MINIMUM),
+							(Double)geneInstance.getValueForParameter(DoubleGeneAlgo.PARAM_MAXIMUM),
+							etam,
+							etac
 							);
 					
 				} else if (geneAlgo instanceof BooleanGeneAlgo) {
 					
 					gene = new ABooleanGene(
 							geneInstance.getName(),
-							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION.getId())
+							(Double)geneInstance.getValueForParameter(AbstractGeneAlgo.PARAM_PROBA_MUTATION),
+							etam,
+							etac
 							);
 					
 				} else {
