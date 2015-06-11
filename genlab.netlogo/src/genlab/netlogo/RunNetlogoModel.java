@@ -50,7 +50,7 @@ public class RunNetlogoModel {
 				workspacesAvailable.remove(workspace);
 				// now we have a workspace
 				poolRunningWorkspacesForModels.put(workspace, modelFilename);
-				GLLogger.debugTech("reusing a Netlogo workspace: "+poolAvailableWorkspacesForModels.size()+" running, "+workspacesAvailable.size()+" available for model "+ modelFilename, RunNetlogoModel.class);	
+				GLLogger.debugTech("reusing a Netlogo workspace: "+poolRunningWorkspacesForModels.size()+" running, "+workspacesAvailable.size()+" available for model "+ modelFilename, RunNetlogoModel.class);	
 		
 				return workspace;
 			}
@@ -75,7 +75,7 @@ public class RunNetlogoModel {
 		synchronized (poolWorkspacesLocker) {
 			// now we have a workspace
 			poolRunningWorkspacesForModels.put(workspace, modelFilename);
-			GLLogger.debugTech("providing a fresh Netlogo workspace: "+poolAvailableWorkspacesForModels.size()+" running, "+workspacesAvailable.size()+" available for model "+ modelFilename, RunNetlogoModel.class);	
+			GLLogger.debugTech("providing a fresh Netlogo workspace: "+poolRunningWorkspacesForModels.size()+" running, "+workspacesAvailable.size()+" available for model "+ modelFilename, RunNetlogoModel.class);	
 		}
 
 		// and return it
@@ -93,7 +93,7 @@ public class RunNetlogoModel {
 		synchronized (poolWorkspacesLocker) {
 			String modelFilename = poolRunningWorkspacesForModels.remove(workspace);
 			Set<HeadlessWorkspace> workspacesAvailable = poolAvailableWorkspacesForModels.get(modelFilename); 
-			GLLogger.debugTech("one more Netlogo workspace is available: "+poolAvailableWorkspacesForModels.size()+" running, "+workspacesAvailable.size()+" available for model "+ modelFilename, RunNetlogoModel.class);
+			GLLogger.debugTech("one more Netlogo workspace is available: "+poolRunningWorkspacesForModels.size()+" running, "+workspacesAvailable.size()+" available for model "+ modelFilename, RunNetlogoModel.class);
 			workspacesAvailable.add(workspace);
 		}
 		
