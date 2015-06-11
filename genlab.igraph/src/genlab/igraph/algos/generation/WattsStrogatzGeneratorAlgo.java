@@ -23,7 +23,7 @@ public class WattsStrogatzGeneratorAlgo extends AbstractIGraphGenerator {
 			"nei", 
 			"size of the neighborhood for each vertex",
 			4,
-			0
+			1
 			);
 	
 	public static final ProbabilityInOut INPUT_P = new ProbabilityInOut(
