@@ -48,7 +48,7 @@ public class ExecuteRAlgorithm extends BasicAlgo {
 	public ExecuteRAlgorithm() {
 		super(
 				"compute R", 
-				"compute any R script", 
+				"computes any R script. Deleguates to R a computation. <br/>Values inputed in the Genlab algorithm are translated to R variables available in the R environment:<ul><li>Constants will have the name of the constant (rename constants in the parameters view).</li><li>Every other input will be available as algo_name.output_name . When there are spaces in these names, they are replaced in R with an underscore.</li></ul><br/>The last result from R will be used as an output; so if you input several lines, only the result of the last one will be outputed by this box.", 
 				ExistingAlgoCategories.ANALYSIS, 
 				null, 
 				null
