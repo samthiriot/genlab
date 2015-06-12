@@ -107,7 +107,7 @@ public class ExecuteRExec extends AbstractAlgoExecutionOneshot {
 					// TODO rsession.getStatus()
 					// set result !
 					if (o != null) {
-						messages.infoUser("current result for \""+evaluated+"\": "+rsession.cast(o), getClass());
+						messages.debugTech("current result for \""+evaluated+"\": "+rsession.cast(o), getClass());
 						currentResult = Rsession.cast(o);	
 					}
 				} catch (REXPMismatchException e) {
