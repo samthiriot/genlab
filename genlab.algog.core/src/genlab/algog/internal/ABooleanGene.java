@@ -4,8 +4,8 @@ import cern.jet.random.Uniform;
 
 public class ABooleanGene extends AGene<Boolean> {
 
-	public ABooleanGene(String name, double mutationProba) {
-		super(name, mutationProba);
+	public ABooleanGene(String name, double mutationProba, Double etam, Double etac) {
+		super(name, mutationProba, etam, etac);
 	}
 
 	@Override

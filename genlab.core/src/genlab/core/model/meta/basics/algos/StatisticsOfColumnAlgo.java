@@ -15,6 +15,7 @@ import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.DoubleFlowType;
 import genlab.core.model.meta.basics.flowtypes.IGenlabTable;
 import genlab.core.model.meta.basics.flowtypes.TableFlowType;
+import genlab.core.parameters.BooleanParameter;
 import genlab.core.parameters.ListParameter;
 
 public class StatisticsOfColumnAlgo extends BasicAlgo {
@@ -25,6 +26,13 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 			"in_table", 
 			"table", 
 			"the table to analyze"
+			);
+	
+	public static final BooleanParameter PARAM_VARIANCE_SAMPLE = new BooleanParameter(
+			"param_sample_variance", 
+			"use unbiased sample variance", 
+			"unbiased sample variance uses the Bessel's correction", 
+			Boolean.TRUE
 			);
 	
 	public static final InputOutput<Double> OUTPUT_AVERAGE = new InputOutput<Double>(
@@ -62,6 +70,8 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 		outputs.add(OUTPUT_AVERAGE);
 		outputs.add(OUTPUT_VARIANCE);
 		outputs.add(OUTPUT_STD);
+		
+		registerParameter(PARAM_VARIANCE_SAMPLE);
 	}
 
 	
@@ -109,6 +119,7 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 				final Integer columnOptionsIdx = (Integer)algoInst.getValueForParameter(paramColumn);
 				final String columnId = paramColumn.getLabel(columnOptionsIdx);
 
+				final Boolean useSampleVariance = (Boolean) algoInst.getValueForParameter(PARAM_VARIANCE_SAMPLE);
 				
 				final boolean computeSTD = isUsed(OUTPUT_STD);
 				final boolean computeVariance = computeSTD || isUsed(OUTPUT_VARIANCE);
@@ -118,8 +129,8 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 				setResult(res);
 				
 				// specific case: no row !
-				if (table.getRowsCount() == 0) {
-					messages.warnUser("the table contains no row", getClass());
+				if (table.getRowsCount() == 0 || (useSampleVariance && table.getRowsCount() == 1)) {
+					messages.warnUser("the table contains not enough rows for computing variance", getClass());
 					res.setResult(OUTPUT_AVERAGE, Double.NaN);
 					res.setResult(OUTPUT_STD, Double.NaN);
 					progress.setComputationState(ComputationState.FINISHED_OK);
@@ -146,7 +157,11 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 									2.0
 									);
 						}
-						variance = totalValue/table.getRowsCount();
+						if (useSampleVariance)
+							// Bessel's correction
+							variance = totalValue/(table.getRowsCount()-1);
+						else 
+							variance = totalValue/table.getRowsCount();
 						res.setResult(OUTPUT_VARIANCE, variance);
 					}
 					if (computeSTD) {
