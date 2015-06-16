@@ -137,6 +137,18 @@
                url="https://en.wikipedia.org/wiki/Dense_graph">
          </more_info>
       </docalgo>
+      <docalgo
+            algo_id="genlab.core.model.meta.basics.algos.AverageOfColumnAlgo"
+            library_id="genlab.algog.core.library">
+         <more_info
+               content="wikipedia explanations for the Bessel&apos;s correction"
+               url="http://en.wikipedia.org/wiki/Bessel&apos;s_correction">
+         </more_info>
+         <more_info
+               content="Wiikipedia page on variance"
+               url="http://en.wikipedia.org/wiki/Variance">
+         </more_info>
+      </docalgo>
    </extension>
 
 

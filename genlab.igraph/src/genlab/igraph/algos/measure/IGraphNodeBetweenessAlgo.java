@@ -3,6 +3,8 @@ package genlab.igraph.algos.measure;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
@@ -60,4 +62,17 @@ public class IGraphNodeBetweenessAlgo extends AbstractIGraphMeasure {
 		return new IGraphNodeBetweenessExec(execution, algoInstance, algoInstance);
 	}
 
+	@Override
+	public IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
+		return new IGraphNodeBetweenessInstance(this, workflow);
+	}
+
+	@Override
+	public IAlgoInstance createInstance(String id,
+			IGenlabWorkflowInstance workflow) {
+		return new IGraphNodeBetweenessInstance(this, workflow, id);
+	}
+
+	
+	
 }

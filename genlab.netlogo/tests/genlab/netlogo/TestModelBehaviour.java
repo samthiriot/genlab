@@ -1,7 +1,10 @@
 package genlab.netlogo;
 
-import java.util.HashSet;
+import genlab.core.usermachineinteraction.GLLogger;
+import genlab.core.usermachineinteraction.ListsOfMessages;
+import genlab.core.usermachineinteraction.MessageLevel;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +32,16 @@ public abstract class TestModelBehaviour {
 		
 	}
 	
+	@Test
+	public void testModelSuccessiveRuns() {
+		
+		for (int i=0; i<10; i++) {
+			Map<String,Object> result = runModel();
+			checkResult(result);
+		}
+		
+	}
+	
 	
 	private Set<Thread> collectCurrentThreads() {
 		Thread[] activeThreadsT = new Thread[Thread.activeCount()];
@@ -38,6 +51,7 @@ public abstract class TestModelBehaviour {
 			res.add(t);
 		return res;
 	}
+	
 	/**
 	 * Runs the same model many times and ensures it is not creating many threads which 
 	 * would finish blocking the JVM
@@ -81,5 +95,84 @@ public abstract class TestModelBehaviour {
 			fail("about "+nbPerIteration+" novel threads are created at each run; this cannot be used in production");
 		}
 		
+	}
+	
+
+	/**
+	 * Runs the same model many times in parallel and ensures it is still giving relevant results 
+	 * would finish blocking the JVM
+	 */
+	@Test
+	public void testModelParallel() {
+		
+		ListsOfMessages.getGenlabMessages().setFilterIgnoreBelow(MessageLevel.TRACE, MessageLevel.TRACE);
+		
+		int countThreadBeginning = Thread.activeCount();
+		
+		final int PARALLELL_THREADS = 10;
+
+		class ThreadRunModel extends Thread {
+			
+			private final Set<ThreadRunModel> threadsToWait;
+			
+			public ThreadRunModel(Set<ThreadRunModel> threadsToWait) {
+				setDaemon(false);
+				this.threadsToWait = threadsToWait;
+			}
+			@Override
+			public void run() {
+				
+				for (int i=0; i<30; i++) {
+					System.err.println("wait");
+					// wait a bit randomly
+					try {
+						Thread.sleep((long)(2000*Math.random()));
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					// run the model
+					System.err.println("run !");
+					Map<String,Object> result = runModel();
+					checkResult(result);
+					
+				}
+				// return 
+				synchronized (threadsToWait) {
+					this.threadsToWait.remove(this);	
+				}
+			}
+			
+		}
+		
+		final Set<ThreadRunModel> threadsToWait = new HashSet<ThreadRunModel>();
+		
+		
+		// create threads
+		for (int i=0; i<PARALLELL_THREADS; i++) {
+			threadsToWait.add(new ThreadRunModel(threadsToWait));
+		}
+		
+		// start threads
+		for (ThreadRunModel t: threadsToWait) {
+			t.start();
+		}
+		
+		// wait for all of them to finish
+		while (true) {
+			synchronized (threadsToWait) {
+				if (threadsToWait.isEmpty())
+					break;
+				System.out.println("waiting for "+threadsToWait.size()+" model threads");
+			}
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		System.out.println("thread count: before "+countThreadBeginning+", after "+Thread.activeCount());
 	}
 }

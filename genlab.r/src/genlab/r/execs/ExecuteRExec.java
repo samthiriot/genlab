@@ -99,17 +99,15 @@ public class ExecuteRExec extends AbstractAlgoExecutionOneshot {
 				final String evaluated = st.nextToken();
 				try {
 					REXP o = rsession.eval(evaluated);
-					if (rsession.getStatus() == Rsession.STATUS_ERROR) {
+					if (rsession.getStatus() == Rsession.STATUS_ERROR || o == null) {
 						messages.errorUser("error while evaluating in R \""+evaluated+"\"", getClass());
 						progress.setComputationState(ComputationState.FINISHED_FAILURE);
 						return;
 					}
 					// TODO rsession.getStatus()
 					// set result !
-					if (o != null) {
-						messages.debugTech("current result for \""+evaluated+"\": "+rsession.cast(o), getClass());
-						currentResult = Rsession.cast(o);	
-					}
+					messages.infoUser("current result for \""+evaluated+"\": "+rsession.cast(o), getClass());
+					currentResult = Rsession.cast(o);	
 				} catch (REXPMismatchException e) {
 					messages.errorUser("unable to evaluate \""+evaluated+"\": "+e.getLocalizedMessage(), getClass(), e);
 					progress.setComputationState(ComputationState.FINISHED_FAILURE);

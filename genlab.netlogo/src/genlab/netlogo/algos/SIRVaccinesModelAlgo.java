@@ -3,6 +3,8 @@ package genlab.netlogo.algos;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
@@ -13,6 +15,7 @@ import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.parameters.BooleanParameter;
 import genlab.core.parameters.IntParameter;
 import genlab.netlogo.exec.SIRVaccinesModelExec;
+import genlab.netlogo.inst.SIRVaccinesModelInstance;
 
 public class SIRVaccinesModelAlgo extends BasicAlgo {
 
@@ -138,9 +141,21 @@ public class SIRVaccinesModelAlgo extends BasicAlgo {
 		registerParameter(PARAM_MAX_STEPS);
 		registerParameter(PARAM_GUI);
 	}
+	
+	
+	@Override
+	public IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
+		return new SIRVaccinesModelInstance(this, workflow);
+	}
 
-	
-	
+
+	@Override
+	public IAlgoInstance createInstance(String id,
+			IGenlabWorkflowInstance workflow) {
+		return new SIRVaccinesModelInstance(this, workflow, id);
+	}
+
+
 	@Override
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {

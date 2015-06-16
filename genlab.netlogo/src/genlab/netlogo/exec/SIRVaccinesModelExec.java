@@ -22,11 +22,13 @@ import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.parameters.ListParameter;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.netlogo.NetlogoUtils;
 import genlab.netlogo.RunNetlogoModel;
 import genlab.netlogo.algos.SIRModelAlgo;
 import genlab.netlogo.algos.SIRVaccinesModelAlgo;
+import genlab.netlogo.inst.SIRVaccinesModelInstance;
 
 public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 
@@ -112,25 +114,51 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 			
 			progress.setProgressMade(1);
 		
-			final String attributeValue = "igraph_node_betweeness";
+			String paramAttributeDegreeId;
+			{
+				final ListParameter paramForDegree = ((SIRVaccinesModelInstance)algoInst).PARAM_COLUMN_DEGREE;
+				final Integer paramAttributeDegreeForVertexIdx = (Integer)algoInst.getValueForParameter(paramForDegree);
+				paramAttributeDegreeId = paramForDegree.getLabel(paramAttributeDegreeForVertexIdx);
+			}
+			String paramAttributeBetweenessId;
+			{
+				final ListParameter paramForBetweeness = ((SIRVaccinesModelInstance)algoInst).PARAM_COLUMN_BETWEENESS;
+				final Integer paramAttributeBetweenessForVertexIdx = (Integer)algoInst.getValueForParameter(paramForBetweeness);
+				paramAttributeBetweenessId = paramForBetweeness.getLabel(paramAttributeBetweenessForVertexIdx);
+			}
 			
 			// declare fields
 			graph.declareVertexAttribute("presistant", Boolean.class);
 			// TODO create vaccination !
+			for (String vertexId: graph.getVertices()) {
+				graph.setVertexAttribute(vertexId, "presistant", false);
+			}
 			if (countVaccinesBetweeness > 0) {
 				SortedSet<String> highestBetweeness = findHigestValues(
 														graph, 
 														countVaccinesBetweeness, 
-														attributeValue
+														paramAttributeBetweenessId
 														);
 	
 				messages.infoUser("will vaccinate nodes with highest betweeness: "+highestBetweeness, getClass());
-				for (String vertexId: graph.getVertices()) {
-					graph.setVertexAttribute(vertexId, "presistant", highestBetweeness.contains(vertexId));
+				for (String vertexId: highestBetweeness) {
+					graph.setVertexAttribute(vertexId, "presistant", true);
 				}
 				
-			}
-			
+			} 
+			if (countVaccinesDegree > 0) {
+				SortedSet<String> highestDegree = findHigestValues(
+														graph, 
+														countVaccinesDegree, 
+														paramAttributeDegreeId
+														);
+	
+				messages.infoUser("will vaccinate nodes with highest degree: "+highestDegree, getClass());
+				for (String vertexId: highestDegree) {
+					graph.setVertexAttribute(vertexId, "presistant", true);
+				}
+				
+			} 		
 			// write the graph somewhere so it can be read by netlogo
 			File fileNetwork = NetlogoUtils.writeGraphToNetlogoGraphML(graph, messages);
 			progress.setProgressMade(2);
@@ -188,7 +216,7 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 			res.setResult(SIRModelAlgo.OUTPUT_RESISTANT, result.get("measure-resistant"));
 			res.setResult(SIRModelAlgo.OUTPUT_DURATION, result.get("_duration"));
 
-			progress.setProgressMade(10);
+			progress.setProgressMade(140);
 			
 			progress.setComputationState(ComputationState.FINISHED_OK);
 

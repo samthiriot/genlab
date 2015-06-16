@@ -49,6 +49,10 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Ext
 	public static final String KEY_TECHNICAL_INFO_COUNT_CLONES = "core / count of graphs cloned";
 	public static final String KEY_TECHNICAL_INFO_COUNT_CREATED = "core / count of graphs created";
 	
+	public static final String KEY_VERTEX_ATTRIBUTE_DEGREE_TOTAL = "_degree_total";
+	public static final String KEY_VERTEX_ATTRIBUTE_DEGREE_OUT = "_degree_in";
+	public static final String KEY_VERTEX_ATTRIBUTE_DEGREE_IN = "_degree_out";
+	
 	public boolean ignoreGraphAttributeErrors = false;
 	
 	/**
@@ -58,7 +62,10 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Ext
 	public AbstractGraphstreamBasedGraph(Graph gsGraph) {
 		
 		this.gsGraph = gsGraph;
-		
+		declareVertexAttribute(KEY_VERTEX_ATTRIBUTE_DEGREE_TOTAL, Integer.class);
+		declareVertexAttribute(KEY_VERTEX_ATTRIBUTE_DEGREE_IN, Integer.class);
+		declareVertexAttribute(KEY_VERTEX_ATTRIBUTE_DEGREE_OUT, Integer.class);
+
 	}
 
 	@Override
@@ -136,6 +143,15 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Ext
 	@SuppressWarnings("rawtypes")
 	public void setVertexAttribute(String vertexId, String attributeId,
 			Object value) {
+		
+
+		if (
+				attributeId.equals(KEY_VERTEX_ATTRIBUTE_DEGREE_TOTAL)
+				|| attributeId.equals(KEY_VERTEX_ATTRIBUTE_DEGREE_IN)
+				|| attributeId.equals(KEY_VERTEX_ATTRIBUTE_DEGREE_OUT)
+				)
+			throw new WrongParametersException("cannot modify the degree attribute '"+attributeId+"' of a node without adding or removing an edge");
+
 		// ensure existence of the node
 		Node gsNode = gsGraph.getNode(vertexId); 
 		if (gsNode == null) {
@@ -163,6 +179,8 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Ext
 
 	@Override
 	public void setVertexAttributes(String vertexId, Map<String, Object> values) {
+		
+
 		// ensure existence of the node
 		Node gsNode = gsGraph.getNode(vertexId); 
 		if (gsNode == null) {
@@ -178,6 +196,13 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Ext
 			if (!attributeType.isInstance(entry.getValue())) {
 				throw new WrongParametersException("type "+attributeType.getSimpleName()+" is expected for attribute "+entry.getKey());
 			}
+
+			if (
+					entry.getKey().equals(KEY_VERTEX_ATTRIBUTE_DEGREE_TOTAL)
+					|| entry.getKey().equals(KEY_VERTEX_ATTRIBUTE_DEGREE_IN)
+					|| entry.getKey().equals(KEY_VERTEX_ATTRIBUTE_DEGREE_OUT)
+					)
+				throw new WrongParametersException("cannot modify the degree attribute '"+entry.getKey()+"' of a node without adding or removing an edge");
 
 			// finally add value
 			gsNode.setAttribute(entry.getKey(), entry.getValue());	
@@ -420,17 +445,16 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Ext
 	@Override
 	public Map<String, Object> getVertexAttributes(String vertexId) {
 		
-		// TODO very slow; optimize it ?
-		
 		final Node n = gsGraph.getNode(vertexId);
 		
 		if (n == null)
 			throw new WrongParametersException("unknown vertex "+vertexId);
 		
-		if (vertexAttributes2type.isEmpty())
-			return Collections.EMPTY_MAP;
-		
 		Map<String, Object> map = new HashMap<String, Object>(vertexAttributes2type.size());
+		
+		map.put(KEY_VERTEX_ATTRIBUTE_DEGREE_TOTAL, n.getDegree());
+		map.put(KEY_VERTEX_ATTRIBUTE_DEGREE_IN, n.getInDegree());
+		map.put(KEY_VERTEX_ATTRIBUTE_DEGREE_OUT, n.getOutDegree());
 		
 		for (String attribute: vertexAttributes2type.keySet()) {
 			Object value = n.getAttribute(attribute);
@@ -447,6 +471,13 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Ext
 		final Node n = gsGraph.getNode(vertexId);
 		if (n == null)
 			throw new WrongParametersException("unknown vertex "+vertexId);
+		
+		if (attributeName.equals(KEY_VERTEX_ATTRIBUTE_DEGREE_TOTAL))
+			return n.getDegree();
+		if (attributeName.equals(KEY_VERTEX_ATTRIBUTE_DEGREE_IN))
+			return n.getInDegree();
+		if (attributeName.equals(KEY_VERTEX_ATTRIBUTE_DEGREE_OUT))
+			return n.getOutDegree();
 		
 		return n.getAttribute(attributeName);
 		
@@ -553,12 +584,18 @@ public abstract class AbstractGraphstreamBasedGraph implements IGenlabGraph, Ext
 		}
 		// .. node attributes
 		for (String a: vertexAttributes2type.keySet()) {
-			Class type = vertexAttributes2type.get(a);
+			if (
+					a.equals(KEY_VERTEX_ATTRIBUTE_DEGREE_IN)
+					|| a.equals(KEY_VERTEX_ATTRIBUTE_DEGREE_OUT)
+					|| a.equals(KEY_VERTEX_ATTRIBUTE_DEGREE_TOTAL)
+					)
+				continue;
+			Class<?> type = vertexAttributes2type.get(a);
 			clone.declareVertexAttribute(a, type);
 		} 
 		// .. edge attributes
 		for (String a: edgeAttributes2type.keySet()) {
-			Class type = edgeAttributes2type.get(a);
+			Class<?> type = edgeAttributes2type.get(a);
 			clone.declareEdgeAttribute(a, type);
 		}
 		
