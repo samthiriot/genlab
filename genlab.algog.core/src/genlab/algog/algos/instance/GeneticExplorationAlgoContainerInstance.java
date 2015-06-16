@@ -43,7 +43,10 @@ public class GeneticExplorationAlgoContainerInstance extends
 		// super.checkForRun(res);
 		// we have no connection ^^
 		
+		Set<String> goalNames = new HashSet<String>();
+		
 		// ensure we contain the relevant children
+		// ensure each name of goal is different
 		LinkedList<IAlgoInstance> genomeAlgos = new LinkedList<IAlgoInstance>();
 		int countFitness = 0;
 		for (IAlgoInstance aiChild: getChildren()) {
@@ -51,6 +54,8 @@ public class GeneticExplorationAlgoContainerInstance extends
 				genomeAlgos.add(aiChild);
 			} else if (aiChild.getAlgo() instanceof GoalAlgo) {
 				countFitness++;
+				if (!goalNames.add(aiChild.getName()))
+					res.messages.errorUser("several goals are named '"+aiChild.getName()+"'; please rename them", getClass());
 			} 
 		}
 		
