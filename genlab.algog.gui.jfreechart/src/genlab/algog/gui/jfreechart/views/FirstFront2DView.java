@@ -1,5 +1,7 @@
 package genlab.algog.gui.jfreechart.views;
 
+import java.awt.Color;
+
 import genlab.algog.algos.meta.GeneticExplorationAlgoConstants;
 import genlab.algog.gui.jfreechart.instance.FirstFront2DInstance;
 import genlab.core.commons.WrongParametersException;
@@ -26,6 +28,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.chart.swt.ChartComposite;
+import org.jfree.util.PaintUtilities;
 import org.jfree.util.ShapeUtilities;
 
 public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> implements IParametersListener {
@@ -86,7 +89,10 @@ public class FirstFront2DView extends AbstractViewOpenedByAlgo<GenlabTable> impl
 			chart.getXYPlot().getDomainAxis(0).setLabel(chartXLabel);
 			chart.getXYPlot().getRangeAxis().setLabel(chartYLabel);
 			chart.getXYPlot().getRenderer().setSeriesShape(0, ShapeUtilities.createRegularCross(3, 0));
-			chart.getXYPlot().setBackgroundAlpha(0f);
+			//chart.getXYPlot().setBackgroundAlpha(0f);
+			chart.getXYPlot().setBackgroundPaint(Color.WHITE);
+			chart.getXYPlot().setDomainGridlinePaint(Color.LIGHT_GRAY);
+			chart.getXYPlot().setDomainGridlinePaint(Color.LIGHT_GRAY);
 			
 			// update data !
 			serie.setNotify(false);
