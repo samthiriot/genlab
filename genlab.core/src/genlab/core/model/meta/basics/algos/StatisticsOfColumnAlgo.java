@@ -49,6 +49,14 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 			"variance for this column"
 			);
 	
+	public static final InputOutput<Double> OUTPUT_STD = new InputOutput<Double>(
+			DoubleFlowType.SINGLETON, 
+			"out_std", 
+			"std", 
+			"standard deviation for this column"
+			);
+	
+	
 	public static final InputOutput<Double> OUTPUT_SPREAD = new InputOutput<Double>(
 			DoubleFlowType.SINGLETON, 
 			"out_spread", 
@@ -75,6 +83,7 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 		inputs.add(INPUT_TABLE);
 		outputs.add(OUTPUT_AVERAGE);
 		outputs.add(OUTPUT_VARIANCE);
+		outputs.add(OUTPUT_STD);
 		outputs.add(OUTPUT_SPREAD);
 		outputs.add(OUTPUT_MOST_ATYPICAL);
 		
@@ -127,10 +136,11 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 				final String columnId = paramColumn.getLabel(columnOptionsIdx);
 
 				final Boolean useSampleVariance = (Boolean) algoInst.getValueForParameter(PARAM_VARIANCE_SAMPLE);
-				
+
+				final boolean computeStd = isUsed(OUTPUT_STD);
 				final boolean computeSpread = isUsed(OUTPUT_SPREAD);
-				final boolean computeVariance = computeSpread || isUsed(OUTPUT_VARIANCE);
-				final boolean computeAverage = computeSpread || isUsed(OUTPUT_AVERAGE);
+				final boolean computeVariance = computeSpread || computeStd || isUsed(OUTPUT_VARIANCE);
+				final boolean computeAverage = computeSpread || computeVariance || isUsed(OUTPUT_AVERAGE) || isUsed(OUTPUT_MOST_ATYPICAL);
 				
 				ComputationResult res = new ComputationResult(algoInst, progress, messages);
 				setResult(res);
@@ -148,19 +158,22 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 				// else compute the average
 				try {
 					double average = .0;
-					if (computeAverage) {
+					if (computeAverage ) {
 						double min = ((Number)table.getValue(0, columnId)).doubleValue();
-						double max = ((Number)table.getValue(0, columnId)).doubleValue();
+						double max = min;
 						double totalValue = .0;
 						for (int i=0; i<table.getRowsCount(); i++) {
-							if( ((Number)table.getValue(i, columnId)).doubleValue()<min ) min = ((Number)table.getValue(i, columnId)).doubleValue();
-							if( ((Number)table.getValue(i, columnId)).doubleValue()>max ) max = ((Number)table.getValue(i, columnId)).doubleValue();
-							totalValue += ((Number)table.getValue(i, columnId)).doubleValue();
+							final double currentValue = ((Number)table.getValue(i, columnId)).doubleValue();
+							if (currentValue < min) 
+								min = currentValue;
+							if (currentValue > max) 
+								max = currentValue;
+							totalValue += currentValue;
 						}
 						average = totalValue/table.getRowsCount();
 						res.setResult(OUTPUT_AVERAGE, average);
 						res.setResult(OUTPUT_SPREAD, max-min);
-						if( Math.abs(average-min)>Math.abs(average-max) )
+						if( Math.abs(average-min) > Math.abs(average-max) )
 							res.setResult(OUTPUT_MOST_ATYPICAL, min);
 						else
 							res.setResult(OUTPUT_MOST_ATYPICAL, max);
@@ -180,6 +193,9 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 						else 
 							variance = totalValue/table.getRowsCount();
 						res.setResult(OUTPUT_VARIANCE, variance);
+					}
+					if (computeStd) {
+						res.setResult(OUTPUT_STD, StrictMath.sqrt(variance));
 					}
 					progress.setComputationState(ComputationState.FINISHED_OK);
 				} catch (ClassCastException e) {
