@@ -10,10 +10,11 @@ import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
+import genlab.core.model.meta.basics.flowtypes.NumberInOut;
 
 public class SumAlgo extends BasicAlgo {
 
-	public static final DoubleInOut INPUT_VALUES = new DoubleInOut(
+	public static final NumberInOut INPUT_VALUES = new NumberInOut(
 			"in_inputs", 
 			"numbers", 
 			"all the numbers to sum",
