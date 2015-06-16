@@ -42,7 +42,6 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 			"contains the mean of the column"
 			);
 	
-
 	public static final InputOutput<Double> OUTPUT_VARIANCE = new InputOutput<Double>(
 			DoubleFlowType.SINGLETON, 
 			"out_variance", 

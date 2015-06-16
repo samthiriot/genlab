@@ -5,7 +5,6 @@ import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.IInputOutput;
-import genlab.core.model.meta.basics.graphs.GraphDirectionality;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.igraph.commons.IGraph2GenLabConvertor;
@@ -13,13 +12,11 @@ import genlab.igraph.commons.IGraph2GenLabConvertor;
 import java.util.HashMap;
 import java.util.Map;
 
-final class IGraphNodeClosenessExec extends AbstractIGraphMeasureExec {
-	private final AlgoInstance algoInstance;
-
-	IGraphNodeClosenessExec(IExecution exec, IAlgoInstance algoInst,
+public class IGraphNodeClosenessExec extends AbstractIGraphMeasureExec {
+	
+	public IGraphNodeClosenessExec(IExecution exec, IAlgoInstance algoInst,
 			AlgoInstance algoInstance) {
 		super(exec, algoInst);
-		this.algoInstance = algoInstance;
 	}
 
 	@Override
@@ -31,7 +28,7 @@ final class IGraphNodeClosenessExec extends AbstractIGraphMeasureExec {
 		
 		Map<IInputOutput<?>, Object> results = new HashMap<IInputOutput<?>, Object>();
 
-		final String parameterAttribute = (String) algoInstance.getValueForParameter(IGraphNodeClosenessAlgo.PARAM_ATTRIBUTE_NAME);
+		final String parameterAttribute = (String) algoInst.getValueForParameter(IGraphNodeClosenessAlgo.PARAM_ATTRIBUTE_NAME);
 			
 		// is connected
 		if (isUsed(IGraphNodeBetweenessAlgo.OUTPUT_GRAPH)) {

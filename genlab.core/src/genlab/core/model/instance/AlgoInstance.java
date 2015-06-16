@@ -257,6 +257,9 @@ public class AlgoInstance implements IAlgoInstance, Serializable {
 		// precompute
 		IConnection c = inputInstance.getConnection();
 		
+		if (c == null)
+			return null;
+		
 		return c.getPrecomputedValue();
 			
 	}

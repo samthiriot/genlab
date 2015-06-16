@@ -1,5 +1,7 @@
 package genlab.igraph.algos.generation;
 
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.AlgoCategory;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
@@ -69,5 +71,25 @@ public abstract class AbstractIGraphGenerator extends BasicAlgo {
 	public boolean isAvailable() {
 		return IgraphLibFactory.isIGraphAvailable();
 	}
+
+
+
+	@Override
+	public IAlgoInstance createInstance(IGenlabWorkflowInstance workflow) {
+		return new AbstractIGraphGeneratorInstance(this, workflow);
+	}
+
+
+
+	@Override
+	public IAlgoInstance createInstance(String id,
+			IGenlabWorkflowInstance workflow) {
+		return new AbstractIGraphGeneratorInstance(this, workflow, id);
+	}
+
+	
+	
 	
 }
+
+

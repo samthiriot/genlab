@@ -64,7 +64,8 @@ public interface IAlgo extends IGenlabResource {
 	 * @return
 	 */
 	public IAlgoExecution createExec(IExecution execution, AlgoInstance algoInstance);
-
+ 
+	
 	/**
 	 * Returns the category of the algo, in the form "category1/subcategory1/subsub" (various number of levels, 2 recommanded).
 	 * Would be better to use the constants defined here.
@@ -124,4 +125,5 @@ public interface IAlgo extends IGenlabResource {
 	 */
 	public Integer getPriorityForIntuitiveCreation();
 
+	
 }
