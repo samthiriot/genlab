@@ -67,7 +67,8 @@ public class Genlab2RSession {
 	public static boolean isWorking(Rsession r) {
 		try {
 			r.eval("R.version");
-			return r.connection.getLastError() == null;
+			final String lastError = r.connection.getLastError();
+			return lastError == null || lastError.equals("OK");
 		} catch (Exception e) {
 			return false;
 		}
@@ -113,7 +114,7 @@ public class Genlab2RSession {
 					poolAvailable.remove(res);
 					// is it still working ?
 					if (!isWorking(res)) {
-						GLLogger.debugTech("this R session is not operational anymore. Will close it and create another one instead.", Genlab2RSession.class);
+						GLLogger.warnTech("this R session is not operational anymore. Will close it and create another one instead.", Genlab2RSession.class);
 						try {
 							res.end();
 						} catch (Exception e) {
