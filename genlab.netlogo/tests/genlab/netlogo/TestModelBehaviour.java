@@ -35,7 +35,7 @@ public abstract class TestModelBehaviour {
 	@Test
 	public void testModelSuccessiveRuns() {
 		
-		for (int i=0; i<20; i++) {
+		for (int i=0; i<10; i++) {
 			Map<String,Object> result = runModel();
 			checkResult(result);
 		}

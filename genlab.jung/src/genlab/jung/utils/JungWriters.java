@@ -22,7 +22,6 @@ public class JungWriters {
 		for (Entry<String, Class> e : graph.getDeclaredVertexAttributesAndTypes().entrySet()) {
 			
 			final String attributeId = e.getKey();
-			
 		
 			graphWriter.addVertexData(
 					e.getKey(), 
