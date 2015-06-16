@@ -216,7 +216,7 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 			res.setResult(SIRModelAlgo.OUTPUT_RESISTANT, result.get("measure-resistant"));
 			res.setResult(SIRModelAlgo.OUTPUT_DURATION, result.get("_duration"));
 
-			progress.setProgressMade(10);
+			progress.setProgressMade(140);
 			
 			progress.setComputationState(ComputationState.FINISHED_OK);
 
