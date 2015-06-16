@@ -64,6 +64,10 @@ public final class TasksProgressView
 
 	private static final String SWT_THREAD_USER_ID = TasksProgressView.class.getCanonicalName()+":refresh";
 
+	public static final int MAX_DEPTH_FOR_CREATING_WIDGET = 5;
+	public static final int MAX_DEPTH_FOR_ANALYZING_CHILDREN = 3;
+	public static final int MAX_DEPTH_FOR_DISPLAYING_PROGRESS = 3;
+	
 	public final static long REFRESH_PERIOD = 200;
 
 	private Display display = null;
@@ -142,7 +146,7 @@ public final class TasksProgressView
 			setName("refresh tasks view");
 			setDaemon(true);
 			//setPriority(NORM_PRIORITY);
-			setPriority(Thread.NORM_PRIORITY);
+			setPriority(Thread.MIN_PRIORITY);
 			
 			GLLogger.traceTech("created.", getClass());
 		}
@@ -509,6 +513,10 @@ public final class TasksProgressView
 		
 		//GLLogger.debugTech("updating for task "+t, getClass());
 		
+		final int taskDepth = t.getDepth(); 
+		if (taskDepth > MAX_DEPTH_FOR_CREATING_WIDGET)
+			return;
+		
 		// create (or get) it ?
 		TreeItem item = getOrCreateItemForTask(t);
 		
@@ -536,7 +544,10 @@ public final class TasksProgressView
 				
 
 		// also create its children ? 
-		if ((itemIsVisible) && (t instanceof IContainerTask)) {
+		if (
+				(taskDepth <= MAX_DEPTH_FOR_ANALYZING_CHILDREN)
+				&&
+				(itemIsVisible) && (t instanceof IContainerTask)) {
 			IContainerTask cont = (IContainerTask)t;
 			
 			for (ITask sub : cont.getTasks()) {
@@ -592,39 +603,41 @@ public final class TasksProgressView
 		item.setText(1, txt);
 		
 		// progress bar :-)
-		ProgressBar pb = _ui_task2progress.get(t);
-		if (state == ComputationState.STARTED) {
-			if (itemIsVisible) {
-				if (pb == null) {
-					// create the progress bar !
-					TreeEditor editor = new TreeEditor(treeWidget);
-					pb = new ProgressBar(treeWidget, SWT.SMOOTH);
-					editor.grabHorizontal = true;
-					editor.setEditor(pb, item, 1);
-					_ui_task2progress.put(t, pb);
-					_ui_task2editor.put(t, editor);
-					pb.setState(SWT.NORMAL);
-				}
-				pb.setVisible(true);
-				try {
-					final Double progressPercent = t.getProgress().getProgressPercent();
-					if (progressPercent != null)
-						pb.setSelection((int)Math.floor(progressPercent));
-				} catch (NullPointerException e) {
-					// ignore it
-					// TODO remove ? clear(t);
-					GLLogger.warnTech("null on the progress of task "+t, getClass(), e);
+		if (taskDepth <= MAX_DEPTH_FOR_DISPLAYING_PROGRESS) {
+			ProgressBar pb = _ui_task2progress.get(t);
+			if (state == ComputationState.STARTED) {
+				if (itemIsVisible) {
+					if (pb == null) {
+						// create the progress bar !
+						TreeEditor editor = new TreeEditor(treeWidget);
+						pb = new ProgressBar(treeWidget, SWT.SMOOTH);
+						editor.grabHorizontal = true;
+						editor.setEditor(pb, item, 1);
+						_ui_task2progress.put(t, pb);
+						_ui_task2editor.put(t, editor);
+						pb.setState(SWT.NORMAL);
+					}
+					pb.setVisible(true);
+					try {
+						final Double progressPercent = t.getProgress().getProgressPercent();
+						if (progressPercent != null)
+							pb.setSelection((int)Math.floor(progressPercent));
+					} catch (NullPointerException e) {
+						// ignore it
+						// TODO remove ? clear(t);
+						GLLogger.warnTech("null on the progress of task "+t, getClass(), e);
+					}
+				} else if (pb != null) {
+					pb.setVisible(false);
 				}
 			} else if (pb != null) {
-				pb.setVisible(false);
+				// should remove this progress bar !
+				pb.dispose();
+				_ui_task2editor.remove(t).dispose();
+				_ui_task2progress.remove(t);
 			}
-		} else if (pb != null) {
-			// should remove this progress bar !
-			pb.dispose();
-			_ui_task2editor.remove(t).dispose();
-			_ui_task2progress.remove(t);
+			
 		}
-		
 
 		if (DEBUG_DURATIONS)
 			Timers.SINGLETON.endTask("update progress for task "+t.getName(), 10);
@@ -714,6 +727,7 @@ public final class TasksProgressView
 		// now update each task / widget
 		initItemsVisibility();
 		
+		
 		for (ITask t : tasksUpdating) {
 			try {
 				_ui_updateWidget(t);
@@ -725,6 +739,9 @@ public final class TasksProgressView
 					tasksToUpdate.remove(t);
 				}*/
 			}
+			//if (System.currentTimeMillis() - timeStart > 500) {
+				
+			//}
 		}
 
 		// clear the list

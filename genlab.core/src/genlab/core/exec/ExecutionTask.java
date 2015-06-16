@@ -151,5 +151,20 @@ public abstract class ExecutionTask implements IExecutionTask, Externalizable {
 		//prerequires = (HashSet<ITask>) in.readObject();
 		
 	}
+	
+	@Override
+	public String getDescription() {
+		return null;
+	}
+
+	@Override
+	public final int getDepth() {
+		if (parent == null)
+			return 0;
+		else {
+			return parent.getDepth()+1;
+		}
+	}
+
 
 }

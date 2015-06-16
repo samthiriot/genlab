@@ -259,9 +259,23 @@ public class GeneticExplorationAlgoIndividualRun
 	
 	@Override
 	public String getName() {
-		return individual.genome.name;
+		StringBuffer sb = new StringBuffer();
+		sb.append("[").append(individual.genome.name).append("] ");
+		sb.append(individual.id);
+		return sb.toString();
 	}
 	
-
+	@Override
+	public String getDescription() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("- genome: ").append(individual.genome.name).append("\n");
+		sb.append("- id: ").append(individual.id).append("\n");
+		AGene<?>[] genes = individual.genome.getGenes();
+		for (int i=0; i<genes.length; i++) {
+			sb.append("- ").append(genes[i].name).append(": ").append(individual.genes[i]).append("\n");
+		}
+		
+		return sb.toString();
+	}
 
 }

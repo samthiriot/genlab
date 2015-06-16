@@ -35,6 +35,13 @@ public interface ITask {
 	public String getName(); 
 	
 	/**
+	 * Returns a human readable description or null. 
+	 * @return
+	 */
+	public String getDescription();
+	
+	
+	/**
 	 * Returns a progress able to describe the total progress,
 	 * the current task, etc.
 	 * @return
@@ -80,6 +87,12 @@ public interface ITask {
 	public void propagateRank(Integer rank, Set<ITask> visited);
 	
 	public Integer getRank();
+
+	/**
+	 * Returns the number of parents (depth in the tree)
+	 * @return
+	 */
+	public int getDepth();
 	
 }
 
