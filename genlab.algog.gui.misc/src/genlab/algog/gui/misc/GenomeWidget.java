@@ -380,14 +380,22 @@ public class GenomeWidget extends Canvas {
 			
 			@Override
 			public void widgetDisposed(DisposeEvent e) {
-				disposeColors();
+				try {
+					disposeColors();
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
 			}
 		});
 		addPaintListener(new PaintListener() {
 			
 			@Override
 			public void paintControl(PaintEvent e) {
-				paintData(e.gc);
+				try {
+					paintData(e.gc);
+				} catch (Exception e2) {
+					e2.printStackTrace();
+				}
 			}
 		});
 		addMouseTrackListener(new MouseTrackListener() {
@@ -418,7 +426,7 @@ public class GenomeWidget extends Canvas {
 			
 			@Override
 			public void mouseMove(MouseEvent e) {
-				System.out.println("mouse move ! "+e);
+				//System.out.println("mouse move ! "+e);
 
 				try {
 	            	GenomeWidget actionWidget = (GenomeWidget)e.widget;
@@ -440,7 +448,7 @@ public class GenomeWidget extends Canvas {
 	                	tip.setMessage(c[1]);
 	                	tip.setVisible(true);
 	                }
-            	} catch (RuntimeException e2) {
+            	} catch (Exception e2) {
             		e2.printStackTrace();
             	}
 			}
@@ -479,7 +487,7 @@ public class GenomeWidget extends Canvas {
 		if (lastVersionDataToDisplay == null || lastVersionDataToDisplay.isEmpty() || widthPerGene==0)
 			return null;
 		
-		if (loc.y < heightText)
+		if (loc == null || loc.y < heightText)
 			return null;
 		
 		try {
@@ -495,12 +503,15 @@ public class GenomeWidget extends Canvas {
 			String geneId = geneIdx2columnValue[colLineWidget];
 			
 			Object v = lastVersionDataToDisplay.getValue(idxLineTable, geneId);;
-			if (v == null)
-				return null;
-			
-			return new String[] {
-				geneId, v.toString()	
-			};
+			if (v == null) {
+				return new String[] {
+						geneId, "?"	
+				};
+			} else {
+				return new String[] {
+						geneId, v.toString()	
+				};
+			}
 			
 		} catch (RuntimeException e) {
 			e.printStackTrace();
