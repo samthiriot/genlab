@@ -39,6 +39,10 @@ public class WorkingRunnerThread extends Thread {
 	
 	private final ListOfMessages messages = ListsOfMessages.getGenlabMessages();
 	
+	/**
+	 * The current execution 
+	 */
+	protected IAlgoExecution exec = null;
 	
 	public WorkingRunnerThread(
 				String name, 
@@ -60,13 +64,15 @@ public class WorkingRunnerThread extends Thread {
 		setDaemon(true);
 		setPriority(MIN_PRIORITY);
 	}
+	
+	public IAlgoExecution getCurrentlyProcessedTask() {
+		return exec;
+	}
 
 	@Override
 	public void run() {
 
 		while (true) {
-		
-			IAlgoExecution exec = null;
 			
 			// find a task (maybe wait for it)
 			if (this.readyToCompute2 == null) {
@@ -120,6 +126,8 @@ public class WorkingRunnerThread extends Thread {
 				exec.getProgress().setException(e);
 			}
 			messages.debugTech(getName()+" ran task: "+exec.getName(), getClass());
+			
+			exec = null;
 			
 			// might let the other react
 			Thread.yield();

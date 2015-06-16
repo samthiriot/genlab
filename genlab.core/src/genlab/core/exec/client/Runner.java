@@ -84,9 +84,8 @@ public class Runner extends Thread implements IRunner {
 	 * Contains worker threads which do not use the CPU (in fact, they are more control threads.
 	 * This thread pool will be resized on demand.
 	 */
-	protected Set<Thread> threadsPoolTaskNoThread = new HashSet<Thread>(500);
+	protected Set<WorkingRunnerThread> threadsPoolTaskNoThread = new HashSet<WorkingRunnerThread>(500);
 	final BlockingQueue<IAlgoExecution> readyToComputeNoThread = new LinkedBlockingQueue<IAlgoExecution>();
-	private int usedThreadsWithoutThread = 0;
 
 	/**
 	 * Contains worker threads which do use the CPU. Contains only MAX_THREADS
@@ -179,6 +178,7 @@ public class Runner extends Thread implements IRunner {
 		
 	}
 	
+	
 	/**
 	 *  Directs a task to the queue of distant execution or falls back to 
 	 * standard behaviour.
@@ -189,20 +189,28 @@ public class Runner extends Thread implements IRunner {
 		
 		if (exec.getThreadsUsed() == 0) {
 			// control thread, let's just delegate it there
-			synchronized (threadsPoolTaskNoThread) {
-				if (usedThreadsWithoutThread == threadsPoolTaskNoThread.size()) {
-					messagesRun.debugTech("not enough threads; increasing the size to "+(threadsPoolTaskNoThread.size()+1), getClass());
-					threadsPoolTaskNoThread.add(
-							new WorkingRunnerThread(
-									"gl_workcontroller_local_"+threadsPoolTaskNoThread.size(), 
-									readyToComputeNoThread,
-									null,
-									null
-									)
-							);
+			// recreate a control thread only if they are all busy 
+			boolean hasAThreadNotWorking = false;
+			for (WorkingRunnerThread t: threadsPoolTaskNoThread) {
+				if (t.getCurrentlyProcessedTask() == null) {
+					hasAThreadNotWorking = true;
+					break;
 				}
+			}
+			synchronized (threadsPoolTaskNoThread) {
+				if (!hasAThreadNotWorking) {
+					messagesRun.debugTech("not enough threads; increasing the size to "+(threadsPoolTaskNoThread.size()+1), getClass());
+					WorkingRunnerThread wrt = new WorkingRunnerThread(
+							"gl_workcontroller_local_"+threadsPoolTaskNoThread.size(), 
+							readyToComputeNoThread,
+							null,
+							null
+							); 
+					wrt.start();
+					threadsPoolTaskNoThread.add(wrt);
+				}
+				messagesRun.traceTech("adding task with no CPU: "+exec, getClass());
 				readyToComputeNoThread.add(exec);
-
 			}
 		} else if (exec instanceof IAlgoExecutionRemotable) {
 			// if it can be executable remotely, here is its target
@@ -373,12 +381,26 @@ public class Runner extends Thread implements IRunner {
 				.append(done.size()).append(" done, ")
 				.append(running.size()).append(" running, ")
 				.append(ready.size()).append(" ready, ")
-				.append(notReady.size()).append(" waiting.")
-				//.append("\n(Running: ").append(running.toString()).append(")")
-				//.append("\n(Ready: ").append(ready.toString()).append(")")
-				//.append("\n(Pending: ").append(notReady.toString()).append(")")
+				.append(notReady.size()).append(" waiting, ")
+				.append(tasksProducers.size()).append(" task producers, ")
+				.append(threadsPoolTaskNoThread.size()).append(" threads monitoring and ")
+				.append(threadsPoolTaskWithThreads.size()).append(" working")
 				;
 			
+			if (threadsPoolTaskNoThread.size() > 20) {
+				sb.append("\ncurrent tasks with no thread: ");
+				for (Thread t: threadsPoolTaskNoThread) {
+					try {
+						WorkingRunnerThread wt = (WorkingRunnerThread)t;
+						IAlgoExecution exec =wt.getCurrentlyProcessedTask(); 
+						if (exec == null)
+							continue;
+						sb.append(exec.getName()).append(", ");
+					} catch (ClassCastException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 			
 		}
 		
@@ -387,7 +409,7 @@ public class Runner extends Thread implements IRunner {
 	
 	protected void printState() {
 		
-		messagesRun.traceTech(getHumanReadableState(), getClass());
+		messagesRun.debugTech(getHumanReadableState(), getClass());
 		
 	}
 	
@@ -515,6 +537,7 @@ public class Runner extends Thread implements IRunner {
 				timeoutToWait = 500;
 		
 			try {
+				printState();
 				messagesRun.traceTech("nothing to do, sleeping.", getClass());
 				synchronized (lockerMainLoop) {
 					lockerMainLoop.wait(timeoutToWait);	
@@ -534,7 +557,6 @@ public class Runner extends Thread implements IRunner {
 					proposeDynamicProducersToWork();
 				}
 				
-
 			}
 			
 			// clean old work
@@ -631,14 +653,10 @@ public class Runner extends Thread implements IRunner {
 				if (wasContained) {
 					done.add(e);
 				}
-				if (wasRunning) {
+				if (wasRunning && e.getThreadsUsed() > 0) {
 					
-					if (e.getThreadsUsed() == 0) {
-						usedThreadsWithoutThread--;
-					} else {
-						usedThreads -= e.getThreadsUsed();
-					}
-		
+					usedThreads -= e.getThreadsUsed();
+					
 				}
 				possibilityOfTaskCleanup(e);
 				wakeUp = true;
@@ -658,9 +676,7 @@ public class Runner extends Thread implements IRunner {
 				ready.remove(e);
 				notReady.remove(e);
 				if (running.add(e)) {
-					if (e.getThreadsUsed() == 0) {
-						usedThreadsWithoutThread++;
-					} else {
+					if (e.getThreadsUsed() > 0) {
 						usedThreads += e.getThreadsUsed();
 					}
 				}
