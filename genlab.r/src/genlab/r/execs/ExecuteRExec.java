@@ -108,7 +108,6 @@ public class ExecuteRExec extends AbstractAlgoExecutionOneshot {
 					// set result !
 					messages.infoUser("current result for \""+evaluated+"\": "+rsession.cast(o), getClass());
 					currentResult = Rsession.cast(o);	
-				
 				} catch (REXPMismatchException e) {
 					messages.errorUser("unable to evaluate \""+evaluated+"\": "+e.getLocalizedMessage(), getClass(), e);
 					progress.setComputationState(ComputationState.FINISHED_FAILURE);
