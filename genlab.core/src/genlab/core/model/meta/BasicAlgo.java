@@ -275,6 +275,15 @@ public abstract class BasicAlgo implements IAlgo {
 		return true;
 	}
 
+	@Override
+	public boolean containsInput(IInputOutput input) {
+		return inputs.contains(input);
+	}
+
+	@Override
+	public boolean containsOutput(IInputOutput output) {
+		return outputs.contains(output);
+	}
 
 
 }

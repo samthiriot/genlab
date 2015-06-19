@@ -9,6 +9,8 @@ import genlab.gui.listeners.WorkflowGUIEventsDispatcher;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -18,11 +20,14 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.command.Command;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.edit.command.DeleteCommand;
 import org.eclipse.emf.edit.ui.action.CommandAction;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.emf.transaction.util.TransactionUtil;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.features.IAddFeature;
+import org.eclipse.graphiti.features.IFeature;
+import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
 import org.eclipse.graphiti.features.context.impl.AreaContext;
@@ -31,6 +36,7 @@ import org.eclipse.graphiti.features.custom.ICustomFeature;
 import org.eclipse.graphiti.internal.command.FeatureCommand;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
+import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
@@ -194,10 +200,10 @@ public class Genlab2GraphitiUtils {
 
 	private static class FeatureCommand implements Command {
 
-		private final ICustomFeature f;
+		private final IFeature f;
 		private final IContext ctxt;
 
-		public FeatureCommand(ICustomFeature f, IContext ctxt) {
+		public FeatureCommand(IFeature f, IContext ctxt) {
 			this.f = f;
 			this.ctxt = ctxt;
 		}
@@ -308,8 +314,105 @@ public class Genlab2GraphitiUtils {
 			
 	}
 	
+	protected static void deleteInTransaction(Diagram diagram, final PictogramElement pe) {
 
-	protected static void ExecuteInTransaction(ICustomFeature feature, IContext ctxt, Diagram diagram) {
+		final ResourceSet resourceSet = diagram.eResource().getResourceSet();
+
+        TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(resourceSet);
+        if (editingDomain == null) {
+        	// Not yet existing, create one
+        	editingDomain = TransactionalEditingDomain.Factory.INSTANCE.createEditingDomain(resourceSet);
+        }        
+		final Command cmd = new Command() {
+			
+			@Override
+			public void undo() {
+			}
+			
+			@Override
+			public void redo() {
+				
+			}
+			
+			@Override
+			public Collection<?> getResult() {
+				return Collections.EMPTY_LIST;
+			}
+			
+			@Override
+			public String getLabel() {
+				return "delete picto";
+			}
+			
+			@Override
+			public String getDescription() {
+				return "deletion of a picto";
+			}
+			
+			@Override
+			public Collection<?> getAffectedObjects() {
+				Collection<Object> res = new LinkedList<Object>();
+				res.add(pe);
+				return res;
+			}
+			
+			@Override
+			public void execute() {
+				Graphiti.getPeService().deletePictogramElement(pe);
+			}
+			
+			@Override
+			public void dispose() {
+				
+			}
+			
+			@Override
+			public Command chain(Command command) {
+				// TODO Auto-generated method stub
+				return null;
+			}
+			
+			@Override
+			public boolean canUndo() {
+				return false;
+			}
+			
+			@Override
+			public boolean canExecute() {
+				return true;
+			}
+		}; 
+				//new DeleteCommand(editingDomain, toDelete);
+		
+        editingDomain.getCommandStack().execute(
+				cmd
+				);
+			
+	}
+
+
+protected static void ExecuteInTransaction(IUpdateFeature feature, IContext ctxt, Diagram diagram) {
+
+		
+		final ResourceSet resourceSet = diagram.eResource().getResourceSet();
+
+        TransactionalEditingDomain editingDomain = TransactionUtil.getEditingDomain(resourceSet);
+        
+        if (editingDomain == null) {
+        	// Not yet existing, create one
+        	editingDomain = TransactionalEditingDomain.Factory.INSTANCE.createEditingDomain(resourceSet);
+        }
+        
+        if (ctxt == null)
+        	ctxt = new CustomContext();
+        
+        FeatureCommand fc = new FeatureCommand(feature, ctxt);
+
+        editingDomain.getCommandStack().execute(fc);
+			
+	}
+
+protected static void ExecuteInTransaction(ICustomFeature feature, IContext ctxt, Diagram diagram) {
 
 		
 		final ResourceSet resourceSet = diagram.eResource().getResourceSet();

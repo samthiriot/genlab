@@ -379,10 +379,10 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		if (!id2algoInstance.containsKey(from.getAlgoInstance().getId()) && !id2algoInstance.containsKey(to.getAlgoInstance().getId()))
 			throw new WrongParametersException("this instance of the algorithm does not belongs the workflow");
 		
-		if (!from.getAlgoInstance().getAlgo().getOuputs().contains(from.getMeta()))
+		if (!from.getAlgoInstance().containsOutput(from.getMeta()))
 			throw new WrongParametersException("this output does not belong this algo");
 		
-		if (!to.getAlgoInstance().getAlgo().getInputs().contains(to.getMeta()))
+		if (!to.getAlgoInstance().containsInput(to.getMeta()))
 			throw new WrongParametersException("this input does not belong this algo");
 		
 		// actually create it
@@ -407,6 +407,16 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		return res;
 	}
 
+	@Override
+	public void dispatchAlgoChange(IAlgoInstance ai) {
+		for (IWorkflowContentListener l: new LinkedList<IWorkflowContentListener>(listeners)) {
+			try {
+				l.notifyAlgoChanged(ai);
+			} catch (RuntimeException e) {
+				GLLogger.warnTech("an error was catched during the dispatching of the event", getClass());
+			}
+		}
+	}
 
 	@Override
 	public IAlgo getAlgo() {
@@ -542,6 +552,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 				try {
 					l.notifyConnectionRemoved(c);
 				} catch (RuntimeException e) {
+					e.printStackTrace();
 					GLLogger.warnTech("an error was catched during the dispatching of the event", getClass());
 				}
 			}

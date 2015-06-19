@@ -1,121 +1,179 @@
-extensions [nw]
-
-turtles-own 
-[
-  infected?           ;; if true, the turtle is infectious
-  resistant?          ;; if true, the turtle can't be infected
-  presistant         
-  virus-check-timer   ;; number of ticks since this turtle's last virus-check
-  
+patches-own [
+  chemical             ;; amount of chemical on this patch
+  food                 ;; amount of food on this patch (0, 1, or 2)
+  nest?                ;; true on nest patches, false elsewhere
+  nest-scent           ;; number that is higher closer to the nest
+  food-source-number   ;; number (1, 2, or 3) to identify the food sources
 ]
+
+
+
+to-report genlab-inputs
+  report ["population" "diffusion-rate" "evaporation-rate"]
+end
+
+
+to-report food-in-pile1
+  report sum [food] of patches with [pcolor = cyan]
+end
+to-report food-in-pile2
+  report sum [food] of patches with [pcolor = sky]
+end
+to-report food-in-pile3
+  report sum [food] of patches with [pcolor = blue]
+end
+
+to-report genlab-outputs
+  report ["food-in-pile1" "food-in-pile2" "food-in-pile3"]
+end
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Setup procedures ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;
 
 to setup
   clear-all
-  setup-network-load
-  ask n-of initial-outbreak-size turtles
-    [ become-infected ]
-  ask links [ set color white ]
+  set-default-shape turtles "bug"
+  crt population
+  [ set size 2         ;; easier to see
+    set color red  ]   ;; red = not carrying food
+  setup-patches
   reset-ticks
 end
 
-to setup-network-load
-  ;; load the network from the file and also initialize their state
-  nw:load-graphml network-filename [
-    ; for visual reasons, we don't put any nodes *too* close to the edges
-    setxy (random-xcor * 0.9) (random-ycor * 0.9)
-    ifelse presistant = true
-    [ become-resistant ]
-    [ become-susceptible ]
-   
-    set virus-check-timer random virus-check-frequency
-  ]
-  ;; also layout it for beauty purpose
-  
-  if is-graphical [repeat 100 [layout-spring turtles links 0.8 1 6]]
+to setup-patches
+  ask patches
+  [ setup-nest
+    setup-food
+    recolor-patch ]
 end
 
-to setup-nodes
-  set-default-shape turtles "circle"
- 
+to setup-nest  ;; patch procedure
+  ;; set nest? variable to true inside the nest, false elsewhere
+  set nest? (distancexy 0 0) < 5
+  ;; spread a nest-scent over the whole world -- stronger near the nest
+  set nest-scent 200 - distancexy 0 0
 end
 
-to go
-  if all? turtles [not infected?]
-    [ stop ]
+to setup-food  ;; patch procedure
+  ;; setup food source one on the right
+  if (distancexy (0.6 * max-pxcor) 0) < 5
+  [ set food-source-number 1 ]
+  ;; setup food source two on the lower-left
+  if (distancexy (-0.6 * max-pxcor) (-0.6 * max-pycor)) < 5
+  [ set food-source-number 2 ]
+  ;; setup food source three on the upper-left
+  if (distancexy (-0.8 * max-pxcor) (0.8 * max-pycor)) < 5
+  [ set food-source-number 3 ]
+  ;; set "food" at sources to either 1 or 2, randomly
+  if food-source-number > 0
+  [ set food one-of [1 2] ]
+end
+
+to recolor-patch  ;; patch procedure
+  ;; give color to nest and food sources
+  ifelse nest?
+  [ set pcolor violet ]
+  [ ifelse food > 0
+    [ if food-source-number = 1 [ set pcolor cyan ]
+      if food-source-number = 2 [ set pcolor sky  ]
+      if food-source-number = 3 [ set pcolor blue ] ]
+    ;; scale color to show chemical concentration
+    [ set pcolor scale-color green chemical 0.1 5 ] ]
+end
+
+;;;;;;;;;;;;;;;;;;;;;
+;;; Go procedures ;;;
+;;;;;;;;;;;;;;;;;;;;;
+
+to go  ;; forever button
   ask turtles
-  [
-     set virus-check-timer virus-check-timer + 1
-     if virus-check-timer >= virus-check-frequency
-       [ set virus-check-timer 0 ]
-  ]
-  spread-virus
-  do-virus-checks
+  [ if who >= ticks [ stop ] ;; delay initial departure
+    ifelse color = red
+    [ look-for-food  ]       ;; not carrying food? look for it
+    [ return-to-nest ]       ;; carrying food? take it back to nest
+    wiggle
+    fd 1 ]
+  diffuse chemical (diffusion-rate / 100)
+  ask patches
+  [ set chemical chemical * (100 - evaporation-rate) / 100  ;; slowly evaporate chemical
+    recolor-patch ]
   tick
 end
 
-
-to become-infected  ;; turtle procedure
-  set infected? true
-  set resistant? false
-  set color red
+to return-to-nest  ;; turtle procedure
+  ifelse nest?
+  [ ;; drop food and head out again
+    set color red
+    rt 180 ]
+  [ set chemical chemical + 60  ;; drop some chemical
+    uphill-nest-scent ]         ;; head toward the greatest value of nest-scent
 end
 
-to become-susceptible  ;; turtle procedure
-  set infected? false
-  set resistant? false
-  set color green
+to look-for-food  ;; turtle procedure
+  if food > 0
+  [ set color orange + 1     ;; pick up food
+    set food food - 1        ;; and reduce the food source
+    rt 180                   ;; and turn around
+    stop ]
+  ;; go in the direction where the chemical smell is strongest
+  if (chemical >= 0.05) and (chemical < 2)
+  [ uphill-chemical ]
 end
 
-to become-resistant  ;; turtle procedure
-  set infected? false
-  set resistant? true
-  set color gray
-  ask my-links [ set color gray - 2 ]
+;; sniff left and right, and go where the strongest smell is
+to uphill-chemical  ;; turtle procedure
+  let scent-ahead chemical-scent-at-angle   0
+  let scent-right chemical-scent-at-angle  45
+  let scent-left  chemical-scent-at-angle -45
+  if (scent-right > scent-ahead) or (scent-left > scent-ahead)
+  [ ifelse scent-right > scent-left
+    [ rt 45 ]
+    [ lt 45 ] ]
 end
 
-to spread-virus
-  ask turtles with [infected?]
-    [ ask link-neighbors with [not resistant?]
-        [ if random-float 100 < virus-spread-chance
-            [ become-infected ] ] ]
+;; sniff left and right, and go where the strongest smell is
+to uphill-nest-scent  ;; turtle procedure
+  let scent-ahead nest-scent-at-angle   0
+  let scent-right nest-scent-at-angle  45
+  let scent-left  nest-scent-at-angle -45
+  if (scent-right > scent-ahead) or (scent-left > scent-ahead)
+  [ ifelse scent-right > scent-left
+    [ rt 45 ]
+    [ lt 45 ] ]
 end
 
-to-report measure-susceptible
-  report (count turtles with [not infected? and not resistant?]) / (count turtles) * 100
+to wiggle  ;; turtle procedure
+  rt random 40
+  lt random 40
+  if not can-move? 1 [ rt 180 ]
 end
 
-to-report measure-infected
-  report (count turtles with [infected?]) / (count turtles) * 100
+to-report nest-scent-at-angle [angle]
+  let p patch-right-and-ahead angle 1
+  if p = nobody [ report 0 ]
+  report [nest-scent] of p
 end
 
-to-report measure-resistant
-  report (count turtles with [resistant?]) / (count turtles) * 100
-end
-
-to do-virus-checks
-  ask turtles with [infected? and virus-check-timer = 0]
-  [
-    if random 100 < recovery-chance
-    [
-      ifelse random 100 < gain-resistance-chance
-        [ become-resistant ]
-        [ become-susceptible ]
-    ]
-  ]
+to-report chemical-scent-at-angle [angle]
+  let p patch-right-and-ahead angle 1
+  if p = nobody [ report 0 ]
+  report [chemical] of p
 end
 
 
-; Copyright 2008 Uri Wilensky.
+; Copyright 1997 Uri Wilensky.
 ; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
-472
+257
 10
-1193
-752
-20
-20
-17.3415
+764
+538
+35
+35
+7.0
 1
 10
 1
@@ -125,66 +183,21 @@ GRAPHICS-WINDOW
 0
 0
 1
--20
-20
--20
-20
+-35
+35
+-35
+35
 1
 1
 1
 ticks
 30.0
 
-SLIDER
-25
-280
-230
-313
-gain-resistance-chance
-gain-resistance-chance
-0.0
-100
-100
-1
-1
-%
-HORIZONTAL
-
-SLIDER
-25
-245
-230
-278
-recovery-chance
-recovery-chance
-0.0
-10.0
-50
-0.1
-1
-%
-HORIZONTAL
-
-SLIDER
-25
-175
-230
-208
-virus-spread-chance
-virus-spread-chance
-0.0
-10.0
-100
-0.1
-1
-%
-HORIZONTAL
-
 BUTTON
-25
-125
-120
-165
+46
+71
+126
+104
 NIL
 setup
 NIL
@@ -197,11 +210,41 @@ NIL
 NIL
 1
 
+SLIDER
+31
+106
+221
+139
+diffusion-rate
+diffusion-rate
+0.0
+99.0
+17
+1.0
+1
+NIL
+HORIZONTAL
+
+SLIDER
+31
+141
+221
+174
+evaporation-rate
+evaporation-rate
+0.0
+99.0
+10
+1.0
+1
+NIL
+HORIZONTAL
+
 BUTTON
-135
-125
-230
-165
+136
+71
+211
+104
 NIL
 go
 T
@@ -212,156 +255,108 @@ NIL
 NIL
 NIL
 NIL
-1
-
-PLOT
-5
-325
-457
-652
-Network Status
-time
-% of nodes
-0.0
-52.0
-0.0
-100.0
-true
-true
-"" ""
-PENS
-"susceptible" 1.0 0 -10899396 true "" "plot measure-susceptible"
-"infected" 1.0 0 -2674135 true "" "plot measure-infected"
-"resistant" 1.0 0 -7500403 true "" "plot measure-resistant"
-
-SLIDER
-25
-210
-230
-243
-virus-check-frequency
-virus-check-frequency
-1
-20
-1
-1
-1
-ticks
-HORIZONTAL
-
-INPUTBOX
-25
-48
-227
-108
-network-filename
-/tmp/genlab_tmpdata3353815866307583864/netlogo_2072339104016140535.net
-1
 0
-String
 
 SLIDER
-27
-10
+31
+36
 221
-43
-initial-outbreak-size
-initial-outbreak-size
-0
-100
-2
-1
+69
+population
+population
+0.0
+200.0
+183
+1.0
 1
 NIL
 HORIZONTAL
 
-SWITCH
-272
-52
-408
-85
-is-graphical
-is-graphical
-0
-1
--1000
+PLOT
+5
+197
+248
+476
+Food in each pile
+time
+food
+0.0
+50.0
+0.0
+120.0
+true
+false
+"" ""
+PENS
+"food-in-pile1" 1.0 0 -11221820 true "" "plotxy ticks sum [food] of patches with [pcolor = cyan]"
+"food-in-pile2" 1.0 0 -13791810 true "" "plotxy ticks sum [food] of patches with [pcolor = sky]"
+"food-in-pile3" 1.0 0 -13345367 true "" "plotxy ticks sum [food] of patches with [pcolor = blue]"
 
 @#$#@#$#@
 ## WHAT IS IT?
 
-This model demonstrates the spread of a virus through a network.  Although the model is somewhat abstract, one interpretation is that each node represents a computer, and we are modeling the progress of a computer virus (or worm) through this network.  Each node may be in one of three states:  susceptible, infected, or resistant.  In the academic literature such a model is sometimes referred to as an SIR model for epidemics.
+In this project, a colony of ants forages for food. Though each ant follows a set of simple rules, the colony as a whole acts in a sophisticated way.
 
 ## HOW IT WORKS
 
-Each time step (tick), each infected node (colored red) attempts to infect all of its neighbors.  Susceptible neighbors (colored green) will be infected with a probability given by the VIRUS-SPREAD-CHANCE slider.  This might correspond to the probability that someone on the susceptible system actually executes the infected email attachment.  
-Resistant nodes (colored gray) cannot be infected.  This might correspond to up-to-date antivirus software and security patches that make a computer immune to this particular virus.
-
-Infected nodes are not immediately aware that they are infected.  Only every so often (determined by the VIRUS-CHECK-FREQUENCY slider) do the nodes check whether they are infected by a virus.  This might correspond to a regularly scheduled virus-scan procedure, or simply a human noticing something fishy about how the computer is behaving.  When the virus has been detected, there is a probability that the virus will be removed (determined by the RECOVERY-CHANCE slider).
-
-If a node does recover, there is some probability that it will become resistant to this virus in the future (given by the GAIN-RESISTANCE-CHANCE slider).
-
-When a node becomes resistant, the links between it and its neighbors are darkened, since they are no longer possible vectors for spreading the virus.
+When an ant finds a piece of food, it carries the food back to the nest, dropping a chemical as it moves. When other ants "sniff" the chemical, they follow the chemical toward the food. As more ants carry food to the nest, they reinforce the chemical trail.
 
 ## HOW TO USE IT
 
-Using the sliders, choose the NUMBER-OF-NODES and the AVERAGE-NODE-DEGREE (average number of links coming out of each node).
+Click the SETUP button to set up the ant nest (in violet, at center) and three piles of food. Click the GO button to start the simulation. The chemical is shown in a green-to-white gradient.
 
-The network that is created is based on proximity (Euclidean distance) between nodes.  A node is randomly chosen and connected to the nearest node that it is not already connected to.  This process is repeated until the network has the correct number of links to give the specified average node degree.
+The EVAPORATION-RATE slider controls the evaporation rate of the chemical. The DIFFUSION-RATE slider controls the diffusion rate of the chemical.
 
-The INITIAL-OUTBREAK-SIZE slider determines how many of the nodes will start the simulation infected with the virus.
-
-Then press SETUP to create the network.  Press GO to run the model.  The model will stop running once the virus has completely died out.
-
-The VIRUS-SPREAD-CHANCE, VIRUS-CHECK-FREQUENCY, RECOVERY-CHANCE, and GAIN-RESISTANCE-CHANCE sliders (discussed in "How it Works" above) can be adjusted before pressing GO, or while the model is running.
-
-The NETWORK STATUS plot shows the number of nodes in each state (S, I, R) over time.
+If you want to change the number of ants, move the POPULATION slider before pressing SETUP.
 
 ## THINGS TO NOTICE
 
-At the end of the run, after the virus has died out, some nodes are still susceptible, while others have become immune.  What is the ratio of the number of immune nodes to the number of susceptible nodes?  How is this affected by changing the AVERAGE-NODE-DEGREE of the network?
+The ant colony generally exploits the food source in order, starting with the food closest to the nest, and finishing with the food most distant from the nest. It is more difficult for the ants to form a stable trail to the more distant food, since the chemical trail has more time to evaporate and diffuse before being reinforced.
 
-## THINGS TO TRY
+Once the colony finishes collecting the closest food, the chemical trail to that food naturally disappears, freeing up ants to help collect the other food sources. The more distant food sources require a larger "critical number" of ants to form a stable trail.
 
-Set GAIN-RESISTANCE-CHANCE to 0%.  Under what conditions will the virus still die out?   How long does it take?  What conditions are required for the virus to live?  If the RECOVERY-CHANCE is bigger than 0, even if the VIRUS-SPREAD-CHANCE is high, do you think that if you could run the model forever, the virus could stay alive?
+The consumption of the food is shown in a plot.  The line colors in the plot match the colors of the food piles.
 
 ## EXTENDING THE MODEL
 
-The real computer networks on which viruses spread are generally not based on spatial proximity, like the networks found in this model.  Real computer networks are more often found to exhibit a "scale-free" link-degree distribution, somewhat similar to networks created using the Preferential Attachment model.  Try experimenting with various alternative network structures, and see how the behavior of the virus differs.
+Try different placements for the food sources. What happens if two food sources are equidistant from the nest? When that happens in the real world, ant colonies typically exploit one source then the other (not at the same time).
 
-Suppose the virus is spreading by emailing itself out to everyone in the computer's address book.  Since being in someone's address book is not a symmetric relationship, change this model to use directed links instead of undirected links.
+In this project, the ants use a "trick" to find their way back to the nest: they follow the "nest scent." Real ants use a variety of different approaches to find their way back to the nest. Try to implement some alternative strategies.
 
-Can you model multiple viruses at the same time?  How would they interact?  Sometimes if a computer has a piece of malware installed, it is more vulnerable to being infected by more malware.
+The ants only respond to chemical levels between 0.05 and 2.  The lower limit is used so the ants aren't infinitely sensitive.  Try removing the upper limit.  What happens?  Why?
 
-Try making a model similar to this one, but where the virus has the ability to mutate itself.  Such self-modifying viruses are a considerable threat to computer security, since traditional methods of virus signature identification may not work against them.  In your model, nodes that become immune may be reinfected if the virus has mutated to become significantly different than the variant that originally infected the node.
-
-## RELATED MODELS
-
-Virus, Disease, Preferential Attachment, Diffusion on a Directed Network
+In the `uphill-chemical` procedure, the ant "follows the gradient" of the chemical. That is, it "sniffs" in three directions, then turns in the direction where the chemical is strongest. You might want to try variants of the `uphill-chemical` procedure, changing the number and placement of "ant sniffs."
 
 ## NETLOGO FEATURES
 
-Links are used for modeling the network.  The `layout-spring` primitive is used to position the nodes and links such that the structure of the network is visually clear.
+The built-in `diffuse` primitive lets us diffuse the chemical easily without complicated code.
 
-Though it is not used in this model, there exists a network extension for NetLogo that you can download at: https://github.com/NetLogo/NW-Extension.
+The primitive `patch-right-and-ahead` is used to make the ants smell in different directions without actually turning.
 
 
 ## HOW TO CITE
 
 If you mention this model in a publication, we ask that you include these citations for the model itself and for the NetLogo software:
 
-* Stonedahl, F. and Wilensky, U. (2008).  NetLogo Virus on a Network model.  http://ccl.northwestern.edu/netlogo/models/VirusonaNetwork.  Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
+* Wilensky, U. (1997).  NetLogo Ants model.  http://ccl.northwestern.edu/netlogo/models/Ants.  Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
 
 * Wilensky, U. (1999). NetLogo. http://ccl.northwestern.edu/netlogo/. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
 
 ## COPYRIGHT AND LICENSE
 
-Copyright 2008 Uri Wilensky.
+Copyright 1997 Uri Wilensky.
 
 ![CC BY-NC-SA 3.0](http://ccl.northwestern.edu/images/creativecommons/byncsa.png)
 
 This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License.  To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/ or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
 
 Commercial licenses are also available. To inquire about commercial licenses, please contact Uri Wilensky at uri@northwestern.edu.
+
+This model was created as part of the project: CONNECTED MATHEMATICS: MAKING SENSE OF COMPLEX PHENOMENA THROUGH BUILDING OBJECT-BASED PARALLEL MODELS (OBPML).  The project gratefully acknowledges the support of the National Science Foundation (Applications of Advanced Technologies Program) -- grant numbers RED #9552950 and REC #9632612.
+
+This model was developed at the MIT Media Lab using CM StarLogo.  See Resnick, M. (1994) "Turtles, Termites and Traffic Jams: Explorations in Massively Parallel Microworlds."  Cambridge, MA: MIT Press.  Adapted to StarLogoT, 1997, as part of the Connected Mathematics Project.
+
+This model was converted to NetLogo as part of the projects: PARTICIPATORY SIMULATIONS: NETWORK-BASED DESIGN FOR SYSTEMS LEARNING IN CLASSROOMS and/or INTEGRATED SIMULATION AND MODELING ENVIRONMENT. The project gratefully acknowledges the support of the National Science Foundation (REPP & ROLE programs) -- grant numbers REC #9814682 and REC-0126227. Converted from StarLogoT to NetLogo, 1998.
 @#$#@#$#@
 default
 true

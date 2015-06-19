@@ -331,12 +331,17 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 				final Button button = toolkit.createButton(form.getBody(), txt, SWT.PUSH);
 
 				createdWidget = button;
-				
+								
 				button.addSelectionListener(new SelectionListener() {
 					
 					@Override
 					public void widgetSelected(SelectionEvent e) {
+						
+						File value = (File)algo.getValueForParameter(f);
+						
 						FileDialog dialog = new FileDialog (form.getShell(), SWT.OPEN);
+						if (value != null)
+							dialog.setFileName(value.getAbsolutePath());
 						String res = dialog.open();
 						if (res != null)
 							algo.setValueForParameter(f.getId(), new File(res));

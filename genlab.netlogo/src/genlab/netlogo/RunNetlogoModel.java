@@ -20,6 +20,12 @@ import org.nlogo.api.LogoException;
 import org.nlogo.app.App;
 import org.nlogo.headless.HeadlessWorkspace;
 
+/**
+ * TODO add a detection of changes in the model and reload the workspace in this case.
+ * 
+ * @author Samuel Thiriot
+ *
+ */
 public class RunNetlogoModel {
 
 	public RunNetlogoModel() {
@@ -115,7 +121,7 @@ public class RunNetlogoModel {
 			GLLogger.warnTech("error while disposing the netlogo workspace: "+e.getMessage(), RunNetlogoModel.class, e);
 		}
 	}
-
+	
 	public static Map<String,Object> runNetlogoModelHeadless(
 			ListOfMessages messages, 
 			String modelFilename, 
@@ -124,24 +130,24 @@ public class RunNetlogoModel {
 			int maxIterations,
 			IComputationProgress progress
 			) {
+		return runNetlogoModelHeadless(messages, modelFilename, inputs, outputs, maxIterations, progress, "setup");
+	}
+
+	public static Map<String,Object> runNetlogoModelHeadless(
+			ListOfMessages messages, 
+			String modelFilename, 
+			Map<String,Object> inputs, 
+			Collection<String> outputs, 
+			int maxIterations,
+			IComputationProgress progress,
+			String setupCommand
+			) {
 		
 		// check file does exist
 		// TODO 
 		
 		HeadlessWorkspace workspace = getWorkspaceWithModel(modelFilename);
-		/*
-		HeadlessWorkspace workspace = HeadlessWorkspace.newInstance();
 		
-		// open model
-		try {
-			workspace.open(modelFilename);
-			
-		} catch (Exception e) {
-			final String msg = "error while running the model: "+e.getMessage();
-			messages.errorUser(msg, RunNetlogoModel.class, e);
-			throw new RuntimeException(msg, e);
-		}
-		*/
 		if (progress != null) 
 			progress.incProgressMade(10);
 		
@@ -163,6 +169,7 @@ public class RunNetlogoModel {
 			// workspace.command("set random-seed " + args[3]) ;
 			
 		} catch (Exception e) {
+			dropWorkspaceFromPool(workspace);
 			final String msg = "error while defining parameters: "+e.getMessage();
 			messages.errorUser(msg, RunNetlogoModel.class, e);
 			throw new RuntimeException(msg, e);
@@ -175,14 +182,13 @@ public class RunNetlogoModel {
 		try {
 			messages.debugUser("setup model...", RunNetlogoModel.class);
 			long timestampStart = System.currentTimeMillis();
-			workspace.command("setup-network-load");
-			
-			workspace.command("setup") ;
+			workspace.command(setupCommand) ;
 			long duration = System.currentTimeMillis() - timestampStart;
 			messages.debugTech("init in "+duration+"ms", RunNetlogoModel.class);
 		} catch (Exception e) {
 			final String msg = "error while initializing the model: "+e.getMessage();
 			messages.errorUser(msg, RunNetlogoModel.class, e);
+			dropWorkspaceFromPool(workspace);
 			throw new RuntimeException(msg, e);
 		}
 		if (progress != null) 
@@ -200,6 +206,7 @@ public class RunNetlogoModel {
 		} catch (Exception e) {
 			final String msg = "error while running the model: "+e.getMessage();
 			messages.errorUser(msg, RunNetlogoModel.class, e);
+			dropWorkspaceFromPool(workspace);
 			throw new RuntimeException(msg, e);
 		}
 		if (progress != null) 

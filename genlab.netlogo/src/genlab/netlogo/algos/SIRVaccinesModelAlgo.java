@@ -14,6 +14,7 @@ import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.parameters.BooleanParameter;
 import genlab.core.parameters.IntParameter;
+import genlab.netlogo.exec.NetlogoModelExec;
 import genlab.netlogo.exec.SIRVaccinesModelExec;
 import genlab.netlogo.inst.SIRVaccinesModelInstance;
 
@@ -41,7 +42,17 @@ public class SIRVaccinesModelAlgo extends BasicAlgo {
 			"spreading probability",
 			1.0
 			);
+
+
+	public static final IntegerInOut INPUT_VACCINE_RANDOM = new IntegerInOut(
+			"in_vaccine_random", 
+			"count vaccines random", 
+			"number of vaccines distributed randomly",
+			0,
+			0
+			);
 	
+
 
 	public static final IntegerInOut INPUT_VACCINE_HIGHEST_DEGREE = new IntegerInOut(
 			"in_vaccine_degree_count", 
@@ -130,6 +141,7 @@ public class SIRVaccinesModelAlgo extends BasicAlgo {
 		inputs.add(INPUT_RECOVER_CHANCE);
 		inputs.add(INPUT_RESISTANCE_CHANCE);
 		
+		inputs.add(INPUT_VACCINE_RANDOM);
 		inputs.add(INPUT_VACCINE_HIGHEST_DEGREE);
 		inputs.add(INPUT_VACCINE_HIGHEST_BETWEENESS);
 		
@@ -159,7 +171,7 @@ public class SIRVaccinesModelAlgo extends BasicAlgo {
 	@Override
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {
-		return new SIRVaccinesModelExec(execution, algoInstance);
+		return new NetlogoModelExec(execution, algoInstance);
 	}
 
 }

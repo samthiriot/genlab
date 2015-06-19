@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Most of the time, an algo instance can be infered automatically 
@@ -48,8 +49,8 @@ public class AlgoInstance implements IAlgoInstance, Serializable {
 	protected transient Collection<IParametersListener> parametersListener = null;
 
 	
-	private Map<IInputOutput<?>,IInputOutputInstance> inputs2inputInstances = new LinkedHashMap<IInputOutput<?>, IInputOutputInstance>();
-	private Map<IInputOutput<?>,IInputOutputInstance> outputs2outputInstances = new LinkedHashMap<IInputOutput<?>, IInputOutputInstance>();
+	protected Map<IInputOutput<?>,IInputOutputInstance> inputs2inputInstances = new LinkedHashMap<IInputOutput<?>, IInputOutputInstance>();
+	protected Map<IInputOutput<?>,IInputOutputInstance> outputs2outputInstances = new LinkedHashMap<IInputOutput<?>, IInputOutputInstance>();
 	
 	// very basic management of algo parameters;
 	// TODO improve algo parameters
@@ -553,6 +554,26 @@ public class AlgoInstance implements IAlgoInstance, Serializable {
 	public Object getPrecomputedValueForOutput(IInputOutput<?> output) {
 
 		return null;
+	}
+
+	@Override
+	public Set<IInputOutput> getInputs() {
+		return algo.getInputs();
+	}
+
+	@Override
+	public Set<IInputOutput> getOuputs() {
+		return algo.getOuputs();
+	}
+
+	@Override
+	public boolean containsInput(IInputOutput input) {
+		return algo.containsInput(input);
+	}
+
+	@Override
+	public boolean containsOutput(IInputOutput output) {
+		return algo.containsOutput(output);
 	}
 
 

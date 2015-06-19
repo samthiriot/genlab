@@ -8,6 +8,7 @@ turtles-own
   
 ]
 
+
 to setup
   clear-all
   setup-network-load
@@ -19,7 +20,7 @@ end
 
 to setup-network-load
   ;; load the network from the file and also initialize their state
-  nw:load-graphml network-filename  [
+  nw:load-gml network-filename turtles links [
     ; for visual reasons, we don't put any nodes *too* close to the edges
     setxy (random-xcor * 0.9) (random-ycor * 0.9)
     become-susceptible

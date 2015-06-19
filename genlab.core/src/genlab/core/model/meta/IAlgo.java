@@ -30,9 +30,23 @@ public interface IAlgo extends IGenlabResource {
 	
 	public String getDescription();
 		
+	/**
+	 * Returns the set of inputs that is declared for this algo.
+	 * Note that instances might add some inputs !
+	 * @return
+	 */
 	public Set<IInputOutput> getInputs();
 	
+	/**
+	 * Returns the set of outputs declared for this algo.
+	 * Node that instances of this algo might add outputs !
+	 * @return
+	 */
 	public Set<IInputOutput> getOuputs();
+	
+
+	public boolean containsInput(IInputOutput input);
+	public boolean containsOutput(IInputOutput output);
 	
 
 	public IInputOutput<?> getInputInstanceForId(String inputId);

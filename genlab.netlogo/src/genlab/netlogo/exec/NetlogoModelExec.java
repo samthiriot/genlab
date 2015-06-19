@@ -1,11 +1,5 @@
 package genlab.netlogo.exec;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
@@ -13,27 +7,46 @@ import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.netlogo.NetlogoUtils;
 import genlab.netlogo.RunNetlogoModel;
-import genlab.netlogo.algos.SIRModelAlgo;
+import genlab.netlogo.algos.NetlogoModelAlgo;
 
-public class SIRModelExec extends AbstractAlgoExecutionOneshot {
+import java.io.File;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
+public class NetlogoModelExec extends AbstractAlgoExecutionOneshot {
 
 	private boolean cancel = false;
 	
-	public SIRModelExec(IExecution exec, IAlgoInstance algoInst) {
+	public NetlogoModelExec(IExecution exec, IAlgoInstance algoInst) {
 		super(exec, algoInst, new ComputationProgressWithSteps());
 	}
 
-	public SIRModelExec() {
+	public NetlogoModelExec() {
 	}
 
 	@Override
 	public long getTimeout() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+	
+	protected Object getNetlogoValueForValue(Object v) {
+		if (v instanceof Double) {
+			Double d = (Double)v;
+			if (Math.round(d) == d.doubleValue()) {
+				return new Integer(d.intValue());
+			} else {
+				return d;
+			}
+		} else {
+			return v;
+		}
 	}
 
 	@Override
@@ -48,41 +61,34 @@ public class SIRModelExec extends AbstractAlgoExecutionOneshot {
 		
 		try {
 			// retrieve inputs
-			final IGenlabGraph graph = (IGenlabGraph)getInputValueForInput(SIRModelAlgo.INPUT_GRAPH);
-			final Integer outbreak = (Integer)getInputValueForInput(SIRModelAlgo.INPUT_OUTBREAK);
-			
-			final Double spread = (Double)getInputValueForInput(SIRModelAlgo.INPUT_SPREAD_CHANCE);
-			final Double recover = (Double)getInputValueForInput(SIRModelAlgo.INPUT_RECOVER_CHANCE);
-			final Double resistance = (Double)getInputValueForInput(SIRModelAlgo.INPUT_RESISTANCE_CHANCE);
-			
-			final Integer maxStep = (Integer) algoInst.getValueForParameter(SIRModelAlgo.PARAM_MAX_STEPS);
-			final Boolean openGui = (Boolean)algoInst.getValueForParameter(SIRModelAlgo.PARAM_GUI);
+			final Integer maxStep = (Integer) algoInst.getValueForParameter(NetlogoModelAlgo.PARAM_MAX_STEPS);
+			final Boolean openGui = (Boolean)algoInst.getValueForParameter(NetlogoModelAlgo.PARAM_GUI);
+			final File modelFile = (File)algoInst.getValueForParameter(NetlogoModelAlgo.PARAM_NETLOGO_MODEL);
 			
 			progress.setProgressMade(1);
-	
-			// write the graph somewhere so it can be read by netlogo
-			File fileNetwork = NetlogoUtils.writeGraphToNetlogoGML(graph);
-			progress.setProgressMade(2);
-	
+		
 			// define inputs
 			Map<String,Object> inputs = new HashMap<String, Object>();
-			inputs.put("network-filename", fileNetwork.getAbsolutePath());
-			inputs.put("initial-outbreak-size", outbreak);
-			inputs.put("virus-spread-chance", (int)Math.round(spread*100));
-			inputs.put("virus-check-frequency", 1);
-			inputs.put("recovery-chance", (int)Math.round(recover*100));
-			inputs.put("gain-resistance-chance", (int)Math.round(resistance*100));
-			inputs.put("is-graphical", openGui.booleanValue());
+			for (IInputOutputInstance inputInst: algoInst.getInputInstances()) {
+				inputs.put(
+						inputInst.getMeta().getName(), 
+						getNetlogoValueForValue(getInputValueForInput(inputInst))
+						);
+
+			}
 
 			// define outputs
 			Collection<String> requiredOutputs = new LinkedList<String>();
-			requiredOutputs.add("measure-susceptible");
-			requiredOutputs.add("measure-infected");
-			requiredOutputs.add("measure-resistant");
-					
+			for (IInputOutputInstance outputInst: algoInst.getOutputInstances()) {
+				// ignore the outputs we already process elsewhere
+				if (outputInst.getMeta().equals(NetlogoModelAlgo.OUTPUT_DURATION))
+					continue;
+				// and add these ones
+				requiredOutputs.add(outputInst.getMeta().getName());
+			}
 			progress.setProgressMade(3);
 	
-			String fileAbsolute = NetlogoUtils.findAbsolutePathForRelativePath("genlab.netlogo/ressources/models/Virus on a Network.nlogo");
+			String fileAbsolute = NetlogoUtils.findAbsolutePathForRelativePath(modelFile.getAbsolutePath());
 			
 			if (fileAbsolute == null) {
 				throw new ProgramException("Unable to find file for the Netlogo model");
@@ -103,21 +109,28 @@ public class SIRModelExec extends AbstractAlgoExecutionOneshot {
 			} else {
 				result = RunNetlogoModel.runNetlogoModelHeadless(
 					messages, 
-					"genlab.netlogo/ressources/models/Virus on a Network.nlogo", 
+					fileAbsolute, 
 					inputs, 
 					requiredOutputs,
 					maxStep,
 					progress
 					);
-				fileNetwork.delete();
 			}
 			// transmit results
-			res.setResult(SIRModelAlgo.OUTPUT_INFECTED, result.get("measure-infected"));
-			res.setResult(SIRModelAlgo.OUTPUT_SUSCEPTIBLE, result.get("measure-susceptible"));
-			res.setResult(SIRModelAlgo.OUTPUT_RESISTANT, result.get("measure-resistant"));
-			res.setResult(SIRModelAlgo.OUTPUT_DURATION, result.get("_duration"));
+			// define outputs
+			res.setResult(NetlogoModelAlgo.OUTPUT_DURATION, result.get("_duration"));
+			for (IInputOutputInstance outputInst: algoInst.getOutputInstances()) {
+				// ignore the outputs we already process elsewhere
+				if (outputInst.getMeta().equals(NetlogoModelAlgo.OUTPUT_DURATION))
+					continue;
+				// and add these ones
+				res.setResult(
+						outputInst.getMeta(), 
+						result.get(outputInst.getMeta().getName())
+						);
 
-			progress.setProgressMade(10);
+			}
+			progress.setProgressMade(140);
 			
 			progress.setComputationState(ComputationState.FINISHED_OK);
 

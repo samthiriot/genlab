@@ -7,13 +7,7 @@ import genlab.gui.graphiti.genlab2graphiti.GenlabNotificationService;
 import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
 import genlab.gui.graphiti.palette.WorkflowToolBehaviorProvider;
 
-import java.io.ObjectInputStream.GetField;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.graphiti.dt.AbstractDiagramTypeProvider;
-import org.eclipse.graphiti.internal.services.GraphitiInternal;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.notification.INotificationService;
 import org.eclipse.graphiti.platform.IDiagramBehavior;
@@ -110,6 +104,30 @@ public class GraphitiDiagramTypeProvider extends AbstractDiagramTypeProvider {
 		if (workflow != null)
 			registerDiagram(workflow, diagram);
 		
+	}
+
+	@Override
+	public boolean isAutoUpdateAtRuntime() {
+		// TODO Auto-generated method stub
+		return super.isAutoUpdateAtRuntime();
+	}
+
+	@Override
+	public boolean isAutoUpdateAtRuntimeWhenEditorIsSaved() {
+		// TODO Auto-generated method stub
+		return super.isAutoUpdateAtRuntimeWhenEditorIsSaved();
+	}
+
+	@Override
+	public boolean isAutoUpdateAtStartup() {
+		// TODO Auto-generated method stub
+		return super.isAutoUpdateAtStartup();
+	}
+
+	@Override
+	public boolean isAutoUpdateAtReset() {
+		// TODO Auto-generated method stub
+		return super.isAutoUpdateAtReset();
 	}
 	
 

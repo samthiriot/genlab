@@ -263,17 +263,25 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 		final GraphitiFeatureProvider dfp = GraphitiFeatureProvider.getFeatureProviderForWorkflow(c.getWorkflow());
 
 		PictogramElement e = dfp.getPictogramElementForBusinessObject(c);
+		
+		Diagram diag = (Diagram) dfp.getPictogramElementForBusinessObject(c.getWorkflow());
+		
+		Genlab2GraphitiUtils.deleteInTransaction(diag, e);
+		
+		/*
 		if (e != null) {
 			
 			try {
 				GLLogger.debugTech("the connection "+c+" has a graphiti counterpart, which has to be removed", getClass());
 				
+				Genlab2GraphitiUtils.linkInTransaction(dfp, pictogramElement, businessObject);
 				Graphiti.getPeService().deletePictogramElement(e);
 				
 			} catch (RuntimeException e2) {
 				GLLogger.errorTech("unable to delete the graphical representation for connection: "+c+"; the graphical representation is no more consistant with the actual data", getClass(), e2);
 			}
 		}
+		*/
 	}
 
 	@Override
@@ -374,7 +382,12 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 					GLLogger.warnTech("unable to execute an update feature for this algo instance; graphic dysplay is no more in sync", getClass());
 					return;
 				}
-				uf.execute(uc);
+				if (uf.updateNeeded(uc).toBoolean())
+					Genlab2GraphitiUtils.ExecuteInTransaction(
+							uf, 
+							uc, 
+							(Diagram) dfp.getPictogramElementForBusinessObject(ai.getWorkflow())
+							);
 				
 			} catch (RuntimeException e2) {
 				GLLogger.errorTech("unable to update the graphical representation for algo instance: "+ai+"; the graphical representation is no more consistant with the actual data", getClass(), e2);

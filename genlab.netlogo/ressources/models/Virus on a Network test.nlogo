@@ -4,29 +4,60 @@ turtles-own
 [
   infected?           ;; if true, the turtle is infectious
   resistant?          ;; if true, the turtle can't be infected
-  presistant         
   virus-check-timer   ;; number of ticks since this turtle's last virus-check
   
 ]
 
 to setup
   clear-all
-  setup-network-load
+  setup-network-load-gml
   ask n-of initial-outbreak-size turtles
     [ become-infected ]
   ask links [ set color white ]
   reset-ticks
 end
 
-to setup-network-load
+
+to setup-graphml
+  clear-all
+  setup-network-load-graphml
+  ask n-of initial-outbreak-size turtles
+    [ become-infected ]
+  ask links [ set color white ]
+  reset-ticks
+end
+
+
+to setup-gml
+  clear-all
+  setup-network-load-gml
+  ask n-of initial-outbreak-size turtles
+    [ become-infected ]
+  ask links [ set color white ]
+  reset-ticks
+end
+
+
+to setup-network-load-graphml
   ;; load the network from the file and also initialize their state
   nw:load-graphml network-filename [
     ; for visual reasons, we don't put any nodes *too* close to the edges
     setxy (random-xcor * 0.9) (random-ycor * 0.9)
-    ifelse presistant = true
-    [ become-resistant ]
-    [ become-susceptible ]
-   
+    become-susceptible
+    set virus-check-timer random virus-check-frequency
+  ]
+  ;; also layout it for beauty purpose
+  
+  if is-graphical [repeat 100 [layout-spring turtles links 0.8 1 6]]
+end
+
+
+to setup-network-load-gml
+  ;; load the network from the file and also initialize their state
+  nw:load-gml network-filename turtles links [
+    ; for visual reasons, we don't put any nodes *too* close to the edges
+    setxy (random-xcor * 0.9) (random-ycor * 0.9)
+    become-susceptible
     set virus-check-timer random virus-check-frequency
   ]
   ;; also layout it for beauty purpose
@@ -52,7 +83,6 @@ to go
   do-virus-checks
   tick
 end
-
 
 to become-infected  ;; turtle procedure
   set infected? true
@@ -255,7 +285,7 @@ INPUTBOX
 227
 108
 network-filename
-/tmp/genlab_tmpdata3353815866307583864/netlogo_2072339104016140535.net
+../../testdata/networks/ws1.gml.net
 1
 0
 String

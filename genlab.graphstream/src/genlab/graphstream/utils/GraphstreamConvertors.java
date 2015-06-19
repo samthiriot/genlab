@@ -317,11 +317,26 @@ public class GraphstreamConvertors {
 		
 		Graph g = new MultiGraph("tmpGraph", true, false);
 		
-		messages.debugTech("transcoding from a genlab graph to a graphstream graph...", GraphstreamConvertors.class);
+		if (messages != null)
+			messages.debugTech("transcoding from a genlab graph to a graphstream graph...", GraphstreamConvertors.class);
 		
 		Map<String,Node> genlabNode2graphStreamNode = new HashMap<String, Node>((int) genlabGraph.getVerticesCount());
 		
 		// TODO graph attributes
+
+		// add graph attributes
+		switch (genlabGraph.getDirectionality()) {
+			case DIRECTED:
+			case MIXED:
+				g.setAttribute("directed", 1);
+				break;
+			case UNDIRECTED:
+				g.setAttribute("directed", 0);
+				break;
+			default:
+				throw new ProgramException("unknown directionnality "+genlabGraph.getDirectionality());	
+		}
+		
 		
 		// add nodes		
 		for (String vertexId : genlabGraph.getVertices()) {

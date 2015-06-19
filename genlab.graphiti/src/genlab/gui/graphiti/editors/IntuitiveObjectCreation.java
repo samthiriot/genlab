@@ -3,7 +3,6 @@ package genlab.gui.graphiti.editors;
 import genlab.core.model.meta.ExistingAlgos;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IAlgoContainer;
-import genlab.core.model.meta.IConstantAlgo;
 import genlab.core.model.meta.IFlowType;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.usermachineinteraction.GLLogger;
@@ -11,10 +10,8 @@ import genlab.core.usermachineinteraction.GLLogger;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 /**

@@ -10,9 +10,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class TestSIRHeadless extends TestModelBehaviour {
+public class TestSIRHeadlessGML extends TestModelBehaviour {
 
-	public TestSIRHeadless() {
+	public TestSIRHeadlessGML() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -22,15 +22,14 @@ public class TestSIRHeadless extends TestModelBehaviour {
 		ListOfMessages msg = new ListOfMessages();
 		
 		Map<String,Object> inputs = new HashMap<String, Object>();
-		inputs.put("network-filename", "../../testdata/networks/ws1.net");
+		inputs.put("network-filename", "../../testdata/networks/ws1.gml.net");
 		
 		inputs.put("initial-outbreak-size", 10);
 		inputs.put("virus-spread-chance", 100);
 		inputs.put("virus-check-frequency", 1);
 		inputs.put("recovery-chance", 10);
 		inputs.put("gain-resistance-chance", 100);
-		inputs.put("is-graphical", false);
-
+		inputs.put("is-graphical", true);
 		
 		Collection<String> requiredOutputs = new LinkedList<String>();
 		requiredOutputs.add("measure-susceptible");
@@ -41,11 +40,12 @@ public class TestSIRHeadless extends TestModelBehaviour {
 		
 		return RunNetlogoModel.runNetlogoModelHeadless(
 				msg, 
-				"./ressources/models/Virus on a Network.nlogo", 
+				"./ressources/models/Virus on a Network test.nlogo", 
 				inputs, 
 				requiredOutputs,
 				500,
-				null
+				null,
+				"setup-gml"
 				);
 		
 	}

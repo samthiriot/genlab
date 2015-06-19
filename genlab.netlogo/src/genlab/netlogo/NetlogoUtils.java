@@ -1,6 +1,7 @@
 package genlab.netlogo;
 
 import genlab.core.commons.FileUtils;
+import genlab.core.commons.ProgramException;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.graphstream.utils.GraphstreamConvertors;
@@ -10,8 +11,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.graphstream.stream.file.FileSinkGML;
-
-import scala.annotation.target.getter;
 
 public class NetlogoUtils {
 
@@ -28,6 +27,12 @@ public class NetlogoUtils {
 		return v.toString();
 	}
 	
+	/**
+	 * Writes a genlab graph to a graph readable by Netlogo in GraphML
+	 * @param g
+	 * @param messages
+	 * @return
+	 */
 	public static File writeGraphToNetlogoGraphML(IGenlabGraph g, ListOfMessages messages) {
 
 		File tmpFile = FileUtils.createTmpFile("netlogo_", ".net");
@@ -37,6 +42,34 @@ public class NetlogoUtils {
 		return tmpFile;
 
 	}
+	
+	/**
+	 * writes a genlab graph to a graph readable by Netlogo in GML
+	 * @param g
+	 * @param messages
+	 * @return
+	 */
+	public static File writeGraphToNetlogoGML(IGenlabGraph g) {
+ 		
+		File tmpFile = FileUtils.createTmpFile("netlogo_", ".net");
+		FileSinkGML fileSink = new FileSinkGML();
+		try {
+			fileSink.writeAll(
+						GraphstreamConvertors.getGraphstreamGraphFromGenLabGraph(g, null), 
+						tmpFile.getAbsolutePath()
+						);
+		} catch (IOException e) {
+			throw new RuntimeException("error while writing the network to a file for Netlogo", e);
+		}
+		/*
+		try {
+			fileSink.end();
+		} catch (IOException e) {
+			throw new ProgramException("error while writing the graph in a file: "+e.getMessage());
+		}*/
+		return tmpFile;
+	}
+	 
 	
 	public static String findAbsolutePathForRelativePath(String relative) {
 		File f;

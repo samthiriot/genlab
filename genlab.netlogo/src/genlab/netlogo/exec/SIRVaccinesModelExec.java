@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import cern.jet.random.Uniform;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
@@ -29,6 +31,7 @@ import genlab.netlogo.RunNetlogoModel;
 import genlab.netlogo.algos.SIRModelAlgo;
 import genlab.netlogo.algos.SIRVaccinesModelAlgo;
 import genlab.netlogo.inst.SIRVaccinesModelInstance;
+import genlab.random.colt.ColtRandomGenerator;
 
 public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 
@@ -55,9 +58,14 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 			public int compare(String arg0, String arg1) {
 				Number n1 = (Number) graph.getVertexAttributeValue(arg0, attributeId);
 				Number n2 = (Number) graph.getVertexAttributeValue(arg1, attributeId);
-				return Double.compare(n1.doubleValue(), n2.doubleValue());
+				int doubleRes = Double.compare(n1.doubleValue(), n2.doubleValue());
+				if (doubleRes == 0)
+					return arg0.compareTo(arg1);
+				else 
+					return doubleRes;
 			}
 	
+			
 		});
 		
 		double lowerValue = Double.MAX_VALUE;
@@ -109,6 +117,8 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 			final Integer maxStep = (Integer) algoInst.getValueForParameter(SIRVaccinesModelAlgo.PARAM_MAX_STEPS);
 			final Boolean openGui = (Boolean)algoInst.getValueForParameter(SIRVaccinesModelAlgo.PARAM_GUI);
 			
+
+			final Integer countVaccinesRandom = (Integer)getInputValueForInput(SIRVaccinesModelAlgo.INPUT_VACCINE_RANDOM);
 			final Integer countVaccinesDegree = (Integer)getInputValueForInput(SIRVaccinesModelAlgo.INPUT_VACCINE_HIGHEST_DEGREE);
 			final Integer countVaccinesBetweeness = (Integer)getInputValueForInput(SIRVaccinesModelAlgo.INPUT_VACCINE_HIGHEST_BETWEENESS);
 			
@@ -158,7 +168,31 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 					graph.setVertexAttribute(vertexId, "presistant", true);
 				}
 				
-			} 		
+			} 	
+			if (countVaccinesRandom > 0) {
+				Set<String> idsVaccinated = new HashSet<String>(countVaccinesRandom); 
+				ColtRandomGenerator random = new ColtRandomGenerator(); 
+				while (idsVaccinated.size() < countVaccinesRandom) {
+					// pick up a random vertex
+					String candidate = graph.getVertex(random.nextIntBetween(0, (int)graph.getVerticesCount()-1));
+					idsVaccinated.add(candidate);
+				}
+				for (String vertexId: idsVaccinated) {
+					
+					graph.setVertexAttribute(vertexId, "presistant", true);
+				}
+				messages.infoUser("will vaccinate nodes randomly: "+idsVaccinated, getClass());
+
+				
+			} 
+			
+			// count the individual that are resistant before the simulation
+			int totalResistanceBeginning = 0;
+			for (String vertexId: graph.getVertices()) {
+				if ((Boolean)graph.getVertexAttributeValue(vertexId, "presistant"))
+					totalResistanceBeginning++;
+			}
+			
 			// write the graph somewhere so it can be read by netlogo
 			File fileNetwork = NetlogoUtils.writeGraphToNetlogoGraphML(graph, messages);
 			progress.setProgressMade(2);
@@ -202,7 +236,7 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 			} else {
 				result = RunNetlogoModel.runNetlogoModelHeadless(
 					messages, 
-					"genlab.netlogo/ressources/models/Virus on a Network.nlogo", 
+					"genlab.netlogo/ressources/models/Virus on a Network vaccines.nlogo", 
 					inputs, 
 					requiredOutputs,
 					maxStep,
@@ -211,8 +245,15 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 				fileNetwork.delete();
 			}
 			// transmit results
+			Double susceptibleAtEndOfSimulation = (Double)result.get("measure-susceptible");
+			
+			// if we had at the beginning 1/3 of the population vaccined
+			// then the ideal result is to have at the end 2/3 of the population susceptible
+			// because at the end 1/3 + 2/3 of the population were saved
+			double protectedTotal = susceptibleAtEndOfSimulation +((double)totalResistanceBeginning)*100/graph.getVerticesCount();
+			
 			res.setResult(SIRModelAlgo.OUTPUT_INFECTED, result.get("measure-infected"));
-			res.setResult(SIRModelAlgo.OUTPUT_SUSCEPTIBLE, result.get("measure-susceptible"));
+			res.setResult(SIRModelAlgo.OUTPUT_SUSCEPTIBLE, protectedTotal);
 			res.setResult(SIRModelAlgo.OUTPUT_RESISTANT, result.get("measure-resistant"));
 			res.setResult(SIRModelAlgo.OUTPUT_DURATION, result.get("_duration"));
 

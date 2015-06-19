@@ -10,6 +10,7 @@ import genlab.core.parameters.Parameter;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 public interface IAlgoInstance extends IGenlabResource {
 
@@ -24,6 +25,24 @@ public interface IAlgoInstance extends IGenlabResource {
 	public void setName(String novelName);
 	
 	public IAlgo getAlgo();
+	
+	
+	/**
+	 * Returns the set of inputs that is declared for this algo instance and this algo.
+	 * Note that instances might add some inputs !
+	 * @return
+	 */
+	public Set<IInputOutput> getInputs();
+	
+	/**
+	 * Returns the set of outputs declared for this algo instance and this algo.
+	 * Node that instances of this algo might add outputs !
+	 * @return
+	 */
+	public Set<IInputOutput> getOuputs();
+	
+	public boolean containsInput(IInputOutput input);
+	public boolean containsOutput(IInputOutput output);
 	
 	/**
 	 * Returns the executable object.

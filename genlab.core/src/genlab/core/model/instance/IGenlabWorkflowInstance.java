@@ -117,5 +117,7 @@ public interface IGenlabWorkflowInstance extends IAlgoContainerInstance,
 	 * @return
 	 */
 	public String getNextId(String basedId);
+
+	void dispatchAlgoChange(IAlgoInstance ai);
 	
 }

@@ -83,15 +83,26 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution impleme
 		messages.traceTech("starting", getClass());
 		progress.setComputationState(ComputationState.STARTED);
 		
+		// where do we come from ?
+		try {
+			throw new ProgramException("where are we ?");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.err.println("we are in thread: "+Thread.currentThread().getName());
+		
+		// maybe we did not receive all the values yet ?
+		completeValues();
+		
 		// define result
 		ComputationResult result = new ComputationResult(algoInst, progress, exec.getListOfMessages());
 		result.setResult(AppendToTableAlgo.OUTPUT_TABLE, outputTable);
 		setResult(result);
 		
 		// TODO we could add a hook there for post processing (why not ?)
-		completeValues();
 		
 		// notify end
+		messages.traceTech("finished !", getClass());
 		progress.setComputationState(ComputationState.FINISHED_OK);
 		
 	}
