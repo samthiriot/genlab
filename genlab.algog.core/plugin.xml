@@ -32,6 +32,10 @@
             id="genlab.algog.algos.meta.GoalAlgo">
       </algo>
       <algo
+            class="genlab.algog.algos.meta.NSGA2GeneticExplorationAlanAlgo"
+            id="genlab.algog.algos.meta.NSGA2GeneticExplorationAlanAlgo">
+      </algo>
+      <algo
             class="genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo"
             id="genlab.algog.algos.meta.NSGA2GeneticExplorationAlgo">
       </algo>
@@ -62,6 +66,9 @@
                url="en.wikipedia.org/wiki/Test_functions_for_optimization">
          </more_info>
       </docalgo>
+   </extension>
+   <extension
+         point="genlab.core.algo">
    </extension>
 
 </plugin>

@@ -793,13 +793,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			int indexTo = indexFrom + TOURNAMENT_DEPTH;
 			List<AnIndividual> subList = listOfParents.subList(indexFrom, indexTo);
 			
-			for( AnIndividual ind : subList ) {
-				System.out.println(ind.toMiniString());
-			}
 			List<AnIndividual> twoParents = recursiveCrowdedTournamentSelection(subList);
-			for( AnIndividual ind : twoParents ) {
-				System.out.println(ind.toMiniString());
-			}System.out.println();
 
 			AnIndividual p1 = twoParents.get(0);
 			AnIndividual p2 = twoParents.get(1);
@@ -873,7 +867,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		for( Integer i : fronts.keySet() ) {
 			msg.append("\nFront "+i+"("+fronts.get(i).size()+"):\n");
 			for( AnIndividual a : fronts.get(i) ) {
-				msg.append(" -- "+a.toMiniString());
+				msg.append(" -- "+a.toString());
 			}
 		}
 		

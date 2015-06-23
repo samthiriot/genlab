@@ -134,7 +134,10 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		messages.infoUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
 
 		// store it 
-		offspringGeneration.put(iterationsMade, individuals);
+		// only offspring without parents
+		Set<AnIndividual> h = new HashSet<>(individuals);
+		h.removeAll(parentGeneration.get(iterationsMade));
+		offspringGeneration.put(iterationsMade, h);
 
 		
 		this.progress.incProgressMade();
