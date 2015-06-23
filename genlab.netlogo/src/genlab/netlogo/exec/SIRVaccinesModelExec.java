@@ -215,11 +215,7 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 					
 			progress.setProgressMade(3);
 	
-			String fileAbsolute = NetlogoUtils.findAbsolutePathForRelativePath("genlab.netlogo/ressources/models/Virus on a Network vaccines.nlogo");
-			
-			if (fileAbsolute == null) {
-				throw new ProgramException("Unable to find file for the Netlogo model");
-			}
+			final File fileModel = NetlogoUtils.findFileInPlugin("ressources/models/Virus on a Network vaccines.nlogo");
 				
 			// run the model
 			Map<String,Object> result = null;
@@ -227,7 +223,7 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 				GLLogger.warnUser("once open, Netlogo cannot be closed. It will close itself when you close Netlogo. Sorry.", getClass());
 				result = RunNetlogoModel.runNetlogoModelGraphical(
 						messages, 
-						fileAbsolute, 
+						fileModel.getAbsolutePath(), 
 						inputs, 
 						requiredOutputs,
 						maxStep,
@@ -236,7 +232,7 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 			} else {
 				result = RunNetlogoModel.runNetlogoModelHeadless(
 					messages, 
-					"genlab.netlogo/ressources/models/Virus on a Network vaccines.nlogo", 
+					fileModel.getAbsolutePath(), 
 					inputs, 
 					requiredOutputs,
 					maxStep,

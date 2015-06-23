@@ -9,8 +9,12 @@ import genlab.jung.utils.JungWriters;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
+import org.eclipse.core.runtime.FileLocator;
 import org.graphstream.stream.file.FileSinkGML;
+import org.osgi.framework.Bundle;
 
 public class NetlogoUtils {
 
@@ -91,6 +95,18 @@ public class NetlogoUtils {
 	
 	private NetlogoUtils() {
 		
+	}
+
+	public static File findFileInPlugin(String resourcePath) {
+		Bundle bundle = Activator.getDefault().getBundle();
+		URL fileURL = bundle.getEntry(resourcePath);
+		File file = null;
+		try {
+		    file = new File(FileLocator.resolve(fileURL).toURI());
+		} catch (URISyntaxException|IOException e) {
+		    throw new ProgramException("unable to find the file for the Netlogo model", e);
+		} 
+		return file;
 	}
 
 }
