@@ -243,9 +243,9 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 		@Override
 		public int compare(AnIndividual o1, AnIndividual o2) {
 			
-			final Double a = (Double)o1.genes[g];
-			final Double b = (Double)o2.genes[g];
-			return Double.compare(a, b);
+			final Number a = (Number)o1.genes[g];
+			final Number b = (Number)o2.genes[g];
+			return Double.compare(a.doubleValue(), b.doubleValue());
 		}
 	}
 
@@ -394,23 +394,28 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 			}
 			for( int g=0 ; g<front.get(0).genes.length ; g++ ) {
 				Collections.sort(front, new ComparatorGenes(g));
-				
-				final double delta = (Double)(front.get(l-1).genes[g]) - (Double)(front.get(0).genes[g]);
+
+				double z = ((Number)(front.get(l-1).genes[g])).doubleValue();
+				double a = ((Number)(front.get(0).genes[g])).doubleValue();
+				final double delta =  z - a;
 	
 				front.get(0).crowdDistance = INF;
 				front.get(l-1).crowdDistance = INF;
 
-				front.get(0).centerDistance += Math.abs( (Double)(front.get(0).genes[g])-(Double)(front.get(l-1).genes[g]) ) / delta;
-				front.get(l-1).centerDistance += Math.abs( (Double)(front.get(0).genes[g])-(Double)(front.get(l-1).genes[g]) ) / delta;
+				front.get(0).centerDistance += Math.abs( a-z ) / delta;
+				front.get(l-1).centerDistance += Math.abs( a-z ) / delta;
 	
 				for( int i=1 ; i<l-1 ; i++ ) {
-					front.get(i).crowdDistance += Math.abs( (Double)(front.get(i-1).genes[g])-(Double)(front.get(i+1).genes[g]) ) / delta;
+					double m = ((Number)(front.get(i-1).genes[g])).doubleValue();
+					double o = ((Number)(front.get(i).genes[g])).doubleValue();
+					double n = ((Number)(front.get(i+1).genes[g])).doubleValue();
+					front.get(i).crowdDistance += Math.abs( m-n ) / delta;
 					
 					// 0 farther from i than n
-					if( Math.abs((Double)(front.get(i).genes[g])-(Double)(front.get(0).genes[g])) > Math.abs((Double)(front.get(l-1).genes[g])-(Double)(front.get(i).genes[g])) ) {
-						front.get(i).centerDistance += Math.abs( (Double)(front.get(i).genes[g])-(Double)(front.get(0).genes[g]) ) / delta;
+					if( Math.abs(o-a) > Math.abs(z-o) ) {
+						front.get(i).centerDistance += Math.abs( o-a ) / delta;
 					}else {
-						front.get(i).centerDistance += Math.abs( (Double)(front.get(l-1).genes[g])-(Double)(front.get(i).genes[g]) ) / delta;
+						front.get(i).centerDistance += Math.abs( z-o ) / delta;
 					}
 				}
 			}
