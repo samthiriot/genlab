@@ -875,7 +875,7 @@ public class NSGA2Exec extends BasicGeneticExplorationAlgoExec {
 				msg.append(" -- "+a.toString());
 			}
 		}
-		
+
 		messages.infoUser(msg.toString(), getClass());
 	}
 	

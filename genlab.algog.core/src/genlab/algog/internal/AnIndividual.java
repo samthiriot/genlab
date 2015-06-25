@@ -89,14 +89,15 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	 */
 	@Override
 	public String toString() {
-		return "AnIndividual [genome=" + genome + ", averageRank="
-				+ averageRank + ", genes="
-				+ Arrays.toString(genes) + ", fitness="
-				+ Arrays.toString(fitness) + ", targets="
-				+ Arrays.toString(targets) + ", values="
-				+ Arrays.toString(values) + ", rank=" + rank
-				+ ", crowdDistance=" + crowdDistance + ", birthday=" + birthday + ", centerDistance="
-				+ centerDistance + ", id=" + id + "]";
+		return Arrays.toString(genes) + Arrays.toString(values);
+//		return "AnIndividual [genome=" + genome + ", averageRank="
+//				+ averageRank + ", genes="
+//				+ Arrays.toString(genes) + ", fitness="
+//				+ Arrays.toString(fitness) + ", targets="
+//				+ Arrays.toString(targets) + ", values="
+//				+ Arrays.toString(values) + ", rank=" + rank
+//				+ ", crowdDistance=" + crowdDistance + ", birthday=" + birthday + ", centerDistance="
+//				+ centerDistance + ", id=" + id + "]";
 	}
 
 	public String genesToString() {
