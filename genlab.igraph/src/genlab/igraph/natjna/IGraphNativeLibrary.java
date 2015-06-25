@@ -248,7 +248,7 @@ public class IGraphNativeLibrary {
 		
 	}
 	
-	public IGraphGraph generateBarabasiAlbert(int size, int m, double power, double zeroAppeal, boolean directed, boolean outputPref, double A) {
+	public IGraphGraph generateBarabasiAlbert(int size, int m, double power, double zeroAppeal, boolean directed, boolean outputPref) {
 
 		final InternalGraphStruct g = createEmptyGraph();
 		
@@ -261,7 +261,7 @@ public class IGraphNativeLibrary {
 				m, 
 				null, 
 				outputPref, 
-				A, 
+				zeroAppeal, 
 				directed, 
 				// always use this algo which is said to be ok for any combination of power and m
 				IGraphBarabasiAlgorithm.IGRAPH_BARABASI_PSUMTREE.ordinal(), 

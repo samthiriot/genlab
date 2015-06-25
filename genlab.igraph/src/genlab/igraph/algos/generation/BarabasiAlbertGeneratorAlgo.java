@@ -48,12 +48,6 @@ public class BarabasiAlbertGeneratorAlgo extends AbstractIGraphGenerator {
 			false
 			);
 	
-	public static final ProbabilityInOut INPUT_A = new ProbabilityInOut(
-			"in_a", 
-			"A", 
-			"The probability that a vertex is cited is proportional to d^power+A",
-			1.0
-			);
 	
 	public static final BooleanParameter PARAM_DIRECTED = new BooleanParameter(
 			"param_directed", 
@@ -82,8 +76,6 @@ public class BarabasiAlbertGeneratorAlgo extends AbstractIGraphGenerator {
 		inputs.add(INPUT_POWER);
 		inputs.add(INPUT_ZERO_APPEAL);
 		inputs.add(INPUT_OUTPUT_PREF);
-		inputs.add(INPUT_A);
-
 		
 		registerParameter(PARAM_DIRECTED);
 		registerParameter(PARAM_LOOPS);
