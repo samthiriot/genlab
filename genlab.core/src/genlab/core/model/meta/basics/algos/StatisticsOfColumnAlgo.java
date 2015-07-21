@@ -1,5 +1,8 @@
 package genlab.core.model.meta.basics.algos;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
@@ -24,7 +27,7 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 	public static final InputOutput<IGenlabTable> INPUT_TABLE = new InputOutput<IGenlabTable>(
 			TableFlowType.SINGLETON, 
 			"in_table", 
-			"table", 
+			"Table", 
 			"the table to analyze"
 			);
 	
@@ -37,38 +40,58 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 	
 	public static final InputOutput<Double> OUTPUT_AVERAGE = new InputOutput<Double>(
 			DoubleFlowType.SINGLETON, 
-			"out_mean", 
-			"mean", 
-			"contains the mean of the column"
+			"out_average", 
+			"Mean", 
+			"Average of the column"
 			);
 	
-	public static final InputOutput<Double> OUTPUT_VARIANCE = new InputOutput<Double>(
-			DoubleFlowType.SINGLETON, 
-			"out_variance", 
-			"variance", 
-			"variance for this column"
-			);
+//	public static final InputOutput<Double> OUTPUT_VARIANCE = new InputOutput<Double>(
+//			DoubleFlowType.SINGLETON, 
+//			"out_variance", 
+//			"variance", 
+//			"variance for this column"
+//			);
 	
 	public static final InputOutput<Double> OUTPUT_STD = new InputOutput<Double>(
 			DoubleFlowType.SINGLETON, 
 			"out_std", 
-			"std", 
-			"standard deviation for this column"
+			"SD", 
+			"Standard deviation for this column"
 			);
 	
-	
-	public static final InputOutput<Double> OUTPUT_SPREAD = new InputOutput<Double>(
+	public static final InputOutput<Double> OUTPUT_MIN = new InputOutput<Double>(
 			DoubleFlowType.SINGLETON, 
-			"out_spread", 
-			"spread", 
-			"statistical dispersion (max-min) for this column"
+			"out_min", 
+			"Min", 
+			"Minimum value for this column"
 			);
 	
-	public static final InputOutput<Double> OUTPUT_MOST_ATYPICAL = new InputOutput<Double>(
+	public static final InputOutput<Double> OUTPUT_Q1 = new InputOutput<Double>(
 			DoubleFlowType.SINGLETON, 
-			"out_atypical", 
-			"atypical", 
-			"the farthest value for this column from the average"
+			"out_q1", 
+			"Q1", 
+			"First quartile"
+			);
+	
+	public static final InputOutput<Double> OUTPUT_MEDIAN = new InputOutput<Double>(
+			DoubleFlowType.SINGLETON, 
+			"out_median", 
+			"Median", 
+			"Median for this column"
+			);
+	
+	public static final InputOutput<Double> OUTPUT_Q3 = new InputOutput<Double>(
+			DoubleFlowType.SINGLETON, 
+			"out_q3", 
+			"Q3", 
+			"Third quartile"
+			);
+	
+	public static final InputOutput<Double> OUTPUT_MAX = new InputOutput<Double>(
+			DoubleFlowType.SINGLETON, 
+			"out_max", 
+			"Max", 
+			"Maximum value for this column"
 			);
 	
 	public StatisticsOfColumnAlgo() {
@@ -82,10 +105,12 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 
 		inputs.add(INPUT_TABLE);
 		outputs.add(OUTPUT_AVERAGE);
-		outputs.add(OUTPUT_VARIANCE);
 		outputs.add(OUTPUT_STD);
-		outputs.add(OUTPUT_SPREAD);
-		outputs.add(OUTPUT_MOST_ATYPICAL);
+		outputs.add(OUTPUT_MIN);
+		outputs.add(OUTPUT_Q1);
+		outputs.add(OUTPUT_MEDIAN);
+		outputs.add(OUTPUT_Q3);
+		outputs.add(OUTPUT_MAX);
 		
 		registerParameter(PARAM_VARIANCE_SAMPLE);
 	}
@@ -138,9 +163,8 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 				final Boolean useSampleVariance = (Boolean) algoInst.getValueForParameter(PARAM_VARIANCE_SAMPLE);
 
 				final boolean computeStd = isUsed(OUTPUT_STD);
-				final boolean computeSpread = isUsed(OUTPUT_SPREAD);
-				final boolean computeVariance = computeSpread || computeStd || isUsed(OUTPUT_VARIANCE);
-				final boolean computeAverage = computeSpread || computeVariance || isUsed(OUTPUT_AVERAGE) || isUsed(OUTPUT_MOST_ATYPICAL);
+				final boolean computeVariance = computeStd;// || isUsed(OUTPUT_VARIANCE);
+				final boolean computeAverage = computeVariance || isUsed(OUTPUT_AVERAGE);
 				
 				ComputationResult res = new ComputationResult(algoInst, progress, messages);
 				setResult(res);
@@ -149,53 +173,60 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 				if (table.getRowsCount() == 0 || (useSampleVariance && table.getRowsCount() == 1)) {
 					messages.warnUser("the table contains not enough rows for computing variance", getClass());
 					res.setResult(OUTPUT_AVERAGE, Double.NaN);
-					res.setResult(OUTPUT_SPREAD, Double.NaN);
-					res.setResult(OUTPUT_MOST_ATYPICAL, Double.NaN);
+					res.setResult(OUTPUT_STD, Double.NaN);
+					res.setResult(OUTPUT_MIN, Double.NaN);
+					res.setResult(OUTPUT_Q1, Double.NaN);
+					res.setResult(OUTPUT_MEDIAN, Double.NaN);
+					res.setResult(OUTPUT_Q3, Double.NaN);
+					res.setResult(OUTPUT_MAX, Double.NaN);
 					progress.setComputationState(ComputationState.FINISHED_OK);
 					return;
 				}
 				
-				// else compute the average
+				// else
 				try {
-					double average = .0;
-					if (computeAverage ) {
-						double min = ((Number)table.getValue(0, columnId)).doubleValue();
-						double max = min;
+					// compute average, min, q1, median, q3 and max
+					if( computeAverage ) {
+						double average = .0;
 						double totalValue = .0;
-						for (int i=0; i<table.getRowsCount(); i++) {
+						int size = table.getRowsCount();
+						ArrayList<Double> values = new ArrayList<>(size);
+						for( int i=0 ; i<size ; i++ ) {
 							final double currentValue = ((Number)table.getValue(i, columnId)).doubleValue();
-							if (currentValue < min) 
-								min = currentValue;
-							if (currentValue > max) 
-								max = currentValue;
+							values.add(currentValue);
 							totalValue += currentValue;
 						}
-						average = totalValue/table.getRowsCount();
+						average = totalValue/size;
 						res.setResult(OUTPUT_AVERAGE, average);
-						res.setResult(OUTPUT_SPREAD, max-min);
-						if( Math.abs(average-min) > Math.abs(average-max) )
-							res.setResult(OUTPUT_MOST_ATYPICAL, min);
-						else
-							res.setResult(OUTPUT_MOST_ATYPICAL, max);
-					}
-					double variance = .0;
-					if (computeVariance) {
-						double totalValue = .0;
-						for (int i=0; i<table.getRowsCount(); i++) {
-							totalValue += StrictMath.pow(
-									average - ((Number)table.getValue(i, columnId)).doubleValue(),
+						Collections.sort(values);
+						res.setResult(OUTPUT_MIN, values.get(0));
+						res.setResult(OUTPUT_Q1, values.get(size/4));
+						res.setResult(OUTPUT_MEDIAN, values.get(size/2));
+						res.setResult(OUTPUT_Q3, values.get(3*size/4));
+						res.setResult(OUTPUT_MAX, values.get(size-1));
+						
+						double variance = .0;
+						// then compute variance
+						if( computeVariance ) {
+							totalValue = .0;
+							for( int i=0 ; i<size ; i++ ) {
+								final double currentValue = ((Number)table.getValue(i, columnId)).doubleValue();
+								totalValue += StrictMath.pow(
+									average - currentValue,
 									2.0
-									);
-						}
-						if (useSampleVariance)
+								);
+							}
 							// Bessel's correction
-							variance = totalValue/(table.getRowsCount()-1);
-						else 
-							variance = totalValue/table.getRowsCount();
-						res.setResult(OUTPUT_VARIANCE, variance);
-					}
-					if (computeStd) {
-						res.setResult(OUTPUT_STD, StrictMath.sqrt(variance));
+							if (useSampleVariance) variance = totalValue/(size-1);
+							else  variance = totalValue/size;
+							
+//							res.setResult(OUTPUT_VARIANCE, variance);
+							
+							// then compute std
+							if( computeStd ) {
+								res.setResult(OUTPUT_STD, StrictMath.sqrt(variance));
+							}
+						}
 					}
 					progress.setComputationState(ComputationState.FINISHED_OK);
 				} catch (ClassCastException e) {
