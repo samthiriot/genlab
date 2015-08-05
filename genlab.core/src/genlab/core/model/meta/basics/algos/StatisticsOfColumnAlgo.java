@@ -161,10 +161,6 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 				final String columnId = paramColumn.getLabel(columnOptionsIdx);
 
 				final Boolean useSampleVariance = (Boolean) algoInst.getValueForParameter(PARAM_VARIANCE_SAMPLE);
-
-				final boolean computeStd = isUsed(OUTPUT_STD);
-				final boolean computeVariance = computeStd;// || isUsed(OUTPUT_VARIANCE);
-				final boolean computeAverage = computeVariance || isUsed(OUTPUT_AVERAGE);
 				
 				ComputationResult res = new ComputationResult(algoInst, progress, messages);
 				setResult(res);
@@ -186,47 +182,44 @@ public class StatisticsOfColumnAlgo extends BasicAlgo {
 				// else
 				try {
 					// compute average, min, q1, median, q3 and max
-					if( computeAverage ) {
-						double average = .0;
-						double totalValue = .0;
-						int size = table.getRowsCount();
-						ArrayList<Double> values = new ArrayList<>(size);
+					double average = .0;
+					double totalValue = .0;
+					int size = table.getRowsCount();
+					ArrayList<Double> values = new ArrayList<>(size);
+					for( int i=0 ; i<size ; i++ ) {
+						final double currentValue = ((Number)table.getValue(i, columnId)).doubleValue();
+						values.add(currentValue);
+						totalValue += currentValue;
+					}
+					average = totalValue/size;
+					res.setResult(OUTPUT_AVERAGE, average);
+					Collections.sort(values);
+					res.setResult(OUTPUT_MIN, values.get(0));
+					res.setResult(OUTPUT_Q1, values.get((size+1)/4));
+					res.setResult(OUTPUT_MEDIAN, values.get((size+1)/2));
+					res.setResult(OUTPUT_Q3, values.get(3*(size+1)/4));
+					res.setResult(OUTPUT_MAX, values.get(size-1));
+					
+					double variance = .0;
+					// then compute variance
+					if( isUsed(OUTPUT_STD) ) {
+						totalValue = .0;
 						for( int i=0 ; i<size ; i++ ) {
 							final double currentValue = ((Number)table.getValue(i, columnId)).doubleValue();
-							values.add(currentValue);
-							totalValue += currentValue;
+							totalValue += StrictMath.pow(
+								average - currentValue,
+								2.0
+							);
 						}
-						average = totalValue/size;
-						res.setResult(OUTPUT_AVERAGE, average);
-						Collections.sort(values);
-						res.setResult(OUTPUT_MIN, values.get(0));
-						res.setResult(OUTPUT_Q1, values.get(size/4));
-						res.setResult(OUTPUT_MEDIAN, values.get(size/2));
-						res.setResult(OUTPUT_Q3, values.get(3*size/4));
-						res.setResult(OUTPUT_MAX, values.get(size-1));
+						// Bessel's correction
+						if (useSampleVariance) {
+							variance = totalValue/(size-1);
+						}
+						else {
+							variance = totalValue/size;
+						}
 						
-						double variance = .0;
-						// then compute variance
-						if( computeVariance ) {
-							totalValue = .0;
-							for( int i=0 ; i<size ; i++ ) {
-								final double currentValue = ((Number)table.getValue(i, columnId)).doubleValue();
-								totalValue += StrictMath.pow(
-									average - currentValue,
-									2.0
-								);
-							}
-							// Bessel's correction
-							if (useSampleVariance) variance = totalValue/(size-1);
-							else  variance = totalValue/size;
-							
-//							res.setResult(OUTPUT_VARIANCE, variance);
-							
-							// then compute std
-							if( computeStd ) {
-								res.setResult(OUTPUT_STD, StrictMath.sqrt(variance));
-							}
-						}
+						res.setResult(OUTPUT_STD, StrictMath.sqrt(variance));
 					}
 					progress.setComputationState(ComputationState.FINISHED_OK);
 				} catch (ClassCastException e) {
