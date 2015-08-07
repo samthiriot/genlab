@@ -14,7 +14,7 @@ public class EverestParallel {
 	
 	private final Object lockMeToKnowWhenComputationFinished = new Object();
 	
-	private boolean reachedFullLoad = true;
+	private boolean reachedFullLoad = false;
 	
 	public static EverestParallel getEverestParallel() {
 		if (singleton == null)
