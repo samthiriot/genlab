@@ -14,6 +14,8 @@ public class EverestParallel {
 	
 	private final Object lockMeToKnowWhenComputationFinished = new Object();
 	
+	private boolean reachedFullLoad = true;
+	
 	public static EverestParallel getEverestParallel() {
 		if (singleton == null)
 			singleton = new EverestParallel();
@@ -59,7 +61,8 @@ public class EverestParallel {
 			
 		// wait for a slot until one is free
 		GLLogger.traceTech("waiting for an Everest slot: "+countUsed+" over "+maxparallel+" for "+urlEverest, getClass());
-
+		reachedFullLoad = true;
+		
 		while (true) {
 			
 			// we already have to many people working there; lets wait !
@@ -89,11 +92,16 @@ public class EverestParallel {
 		}
 				
 		} finally {
-			
-			if (url2countUsed.get(urlEverest) >= 1) {
+			Integer countEstimated = url2countUsed.get(urlEverest);
+			 
+			if (countEstimated > 1 && !reachedFullLoad) {
 				// add a small delay to shift the load of the Everest server to different steps of simulations
-				long timesleep = Math.round(Math.random()*10000)+1000;
-				GLLogger.traceTech("sleeping during "+timesleep+"ms to reduce the server load", getClass());
+				int maxTimeToWaitSec;
+				if (countEstimated <= 2) maxTimeToWaitSec = 30;
+				else maxTimeToWaitSec = 60;
+				
+				long timesleep = Math.round(Math.random()*maxTimeToWaitSec)*1000;
+				GLLogger.traceTech("sleeping during "+timesleep+"ms to desynchronize the simulations", getClass());
 				try {
 					Thread.sleep(timesleep);
 				} catch (InterruptedException e) {
@@ -116,6 +124,9 @@ public class EverestParallel {
 		synchronized (url2countUsed) {
 			Integer newCountDown = Math.max(0, url2countUsed.get(urlEverest)-1);
 			url2countUsed.put(urlEverest, newCountDown);
+			if (newCountDown == 0) 
+				reachedFullLoad = false;
+			
 			GLLogger.traceTech("freeing an Everest connection, there are now "+newCountDown+" working for "+urlEverest, getClass());
 		}
 
