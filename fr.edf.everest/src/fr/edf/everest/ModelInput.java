@@ -25,7 +25,7 @@ public abstract class ModelInput {
 	
 	
 	/**
-	 * Inherited classes should feed the genlab inputs
+	 * Inherited classes should feed the genlab inputs genlabInputs
 	 * @param PIDname
 	 * @param PID
 	 * @param attributeTechName

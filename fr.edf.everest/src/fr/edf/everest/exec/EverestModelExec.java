@@ -242,12 +242,17 @@ public class EverestModelExec extends AbstractAlgoExecutionOneshot {
 	
 	protected void runPythonScript(File fileInputs, File fileOutputs) {
 		
+		// check the existence of the python script
+		File pythonScript = new File("fr.edf.everest/pythonSrc/test1.py");
+		if (!pythonScript.exists() || !pythonScript.isFile()) {
+			throw new ProgramException("unable to find the python script "+pythonScript.getPath()+" for environment "+System.getenv("PYTHONPATH"));
+		}
 				
 		try {
 			// start the process
 			Process process = new ProcessBuilder(
 							"python",
-							"fr.edf.everest/pythonSrc/test1.py",
+							pythonScript.getAbsolutePath(),
 							fileInputs.getAbsolutePath(),
 							fileOutputs.getAbsolutePath()
 							).start();

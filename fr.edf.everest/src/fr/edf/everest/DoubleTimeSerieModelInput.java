@@ -9,10 +9,6 @@ import java.util.Map;
 
 public class DoubleTimeSerieModelInput extends ModelInput {
 
-	private final Double min; 
-	private final Double max;
-	private final Double defaultValue;
-	
 	private final Double[] baseValues;
 	
 	private final int whenToChange;
@@ -38,9 +34,6 @@ public class DoubleTimeSerieModelInput extends ModelInput {
 		
 		super(PIDname, PID, attributeTechName);
 		
-		this.min = min;
-		this.max = max;
-		this.defaultValue = defaultValue;
 		this.baseValues = baseValues;
 		this.whenToChange = whenToChange;
 		

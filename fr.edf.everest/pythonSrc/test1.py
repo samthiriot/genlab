@@ -24,7 +24,6 @@ from dao0_5.RestCall import RestCall, RestDataException, RestServerException
 from dao0_5.configRestCall import ConfigRestCall
 from cigs2_3.everestInteractions import EverestDataLoader
 
-
 def writeProgress(v):
     print "PROGRESS %s" % v
     sys.stdout.flush()
@@ -67,6 +66,7 @@ class ExecuteASimCase():
                     )
 
         except Exception as e:
+            print e
             return e
 
         return None
@@ -177,6 +177,15 @@ class ExecuteASimCase():
             # download the resulting file
             writeProgress("91")
             try:
+                # install the proxy (if required !)
+                if self.parameters['proxy_enabled']:
+                    proxy = urllib2.ProxyHandler({
+                                'http': str(self.parameters['proxy_host'])+':'+str(self.parameters['proxy_port']),
+                                'https': str(self.parameters['proxy_host'])+':'+str(self.parameters['proxy_port'])
+                                })
+                    opener = urllib2.build_opener(proxy)
+                    urllib2.install_opener(opener)
+                # download the data
                 url = self.parameters['server_download_url'] + "CASE-" + str(simCaseId) + "/dataset.nc?sessionid=" + str(self.restcall.token)
                 response = urllib2.urlopen(url)
                 cityCDF = response.read()
@@ -185,8 +194,9 @@ class ExecuteASimCase():
                 # write the content of the distant URL to this file (== download)
                 with open(fPath, 'w') as f:
                     f.write(cityCDF)
-            except:
-                writeError("server error: unable to download results")
+
+            except Exception as e:
+                writeError("server error: unable to download results: %s" % e)
                 return
             
             writeProgress("95")

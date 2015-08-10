@@ -57,6 +57,16 @@ public class AGG6_3EverestModelAlgo extends AbstractEverestModelAlgo {
 				0.0, 
 				5 // TODO !
 				));
+		declareModelInput(new DoubleTimeSerieModelInput(
+				"Singapor", 
+				"10", 
+				"COPGreenTicks0_ACENBGH_AC", 
+				0.0, // TODO !
+				6.0, // TODO ! 
+				getDoubleZeros(1), // TODO from default values ! 
+				0.0, 
+				0 // TODO !
+				));
 		
 		declareModelOutput(new LastValueOfTimeserieModelOutput(
 				"Neighborhood", 
@@ -74,6 +84,12 @@ public class AGG6_3EverestModelAlgo extends AbstractEverestModelAlgo {
 				"Neighborhood", 
 				"1200000001", "Yuhua",
 				"Neighborhood_PointsGreenMarkBUIGM"
+				)		
+		);
+		declareModelOutput(new LastValueOfTimeserieModelOutput(
+				"Building", 
+				"1400004344", "Block231 !!!",
+				"Building_AnFuelConsumptionENDFC"
 				)		
 		);
 		
