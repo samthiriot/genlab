@@ -1,5 +1,6 @@
 package fr.edf.everest.exec;
 
+import fr.edf.everest.EverestParallel;
 import fr.edf.everest.ModelInput;
 import fr.edf.everest.ModelOutput;
 import fr.edf.everest.algos.AbstractEverestModelAlgo;
@@ -348,16 +349,34 @@ public class EverestModelExec extends AbstractAlgoExecutionOneshot {
 			File fileInputs = writeParameterToFile(encodeParameterFile());
 			File fileOutputs = createResultFile();
 			
-			// run the program 
-			runPythonScript(fileInputs, fileOutputs);
+			final String everestServerUrl = (String)algoInst.getValueForParameter(AbstractEverestModelAlgo.PARAM_SERVER_URL);
+			final Integer maxCountEverestServer = (Integer)algoInst.getValueForParameter(AbstractEverestModelAlgo.PARAM_MAX_PARALLEL);
 			
-			// read the results and use them as outputs
-			JSONObject resultRaw = readResultFromFile(fileOutputs);
-			processResults(resultRaw, res);
+			try {
+				// wait for an Everest slot to be available
+				messages.debugTech("can we use Everest, its not too charged ?", getClass());
 			
-			// delete the file
-			fileInputs.delete();
-			fileOutputs.delete();
+				EverestParallel.getEverestParallel().waitForConnectionToEverestURL(everestServerUrl, maxCountEverestServer);
+				
+				messages.debugTech("autorized to use Everest, starting run now...", getClass());
+				
+				// run the program 
+				runPythonScript(fileInputs, fileOutputs);
+				
+				messages.debugTech("end of Everest simulation, now downloading results...", getClass());
+				
+				// read the results and use them as outputs
+				JSONObject resultRaw = readResultFromFile(fileOutputs);
+				processResults(resultRaw, res);
+				
+				// delete the file
+				fileInputs.delete();
+				fileOutputs.delete();
+				
+			} finally {
+				// always signal others can work
+				EverestParallel.getEverestParallel().freeEverestURL(everestServerUrl);
+			}
 			
 			// it's all right folks
 			progress.setComputationState(ComputationState.FINISHED_OK);

@@ -104,6 +104,16 @@ public class AbstractEverestModelAlgo extends BasicAlgo {
 	protected List<ModelInput> modelInputs = new LinkedList<>();
 	protected List<ModelOutput> modelOutputs = new LinkedList<>();
 
+	public static final IntParameter PARAM_MAX_PARALLEL = new IntParameter(
+			"max_parallel", 
+			"max simultaneous simulations", 
+			"depends on the server characteristics",  
+			2,
+			1,
+			10
+			);
+	
+	
 	public AbstractEverestModelAlgo(String name, String description) {
 		super(
 				name, 
@@ -126,6 +136,7 @@ public class AbstractEverestModelAlgo extends BasicAlgo {
 		registerParameter(PARAM_PROXY_HOST);
 		registerParameter(PARAM_PROXY_PORT);
 		
+		registerParameter(PARAM_MAX_PARALLEL);
 		
 	}
 
