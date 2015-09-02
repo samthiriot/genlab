@@ -1,31 +1,30 @@
 package fr.edf.everest.algos;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import com.thoughtworks.xstream.io.json.JsonWriter;
-
 import fr.edf.everest.ModelInput;
 import fr.edf.everest.ModelOutput;
 import fr.edf.everest.exec.EverestModelExec;
-import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
-import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
-import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
 import genlab.core.parameters.BooleanParameter;
 import genlab.core.parameters.IntParameter;
 import genlab.core.parameters.StringParameter;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 public class AbstractEverestModelAlgo extends BasicAlgo {
 
-
+	public static final BooleanParameter PARAM_MODEL_NO_FAIL = new BooleanParameter(
+			"assume_no_model_fail", 
+			"assume model never fails", 
+			"check only when you consider the model should never fail; in this case it will retry forever the execution in case of problem", 
+			false
+			);
+	
 	public static final IntParameter PARAM_MODEL_ID = new IntParameter(
 			"model_id", 
 			"model id", 
@@ -123,6 +122,7 @@ public class AbstractEverestModelAlgo extends BasicAlgo {
 				null
 				);
 		
+		registerParameter(PARAM_MODEL_NO_FAIL);
 		registerParameter(PARAM_MODEL_ID);
 		registerParameter(PARAM_SCENARIO_ID);
 		

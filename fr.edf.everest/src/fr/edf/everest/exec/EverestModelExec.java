@@ -34,6 +34,12 @@ import org.json.simple.JSONValue;
 
 public class EverestModelExec extends AbstractAlgoExecutionOneshot {
 
+	/**
+	 * The delay in seconds to wait before trying to run again a run of the model. 
+	 * Put it long enough for the machine to reduce its load, the server to restart, etc.
+	 */
+	public static final int DELAY_RETRY_MODEL_SIMULATION_AFTER_FAIL = 30;
+	
 	public EverestModelExec(IExecution exec, IAlgoInstance algoInst) {
 		super(exec, algoInst, new ComputationProgressWithSteps());
 		
@@ -241,7 +247,7 @@ public class EverestModelExec extends AbstractAlgoExecutionOneshot {
 	    }
 	}
 	
-	protected void runPythonScript(File fileInputs, File fileOutputs) {
+	protected void runPythonScript(File fileInputs, File fileOutputs, boolean assumeModelNeverFails) {
 		
 		// check the existence of the python script
 		File pythonScript = new File("fr.edf.everest/pythonSrc/test1.py");
@@ -249,61 +255,79 @@ public class EverestModelExec extends AbstractAlgoExecutionOneshot {
 			throw new ProgramException("unable to find the python script "+pythonScript.getPath()+" for environment "+System.getenv("PYTHONPATH"));
 		}
 				
-		try {
-			// start the process
-			Process process = new ProcessBuilder(
-							"python",
-							pythonScript.getAbsolutePath(),
-							fileInputs.getAbsolutePath(),
-							fileOutputs.getAbsolutePath()
-							).start();
-			
-			StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR");
-			errorGobbler.start();
-
-			// retrieve its stream, so we can parse error and progress online
-			InputStream is = process.getInputStream();
-			InputStreamReader isr = new InputStreamReader(is);
-			BufferedReader br = new BufferedReader(isr);
-			String line;
-
-			boolean errorReceived = false;
-			
-			while ((line = br.readLine()) != null) {
-				
-				if (line.startsWith("PROGRESS ")) {
-					Integer progress = Integer.parseInt(line.substring(9));
-					if (progress > 0 && progress <= 100)
-						this.progress.setProgressMade(progress);
-
-				} else if (line.startsWith("ERROR")) {
-					// decode error and relay it to GenLab (and the user)
-					messages.errorUser(line.substring(6), getClass());
-					// keep that in memory, the process will be flaged failure
-					errorReceived = true;
-				} else { 
-					this.messages.traceTech(line, getClass());
-				}
-			}
+		do { // loop until it is either finished with success, or failed but the flag for retry is not set 
 			
 			try {
-				process.waitFor();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			if (errorReceived || process.exitValue() != 0) {
-				messages.errorTech("errors detected during the execution of the program; failure.", getClass());
+				// start the process
+				Process process = new ProcessBuilder(
+								"python",
+								pythonScript.getAbsolutePath(),
+								fileInputs.getAbsolutePath(),
+								fileOutputs.getAbsolutePath()
+								).start();
+				
+				StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR");
+				errorGobbler.start();
+	
+				// retrieve its stream, so we can parse error and progress online
+				InputStream is = process.getInputStream();
+				InputStreamReader isr = new InputStreamReader(is);
+				BufferedReader br = new BufferedReader(isr);
+				String line;
+	
+				boolean errorReceived = false;
+				
+				while ((line = br.readLine()) != null) {
+					
+					if (line.startsWith("PROGRESS ")) {
+						Integer progress = Integer.parseInt(line.substring(9));
+						if (progress > 0 && progress <= 100)
+							this.progress.setProgressMade(progress);
+	
+					} else if (line.startsWith("ERROR")) {
+						// decode error and relay it to GenLab (and the user)
+						messages.errorUser(line.substring(6), getClass());
+						// keep that in memory, the process will be flaged failure
+						errorReceived = true;
+					} else { 
+						this.messages.traceTech(line, getClass());
+					}
+				}
+				
+				try {
+					process.waitFor();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				if (errorReceived || process.exitValue() != 0) {
+					
+					if (assumeModelNeverFails) {
+						messages.errorTech("errors detected during the execution of the model; will try again after some time.", getClass());
+						try {
+							Thread.sleep(DELAY_RETRY_MODEL_SIMULATION_AFTER_FAIL);
+						} catch (InterruptedException e) {
+						}
+						messages.errorTech("retrying a run of a model which failed before.", getClass());
+						
+					} else {
+						messages.errorTech("errors detected during the execution of the model; failure.", getClass());
+						progress.setComputationState(ComputationState.FINISHED_FAILURE);
+						throw new RuntimeException("error during execution");
+					}
+										
+				} else {
+					break;
+				}
+				
+			} catch (IOException e1) {
+				messages.errorTech("error during the execution of the program: "+e1.getMessage(), getClass(), e1);
 				progress.setComputationState(ComputationState.FINISHED_FAILURE);
-				throw new RuntimeException("error during execution");
+				return;
 			}
 			
-		} catch (IOException e1) {
-			messages.errorTech("error during the execution of the program: "+e1.getMessage(), getClass(), e1);
-			progress.setComputationState(ComputationState.FINISHED_FAILURE);
-			return;
-		}
+		} while (assumeModelNeverFails);
 		
 	}
 	
@@ -361,7 +385,7 @@ public class EverestModelExec extends AbstractAlgoExecutionOneshot {
 				messages.debugTech("autorized to use Everest, starting run now...", getClass());
 				
 				// run the program 
-				runPythonScript(fileInputs, fileOutputs);
+				runPythonScript(fileInputs, fileOutputs, (Boolean)algoInst.getValueForParameter(AbstractEverestModelAlgo.PARAM_MODEL_NO_FAIL));
 				
 				messages.debugTech("end of Everest simulation, now downloading results...", getClass());
 				
