@@ -257,6 +257,10 @@ public class EverestModelExec extends AbstractAlgoExecutionOneshot {
 				
 		do { // loop until it is either finished with success, or failed but the flag for retry is not set 
 			
+			if (progress.getComputationState() == ComputationState.FINISHED_CANCEL) {
+				return;
+			}
+			
 			try {
 				// start the process
 				Process process = new ProcessBuilder(
@@ -306,7 +310,7 @@ public class EverestModelExec extends AbstractAlgoExecutionOneshot {
 					if (assumeModelNeverFails) {
 						messages.errorTech("errors detected during the execution of the model; will try again after some time.", getClass());
 						try {
-							Thread.sleep(DELAY_RETRY_MODEL_SIMULATION_AFTER_FAIL);
+							Thread.sleep(DELAY_RETRY_MODEL_SIMULATION_AFTER_FAIL*(1+(long)Math.ceil(Math.random()*2))*1000);
 						} catch (InterruptedException e) {
 						}
 						messages.errorTech("retrying a run of a model which failed before.", getClass());
@@ -413,12 +417,13 @@ public class EverestModelExec extends AbstractAlgoExecutionOneshot {
 
 	@Override
 	public void cancel() {
-
+		// WARN: we are not able to stop the computation on the server side
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
 	}
 
 	@Override
 	public void kill() {
-
+		progress.setComputationState(ComputationState.FINISHED_CANCEL);
 	}
 
 }
