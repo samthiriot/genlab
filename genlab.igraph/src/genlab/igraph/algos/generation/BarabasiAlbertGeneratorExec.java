@@ -35,8 +35,7 @@ public class BarabasiAlbertGeneratorExec extends AbstractIGraphGeneratorExec {
 					(Double)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_POWER),
 					(Double)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_ZERO_APPEAL),
 					(Boolean)algoInst.getValueForParameter(BarabasiAlbertGeneratorAlgo.PARAM_DIRECTED.getId()),
-					(Boolean)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_OUTPUT_PREF),
-					(Double)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_A), 
+					(Boolean)getInputValueForInput(BarabasiAlbertGeneratorAlgo.INPUT_OUTPUT_PREF), 
 					this.exec,
 					(Long)algoInst.getValueForParameter(AbstractIGraphGenerator.PARAM_SEED)
 				);

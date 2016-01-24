@@ -1,6 +1,5 @@
 package genlab.igraph.Rigraph;
 
-import static org.junit.Assert.fail;
 import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
@@ -15,7 +14,6 @@ import org.math.R.Rsession;
 import org.rosuda.REngine.REXP;
 import org.rosuda.REngine.REXPLogical;
 import org.rosuda.REngine.REXPMismatchException;
-import org.rosuda.REngine.Rserve.RSession;
 
 public class RIGraphLibImplementation implements IGraphLibImplementation {
 
@@ -192,7 +190,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 
 	@Override
 	public IGenlabGraph generateBarabasiAlbert(int size, int m, double power,
-			double zeroAppeal, boolean directed, boolean outputPref, double A,
+			double zeroAppeal, boolean directed, boolean outputPref, 
 			IExecution execution, Long seed) {
 
 		Rsession rsession = null;

@@ -20,6 +20,8 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	/** Crowded distance */
 	public Double crowdDistance;
 	
+	public Double averageRank;
+	public int birthday;
 	public Double centerDistance;
 	
 	public static int lastId = 1;
@@ -41,6 +43,8 @@ public class AnIndividual implements Comparable<AnIndividual> {
 		this.rank = Integer.MAX_VALUE;
 		this.crowdDistance = -INF;
 
+		this.birthday = 0;
+		this.averageRank = 0.5;
 		this.centerDistance = 0d;
 	}
 	
@@ -76,20 +80,26 @@ public class AnIndividual implements Comparable<AnIndividual> {
 	 * 
 	 */
 	
+	public String toMiniString() {
+		return averageRank +" "+birthday+" "+genes[0]+" "+genes[1];
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
-		return hashCode()+" "+Arrays.toString(genes);
+		return Arrays.toString(genes) + Arrays.toString(values);
+//		return "AnIndividual [genome=" + genome + ", averageRank="
+//				+ averageRank + ", genes="
+//				+ Arrays.toString(genes) + ", fitness="
+//				+ Arrays.toString(fitness) + ", targets="
+//				+ Arrays.toString(targets) + ", values="
+//				+ Arrays.toString(values) + ", rank=" + rank
+//				+ ", crowdDistance=" + crowdDistance + ", birthday=" + birthday + ", centerDistance="
+//				+ centerDistance + ", id=" + id + "]";
 	}
-	
-	public String toMiniString() {
-		return "ID "+hashCode()
-				+", GENES "+Arrays.toString(genes)
-				+", VALUES "+Arrays.toString(values)
-				+", TARGETS "+Arrays.toString(targets)
-				+", FITNESS "+Arrays.toString(fitness)
-				+", distance "+crowdDistance;
-	}
-	
+
 	public String genesToString() {
 		return genome.readableValues(this.genes);
 	}

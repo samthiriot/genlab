@@ -20,7 +20,7 @@ public interface IGraphLibImplementation {
 	
 	public IGenlabGraph generateBarabasiAlbert(
 			int size, int m, double power, double zeroAppeal, 
-			boolean directed, boolean outputPref, double A, 
+			boolean directed, boolean outputPref,  
 			IExecution execution,
 			Long seed);
 	

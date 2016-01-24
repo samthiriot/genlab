@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Everest
+Bundle-SymbolicName: fr.edf.everest;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: fr.edf.everest.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ genlab.core;bundle-version="0.0.1"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
+Export-Package: fr.edf.everest.algos,
+ fr.edf.everest.exec
+Bundle-ClassPath: ext/json-simple-1.1.1.jar,
+ .

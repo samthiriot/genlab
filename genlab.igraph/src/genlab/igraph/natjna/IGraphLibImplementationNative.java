@@ -39,7 +39,7 @@ public class IGraphLibImplementationNative implements IGraphLibImplementation {
 	
 	public IGenlabGraph generateBarabasiAlbert(
 			int size, int m, double power, double zeroAppeal, 
-			boolean directed, boolean outputPref, double A, IExecution execution, Long seed) {
+			boolean directed, boolean outputPref, IExecution execution, Long seed) {
 		
 		final ListOfMessages messages = execution.getListOfMessages();
 
@@ -60,8 +60,7 @@ public class IGraphLibImplementationNative implements IGraphLibImplementation {
 					power,
 					zeroAppeal,
 					directed,
-					outputPref,
-					A
+					outputPref
 					);
 			
 			// simplify it, as sometimes we do have loops

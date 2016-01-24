@@ -65,7 +65,7 @@ public abstract class AbstractGeneticExplorationAlgo extends AlgoContainer {
 		OUTPUT_TABLE.setIsContinuousOutput(true);
 
 		PARAM_STOP_MAXITERATIONS.setMinValue(1);
-		PARAM_SIZE_POPULATION.setMinValue(10);
+		PARAM_SIZE_POPULATION.setMinValue(4);
 
 	}
 	

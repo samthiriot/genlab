@@ -59,6 +59,10 @@
             id="genlab.core.model.meta.basics.algos.ConvertBooleanToInteger">
       </algo>
       <algo
+            class="genlab.core.model.meta.basics.algos.ConvertDoubleToInteger"
+            id="genlab.core.model.meta.basics.algos.ConvertDoubleToInteger">
+      </algo>
+      <algo
             class="genlab.core.model.meta.basics.algos.ConstantValueString"
             id="genlab.core.model.meta.basics.algos.ConstantValueString">
       </algo>

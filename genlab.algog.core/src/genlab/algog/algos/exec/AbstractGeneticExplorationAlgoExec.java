@@ -2,7 +2,6 @@ package genlab.algog.algos.exec;
 
 import genlab.algog.algos.instance.GeneticExplorationAlgoContainerInstance;
 import genlab.algog.algos.meta.AbstractGeneAlgo;
-import genlab.algog.algos.meta.AbstractGeneticAlgo;
 import genlab.algog.algos.meta.AbstractGeneticExplorationAlgo;
 import genlab.algog.algos.meta.BooleanGeneAlgo;
 import genlab.algog.algos.meta.DoubleGeneAlgo;
@@ -16,11 +15,8 @@ import genlab.algog.internal.AGenome;
 import genlab.algog.internal.AIntegerGene;
 import genlab.algog.internal.ANumericGene;
 import genlab.algog.internal.AnIndividual;
-import genlab.core.commons.ProgramException;
-import genlab.core.commons.UniqueTimestamp;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
-import genlab.core.exec.ITask;
 import genlab.core.model.exec.AbstractContainerExecution;
 import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
@@ -29,10 +25,8 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IComputationProgress;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
-import genlab.core.model.instance.IInputOutputInstance;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.basics.flowtypes.GenlabTable;
-import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -40,15 +34,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.jws.Oneway;
 
 import cern.jet.random.Uniform;
 import cern.jet.random.engine.MersenneTwister;
@@ -74,13 +68,13 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	protected Uniform uniform;
 
 	// associates each gene to the point were the information has to be sent
-	protected Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance = new HashMap<AGene<?>, IAlgoInstance>();
+	protected Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstance = new LinkedHashMap<AGene<?>, IAlgoInstance>();
 	
 	// associates each genome with the algorithms which enable to evaluate individuals
 	protected Map<AGenome, Collection<IAlgoInstance>> genome2algoInstance = new HashMap<AGenome, Collection<IAlgoInstance>>();
 	
 	// associates each genome with the output where the fitness is retrieved from 
-	protected Map<AGenome, List<IAlgoInstance>> genome2fitnessOutput = new HashMap<AGenome, List<IAlgoInstance>>();
+	protected Map<AGenome, List<IAlgoInstance>> genome2fitnessOutput = new LinkedHashMap<AGenome, List<IAlgoInstance>>();
 
 	// for each generation, and each individual, stores the corresponding fitness
 	protected Map<Integer, Set<AnIndividual>> offspringGeneration = new LinkedHashMap<Integer, Set<AnIndividual>>();
@@ -134,7 +128,10 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		messages.infoUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
 
 		// store it 
-		offspringGeneration.put(iterationsMade, individuals);
+		// only offspring without parents
+		Set<AnIndividual> h = new HashSet<>(individuals);
+		h.removeAll(parentGeneration.get(iterationsMade));
+		offspringGeneration.put(iterationsMade, h);
 
 		
 		this.progress.incProgressMade();
@@ -156,6 +153,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		
 		Set<IAlgoInstance> allGoals = algoInst.collectGoals();
 		
+		Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstanceLocal = new LinkedHashMap<AGene<?>, IAlgoInstance>();
+
 		for (IAlgoInstance childInstance: algoInst.getChildren()) {
 			
 			if (!(childInstance.getAlgo() instanceof GenomeAlgo))
@@ -171,10 +170,10 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 					);
 			
 			// retrieve its parameters
-			Collection<AGene<?>> genesForThisGenome = new LinkedList<AGene<?>>();
+			List<AGene<?>> genesForThisGenome = new LinkedList<AGene<?>>();
 			
 			Set<IAlgoInstance> genomeEvaluationAlgos = new HashSet<IAlgoInstance>();
-			Set<IAlgoInstance> genomeGoalAlgos = new HashSet<IAlgoInstance>();
+			Set<IAlgoInstance> genomeGoalAlgos = new LinkedHashSet<IAlgoInstance>();
 	
 			for (IConnection outC : childInstance.getOutputInstanceForOutput(GenomeAlgo.OUTPUT_GENOME).getConnections()) {
 				
@@ -224,7 +223,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 				
 				// store it
 				genesForThisGenome.add(gene);
-				gene2geneAlgoInstance.put(gene, geneInstance);
+				gene2geneAlgoInstanceLocal.put(gene, geneInstance);
 				
 				// explore children, and add them to the list of the algo isntances to execute for this genome.
 				((GeneticExplorationAlgoContainerInstance)algoInst).collectAlgosToEvaluatePopulation(
@@ -238,6 +237,31 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 				
 			}		
 			
+			// sort the genes by name
+			{
+				Collections.sort(genesForThisGenome, new Comparator<AGene<?>>() {
+
+					@Override
+					public int compare(AGene<?> o1, AGene<?> o2) {
+						return o1.name.compareTo(o2.name);
+					}
+					
+				});
+				// retrieve algos as a list
+				List<AGene<?>> algoInstancesGenes = new LinkedList<>(gene2geneAlgoInstanceLocal.keySet());
+				Collections.sort(algoInstancesGenes, new Comparator<AGene<?>>() {
+
+					@Override
+					public int compare(AGene<?> o1, AGene<?> o2) {
+						return o1.name.compareTo(o2.name);
+					}
+					
+				});
+				for (AGene<?> g: algoInstancesGenes) {
+					gene2geneAlgoInstance.put(g, gene2geneAlgoInstanceLocal.get(g));
+				}
+			}
+						
 			// store the list of all the executable algos for this genome 
 			genome2algoInstance.put(genome, genomeEvaluationAlgos);
 			genome2fitnessOutput.put(genome, new ArrayList<IAlgoInstance>(genomeGoalAlgos));
@@ -379,7 +403,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 */
 	protected Map<AGenome,String[]> declareColumnsForGenes(GenlabTable tab) {
 
-		final Map<AGenome,String[]> genome2geneColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
+		final Map<AGenome,String[]> genome2geneColumns = new LinkedHashMap<AGenome, String[]>(genome2fitnessOutput.size());
 
 		final Map<String,Map<String,Object>> tableMetadataGenes = new HashMap<String, Map<String,Object>>();
 
@@ -425,7 +449,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 */
 	protected Map<AGenome,String[]> declareColumnsForGoals(GenlabTable tab) {
 
-		final Map<AGenome,String[]> genome2fitnessColumns = new HashMap<AGenome, String[]>(genome2fitnessOutput.size());
+		final Map<AGenome,String[]> genome2fitnessColumns = new LinkedHashMap<AGenome, String[]>(genome2fitnessOutput.size());
 		final Map<String,Map<String,String>> tableMetadataGoals = new HashMap<String, Map<String,String>>();
 		for (AGenome currentGenome: genome2fitnessOutput.keySet()) {
 		

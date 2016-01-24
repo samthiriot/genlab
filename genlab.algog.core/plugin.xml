@@ -63,5 +63,8 @@
          </more_info>
       </docalgo>
    </extension>
+   <extension
+         point="genlab.core.algo">
+   </extension>
 
 </plugin>

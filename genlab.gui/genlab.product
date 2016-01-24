@@ -45,6 +45,7 @@
       <plugin id="com.ibm.icu"/>
       <plugin id="com.jcraft.jsch"/>
       <plugin id="edf.simdiasca"/>
+      <plugin id="fr.edf.everest"/>
       <plugin id="genlab.algog.core"/>
       <plugin id="genlab.algog.gui.examples"/>
       <plugin id="genlab.algog.gui.jfreechart"/>
