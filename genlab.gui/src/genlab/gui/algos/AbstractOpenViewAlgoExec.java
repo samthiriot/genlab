@@ -274,8 +274,6 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 				if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
 					TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID_DISPLAY_REDUCE);
 				
-				System.err.println("should display for true true:"+value);
-				
 				displayResultsSyncReduced(theView, executionRun, connectionExec, value);
 				
 				if (TestResponsivity.AUDIT_SWT_THREAD_USE) 

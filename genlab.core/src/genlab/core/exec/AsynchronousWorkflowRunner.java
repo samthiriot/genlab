@@ -1,5 +1,7 @@
 package genlab.core.exec;
 
+import java.io.File;
+
 import genlab.core.exec.client.ComputationNodes;
 import genlab.core.model.exec.ExecutionHooks;
 import genlab.core.model.exec.IAlgoExecution;
@@ -63,7 +65,9 @@ public class AsynchronousWorkflowRunner implements Runnable {
 			IRunner r = ComputationNodes.getSingleton().getDefaultRunner();
 	
 			System.err.println("create execution");
-			Execution exec = new Execution(r);
+			File directoryProjectOutputs = new File(workflow.getProject().getBaseDirectory(),"outputs");
+			directoryProjectOutputs.mkdirs();
+			Execution exec = new Execution(r, directoryProjectOutputs);
 			exec.setExecutionForced(forceExec);
 			exec.getListOfMessages().addAll(checkInfo.messages);
 			exec.getListOfMessages().setFilterIgnoreBelow(

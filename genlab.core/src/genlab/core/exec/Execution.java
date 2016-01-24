@@ -1,14 +1,19 @@
 package genlab.core.exec;
 
+import genlab.core.commons.FileUtils;
+import genlab.core.commons.ProgramException;
 import genlab.core.commons.UniqueTimestamp;
+import genlab.core.projects.GenlabProject;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 
 import java.io.Externalizable;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,6 +30,12 @@ public class Execution implements IExecution, Externalizable {
 	
 	private IRunner runner = null;
 	
+	/**
+	 * The default directory for outputs
+	 */
+	private File resultsDirectory = null;
+	
+	private File baseDirectory = null;
 	
 	public Execution(IRunner runner) {
 		
@@ -39,6 +50,34 @@ public class Execution implements IExecution, Externalizable {
 		// and register them !
 		ListsOfMessages.registerListOfMessages(getId(), messages);
 		
+	}
+	
+	public Execution(IRunner runner, File baseDirectory) {
+		
+		this(runner);
+		
+		this.baseDirectory = baseDirectory;
+	}
+	public synchronized File getResultsDirectory() {
+		
+		
+		if (resultsDirectory == null) {
+
+			if (baseDirectory == null) {
+				// no base directory; lets just use the Genlab one
+				resultsDirectory = new File(FileUtils.getGenlabTmpDirectory(), "experiment_"+Long.toString(stamp.timestamp)); 
+			} else {
+				// TODO display date in a nice way in the folder name !
+				//Date date = new Date(stamp.timestamp);
+				resultsDirectory = new File(baseDirectory, "experiment_"+Long.toString(stamp.timestamp));
+			}
+			
+			resultsDirectory.mkdir();
+			messages.infoUser("results of the experiment will be stored in "+resultsDirectory.getAbsolutePath(), Execution.class);
+			
+		}
+		
+		return resultsDirectory;
 	}
 
 	@Override

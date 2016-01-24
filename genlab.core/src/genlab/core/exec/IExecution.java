@@ -2,6 +2,7 @@ package genlab.core.exec;
 
 import genlab.core.usermachineinteraction.ListOfMessages;
 
+import java.io.File;
 import java.util.Map;
 
 /**
@@ -48,5 +49,12 @@ public interface IExecution {
 	
 	public void setRunner(IRunner r);
 	
+	/**
+	 * Returns a local result directory that can be used to store files.
+	 * Note that algorithms that write file should not be movable to distant
+	 * computation nodes. 
+	 * @return
+	 */
+	public File getResultsDirectory();
 	
 }

@@ -1,6 +1,7 @@
 package genlab.core.commons;
 
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.core.usermachineinteraction.ListsOfMessages;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +11,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.FileChannel;
+
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * TODO propose a "link or copy" command
@@ -258,4 +263,53 @@ public class FileUtils {
 		}
 	}
 	
+	/**
+	 * Will search for the first available number in the directory and create it and return it.
+	 * 
+	 * @return
+	 */
+	public static File createFileWithIncrementingNumber(File directory, String prefix, String postfix) {
+		
+		// first search for the current children; among the ones starting with the right prefix 
+		// and finishing with the right postfix, identify if they are numered, and in this case, 
+		// keep the higher number as a base.
+		Integer higher = 0;
+		for (String childName : directory.list()) {
+			if (!childName.startsWith(prefix) || !childName.endsWith(postfix)) 
+				continue;
+				
+			//GLLogger.traceTech("children: "+childName+" sub "+childName.substring(prefix.length(), childName.length()-postfix.length()), FileUtils.class);
+			try {
+				higher = Math.max(higher, Integer.parseInt(childName.substring(prefix.length(), childName.length()-postfix.length())));
+			} catch (NumberFormatException e) {
+				// not a number, let's ignore that
+			}
+		}
+		
+		higher++;
+		File result = null;
+		// okay, we should now have the minimum. 
+		// But in fact, another file might be create in parallel. 
+		// so let's continue creating the next number until it works
+		int attemptsRemaining = 100;
+		while(true) {
+			result = new File(directory, prefix+Integer.toString(higher)+postfix);
+			try {
+				--attemptsRemaining;
+				if (result.createNewFile())
+					return result;
+			} catch (IOException e) {
+				// not created, let's continue...
+				higher++;
+				if (attemptsRemaining <= 0) {
+					throw new ProgramException("unable to create a temporary file into "+directory.getAbsolutePath()+"; after many tries; maybe it is full or not writable ? "+e.getMessage(), e);
+				}
+			}
+			if (attemptsRemaining <= 0) {
+				throw new ProgramException("unable to create a temporary file into "+directory.getAbsolutePath()+"; after many tries; what happens ?");
+			}
+		}
+		
+	}
+
 }

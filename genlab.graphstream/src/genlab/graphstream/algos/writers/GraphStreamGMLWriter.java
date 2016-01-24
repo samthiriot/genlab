@@ -3,7 +3,7 @@ package genlab.graphstream.algos.writers;
 import org.graphstream.stream.file.FileSink;
 import org.graphstream.stream.file.FileSinkGML;
 
-public class GraphStreamGMLWriter extends AbstractGraphStreamGraphWriter {
+public final class GraphStreamGMLWriter extends AbstractGraphStreamGraphWriter {
 
 	public GraphStreamGMLWriter() {
 		super(
@@ -18,4 +18,9 @@ public class GraphStreamGMLWriter extends AbstractGraphStreamGraphWriter {
 		return new FileSinkGML();
 	}
 
+	@Override
+	protected String getFilenameExtension() {
+		return ".graphml";
+	}
+	
 }

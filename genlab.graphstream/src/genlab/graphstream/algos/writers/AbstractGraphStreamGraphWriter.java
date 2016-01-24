@@ -4,6 +4,7 @@ import genlab.core.exec.IExecution;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.meta.ExistingAlgoCategories;
+import genlab.core.model.meta.IReduceAlgo;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.FileFlowType;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
@@ -16,10 +17,10 @@ import org.graphstream.stream.file.FileSink;
 
 /**
  * TODO add the file as a parameter
- * @author B12772
+ * @author Samuel Thiriot
  *
  */
-public abstract class AbstractGraphStreamGraphWriter extends GraphStreamAlgo {
+public abstract class AbstractGraphStreamGraphWriter extends GraphStreamAlgo implements IReduceAlgo {
 
 	
 	public static final InputOutput<IGenlabGraph> INPUT_GRAPH = new InputOutput<IGenlabGraph>(
@@ -44,16 +45,18 @@ public abstract class AbstractGraphStreamGraphWriter extends GraphStreamAlgo {
 		
 	}
 	
-	
 	protected abstract FileSink getGraphStreamFileSink();
 
+	protected abstract String getFilenameExtension();
+	
 	@Override
 	public IAlgoExecution createExec(IExecution execution, AlgoInstance algoInstance) {
 		
 		return new AbstractGraphstreamGraphWriterExecution(
 				execution,
 				algoInstance, 
-				getGraphStreamFileSink()
+				getGraphStreamFileSink(),
+				getFilenameExtension()
 				);
 	}
 	
