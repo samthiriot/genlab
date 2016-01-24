@@ -2,6 +2,7 @@ package genlab.core.model.exec;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
 
 import java.util.HashSet;
@@ -25,8 +26,16 @@ public abstract class AbstractAlgoExecutionOneshotOrReduce
 			IAlgoInstance algoInst, IComputationProgress progress) {
 		super(exec, algoInst, progress);
 		
-		// at the very beginning, all the inputs are waiting for data
-		inputsNotAvailable = new HashSet<IInputOutputInstance>(algoInst.getInputInstances());
+		// at the very beginning, the inputs that don't come from reducing connections do expect answers
+		inputsNotAvailable = new HashSet<IInputOutputInstance>();
+		for (IInputOutputInstance inputInstance: algoInst.getInputInstances()) {
+			for (IConnectionExecution c: this.getConnectionsForInput(inputInstance)) {
+				if (c instanceof ConnectionExecFromIterationToReduce)
+					// skip reduction links
+					continue;
+				inputsNotAvailable.add(inputInstance);
+			}
+		}
 		
 		if (inputsNotAvailable.isEmpty())
 			progress.setComputationState(ComputationState.READY);

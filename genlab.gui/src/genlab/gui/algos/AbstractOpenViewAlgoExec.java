@@ -1,5 +1,8 @@
 package genlab.gui.algos;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshotOrReduce;
 import genlab.core.model.exec.AbstractContainerExecutionSupervisor;
@@ -26,6 +29,8 @@ import org.eclipse.ui.part.WorkbenchPart;
  * A basic class for algo executions which are supposed to open 
  * a view for a given execution. Takes care of opening the view,
  * connecting it with its execution, etc.
+ *
+ * TODO in reduce mode, this principle is loosing some displays during the time the view is opening itself...
  * 
  * @author Samuel Thiriot
  *
@@ -51,7 +56,7 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 	 */
 	protected AbstractViewOpenedByAlgo theView = null;
 	
-	
+	protected List<List<Object>> pendingForDisplay = new LinkedList();
 	
 	public AbstractOpenViewAlgoExec(IExecution exec, IAlgoInstance algoInst, String viewId) {
 		
@@ -63,7 +68,6 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 				exec.getId()+".view."+
 				// and instance of console into this exec !
 				System.identityHashCode(this);
-		
 		
 	}
 	
@@ -173,6 +177,18 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 		GLLogger.debugTech("received a view ! Let's display results.", getClass());
 		this.theView = theView;
 		
+		// if any, let's first display all the pending elements !
+		synchronized (pendingForDisplay) {
+			for (List<Object> elements: pendingForDisplay) {
+				receiveInput(
+						(IAlgoExecution)elements.get(0), 
+						(IConnectionExecution)elements.get(1), 
+						elements.get(2)
+						);
+			}
+			pendingForDisplay.clear();
+		}
+		
 		displayResultsSync(theView);
 		
 	}
@@ -244,7 +260,7 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 			final IAlgoExecution executionRun,
 			final IConnectionExecution connectionExec, 
 			final Object value) {
-		
+						
 		if (theView.isDisposed())
 			return;
 		
@@ -258,6 +274,8 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 				if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
 					TestResponsivity.singleton.notifySWTThreadUserStartsRunnable(SWT_THREAD_USER_ID_DISPLAY_REDUCE);
 				
+				System.err.println("should display for true true:"+value);
+				
 				displayResultsSyncReduced(theView, executionRun, connectionExec, value);
 				
 				if (TestResponsivity.AUDIT_SWT_THREAD_USE) 
@@ -266,28 +284,45 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 			}
 		});
 	}
+	
+	/**
+	 * Keeps aside the elements that should have been displayed, but that can't because the 
+	 * view is not open yet.
+	 * @param executionRun
+	 * @param connectionExec
+	 * @param value
+	 */
+	protected void keepAsideResultToDisplayLater(IAlgoExecution executionRun,
+			IConnectionExecution connectionExec, Object value) {
+		
+		synchronized (pendingForDisplay) {
+			List<Object> params = new LinkedList();
+			params.add(executionRun);
+			params.add(connectionExec);
+			params.add(value);
+			pendingForDisplay.add(params);
+		}
+		
+	}
 
 	@Override
 	public void receiveInput(IAlgoExecution executionRun,
 			IConnectionExecution connectionExec, Object value) {
 
 		// will be called in continuous mode: in this case, will display the result continuously
-	
+		// if the display is not open, don't display (will be refreshed at callback)
+		if (openDisplayIfNecessary()) {
+			keepAsideResultToDisplayLater(executionRun, connectionExec, value);
+			return;
+		}
+		
 		if (connectionExec instanceof ConnectionExecFromIterationToReduce) {
 		
-			// if the display is not open, don't display (will be refreshed at callback)
-			if (openDisplayIfNecessary())
-				return;
-			
 			// if the display is already open, refresh it 
 			displayResultsASyncReduced(theView, executionRun, connectionExec, value);
 			
 		} else {
 			
-			// if the display is not open, don't display (will be refreshed at callback)
-			if (openDisplayIfNecessary())
-				return;
-		
 			// we don't refresh if the view is not visible 
 			// if the display is already open, refresh it (else it will be refreshed at callback, once the view will be opened.
 			displayResultsAsync(theView);
@@ -299,7 +334,7 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 	@Override
 	public void signalIncomingSupervisor(
 			AbstractContainerExecutionSupervisor supervisor) {
-		// TODO Auto-generated method stub
+		// ignore
 		
 	}
 
@@ -307,7 +342,7 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 	public void signalEndOfTasksForSupervisor(
 			AbstractContainerExecutionSupervisor supervisor,
 			ComputationState state) {
-		// TODO Auto-generated method stub
+		// ignore
 		
 	}
 

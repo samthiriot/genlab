@@ -10,6 +10,7 @@ public abstract class AbstractAlgoExecutionReduce
 	public AbstractAlgoExecutionReduce(IExecution exec, IAlgoInstance algoInst,
 			IComputationProgress progress) {
 		super(exec, algoInst, progress);
+		
 	}
 
 

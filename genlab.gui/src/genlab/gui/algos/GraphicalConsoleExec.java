@@ -2,6 +2,7 @@ package genlab.gui.algos;
 
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ComputationState;
+import genlab.core.model.exec.ConnectionExecFromIterationToReduce;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.instance.IAlgoInstance;
@@ -10,6 +11,7 @@ import genlab.core.model.instance.IInputOutputInstance;
 import genlab.gui.views.AbstractViewOpenedByAlgo;
 import genlab.gui.views.ConsoleView;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -40,10 +42,18 @@ public class GraphicalConsoleExec extends AbstractOpenViewAlgoExec {
 		cv.showBusy(true);
 
 		// just read the values and display them
-		Map<IConnection, Object> values = getInputValuesForInput(GraphicalConsoleAlgo.INPUT);
+		Map<IConnection, Object> values = new HashMap<IConnection, Object>();
+		for (IConnectionExecution c: getConnectionsForInput(algoInst.getInputInstanceForInput(GraphicalConsoleAlgo.INPUT))) {
 		
-		getProgress().setProgressTotal(values.size());
+			// ignore reduced connections that where displayed previously
+			if (!(c instanceof ConnectionExecFromIterationToReduce))
+				continue;
 		
+			values.put(c.getConnection(), c.getValue());
+			
+		}
+		
+		getProgress().setProgressTotal(values.size()+1);
 	
 		StringBuffer sb = new StringBuffer();
 		for (Entry<IConnection,Object> entry : values.entrySet()) {
@@ -63,6 +73,8 @@ public class GraphicalConsoleExec extends AbstractOpenViewAlgoExec {
 		cv.write(sb.toString());
 		
 		cv.showBusy(false);
+
+		getProgress().incProgressMade();
 
 		// in fact, we have nothing to do here
 		// just set result to finished
