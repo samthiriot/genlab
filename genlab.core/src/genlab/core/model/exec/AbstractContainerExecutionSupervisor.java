@@ -7,6 +7,7 @@ import genlab.core.exec.ITasksDynamicProducer;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
+import genlab.core.model.instance.IInputOutputInstance;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -127,9 +128,6 @@ public abstract class AbstractContainerExecutionSupervisor
 		
 		exec.getRunner().registerTasksDynamicProducer(this);
 		
-		
-		// TODO tell each mapreduce that computation is finished
-		
 		// here the result is empty (nothing exported by the loop itself)
 		
 		
@@ -149,46 +147,45 @@ public abstract class AbstractContainerExecutionSupervisor
 	@Override
 	public void initInputs(Map<IAlgoInstance,IAlgoExecution> instance2exec) {
 
-		// nearly as a standard task, but we do iterate across all incoming links
-		// instead of a predefined set of inputs.
+		super.initInputs(instance2exec);
+		
+		Map<IAlgoInstance, IAlgoExecution> instance2execWithChildren = new HashMap(instance2exec);
+		for (IAlgoInstance ai: algoInst.getChildren()) {
+			instance2execWithChildren.put(ai, this);
+		}
 		
 		// create execution links for each input expected;
 		// its comes from the output to this container
 		for (IConnection c : algoInst.getConnectionsComingFromOutside()) {
-
 			createInputExecutableConnection(
 					c.getTo(), 
 					c, 
-					instance2exec
+					instance2execWithChildren
 					);
-			
 			inputsNotAvailable.add(c.getTo());
-			
 		}
 		
 		// also, we store the table for later usage (when we will create the subtasks !)
-		this.instance2execOriginal = instance2exec;
+		this.instance2execOriginal = instance2execWithChildren;
 		
 		// and we create a version to be transmitted to our subtasks
 		instance2execForSubtasks = new HashMap<IAlgoInstance, IAlgoExecution>(instance2execOriginal.size());
 		
-		
 		for (IConnection c : algoInst.getConnectionsComingFromOutside()) {
-
 			// for each algo exec out of this container, the actual 
 			// contact during exec will be the supervisor.
 			instance2execForSubtasks.put(c.getFrom().getAlgoInstance(), this);	
 		}
+		
+		// also add our own inputs...
+		inputsNotAvailable.addAll(algoInst.getInputInstances());
 		
 		// maybe we can start, if there is not input expected ?
 		// at the very beginning, all the inputs are waiting for data
 		if (inputsNotAvailable.isEmpty())
 			progress.setComputationState(ComputationState.READY);
 		
-		
 	}
-	
-
 
 	protected abstract String getSuffixForCurrentIteration();
 	
@@ -199,7 +196,6 @@ public abstract class AbstractContainerExecutionSupervisor
 	 */
 	protected IAlgoExecution createNextExecutionForOneIteration() {
 		
-		
 		// prepare the data to send
 		Map<IConnection,Object> inputConnection2value = new HashMap<IConnection, Object>();
 		for (IConnection c : algoInst.getConnectionsComingFromOutside()) {
@@ -208,7 +204,6 @@ public abstract class AbstractContainerExecutionSupervisor
 			
 			inputConnection2value.put(c, value);
 		}
-		
 		
 		// create the container for the iteration
 		messages.traceTech("creating the executable for this iteration...", getClass());
@@ -225,7 +220,6 @@ public abstract class AbstractContainerExecutionSupervisor
 		resExecIteration.ignoreCancelFromChildren = false;
 		resExecIteration.ignoreFailuresFromChildren = false;
 		
-		
 		// now create the links to call this iteration
 		messages.traceTech("init links for this iteration...", getClass());
 		// note that iterations not only create input, but also output, connections (for connection between children and outside)
@@ -234,18 +228,25 @@ public abstract class AbstractContainerExecutionSupervisor
 		// set values
 		messages.traceTech("defining the values to let the executable start...", getClass());
 		{
-			for (IConnection c: algoInst.getConnectionsComingFromOutside()) {
+
+			// remove from pending inputs the ones which are the inputs of the ref algo
+			for (IInputOutputInstance input: algoInst.getInputInstances()) {
 				
+				resExecIteration.inputsNotAvailable.remove(input);	
+			}
+			
+			// transmit data
+			for (IConnection c: algoInst.getConnectionsComingFromOutside()) {
 				for (IConnectionExecution cEx : resExecIteration.getOrCreateConnectionsForInput(c.getTo())) {
 					Object value = inputConnection2value.get(c);
 					messages.traceTech("defining value "+value+" for "+c, getClass());
 					cEx.forceValue(value);
 				}
 			}
-				
+			resExecIteration.initComputationState();
+
+			
 		}
-		
-	
 		
 		return resExecIteration;
 	}

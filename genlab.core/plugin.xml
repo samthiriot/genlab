@@ -78,6 +78,10 @@
             class="genlab.core.model.meta.basics.algos.SumAlgo"
             id="genlab.core.model.meta.basics.algos.SumAlgo">
       </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.IfBlockAlgo"
+            id="genlab.core.model.meta.basics.algos.IfBlockAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -152,6 +156,11 @@
                content="Wiikipedia page on variance"
                url="http://en.wikipedia.org/wiki/Variance">
          </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.core.model.meta.basics.algos.IfBlockAlgo"
+            description="Runs the algorithms that are inside this block only if the input connection receives true"
+            library_id="genlab.core.doc.library.core">
       </docalgo>
    </extension>
 

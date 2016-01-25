@@ -22,7 +22,6 @@ public abstract class AbstractAlgoExecutionOneshot
 	public AbstractAlgoExecutionOneshot(IExecution exec,
 			IAlgoInstance algoInst, IComputationProgress progress) {
 		super(exec, algoInst, progress);
-		
 
 		// at the very beginning, all the inputs are waiting for data
 		inputsNotAvailable = new HashSet<IInputOutputInstance>(algoInst.getInputInstances().size());
@@ -54,7 +53,6 @@ public abstract class AbstractAlgoExecutionOneshot
 		
 		synchronized (inputsNotAvailable) {
 			
-		
 		// ignore all 
 		if (progress.getComputationState() != ComputationState.WAITING_DEPENDENCY)
 			return;

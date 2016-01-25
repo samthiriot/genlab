@@ -47,7 +47,7 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	/**
 	 * For each input, associates it with the incoming connections for this input.
 	 */
-	protected Map<IInputOutputInstance,Collection<IConnectionExecution>> input2connection = new HashMap<IInputOutputInstance, Collection<IConnectionExecution>>();
+	protected Map<IInputOutputInstance,Collection<IConnectionExecution>> input2connection = null; 
 
 	
 	/**
@@ -68,12 +68,12 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 	
 	public void initInputs(Map<IAlgoInstance,IAlgoExecution> instance2exec) {
 		
+		this.input2connection = new HashMap<IInputOutputInstance, Collection<IConnectionExecution>>();
 		
 		for (IInputOutputInstance input: algoInst.getInputInstances()) {
-			
 			createInputExecutableConnection(input, instance2exec);
-
 		}
+		
 		
 	}
 	
@@ -121,12 +121,8 @@ public abstract class AbstractAlgoExecution extends ExecutionTask implements IAl
 		try {
 			final IAlgoExecution fromExec = instance2exec.get(c.getFrom().getAlgoInstance());
 			final IAlgoExecution toExec = instance2exec.get(c.getTo().getAlgoInstance());
-	
-			if (fromExec == null)
-				System.err.println("oops");
 			
 			IConnectionExecution cEx = ExecutableConnectionsFactory.createExecutableConnection(fromExec, toExec, c);
-			
 			
 			getOrCreateConnectionsForInput(input).add(cEx);
 			

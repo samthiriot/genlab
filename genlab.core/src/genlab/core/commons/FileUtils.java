@@ -298,9 +298,10 @@ public class FileUtils {
 				--attemptsRemaining;
 				if (result.createNewFile())
 					return result;
+				higher++;
+
 			} catch (IOException e) {
 				// not created, let's continue...
-				higher++;
 				if (attemptsRemaining <= 0) {
 					throw new ProgramException("unable to create a temporary file into "+directory.getAbsolutePath()+"; after many tries; maybe it is full or not writable ? "+e.getMessage(), e);
 				}

@@ -126,6 +126,7 @@ public class AbstractGraphstreamGraphWriterExecution
 			
 		} catch (Exception e) {
 			e.printStackTrace();
+			messages.errorTech("stopped because of error: "+e.getLocalizedMessage(), getClass(), e);
 			progress.setComputationState(ComputationState.FINISHED_FAILURE);
 			// TODO store info exception
 		}

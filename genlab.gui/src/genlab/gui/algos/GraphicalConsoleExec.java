@@ -3,6 +3,7 @@ package genlab.gui.algos;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.exec.ConnectionExecFromIterationToReduce;
+import genlab.core.model.exec.ConnectionExecFromSupervisorToChild;
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.exec.IConnectionExecution;
 import genlab.core.model.instance.IAlgoInstance;
@@ -46,7 +47,7 @@ public class GraphicalConsoleExec extends AbstractOpenViewAlgoExec {
 		for (IConnectionExecution c: getConnectionsForInput(algoInst.getInputInstanceForInput(GraphicalConsoleAlgo.INPUT))) {
 		
 			// ignore reduced connections that where displayed previously
-			if (!(c instanceof ConnectionExecFromIterationToReduce))
+			if (c instanceof ConnectionExecFromIterationToReduce || c instanceof ConnectionExecFromSupervisorToChild)
 				continue;
 		
 			values.put(c.getConnection(), c.getValue());

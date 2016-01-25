@@ -10,6 +10,7 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IInputOutputInstance;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class AbstractContainerExecutionIteration
 		}
 		
 		initSubtasks();
-		progress.setComputationState(ComputationState.WAITING_DEPENDENCY);
+		initComputationState();
 
 
 	}
@@ -95,6 +96,8 @@ public class AbstractContainerExecutionIteration
 	@Override
 	public void initInputs(Map<IAlgoInstance,IAlgoExecution> instance2exec) {
 		
+		this.input2connection = new HashMap<IInputOutputInstance, Collection<IConnectionExecution>>();
+
 		AlgoContainerInstance algoContainerInst = (AlgoContainerInstance)algoInst;
 		
 		// creates links from this iteration to its supervisor

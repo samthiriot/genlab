@@ -5,8 +5,8 @@ import genlab.core.exec.IExecution;
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.meta.LoopForAlgo;
 
-public class LoopAlgoExecutionSupervisor extends
-		AbstractContainerExecutionSupervisor {
+public class LoopAlgoExecutionSupervisor 
+					extends AbstractContainerExecutionSupervisor {
 
 	final Object lockIterations = new Object();
 	final int iterationsTotal;
@@ -28,7 +28,6 @@ public class LoopAlgoExecutionSupervisor extends
 
 	@Override
 	protected void initFirstRun() {
-		// TODO Auto-generated method stub
 
 	}
 

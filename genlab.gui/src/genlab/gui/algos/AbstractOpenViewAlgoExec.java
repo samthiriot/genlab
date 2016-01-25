@@ -56,6 +56,12 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 	 */
 	protected AbstractViewOpenedByAlgo theView = null;
 	
+	/**
+	 * If true, means the view is currently being displayed. 
+	 * Avoids to recall the opening feature many times
+	 */
+	protected boolean viewOpeningOngoing = false;
+	
 	protected List<List<Object>> pendingForDisplay = new LinkedList();
 	
 	public AbstractOpenViewAlgoExec(IExecution exec, IAlgoInstance algoInst, String viewId) {
@@ -117,6 +123,8 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 	
 	protected void openView() {
 		
+		viewOpeningOngoing = true;
+		
 		Display display = Display.getDefault();
 		
 		if (display == null) {
@@ -174,6 +182,11 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 	
 	public void callbackRegisterView(AbstractViewOpenedByAlgo theView) {
 		
+		// will be called when the view is opened from the SWT thread (async)
+		// possibilities: 
+		// * either we were open after starting because we are showing results as we run; in this case our state is STARTED or FINISHED (as the running block might have finished while we were opening the view) 
+		// * or we were open to display results continuously; then we don't display yet all our inputs.
+		
 		GLLogger.debugTech("received a view ! Let's display results.", getClass());
 		this.theView = theView;
 		
@@ -189,7 +202,8 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 			pendingForDisplay.clear();
 		}
 		
-		displayResultsSync(theView);
+		if (progress.getComputationState() == ComputationState.STARTED || progress.getComputationState() == ComputationState.FINISHED_OK)
+			displayResultsSync(theView);
 		
 	}
 	
@@ -201,6 +215,8 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 		
 		if (theView != null)
 			return false;
+		if (viewOpeningOngoing)
+			return true;
 		
 		GLLogger.debugTech("opening the  view...", getClass());
 		
