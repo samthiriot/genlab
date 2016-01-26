@@ -24,7 +24,7 @@ public abstract class AbstractIGraphWriterAlgo extends AbstractIGraphAlgo {
 			"graph_"
 	);
 	
-	public static final StringParameter PARAM_FILENAME_EXTENSION = new StringParameter(
+	public final StringParameter PARAM_FILENAME_EXTENSION = new StringParameter(
 			"param_filename_extension",
 			"filename extension",
 			"the file will be written in the experiment output directory with <prefix><number>.<extension>",

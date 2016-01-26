@@ -47,7 +47,7 @@ public abstract class AbstractIGraphWriterExec extends AbstractIGraphExec {
 		File targetFile = FileUtils.createFileWithIncrementingNumber(
 				getExecution().getResultsDirectory(), 
 				(String)getAlgoInstance().getValueForParameter(AbstractIGraphWriterAlgo.PARAM_FILENAME_PREFIX), 
-				(String)getAlgoInstance().getValueForParameter(AbstractIGraphWriterAlgo.PARAM_FILENAME_EXTENSION)
+				(String)getAlgoInstance().getValueForParameter(((AbstractIGraphWriterAlgo)getAlgoInstance().getAlgo()).PARAM_FILENAME_EXTENSION)
 				);
 		messages.infoUser("the graph will be written to "+targetFile.getAbsolutePath(), getClass());
 		progress.setProgressTotal(5);
