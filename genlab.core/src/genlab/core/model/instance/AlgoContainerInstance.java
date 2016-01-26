@@ -154,6 +154,8 @@ public class AlgoContainerInstance extends AlgoInstance implements IAlgoContaine
 		// ensure that each output of this algo is linked with a reduce algo
 		final Collection<IAlgoInstance> dep = getAlgoInstancesDependingToOurChildren();
 		for (IAlgoInstance dependantAlgo : dep) {
+			if (dependantAlgo.isContainedInto(this))
+				continue;
 			if (!(dependantAlgo.getAlgo() instanceof IReduceAlgo)) {
 				// TODO nice(r) message; for instance, add the list of algos which may be used there.
 				res.messages.errorUser(
