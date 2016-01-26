@@ -75,6 +75,26 @@
             class="genlab.igraph.algos.measure.IGraphNodeAlphaCentralityAlgo"
             id="genlab.igraph.algos.measure.IGraphNodeAlphaCentralityAlgo">
       </algo>
+      <algo
+            class="genlab.igraph.algos.writers.WriteEdgeListAlgo"
+            id="genlab.igraph.algos.writers.WriteEdgeListAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.writers.WriteGraphMLAlgo"
+            id="genlab.igraph.algos.writers.WriteGraphMLAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.writers.WritePajekAlgo"
+            id="genlab.igraph.algos.writers.WritePajekAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.writers.WriteGMLAlgo"
+            id="genlab.igraph.algos.writers.WriteGMLAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.writers.WriteDotAlgo"
+            id="genlab.igraph.algos.writers.WriteDotAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -317,7 +337,58 @@
             library_id="genlab.igraph.doc.library.igraph">
          <more_info
                content="R documentation"
-               url="http://igraph.org/r/doc/alpha.centrality.html">
+               url="http://igraph.org/r/doc/alpha_centrality.html">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.writers.WriteEdgeListAlgo"
+            library_id="genlab.igraph.doc.library.igraph"
+            memory_complexity="O(n)"
+            time_complexity="O(n)">
+         <more_info
+               content="R documentation"
+               url="http://igraph.org/r/doc/write_graph.html">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.writers.WriteGraphMLAlgo"
+            description="write the graph in NCol format"
+            library_id="genlab.igraph.doc.library.igraph"
+            memory_complexity="O(n)"
+            time_complexity="O(n)">
+         <more_info
+               content="R documentation"
+               url="http://igraph.org/r/doc/write_graph.html">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.writers.WritePajekAlgo"
+            library_id="genlab.igraph.doc.library.igraph"
+            memory_complexity="O(n)"
+            time_complexity="O(n)">
+         <more_info
+               content="R documentation"
+               url="http://igraph.org/r/doc/write_graph.html">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.writers.WriteGMLAlgo"
+            library_id="genlab.igraph.doc.library.igraph"
+            memory_complexity="O(n)"
+            time_complexity="O(n)">
+         <more_info
+               content="R documentation"
+               url="http://igraph.org/r/doc/write_graph.html">
+         </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.writers.WriteDotAlgo"
+            library_id="genlab.igraph.doc.library.igraph"
+            memory_complexity="O(n)"
+            time_complexity="O(n)">
+         <more_info
+               content="R documentation"
+               url="http://igraph.org/r/doc/write_graph.html">
          </more_info>
       </docalgo>
    </extension>

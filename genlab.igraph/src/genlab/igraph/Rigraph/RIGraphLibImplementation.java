@@ -1,5 +1,8 @@
 package genlab.igraph.Rigraph;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import genlab.core.commons.NotImplementedException;
 import genlab.core.commons.ProgramException;
 import genlab.core.exec.IExecution;
@@ -316,7 +319,6 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		Rsession rsession = null;
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
 			initializeSession(rsession, seed, execution.getListOfMessages());
 
 			// create graph
@@ -375,14 +377,8 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		Rsession rsession = null;
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
-			
+			initializeSession(rsession, null, execution.getListOfMessages());
+
 			// create graph
 			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
 
@@ -476,13 +472,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
+			initializeSession(rsession, null, execution.getListOfMessages());
 			
 			// create graph
 			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
@@ -517,13 +507,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
+			initializeSession(rsession, null, execution.getListOfMessages());
 			
 			// create graph
 			RIGraph2Genlab.loadGraphToRIgraph(g1, rsession, "g1", execution.getListOfMessages());
@@ -580,13 +564,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
+			initializeSession(rsession, null, execution.getListOfMessages());
 			
 			// create graph
 			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
@@ -618,13 +596,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
+			initializeSession(rsession, null, execution.getListOfMessages());
 			
 			// create graph
 			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
@@ -658,13 +630,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
+			initializeSession(rsession, null, execution.getListOfMessages());
 			
 			// create graph
 			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
@@ -701,13 +667,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
+			initializeSession(rsession, null, execution.getListOfMessages());
 			
 			// create graph
 			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
@@ -746,13 +706,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
+			initializeSession(rsession, null, execution.getListOfMessages());
 			
 			// create graph
 			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
@@ -789,12 +743,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
+			initializeSession(rsession, null, execution.getListOfMessages());
 			
 			if (!rsession.isPackageLoaded("Matrix"))
 				rsession.loadPackage("Matrix");
@@ -843,13 +792,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
+			initializeSession(rsession, null, execution.getListOfMessages());
 			
 			// create graph
 			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
@@ -886,13 +829,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
+			initializeSession(rsession, null, execution.getListOfMessages());
 			
 			// create graph
 			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
@@ -928,13 +865,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
+			initializeSession(rsession, null, execution.getListOfMessages());
 			
 			// create graph
 			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
@@ -967,13 +898,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
+			initializeSession(rsession, null, execution.getListOfMessages());
 			
 			// create graph
 			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
@@ -1006,13 +931,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
+			initializeSession(rsession, null, execution.getListOfMessages());
 			
 			// create graph
 			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
@@ -1046,13 +965,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		
 		try {
 			rsession = Genlab2RSession.pickOneSessionFromPool();
-	
-			// load lib
-			if (!rsession.isPackageLoaded("igraph"))
-				rsession.loadPackage("igraph");
-			
-			if (!rsession.isPackageLoaded("igraph"))
-				throw new ProgramException("was unable to load the igraph package in the R session");
+			initializeSession(rsession, null, execution.getListOfMessages());
 			
 			// create graph
 			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
@@ -1078,4 +991,183 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		}
 	}
 
+	private void writeGraphWithOptions(IGenlabGraph g, String filename, String format, Map<String,String> parameters, IExecution execution) {
+
+		Rsession rsession = null;
+		
+		// TODO ensure the file can be written there
+		
+		try {
+			rsession = Genlab2RSession.pickOneSessionFromPool();
+			initializeSession(rsession, null, execution.getListOfMessages());
+			
+			// create graph
+			RIGraph2Genlab.loadGraphToRIgraph(g, rsession, "g", execution.getListOfMessages());
+			
+			// measure it
+			StringBuffer sb = new StringBuffer();
+			sb.append("write.graph(g, file=\"");
+			sb.append(filename);
+			sb.append("\", format=\"");
+			sb.append(format);
+			sb.append("\"");
+			
+			if (parameters != null) {
+				for (String key: parameters.keySet()) {
+					sb.append(", ");
+					sb.append(key);
+					Object value = parameters.get(key);
+					if (value instanceof String)
+						sb.append("\"").append(value).append("\"");
+					else 
+						sb.append(value);
+				}
+			}
+			sb.append(")");
+			
+			rsession.eval(sb.toString());
+			Genlab2RSession.checkStatus(rsession);
+			
+			// TODO check file written ? 
+			
+		} finally {
+
+			if (rsession != null) {
+				// reclaim R memory
+				rsession.unset("g");
+				// return the session to the pool
+				Genlab2RSession.returnSessionFromPool(rsession);
+			}
+			
+		}
+	}
+
+	public void writeGraphEdgelist(IGenlabGraph g, String filename, IExecution execution) {
+		
+		writeGraphWithOptions(
+				g, 
+				filename, 
+				"edgelist", 
+				null, 
+				execution
+				);
+	}
+	public void writeGraphPajek(IGenlabGraph g, String filename, IExecution execution) {
+		
+		writeGraphWithOptions(
+				g, 
+				filename, 
+				"pajek", 
+				null, 
+				execution
+				);
+	}
+	public void writeGraphGraphML(IGenlabGraph g, String filename, IExecution execution) {
+		
+		writeGraphWithOptions(
+				g, 
+				filename, 
+				"graphml", 
+				null, 
+				execution
+				);
+	}
+	public void writeGraphDot(IGenlabGraph g, String filename, IExecution execution) {
+		
+		writeGraphWithOptions(
+				g, 
+				filename, 
+				"dot", 
+				null, 
+				execution
+				);
+	}
+	/**
+	 * TODO test
+	 * @param g
+	 * @param filename
+	 * @param execution
+	 * @param attributeNameForEdgeWeights
+	 */
+	public void writeGraphLGL(IGenlabGraph g, String filename, IExecution execution, String attributeNameForEdgeWeights) {
+		
+		Map<String,String> parameters = new HashMap<String, String>();
+		parameters.put("names", "id");
+		parameters.put("weights", attributeNameForEdgeWeights);
+		parameters.put("isolates", "\"TRUE\"");
+		
+		writeGraphWithOptions(
+				g, 
+				filename, 
+				"lgl", 
+				parameters, 
+				execution
+				);
+	}
+	/**
+	 * TODO test
+	 * @param g
+	 * @param filename
+	 * @param execution
+	 * @param attributeNameForEdgeWeights
+	 */
+	public void writeGraphNcol(IGenlabGraph g, String filename, IExecution execution, String attributeNameForEdgeWeights) {
+		
+		Map<String,String> parameters = new HashMap<String, String>();
+		parameters.put("names", "id");
+		parameters.put("weights", attributeNameForEdgeWeights);
+		
+		writeGraphWithOptions(
+				g, 
+				filename, 
+				"ncol", 
+				parameters, 
+				execution
+				);
+	}
+	/* TODO implement ?
+	public void writeGraphDimacs(IGenlabGraph g, String filename, IExecution execution, String attributeNameForEdgeWeights) {
+		
+		Map<String,String> parameters = new HashMap<String, String>();
+		parameters.put("names", "id");
+		parameters.put("weights", attributeNameForEdgeWeights);
+		
+		writeGraphWithOptions(
+				g, 
+				filename, 
+				"ncol", 
+				parameters, 
+				execution
+				);
+	}
+	*/
+	public void writeGraphGML(IGenlabGraph g, String filename, IExecution execution) {
+		
+		if (g.hasEdgeAttribute("source"))
+			execution.getListOfMessages().warnUser("the edge attribute \"source\" is ignored by igraph during exportation in GML; if you want to keep it, please rename it first", getClass());
+		if (g.hasEdgeAttribute("target"))
+			execution.getListOfMessages().warnUser("the edge attribute \"target\" is ignored by igraph during exportation in GML; if you want to keep it, please rename it first", getClass());
+		
+		writeGraphWithOptions(
+				g, 
+				filename, 
+				"gml", 
+				null, 
+				execution
+				);
+	}
+	public void writeGraphLeda(IGenlabGraph g, String filename, IExecution execution, String attributeNameForVertexAttribute, String attributeNameForEdgeAttribute) {
+		
+		Map<String,String> parameters = new HashMap<String, String>();
+		parameters.put("vertex.attr", attributeNameForVertexAttribute);
+		parameters.put("edge.attr", attributeNameForEdgeAttribute);
+		
+		writeGraphWithOptions(
+				g, 
+				filename, 
+				"leda", 
+				null, 
+				execution
+				);
+	}
 }
