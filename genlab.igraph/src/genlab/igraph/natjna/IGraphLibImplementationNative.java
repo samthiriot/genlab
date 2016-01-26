@@ -924,4 +924,10 @@ public class IGraphLibImplementationNative implements IGraphLibImplementation {
 
 	}
 
+	@Override
+	public IGenlabGraph readGraphEdgelist(String filename, IExecution execution) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+	}
+
 }

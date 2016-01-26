@@ -182,6 +182,55 @@ public interface IGraphLibImplementation {
 			String attributeNameForEdgeAttribute
 			);
 	
+	public IGenlabGraph readGraphEdgelist(
+			String filename,
+			IExecution execution,
+			boolean directed
+			);
 
+	public IGenlabGraph readGraphPajek(
+			String filename,
+			IExecution execution
+			);
+	
+	public IGenlabGraph readGraphGraphML(
+			String filename,
+			IExecution execution
+			);
+	
+	public IGenlabGraph readGraphGML(
+			String filename,
+			IExecution execution
+			);
+	
+	public IGenlabGraph readGraphDL(
+			String filename,
+			IExecution execution,
+			boolean directed
+			);
+
+	public IGenlabGraph readGraphNcol(
+			String filename,
+			IExecution execution,
+			boolean directed
+			);
+
+	public IGenlabGraph readGraphLGL(
+			String filename,
+			IExecution execution
+			);
+	
+	public IGenlabGraph readGraphDIMACS(
+			String filename,
+			IExecution execution,
+			boolean directed
+			);
+	
+	public IGenlabGraph readGraphGraphDB(
+			String filename,
+			IExecution execution,
+			boolean directed
+			);
+	
 	
 }

@@ -95,6 +95,42 @@
             class="genlab.igraph.algos.writers.WriteDotAlgo"
             id="genlab.igraph.algos.writers.WriteDotAlgo">
       </algo>
+      <algo
+            class="genlab.igraph.algos.readers.ReadPajekAlgo"
+            id="genlab.igraph.algos.readers.ReadPajekAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.readers.ReadGraphMLAlgo"
+            id="genlab.igraph.algos.readers.ReadGraphMLAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.readers.ReadGMLAlgo"
+            id="genlab.igraph.algos.readers.ReadGMLAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.readers.ReadLGLAlgo"
+            id="genlab.igraph.algos.readers.ReadLGLAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.readers.ReadEdgelistAlgo"
+            id="genlab.igraph.algos.readers.ReadEdgelistAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.readers.ReadDLAlgo"
+            id="genlab.igraph.algos.readers.ReadDLAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.readers.ReadNcolAlgo"
+            id="genlab.igraph.algos.readers.ReadNcolAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.readers.ReadDimacsAlgo"
+            id="genlab.igraph.algos.readers.ReadDimacsAlgo">
+      </algo>
+      <algo
+            class="genlab.igraph.algos.readers.ReadGraphDBAlgo"
+            id="genlab.igraph.algos.readers.ReadGraphDBAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">
@@ -390,6 +426,80 @@
                content="R documentation"
                url="http://igraph.org/r/doc/write_graph.html">
          </more_info>
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.readers.ReadPajekAlgo"
+            library_id="genlab.igraph.doc.library.igraph"
+            memory_complexity="O(n)"
+            time_complexity="O(n)"
+            time_complexity_best="O(n)"
+            time_complexity_worst="O(n)">
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.readers.ReadGraphMLAlgo"
+            library_id="genlab.igraph.doc.library.igraph"
+            memory_complexity="O(n)"
+            time_complexity="O(n)"
+            time_complexity_best="O(n)"
+            time_complexity_worst="O(n)">
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.readers.ReadGMLAlgo"
+            library_id="genlab.igraph.doc.library.igraph"
+            memory_complexity="O(n)"
+            time_complexity="O(n)"
+            time_complexity_best="O(n)"
+            time_complexity_worst="O(n)">
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.readers.ReadLGLAlgo"
+            library_id="genlab.igraph.doc.library.igraph"
+            memory_complexity="O(n)"
+            time_complexity="O(n)"
+            time_complexity_best="O(n)"
+            time_complexity_worst="O(n)">
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.readers.ReadEdgelistAlgo"
+            library_id="genlab.igraph.doc.library.igraph"
+            memory_complexity="O(n)"
+            time_complexity="O(n)"
+            time_complexity_best="O(n)"
+            time_complexity_worst="O(n)">
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.readers.ReadDLAlgo"
+            implementation_notes="O(n)"
+            library_id="genlab.igraph.doc.library.igraph"
+            memory_complexity="O(n)"
+            time_complexity="O(n)"
+            time_complexity_best="O(n)"
+            time_complexity_worst="O(n)">
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.readers.ReadNcolAlgo"
+            implementation_notes="O(n)"
+            library_id="genlab.igraph.doc.library.igraph"
+            memory_complexity="O(n)"
+            time_complexity="O(n)"
+            time_complexity_best="O(n)"
+            time_complexity_worst="O(n)">
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.readers.ReadDimacsAlgo"
+            library_id="genlab.igraph.doc.library.igraph"
+            memory_complexity="O(n)"
+            time_complexity="O(n)"
+            time_complexity_best="O(n)"
+            time_complexity_worst="O(n)">
+      </docalgo>
+      <docalgo
+            algo_id="genlab.igraph.algos.readers.ReadGraphDBAlgo"
+            library_id="genlab.igraph.doc.library.igraph"
+            memory_complexity="O(n)"
+            time_complexity="O(n)"
+            time_complexity_best="O(n)"
+            time_complexity_worst="O(n)">
       </docalgo>
    </extension>
 

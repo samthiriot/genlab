@@ -991,7 +991,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 		}
 	}
 
-	private void writeGraphWithOptions(IGenlabGraph g, String filename, String format, Map<String,String> parameters, IExecution execution) {
+	private void writeGraphWithOptions(IGenlabGraph g, String filename, String format, Map<String,Object> parameters, IExecution execution) {
 
 		Rsession rsession = null;
 		
@@ -1011,18 +1011,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 			sb.append("\", format=\"");
 			sb.append(format);
 			sb.append("\"");
-			
-			if (parameters != null) {
-				for (String key: parameters.keySet()) {
-					sb.append(", ");
-					sb.append(key);
-					Object value = parameters.get(key);
-					if (value instanceof String)
-						sb.append("\"").append(value).append("\"");
-					else 
-						sb.append(value);
-				}
-			}
+			appendToRCommandLineParameters(sb, parameters);
 			sb.append(")");
 			
 			rsession.eval(sb.toString());
@@ -1091,7 +1080,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 	 */
 	public void writeGraphLGL(IGenlabGraph g, String filename, IExecution execution, String attributeNameForEdgeWeights) {
 		
-		Map<String,String> parameters = new HashMap<String, String>();
+		Map<String,Object> parameters = new HashMap<String, Object>();
 		parameters.put("names", "id");
 		parameters.put("weights", attributeNameForEdgeWeights);
 		parameters.put("isolates", "\"TRUE\"");
@@ -1113,7 +1102,7 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 	 */
 	public void writeGraphNcol(IGenlabGraph g, String filename, IExecution execution, String attributeNameForEdgeWeights) {
 		
-		Map<String,String> parameters = new HashMap<String, String>();
+		Map<String,Object> parameters = new HashMap<String, Object>();
 		parameters.put("names", "id");
 		parameters.put("weights", attributeNameForEdgeWeights);
 		
@@ -1170,4 +1159,122 @@ public class RIGraphLibImplementation implements IGraphLibImplementation {
 				execution
 				);
 	}
+	
+	private void appendToRCommandLineParameters(StringBuffer sb, Map<String,Object> parameters) {
+
+		if (parameters != null) {
+			for (String key: parameters.keySet()) {
+				sb.append(", ");
+				sb.append(key);
+				Object value = parameters.get(key);
+				if (value instanceof String)
+					sb.append("\"").append(value).append("\"");
+				else if (value instanceof Boolean)
+					sb.append(((Boolean)value)?"TRUE":"FALSE");
+				else 
+					sb.append(value);
+			}
+		}
+		
+	}
+	
+	private IGenlabGraph readGraph(String filename, String format, Map<String,Object> parameters, IExecution execution) {
+
+		Rsession rsession = null;
+		
+		// TODO ensure the file exists there
+		
+		try {
+			rsession = Genlab2RSession.pickOneSessionFromPool();
+			initializeSession(rsession, null, execution.getListOfMessages());
+		
+			// measure it
+			StringBuffer sb = new StringBuffer();
+			sb.append("g <- read.graph(file=\"");
+			sb.append(filename);
+			sb.append("\", format=\"");
+			sb.append(format);
+			sb.append("\"");
+			appendToRCommandLineParameters(sb, parameters);
+			sb.append(")");
+			
+			rsession.eval(sb.toString());
+			Genlab2RSession.checkStatus(rsession);
+			
+			// create graph
+			return RIGraph2Genlab.loadGraphFromRIgraph(rsession, "g", false, execution.getListOfMessages());
+			
+			// TODO check file written ? 
+			
+		} finally {
+
+			if (rsession != null) {
+				// reclaim R memory
+				rsession.unset("g");
+				// return the session to the pool
+				Genlab2RSession.returnSessionFromPool(rsession);
+			}
+			
+		}
+	}
+
+	@Override
+	public IGenlabGraph readGraphEdgelist(String filename, IExecution execution, boolean directed) {
+		Map<String,Object> parameters = new HashMap<String, Object>();
+		parameters.put("directed", directed);
+		return readGraph(filename, "edgelist", parameters, execution);
+	}
+
+	@Override
+	public IGenlabGraph readGraphPajek(String filename, IExecution execution) {
+		return readGraph(filename, "pajek", null, execution);
+	}
+
+	@Override
+	public IGenlabGraph readGraphGraphML(String filename, IExecution execution) {
+		return readGraph(filename, "graphml", null, execution);
+	}
+
+	@Override
+	public IGenlabGraph readGraphGML(String filename, IExecution execution) {
+		return readGraph(filename, "gml", null, execution);
+	}
+
+	@Override
+	public IGenlabGraph readGraphDL(String filename, IExecution execution,
+			boolean directed) {
+		Map<String,Object> parameters = new HashMap<String, Object>();
+		parameters.put("directed", directed);
+		return readGraph(filename, "dl", parameters, execution);
+	}
+
+	@Override
+	public IGenlabGraph readGraphNcol(String filename, IExecution execution,
+			boolean directed) {
+		Map<String,Object> parameters = new HashMap<String, Object>();
+		parameters.put("directed", directed);
+		return readGraph(filename, "ncol", parameters, execution);
+	}
+
+	@Override
+	public IGenlabGraph readGraphLGL(String filename, IExecution execution) {
+		return readGraph(filename, "lgl", null, execution);
+	}
+
+	@Override
+	public IGenlabGraph readGraphDIMACS(String filename, IExecution execution,
+			boolean directed) {
+		Map<String,Object> parameters = new HashMap<String, Object>();
+		parameters.put("directed", directed);
+		return readGraph(filename, "dimacs", parameters, execution);
+	}
+
+	@Override
+	public IGenlabGraph readGraphGraphDB(String filename, IExecution execution,
+			boolean directed) {
+		Map<String,Object> parameters = new HashMap<String, Object>();
+		parameters.put("directed", directed);
+		return readGraph(filename, "graphdb", parameters, execution);
+	}
+	
 }
