@@ -3,17 +3,12 @@ package genlab.igraph.algos.generation;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.AlgoCategory;
-import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.basics.flowtypes.GraphInOut;
 import genlab.core.parameters.RNGSeedParameter;
-import genlab.igraph.Activator;
-import genlab.igraph.commons.IgraphLibFactory;
-import genlab.igraph.parameters.ChoiceOfImplementationParameter;
+import genlab.igraph.algos.AbstractIGraphAlgo;
 
-import org.osgi.framework.Bundle;
-
-public abstract class AbstractIGraphGenerator extends BasicAlgo {
+public abstract class AbstractIGraphGenerator extends AbstractIGraphAlgo {
 
 	public static final GraphInOut OUTPUT_GRAPH = new GraphInOut( 
 			"out_graph", 
@@ -21,8 +16,6 @@ public abstract class AbstractIGraphGenerator extends BasicAlgo {
 			"the graph generated"
 	);
 	
-	public static final ChoiceOfImplementationParameter PARAM_IMPLEMENTATION = new ChoiceOfImplementationParameter();
-
 	public static final RNGSeedParameter PARAM_SEED = new RNGSeedParameter(
 			"param_seed", 
 			"seed", 
@@ -49,27 +42,14 @@ public abstract class AbstractIGraphGenerator extends BasicAlgo {
 				name, 
 				description, 
 				category,
-				"/icons/igraph"+IMAGE_PATH_PLACEHOLDER_SIZE+".png",
-				"/icons/igraphBig.png"
+				null
 				);
 		
 		outputs.add(OUTPUT_GRAPH);
-
-		registerParameter(PARAM_IMPLEMENTATION);
 		
 		if (declareParamSeed)
 			registerParameter(PARAM_SEED);
 		
-	}
-
-	@Override
-	public Bundle getBundle() {
-		return Activator.getDefault().getBundle();
-	}
-
-	@Override
-	public boolean isAvailable() {
-		return IgraphLibFactory.isIGraphAvailable();
 	}
 
 

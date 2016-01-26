@@ -1,16 +1,12 @@
 package genlab.igraph.algos.transform;
 
 import genlab.core.model.meta.AlgoCategory;
-import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
-import genlab.igraph.Activator;
-import genlab.igraph.natjna.IGraphRawLibrary;
+import genlab.igraph.algos.AbstractIGraphAlgo;
 
-import org.osgi.framework.Bundle;
-
-public abstract class AbstractIGraphTransform extends BasicAlgo {
+public abstract class AbstractIGraphTransform extends AbstractIGraphAlgo {
 
 	public static final InputOutput<IGenlabGraph> INPUT_GRAPH = new InputOutput<IGenlabGraph>(
 			SimpleGraphFlowType.SINGLETON, 
@@ -36,21 +32,11 @@ public abstract class AbstractIGraphTransform extends BasicAlgo {
 				name, 
 				description, 
 				category,
-				"/icons/igraph"+IMAGE_PATH_PLACEHOLDER_SIZE+".png",
-				"/icons/igraphBig.png"
+				null
 				);
 		
 		inputs.add(INPUT_GRAPH);
 		outputs.add(OUTPUT_GRAPH);
 	}
 
-	@Override
-	public Bundle getBundle() {
-		return Activator.getDefault().getBundle();
-	}
-
-	@Override
-	public boolean isAvailable() {
-		return IGraphRawLibrary.isAvailable;
-	}
 }

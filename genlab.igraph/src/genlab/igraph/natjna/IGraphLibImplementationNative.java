@@ -859,4 +859,69 @@ public class IGraphLibImplementationNative implements IGraphLibImplementation {
 		throw new NotImplementedException();
 	}
 
+	@Override
+	public void writeGraphEdgelist(IGenlabGraph g, String filename,
+			IExecution execution) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+
+	}
+
+	@Override
+	public void writeGraphPajek(IGenlabGraph g, String filename,
+			IExecution execution) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+
+	}
+
+	@Override
+	public void writeGraphGraphML(IGenlabGraph g, String filename,
+			IExecution execution) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+
+	}
+
+	@Override
+	public void writeGraphDot(IGenlabGraph g, String filename,
+			IExecution execution) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+
+	}
+
+	@Override
+	public void writeGraphLGL(IGenlabGraph g, String filename,
+			IExecution execution, String attributeNameForEdgeWeights) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+
+	}
+
+	@Override
+	public void writeGraphNcol(IGenlabGraph g, String filename,
+			IExecution execution, String attributeNameForEdgeWeights) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+
+	}
+
+	@Override
+	public void writeGraphGML(IGenlabGraph g, String filename,
+			IExecution execution) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+
+	}
+
+	@Override
+	public void writeGraphLeda(IGenlabGraph g, String filename,
+			IExecution execution, String attributeNameForVertexAttribute,
+			String attributeNameForEdgeAttribute) {
+		// TODO Auto-generated method stub
+		throw new NotImplementedException();
+
+	}
+
 }

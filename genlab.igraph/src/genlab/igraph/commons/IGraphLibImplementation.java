@@ -129,6 +129,59 @@ public interface IGraphLibImplementation {
 	public Double computeGlobalClusteringLocal(
 			IGenlabGraph g, 
 			IExecution execution);
+	
+	public void writeGraphEdgelist(
+			IGenlabGraph g, 
+			String filename, 
+			IExecution execution
+			);
+
+	public void writeGraphPajek(
+			IGenlabGraph g, 
+			String filename, 
+			IExecution execution
+			);
+
+	public void writeGraphGraphML(
+			IGenlabGraph g, 
+			String filename, 
+			IExecution execution
+			);
+
+	public void writeGraphDot(
+			IGenlabGraph g, 
+			String filename, 
+			IExecution execution
+			);
+
+	public void writeGraphLGL(
+			IGenlabGraph g, 
+			String filename, 
+			IExecution execution, 
+			String attributeNameForEdgeWeights
+			);
+
+	public void writeGraphNcol(
+			IGenlabGraph g, 
+			String filename, 
+			IExecution execution, 
+			String attributeNameForEdgeWeights
+			);
+
+	public void writeGraphGML(
+			IGenlabGraph g, 
+			String filename, 
+			IExecution execution
+			);
+
+	public void writeGraphLeda(
+			IGenlabGraph g, 
+			String filename, 
+			IExecution execution, 
+			String attributeNameForVertexAttribute, 
+			String attributeNameForEdgeAttribute
+			);
+	
 
 	
 }

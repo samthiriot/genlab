@@ -3,16 +3,15 @@ package genlab.igraph.algos.generation;
 import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IAlgoExecutionRemotable;
 import genlab.core.exec.IExecution;
-import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
-import genlab.core.model.exec.ComputationProgressWithSteps;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.igraph.algos.AbstractIGraphExec;
 
 public abstract class AbstractIGraphGeneratorExec 	
-										extends AbstractAlgoExecutionOneshot 
+										extends AbstractIGraphExec 
 										implements IAlgoExecutionRemotable
 										{
 
@@ -22,8 +21,7 @@ public abstract class AbstractIGraphGeneratorExec
 			) {
 		super(
 				exec, 
-				algoInst, 
-				new ComputationProgressWithSteps()
+				algoInst
 				);
 		
 	}

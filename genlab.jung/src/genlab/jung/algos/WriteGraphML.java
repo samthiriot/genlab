@@ -2,6 +2,7 @@ package genlab.jung.algos;
 
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.io.GraphMLWriter;
+import genlab.core.commons.FileUtils;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
@@ -42,7 +43,7 @@ public class WriteGraphML extends BasicAlgo {
 	
 	public WriteGraphML() {
 		super(
-				"write as GraphML", 
+				"write as GraphML (jung)", 
 				"writes a graph in GraphML", 
 				ExistingAlgoCategories.WRITER_GRAPH, 
 				null, 
@@ -85,8 +86,12 @@ public class WriteGraphML extends BasicAlgo {
 					
 					
 					// create output file
-					File tmpFile = File.createTempFile("genlab_tmp_", ".net");
-
+					File tmpFile = FileUtils.createFileWithIncrementingNumber(
+							exec.getResultsDirectory(), 
+							"graph_",
+							".graphml"
+							);
+							
 					progress.incProgressMade();
 					
 					// transform graph

@@ -11,10 +11,11 @@ import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListOfMessages;
+import genlab.igraph.algos.AbstractIGraphExec;
 import genlab.igraph.commons.IGraph2GenLabConvertor;
 import genlab.igraph.natjna.IGraphGraph;
 
-public abstract class AbstractIGraphTransformExec extends AbstractAlgoExecutionOneshot {
+public abstract class AbstractIGraphTransformExec extends AbstractIGraphExec {
 
 	public AbstractIGraphTransformExec(
 			IExecution exec, 
@@ -22,8 +23,7 @@ public abstract class AbstractIGraphTransformExec extends AbstractAlgoExecutionO
 			) {
 		super(
 				exec, 
-				algoInst, 
-				new ComputationProgressWithSteps()
+				algoInst
 				);
 		
 	}

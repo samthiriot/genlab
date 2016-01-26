@@ -11,6 +11,7 @@ import genlab.igraph.natjna.IGraphRawLibrary;
 
 import org.osgi.framework.Bundle;
 
+// TODO subclass AbstractIGraphAlgo
 public abstract class BasicIsomorphism extends BasicAlgo {
 
 	public static final InputOutput<IGenlabGraph> INPUT_GRAPH1 = new InputOutput<IGenlabGraph>(
