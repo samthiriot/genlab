@@ -8,6 +8,7 @@ import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.igraph.algos.AbstractIGraphAlgo;
 import genlab.igraph.algos.AbstractIGraphExec;
 import genlab.igraph.algos.measure.AbstractIGraphMeasure;
 
@@ -45,8 +46,8 @@ public abstract class AbstractIGraphWriterExec extends AbstractIGraphExec {
 		// generate a file name
 		File targetFile = FileUtils.createFileWithIncrementingNumber(
 				getExecution().getResultsDirectory(), 
-				"graph_", 
-				((AbstractIGraphWriterAlgo)getAlgoInstance().getAlgo()).extension
+				(String)getAlgoInstance().getValueForParameter(AbstractIGraphWriterAlgo.PARAM_FILENAME_PREFIX), 
+				(String)getAlgoInstance().getValueForParameter(AbstractIGraphWriterAlgo.PARAM_FILENAME_EXTENSION)
 				);
 		messages.infoUser("the graph will be written to "+targetFile.getAbsolutePath(), getClass());
 		progress.setProgressTotal(5);
