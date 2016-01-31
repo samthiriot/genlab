@@ -1,6 +1,7 @@
 package genlab.gui.launchconfigurations;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -13,10 +14,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.exec.GenlabExecution;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.gui.Activator;
+import genlab.gui.Utils;
 import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 import genlab.gui.perspectives.RunPerspective;
 
@@ -41,7 +44,7 @@ public class GenlabLaunchConfiguration implements ILaunchConfigurationDelegate {
 				GenlabWorkflowLaunchConfigurationTabFirst.KEY_PROJECT, 
 				"haha"
 				);
-		final String workflowPath = configuration.getAttribute(
+		final String workflowRelativePath = configuration.getAttribute(
 				GenlabWorkflowLaunchConfigurationTabFirst.KEY_WORKFLOW, 
 				"haha"
 				);
@@ -51,10 +54,16 @@ public class GenlabLaunchConfiguration implements ILaunchConfigurationDelegate {
 				false
 				);
 
-
 		IProject pro = GenLab2eclipseUtils.getProjectFromRelativePath(projectPath);
-		File workflowFile = new File(pro.getLocation().toOSString()+File.separator+workflowPath);
-		final IGenlabWorkflowInstance glWorkflow = GenlabPersistence.getPersistence().getWorkflowForFilename(workflowFile.getCanonicalPath());
+		File workflowFile = new File(pro.getLocation().toOSString()+File.separator+workflowRelativePath);
+		IGenlabWorkflowInstance glWorkflow = null;
+		try {
+			glWorkflow = GenlabPersistence.getPersistence().getWorkflowForFilename(workflowFile.getCanonicalPath());
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			throw new ProgramException("unable to find file for workflow: "+workflowFile, e1);
+		}
+		final IGenlabWorkflowInstance workflowToRun = glWorkflow;
 		
 		// change perspective
 		// TODO propose user ?
@@ -68,7 +77,11 @@ public class GenlabLaunchConfiguration implements ILaunchConfigurationDelegate {
 						   RunPerspective.ID,       
 						   PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 						   );
-					GenlabExecution.runBackgroundWithoutWaiting(glWorkflow, forceExec);
+					GenlabExecution.runBackgroundWithoutWaiting(
+							workflowToRun, 
+							forceExec, 
+							Utils.getOutputFolderForWorkflow(workflowToRun)
+							);
 
 				} catch (WorkbenchException e) {
 				   e.printStackTrace();

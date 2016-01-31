@@ -3,7 +3,6 @@ package genlab.core.exec;
 import genlab.core.commons.FileUtils;
 import genlab.core.commons.ProgramException;
 import genlab.core.commons.UniqueTimestamp;
-import genlab.core.projects.GenlabProject;
 import genlab.core.usermachineinteraction.ListOfMessages;
 import genlab.core.usermachineinteraction.ListsOfMessages;
 

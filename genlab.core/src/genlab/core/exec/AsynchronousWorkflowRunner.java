@@ -9,7 +9,6 @@ import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.WorkflowCheckResult;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.core.usermachineinteraction.ListsOfMessages;
-import genlab.core.usermachineinteraction.MessageLevel;
 
 /**
  * Once ran, this Runnable will start a workflow computation in background; 
@@ -28,10 +27,13 @@ public class AsynchronousWorkflowRunner implements Runnable {
 	
 	private boolean failure = false;
 	
-	public AsynchronousWorkflowRunner(IGenlabWorkflowInstance workflow, boolean forceExec) {
+	private File outputDirectory = null;
+	
+	public AsynchronousWorkflowRunner(IGenlabWorkflowInstance workflow, boolean forceExec, File outputDirectory) {
 		
 		this.workflow = workflow;
 		this.forceExec = forceExec;
+		this.outputDirectory = outputDirectory;
 		
 	}
 
@@ -64,10 +66,10 @@ public class AsynchronousWorkflowRunner implements Runnable {
 			System.err.println("retrieve runner");
 			IRunner r = ComputationNodes.getSingleton().getDefaultRunner();
 	
+			// find the corresponding project
 			System.err.println("create execution");
-			File directoryProjectOutputs = new File(workflow.getProject().getBaseDirectory(),"outputs");
-			directoryProjectOutputs.mkdirs();
-			Execution exec = new Execution(r, directoryProjectOutputs);
+			outputDirectory.mkdirs();
+			Execution exec = new Execution(r, outputDirectory);
 			exec.setExecutionForced(forceExec);
 			exec.getListOfMessages().addAll(checkInfo.messages);
 			exec.getListOfMessages().setFilterIgnoreBelow(

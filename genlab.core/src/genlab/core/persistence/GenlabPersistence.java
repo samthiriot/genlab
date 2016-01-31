@@ -56,6 +56,7 @@ public class GenlabPersistence extends AbstractPersistence {
 					"was asked a workflow for file "+filename+", but it was not yet loaded :-(", 
 					getClass()
 					);
+			workflow = readWorkflow(filename);
 		}
 		return workflow;
 	}

@@ -1,18 +1,20 @@
 package genlab.core.exec;
 
+import java.io.File;
+
 import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 
 public class GenlabExecution {
 
-	public static IAlgoExecution runBackground(IGenlabWorkflowInstance workflow) {
-		return runBackground(workflow, false);
+	public static IAlgoExecution runBackground(IGenlabWorkflowInstance workflow, File outputDirectory) {
+		return runBackground(workflow, false, outputDirectory);
 	}
 	
 
-	public static void runBackgroundWithoutWaiting(IGenlabWorkflowInstance workflow, boolean forceExec) {
+	public static void runBackgroundWithoutWaiting(IGenlabWorkflowInstance workflow, boolean forceExec, File outputDirectory) {
 
-		AsynchronousWorkflowRunner runnable = new AsynchronousWorkflowRunner(workflow, forceExec);
+		AsynchronousWorkflowRunner runnable = new AsynchronousWorkflowRunner(workflow, forceExec, outputDirectory);
 		
 		Thread th = new Thread(runnable);
 		th.setName("launch_workflow");
@@ -21,9 +23,9 @@ public class GenlabExecution {
 	}
 	
 	
-	public static IAlgoExecution runBackground(IGenlabWorkflowInstance workflow, boolean forceExec) {
+	public static IAlgoExecution runBackground(IGenlabWorkflowInstance workflow, boolean forceExec, File outputDirectory) {
 
-		AsynchronousWorkflowRunner runnable = new AsynchronousWorkflowRunner(workflow, forceExec);
+		AsynchronousWorkflowRunner runnable = new AsynchronousWorkflowRunner(workflow, forceExec, outputDirectory);
 		/*
 		Runnable runnable = new Runnable() {
 			

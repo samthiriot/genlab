@@ -1,26 +1,17 @@
 package genlab.gui;
 
-import java.io.ByteArrayInputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 
-import genlab.core.commons.ProgramException;
-import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.parameters.ColorRGBParameterValue;
-import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.editors.IWorkflowEditor;
-import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
-
-import org.eclipse.core.internal.registry.ExtensionRegistry;
 import org.eclipse.core.internal.resources.File;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.ContributorFactoryOSGi;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IContributor;
-import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.viewers.ContentViewer;
@@ -38,15 +29,70 @@ import org.eclipse.ui.IWorkbenchWizard;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
-import org.eclipse.ui.internal.registry.WizardsRegistryReader;
-import org.eclipse.ui.internal.wizards.NewWizardRegistry;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.navigator.CommonNavigator;
 import org.eclipse.ui.wizards.IWizardDescriptor;
 
+import genlab.core.commons.ProgramException;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.parameters.ColorRGBParameterValue;
+import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.editors.IWorkflowEditor;
+import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
+
 public class Utils {
 
+	public static URI getEclipseURIForWorkflowFile(IGenlabWorkflowInstance workflow) {
+		try {
+			return new URI("file://"+workflow.getAbsolutePath());
+		} catch (URISyntaxException e) {
+			throw new ProgramException("unable to convert the workflow to an URI: "+workflow.getAbsolutePath());
+		}
+	}
+	
+	/**
+	 * Returns the eclipse project that contains the workflow based on its path. 
+	 * @param workflow
+	 * @return
+	 */
+	protected static IProject findEclipseProjectForWorkflow(IGenlabWorkflowInstance workflow) {
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IFile[] containers = workspace.getRoot().findFilesForLocationURI(getEclipseURIForWorkflowFile(workflow));
+		if (containers.length == 0)
+			throw new ProgramException("the workflow does not belongs the current workspace");
+		if (containers.length > 1) 
+			throw new ProgramException("found several files for this path");
+		
+		IProject project = containers[0].getProject();
+		if (project == null)
+			throw new ProgramException("unable to find the project for workflow "+workflow.getAbsolutePath());
+		
+		return project;
+		
+	}
+	
+	public static java.io.File getOutputFolderForWorkflow(IGenlabWorkflowInstance workflow) {
+		
+		// find the parent project
+		IProject eclipseProject = findEclipseProjectForWorkflow(workflow);
+
+		// get or create folder outputs
+		IFolder folderOutputs = eclipseProject.getFolder("outputs");
+		if (!folderOutputs.exists())
+			try {
+				folderOutputs.create(true, true, null);
+			} catch (CoreException e) {
+				throw new ProgramException("Unable to create output folder for this project "+eclipseProject.getName(),e);
+			}
+
+
+		// define the output file
+		java.io.File directoryProjectOutputs = folderOutputs.getFullPath().toFile();
+
+		return directoryProjectOutputs;
+	}
 	
 	public static IProject findEclipseProjectInSelection(IStructuredSelection selection) {
 

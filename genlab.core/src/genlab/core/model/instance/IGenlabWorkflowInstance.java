@@ -4,7 +4,6 @@ import genlab.core.commons.IWithAssociatedData;
 import genlab.core.commons.IWithAssociatedTransientData;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
-import genlab.core.projects.IGenlabProject;
 
 import java.io.File;
 import java.util.Collection;
