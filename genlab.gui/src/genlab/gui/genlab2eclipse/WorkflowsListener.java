@@ -2,11 +2,6 @@ package genlab.gui.genlab2eclipse;
 
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IWorkflowListener;
-import genlab.core.projects.IGenlabProject;
-import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.Utils;
-
-import org.eclipse.core.resources.IProject;
 
 /**
  * Listens for workflow activity, and updates the corresponding 
@@ -48,6 +43,9 @@ public class WorkflowsListener implements IWorkflowListener {
 		// if the workflow is saved, there may be a file to update
 		
 		// we have to refresh the folder which contains the parent
+		
+		// TODO should we react to the saving of workfhlow with an UI action ?
+		/*
 		try {
 			IProject eclipseProject = GenLab2eclipseUtils.getEclipseProjectForGenlabProject(workflow.getProject());
 			Utils.updateCommonNavigator(
@@ -56,23 +54,7 @@ public class WorkflowsListener implements IWorkflowListener {
 					);
 		} catch (Throwable t) {
 			GLLogger.warnTech("error while attempting to process the saving state for project "+workflow.getProject(), getClass());
-		}
-	}
-
-	@Override
-	public void projectSaved(IGenlabProject project) {
-		// we have to refresh the project folder
-		try {
-			IProject eclipseProject = GenLab2eclipseUtils.getEclipseProjectForGenlabProject(project);
-			if (eclipseProject == null)
-				return;
-			Utils.updateCommonNavigator(
-					"genlab.gui.views.projectexplorer", 
-					eclipseProject.getFolder(eclipseProject.getFullPath())
-					);
-		} catch (Throwable t) {
-			GLLogger.warnTech("error while attempting to process the saving state for project "+project, getClass());
-		}
+		}*/
 	}
 
 	@Override

@@ -1,16 +1,5 @@
 package genlab.batch;
 
-import genlab.core.GenLab;
-import genlab.core.commons.WrongParametersException;
-import genlab.core.exec.GenlabExecution;
-import genlab.core.model.exec.IAlgoExecution;
-import genlab.core.model.exec.IComputationProgress;
-import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.persistence.GenlabPersistence;
-import genlab.core.projects.IGenlabProject;
-import genlab.core.usermachineinteraction.ListOfMessages;
-import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
-
 import java.io.File;
 
 import org.apache.log4j.BasicConfigurator;
@@ -19,6 +8,16 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
+
+import genlab.core.GenLab;
+import genlab.core.commons.WrongParametersException;
+import genlab.core.exec.GenlabExecution;
+import genlab.core.model.exec.IAlgoExecution;
+import genlab.core.model.exec.IComputationProgress;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.persistence.GenlabPersistence;
+import genlab.core.usermachineinteraction.ListOfMessages;
+import genlab.core.usermachineinteraction.UserMachineInteractionUtils;
 
 /**
  * This class controls all aspects of the application's execution.
@@ -45,14 +44,7 @@ public class Application implements IApplication {
 		
 		try {
 			
-			// find project
-			IGenlabProject project = GenlabPersistence.getPersistence().searchProjectForFile(fileWorkflow.getAbsolutePath());
-			String relativeWorkflowFile = fileWorkflow.getAbsolutePath();
-			if (!relativeWorkflowFile.startsWith(project.getBaseDirectory()))
-				die("wrong path; internal error");
-			relativeWorkflowFile = relativeWorkflowFile.substring(project.getBaseDirectory().length());
-			
-			IGenlabWorkflowInstance workflow = GenlabPersistence.getPersistence().readWorkflow(project, relativeWorkflowFile);
+			IGenlabWorkflowInstance workflow = GenlabPersistence.getPersistence().readWorkflow(workflowFile);
 			
 			IAlgoExecution execution = GenlabExecution.runBackground(workflow, true);
 			

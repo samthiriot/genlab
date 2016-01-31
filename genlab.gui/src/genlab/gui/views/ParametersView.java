@@ -12,7 +12,7 @@ import genlab.core.parameters.Parameter;
 import genlab.core.parameters.RNGSeedParameter;
 import genlab.core.parameters.StringBasedParameter;
 import genlab.core.parameters.TextParameter;
-import genlab.core.projects.GenlabProject;
+import genlab.core.persistence.GenlabPersistence;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.parameters.ParameterCreatingWidget;
 import genlab.gui.parameters.RGBParameter;
@@ -52,15 +52,13 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
 
 /**
- * This view tunes the parameters of... something that has parameters, 
- * like an algo instance
+ * This view tunes the parameters of an algo instance
  * 
  * @author Samuel Thiriot
  */ 
 public class ParametersView extends ViewPart implements IPropertyChangeListener, SelectionListener, ModifyListener {
 
-	public static final String PROPERTY_PROJECT_ID = "targetProject";
-	public static final String PROPERTY_WORKFLOW_ID = "targetWorkflow";
+	public static final String PROPERTY_WORKFLOW_FILENAME = "targetWorkflow";
 	public static final String PROPERTY_ALGOINSTANCE_ID = "targetAlgoInstance";
 	
 	private FormToolkit toolkit;
@@ -88,25 +86,17 @@ public class ParametersView extends ViewPart implements IPropertyChangeListener,
 		
 		try {
 			// retrieve params
-			final String projectId = this.getPartProperty(PROPERTY_PROJECT_ID);
-			if (projectId == null)
-				return;
-			final String workflowId = this.getPartProperty(PROPERTY_WORKFLOW_ID);
-			if (workflowId == null)
-				return;
+			final String workflowfilename = this.getPartProperty(PROPERTY_WORKFLOW_FILENAME);
+			if (workflowfilename == null)
+				return; // all the parameters are not there yet, ignore that
 			final String algoId = this.getPartProperty(PROPERTY_ALGOINSTANCE_ID);
 			if (algoId == null)
-				return;
+				return; // idem
 			
 			// load corresponding algo
-			GenlabProject project = GenlabProject.getProject(projectId);
-			if (project == null) {
-				GLLogger.errorTech("unable to find the project with id "+projectId+"; will not open the corresponding view", getClass());
-				return;
-			}
-			IGenlabWorkflowInstance workflow = project.getWorkflowForId(workflowId);
+			IGenlabWorkflowInstance workflow = GenlabPersistence.getPersistence().getWorkflowForFilename(workflowfilename);
 			if (workflow == null) {
-				GLLogger.errorTech("unable to find the workflow with id "+workflowId+"; will not open the corresponding view", getClass());
+				GLLogger.errorTech("unable to find the workflow with id "+workflowfilename+"; will not open the corresponding parameter view", getClass());
 				return;
 			}
 			algo = workflow.getAlgoInstanceForId(algoId);

@@ -1,23 +1,8 @@
 package genlab.gui.graphiti.genlab2graphiti;
 
-import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IConnection;
-import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.instance.IWorkflowContentListener;
-import genlab.core.model.instance.IWorkflowListener;
-import genlab.core.projects.IGenlabProject;
-import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
-import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
-import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
-import genlab.gui.graphiti.features.BasicLayoutDiagramFeature;
-import genlab.gui.graphiti.features.BeautifyDiagramFeature;
-
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.emf.common.command.Command;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.impl.AddConnectionContext;
 import org.eclipse.graphiti.features.context.impl.AddContext;
@@ -27,6 +12,17 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
+
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IConnection;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.IWorkflowContentListener;
+import genlab.core.model.instance.IWorkflowListener;
+import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
+import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
+import genlab.gui.graphiti.features.BasicLayoutDiagramFeature;
+import genlab.gui.graphiti.features.BeautifyDiagramFeature;
 
 /**
  * Listens all the genlab worflows (is registered as a listener using an extension point)
@@ -81,10 +77,9 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 		// this call is a bit redondant but solves problems of race conditions with the GUI 
 		GenLabIndependenceSolver.singleton.registerWorkflow(workflow);
 
-		
 		Genlab2GraphitiUtils.createDiagram(
 				workflow, 
-				GenLab2eclipseUtils.getEclipseProjectForGenlabProject(workflow.getProject())
+				GenLab2eclipseUtils.getEclipseProjectForWorkflow(workflow)
 				);
 		
 		workflow.addListener(this);
@@ -224,11 +219,6 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 		
 	}
 
-	@Override
-	public void projectSaved(IGenlabProject project) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public void notifyConnectionAdded(IConnection c) {

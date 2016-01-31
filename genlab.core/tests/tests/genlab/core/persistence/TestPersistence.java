@@ -40,61 +40,6 @@ public class TestPersistence {
 	public void tearDown() throws Exception {
 	}
 	
-	protected GenlabProject createEmptyProject() {
-		
-		TemporaryFolder tmpDir = new TemporaryFolder();
-		try {
-			tmpDir.create();
-		} catch (IOException e) {
-			e.printStackTrace();
-			fail("unable to create tmp directory");
-		}
-		
-		return new GenlabProject(tmpDir.getRoot().getAbsolutePath());
-
-		
-	}
-	
-	protected void compareProjects(GenlabProject project, IGenlabProject projectReaden) {
-		
-		assertNotSame(project, projectReaden);
-		assertEquals("wrong directory", project.getBaseDirectory(), projectReaden.getBaseDirectory());
-		assertEquals("wrong file", project.getProjectSavingFilename(), projectReaden.getProjectSavingFilename());
-		assertEquals("wrong number of workflows", project.getWorkflows().size(), projectReaden.getWorkflows().size());
-		for (String k : project.getAttachedObjects().keySet()) {
-			assertEquals("wrong attached object", project.getAttachedObject(k), projectReaden.getAttachedObject(k));
-		}
-		
-		
-		
-	}
-
-	@Test
-	public void testEmptyProject() {
-		
-		// create project
-		GenlabProject project = createEmptyProject();
-		
-		// tune it
-		project.setAttachedObject("test1", new Integer(2));
-		project.setAttachedObject("test2", null);
-		project.setAttachedObject("test3", "test string");
-		project.setAttachedObject("test3", "test string with special characters !([$ $ ^{");
-
-		
-		// save it
-		GenlabPersistence.getPersistence().saveProject(project);
-		
-		// check project file exists
-		assertTrue((new File(project.getBaseDirectory()+File.separator+GenlabPersistence.FILENAME_PROJECT)).exists());
-		
-		// read it
-		IGenlabProject projectReaden = GenlabPersistence.getPersistence().readProject(project.getBaseDirectory());
-		
-		compareProjects(project, projectReaden);
-		
-		
-	}
 	
 	protected void compareWorkflows(IGenlabWorkflowInstance workflow , IGenlabWorkflowInstance workflowReaden) {
 		
@@ -142,28 +87,19 @@ public class TestPersistence {
 	@Test
 	public void testEmptyWorkflow() {
 		
-		GenlabProject project = createEmptyProject();
-
-		IGenlabWorkflowInstance workflow = GenlabFactory.createWorkflow(project, "workflowAA", "my desc", "my workflow");
+		IGenlabWorkflowInstance workflow = GenlabFactory.createWorkflow("workflowAA", "my desc", "my workflow");
 		assertNotNull(workflow);
 		
 		// store it
-		GenlabPersistence.getPersistence().saveProject(project);
+		GenlabPersistence.getPersistence().saveWorkflow(workflow);
 		
 		// check project and workflow files exists
-		assertTrue((new File(project.getBaseDirectory()+File.separator+GenlabPersistence.FILENAME_PROJECT)).exists());
-		assertTrue((new File(project.getBaseDirectory()+File.separator+workflow.getRelativeFilename())).exists());
 		assertTrue((new File(workflow.getAbsolutePath())).exists());
 		
 		// read it again
-		IGenlabProject projectReaden = GenlabPersistence.getPersistence().readProject(project.getBaseDirectory());
+		IGenlabWorkflowInstance workflowReaden = GenlabPersistence.getPersistence().readWorkflow(workflow.getAbsolutePath());
 		
-		compareProjects(project, projectReaden);
-		
-		// compare 
-		assertEquals(1, projectReaden.getWorkflows().size());
-		IGenlabWorkflowInstance workflowReaden = projectReaden.getWorkflows().iterator().next();
-		
+		// compare
 		compareWorkflows(workflow, workflowReaden);
 		
 	}

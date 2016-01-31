@@ -1,19 +1,5 @@
 package genlab.gui.graphiti.editors;
 
-import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IConnection;
-import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.instance.IWorkflowContentListener;
-import genlab.core.persistence.GenlabPersistence;
-import genlab.core.projects.IGenlabProject;
-import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.editors.IWorkflowEditor;
-import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
-import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
-import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
-import genlab.gui.graphiti.genlab2graphiti.Genlab2GraphitiUtils;
-import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
-
 import java.io.File;
 
 import org.eclipse.core.resources.IFile;
@@ -24,6 +10,16 @@ import org.eclipse.graphiti.ui.editor.DiagramEditor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.persistence.GenlabPersistence;
+import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.editors.IWorkflowEditor;
+import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
+import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
+import genlab.gui.graphiti.genlab2graphiti.GenLabIndependenceSolver;
+import genlab.gui.graphiti.genlab2graphiti.Genlab2GraphitiUtils;
+import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
 
 /**
  * Specific diagram editor that does not sync with EMF objects
@@ -77,6 +73,7 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 		
 		String filename = file.getLocation().toOSString();
 		
+		// search for the corresponding workflow, which should be 
 		filename = filename.substring(
 				0, 
 				filename.length()-GraphitiDiagramTypeProvider.GRAPH_EXTENSION.length()-1
@@ -92,9 +89,6 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 		}
 		
 		// load the corresponding workflow
-		IGenlabProject project = GenlabPersistence.getPersistence().searchProjectForFile(filename);
-		System.err.println("project : "+project);
-		
 		workflow = GenlabPersistence.getPersistence().getWorkflowForFilename(filename);
 
 		// register the workflow so we can map its keys and so on
@@ -207,11 +201,7 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 				workflow.getAbsolutePath()+Genlab2GraphitiUtils.EXTENSION_FILE_MAPPING
 				);
         */
-		
-        // don't only save the workflow, but also the whole project (???)
-        monitor.subTask("saving Genlab project");
-		GenlabPersistence.getPersistence().saveProject(workflow.getProject(), false);
-        
+
         // for sure, we have to save the workflow
         monitor.subTask("saving Genlab workflow");
         GenlabPersistence.getPersistence().saveWorkflow(workflow);

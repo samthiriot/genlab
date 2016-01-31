@@ -1,18 +1,16 @@
 package genlab.gui.wizards;
 
-import genlab.core.model.instance.GenlabFactory;
-import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.projects.IGenlabProject;
-import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.Utils;
-import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
+
+import genlab.core.model.instance.GenlabFactory;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.Utils;
 
 /**
  * Wizard to propose the user to create a new workflow
@@ -54,12 +52,8 @@ public class NewWorkflowWizard extends Wizard implements IWorkbenchWizard, INewW
 			
 			IProject eclipseProject = page2.getSelectedProject();
 			//IProject eclipseProject = Utils.findEclipseProjectInSelection(selection);
-			IGenlabProject glProject = GenLab2eclipseUtils.getGenlabProjectForEclipseProject(eclipseProject);
-			if (glProject == null)
-				GLLogger.warnTech("unable to find glproject, trouble ahead...", getClass());
-			
+
 			IGenlabWorkflowInstance workflow = GenlabFactory.createWorkflow(
-					glProject, 
 					page1.getWorkflowName(), 
 					page1.getWorkflowDesc(), 
 					Utils.getPathRelativeToProject(eclipseProject, page2.getRelativePath().toString())

@@ -38,12 +38,8 @@ public class ViewHelpers {
 			// transmit info to enable the view to load what is required
 			WorkbenchPart v = (WorkbenchPart)view;
 			v.setPartProperty(
-					ParametersView.PROPERTY_PROJECT_ID, 
-					algoInstance.getWorkflow().getProject().getId()
-					);
-			v.setPartProperty(
-					ParametersView.PROPERTY_WORKFLOW_ID, 
-					algoInstance.getWorkflow().getId()
+					ParametersView.PROPERTY_WORKFLOW_FILENAME, 
+					algoInstance.getWorkflow().getAbsolutePath()
 					);
 			v.setPartProperty(
 					ParametersView.PROPERTY_ALGOINSTANCE_ID, 

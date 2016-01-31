@@ -1,12 +1,11 @@
 package genlab.gui.genlab2eclipse;
 
-import genlab.core.persistence.GenlabPersistence;
-import genlab.core.projects.IGenlabProject;
-import genlab.core.usermachineinteraction.GLLogger;
-
 import org.eclipse.core.resources.ISaveContext;
 import org.eclipse.core.resources.ISaveParticipant;
 import org.eclipse.core.runtime.CoreException;
+
+import genlab.core.persistence.GenlabPersistence;
+import genlab.core.usermachineinteraction.GLLogger;
 
 /**
  * Save participant is called as soon as an eclipse project is being saved. 
@@ -48,6 +47,9 @@ public class GenLabSaveParticipant implements ISaveParticipant {
 	@Override
 	public void saving(ISaveContext context) throws CoreException {
 		
+		// TODO should we save somehting when an eclipse project is saved ?
+		
+		/*
 		GLLogger.debugTech("save each resource associated with the eclipse project", getClass());
 		
 		if (context.getKind() != ISaveContext.FULL_SAVE && context.getKind() != ISaveContext.PROJECT_SAVE)
@@ -65,7 +67,7 @@ public class GenLabSaveParticipant implements ISaveParticipant {
 			return;
 		}
 		GenlabPersistence.getPersistence().saveProject(genlabProject);
-		
+		*/
 		
 	}
 

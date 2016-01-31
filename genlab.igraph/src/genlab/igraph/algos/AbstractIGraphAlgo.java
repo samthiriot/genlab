@@ -5,6 +5,7 @@ import org.osgi.framework.Bundle;
 import genlab.core.model.meta.AlgoCategory;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.igraph.Activator;
+import genlab.igraph.Rigraph.RIGraphLibImplementation;
 import genlab.igraph.commons.IgraphLibFactory;
 import genlab.igraph.parameters.ChoiceOfImplementationParameter;
 import genlab.igraph.parameters.ChoiceOfImplementationParameter.EIgraphImplementation;
@@ -38,7 +39,7 @@ public abstract class AbstractIGraphAlgo extends BasicAlgo {
 
 	@Override
 	public boolean isAvailable() {
-		return IgraphLibFactory.isIGraphAvailable();
+		return IgraphLibFactory.isIGraphAvailable() || RIGraphLibImplementation.isAvailable();
 	}
 
 }

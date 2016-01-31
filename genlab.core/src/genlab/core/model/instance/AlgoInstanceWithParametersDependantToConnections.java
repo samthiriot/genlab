@@ -1,7 +1,6 @@
 package genlab.core.model.instance;
 
 import genlab.core.model.meta.IAlgo;
-import genlab.core.projects.IGenlabProject;
 
 /**
  * Abstract algo instance which adapts some parameters to the inputs of the algo.
@@ -121,10 +120,6 @@ public abstract class AlgoInstanceWithParametersDependantToConnections
 		
 	}
 
-	@Override
-	public void projectSaved(IGenlabProject project) {
-		
-	}
 
 	@Override
 	public void workflowAutomaticallyCreatedAndFinished(IGenlabWorkflowInstance instance) {

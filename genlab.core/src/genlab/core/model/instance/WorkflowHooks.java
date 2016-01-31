@@ -1,6 +1,5 @@
 package genlab.core.model.instance;
 
-import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
@@ -139,13 +138,4 @@ public class WorkflowHooks {
 		}
 	}
 	
-	public void notifyProjectSaved(IGenlabProject project) {
-		for (IWorkflowListener l : new LinkedList<IWorkflowListener>(listeners)) {
-			try {
-				l.projectSaved(project);
-			} catch (RuntimeException e) {
-				GLLogger.warnTech("in the workflow listener, catched an exception: "+e.getMessage(), getClass(), e);
-			}
-		}
-	}
 }

@@ -13,7 +13,6 @@ import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IInputOutput;
 import genlab.core.parameters.Parameter;
 import genlab.core.persistence.GenlabPersistence;
-import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.io.File;
@@ -44,10 +43,9 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	
 	private Map<String,IAlgoInstance> id2algoInstance = new HashMap<String, IAlgoInstance>();
 
-	public transient IGenlabProject project;
 	public String name;
 	public String description;
-	private transient String relativeFilename;
+	private transient String absoluteFilename;
 	
 	protected String id;
 	
@@ -62,23 +60,17 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	
 	private IAlgoContainerInstance container = null;
 	
-	public GenlabWorkflowInstance(IGenlabProject project, String name, String description, String relativeFilename) {
+	public GenlabWorkflowInstance(String name, String description, String absoluteFilename) {
 		
-		this.id = "genlab.workflow."+project.getId()+"."+name;
+		this.id = "genlab.workflow."+name;
 		GLLogger.debugTech("creating worklow instance "+id+" "+super.toString(), getClass());
 
-		this.project = project;
 		this.name = name;
 		this.description = description;
-		if (relativeFilename.endsWith(GenlabPersistence.EXTENSION_WORKFLOW))
-			this.relativeFilename = relativeFilename;
+		if (absoluteFilename.endsWith(GenlabPersistence.EXTENSION_WORKFLOW))
+			this.absoluteFilename = absoluteFilename;
 		else
-			this.relativeFilename = relativeFilename+GenlabPersistence.EXTENSION_WORKFLOW;
-		
-		if (project == null)
-			throw new ProgramException("project can not be null");
-		
-		project.addWorkflow(this);
+			this.absoluteFilename = absoluteFilename+GenlabPersistence.EXTENSION_WORKFLOW;
 		
 		// remove that later (unicity is not at a static level, only project)
 		if (id2instance.containsKey(id))
@@ -91,22 +83,16 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
 	}
 	
-	public GenlabWorkflowInstance(String id, IGenlabProject project, String name, String description, String relativeFilename) {
+	public GenlabWorkflowInstance(String id, String name, String description, String absoluteFilename) {
 		
 		GLLogger.debugTech("creating worklow instance "+id+" "+super.toString(), getClass());
 		this.id = id;
-		this.project = project;
 		this.name = name;
 		this.description = description;
-		if (relativeFilename.endsWith(GenlabPersistence.EXTENSION_WORKFLOW))
-			this.relativeFilename = relativeFilename;
+		if (absoluteFilename.endsWith(GenlabPersistence.EXTENSION_WORKFLOW))
+			this.absoluteFilename = absoluteFilename;
 		else
-			this.relativeFilename = relativeFilename+GenlabPersistence.EXTENSION_WORKFLOW;
-		
-		if (project == null)
-			throw new ProgramException("project can not be null");
-		
-		project.addWorkflow(this);
+			this.absoluteFilename = absoluteFilename+GenlabPersistence.EXTENSION_WORKFLOW;
 		
 		// remove that later (unicity is not at a static level, only project)
 		if (id2instance.containsKey(id))
@@ -219,23 +205,8 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	}
 
 	@Override
-	public IGenlabProject getProject() {
-		return project;
-	}
-
-	@Override
-	public String getRelativePath() {
-		return FileUtils.extractPath(relativeFilename);
-	}
-
-	@Override
-	public String getRelativeFilename() {
-		return relativeFilename;
-	}
-
-	@Override
 	public String getFilename() {
-		return FileUtils.extractFilename(relativeFilename);
+		return FileUtils.extractFilename(absoluteFilename);
 	}
 
 	@Override
@@ -251,18 +222,13 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 
 	@Override
 	public String getAbsolutePath() {
-		StringBuffer sbFile = new StringBuffer();
 		
-		sbFile.append(getProject().getBaseDirectory());
-		sbFile.append(File.separator);
-		sbFile.append(getRelativeFilename());
-		
-		File f = new File(sbFile.toString());
+		File f = new File(this.absoluteFilename);
 		try {
 			return f.getCanonicalPath();
 		} catch (IOException e) {
-			GLLogger.warnTech("error while forging the absolute path of this workflow from "+sbFile.toString(), getClass(), e);
-			return sbFile.toString();
+			GLLogger.warnTech("error while forging the absolute path of this workflow from "+absoluteFilename, getClass(), e);
+			return this.absoluteFilename;
 		}
 	}
 	
@@ -271,13 +237,8 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		return getName();
 	}
 	
-	public void _setProject(IGenlabProject project) {
-		this.project = project;
-		project.addWorkflow(this);
-	}
-	
-	public void _setFilename(String relativefilename) {
-		this.relativeFilename = relativefilename;
+	public void _setFilename(String absoluteFilename) {
+		this.absoluteFilename = absoluteFilename;
 	}
 
 	@Override
@@ -326,12 +287,6 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
     	
     	id2instance.put(id, this);
     	
-    	if (project == null)
-			throw new ProgramException("project can not be null");
-		
-		project.addWorkflow(this);
-		
-
 		// TODO remove
 		currentTODO = this;
 		
@@ -346,22 +301,6 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		c.getTo().addConnection(c);
 	}
 
-
-	@Override
-	public IConnection connect(IAlgoInstance fromAlgoInstance,
-			IInputOutput<?> output, IAlgoInstance toAlgoInstance,
-			IInputOutput<?> input) {
-
-		IInputOutputInstance from = fromAlgoInstance.getOutputInstanceForOutput(output);
-		IInputOutputInstance to = toAlgoInstance.getInputInstanceForInput(input);
-		
-		if (from == null)
-			throw new WrongParametersException("unable to find ouput "+output.getName()+" for algorithm instance "+fromAlgoInstance.getName());
-		if (to == null)
-			throw new WrongParametersException("unable to find input "+input.getName()+" for algorithm instance "+toAlgoInstance.getName());
-
-		return connect(from, to);
-	}
 
 	@Override
 	public IConnection connect(IInputOutputInstance from, IInputOutputInstance to) {

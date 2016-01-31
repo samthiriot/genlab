@@ -1,16 +1,8 @@
 package genlab.testing.commons;
 
-import static org.junit.Assert.fail;
 import genlab.core.exec.IRunner;
-import genlab.core.exec.client.ComputationNodes;
 import genlab.core.model.instance.GenlabFactory;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.projects.GenlabProject;
-import genlab.core.projects.IGenlabProject;
-
-import java.io.IOException;
-
-import org.junit.rules.TemporaryFolder;
 
 public class GenlabTestingUtils {
 
@@ -18,25 +10,10 @@ public class GenlabTestingUtils {
 		
 	}
 	
-	public static IGenlabProject createEmptyProject() {
-		
-		TemporaryFolder tmpDir = new TemporaryFolder();
-		try {
-			tmpDir.create();
-		} catch (IOException e) {
-			e.printStackTrace();
-			fail("unable to create tmp directory");
-		}
-				
-		IGenlabProject genlabProject = GenlabFactory.createProject(tmpDir.getRoot().getAbsolutePath());
-		
-		return genlabProject;
-		
-	}
 	
-	public static IGenlabWorkflowInstance createEmptyWorkflow(IGenlabProject project, String name, String desc, String relativePath) {
+	public static IGenlabWorkflowInstance createEmptyWorkflow(String name, String desc, String relativePath) {
 
-		IGenlabWorkflowInstance workflow = GenlabFactory.createWorkflow(project, name, desc, relativePath);
+		IGenlabWorkflowInstance workflow = GenlabFactory.createWorkflow(name, desc, relativePath);
 		
 		return workflow;
 	}

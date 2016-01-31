@@ -1,13 +1,12 @@
 package genlab.examples.gui.creation;
 
+import java.io.File;
+
 import genlab.core.model.instance.GenlabFactory;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.WorkflowHooks;
 import genlab.core.persistence.GenlabPersistence;
-import genlab.core.projects.IGenlabProject;
 import genlab.gui.examples.contributors.IGenlabExample;
-
-import java.io.File;
 
 
 public class ExamplesCreation {
@@ -40,17 +39,16 @@ public class ExamplesCreation {
 	 * @param glProject
 	 * @return
 	 */
-	public static IGenlabWorkflowInstance createWorkflow(IGenlabExample example, IGenlabProject glProject) {
+	public static IGenlabWorkflowInstance createWorkflow(IGenlabExample example, File hostDirectory) {
 
 		
 		IGenlabWorkflowInstance workflow = GenlabFactory.createWorkflow(
-				glProject,
 				example.getName(), 
 				example.getDescription(), 
 				getPathForExample(example)
 				);
 		
-		File dirData = new File(glProject.getBaseDirectory()+File.separator+getPathForExampleResources(example));
+		File dirData = new File(hostDirectory.getAbsolutePath()+File.separator+getPathForExampleResources(example));
 		dirData.mkdirs();
 		
 		example.createFiles(dirData);

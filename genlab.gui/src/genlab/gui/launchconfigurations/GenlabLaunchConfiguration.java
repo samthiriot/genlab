@@ -1,12 +1,5 @@
 package genlab.gui.launchconfigurations;
 
-import genlab.core.exec.GenlabExecution;
-import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.projects.IGenlabProject;
-import genlab.gui.Activator;
-import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
-import genlab.gui.perspectives.RunPerspective;
-
 import java.io.File;
 
 import org.eclipse.core.resources.IProject;
@@ -19,6 +12,13 @@ import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.WorkbenchException;
+
+import genlab.core.exec.GenlabExecution;
+import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.persistence.GenlabPersistence;
+import genlab.gui.Activator;
+import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
+import genlab.gui.perspectives.RunPerspective;
 
 
 public class GenlabLaunchConfiguration implements ILaunchConfigurationDelegate {
@@ -53,8 +53,8 @@ public class GenlabLaunchConfiguration implements ILaunchConfigurationDelegate {
 
 
 		IProject pro = GenLab2eclipseUtils.getProjectFromRelativePath(projectPath);
-		IGenlabProject glPro = GenLab2eclipseUtils.getGenlabProjectForEclipseProject(pro);
-		final IGenlabWorkflowInstance glWorkflow = glPro.getWorkflowForFilename(File.separator+workflowPath);
+		File workflowFile = new File(pro.getLocation().toOSString()+File.separator+workflowPath);
+		final IGenlabWorkflowInstance glWorkflow = GenlabPersistence.getPersistence().getWorkflowForFilename(workflowFile.getCanonicalPath());
 		
 		// change perspective
 		// TODO propose user ?

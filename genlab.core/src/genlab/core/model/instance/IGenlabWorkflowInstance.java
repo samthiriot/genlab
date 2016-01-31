@@ -61,11 +61,7 @@ public interface IGenlabWorkflowInstance extends IAlgoContainerInstance,
 	public File getFilePersisted();
 
 	public void _notifyAlgoChanged(IAlgoInstance ai);
-
-	public String getRelativePath();
-
-	public String getRelativeFilename();
-
+	
 	public String getFilename();
 
 	/**
@@ -74,8 +70,6 @@ public interface IGenlabWorkflowInstance extends IAlgoContainerInstance,
 	 * @return
 	 */
 	public String getAbsolutePath();
-
-	public IGenlabProject getProject();
 
 	public Collection<IAlgoInstance> getAlgoInstances();
 
@@ -119,5 +113,7 @@ public interface IGenlabWorkflowInstance extends IAlgoContainerInstance,
 	public String getNextId(String basedId);
 
 	void dispatchAlgoChange(IAlgoInstance ai);
+
+	public void _setFilename(String absoluteFilename);
 	
 }

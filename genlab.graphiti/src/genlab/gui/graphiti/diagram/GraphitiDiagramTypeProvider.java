@@ -11,8 +11,8 @@ import org.eclipse.graphiti.dt.AbstractDiagramTypeProvider;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.notification.INotificationService;
 import org.eclipse.graphiti.platform.IDiagramBehavior;
-import org.eclipse.graphiti.platform.IDiagramEditor;
 import org.eclipse.graphiti.tb.IToolBehaviorProvider;
+import org.eclipse.graphiti.ui.editor.IDiagramEditorInput;
 
 public class GraphitiDiagramTypeProvider extends AbstractDiagramTypeProvider {
 
@@ -71,7 +71,7 @@ public class GraphitiDiagramTypeProvider extends AbstractDiagramTypeProvider {
 		
 	}
 	
-	
+	/*
 	@Override
 	public void init(Diagram diagram, IDiagramEditor diagramEditor) {
 		
@@ -93,7 +93,7 @@ public class GraphitiDiagramTypeProvider extends AbstractDiagramTypeProvider {
 		workflow.addListener(WorkflowListener.lastInstance);
 			
 	}
-	
+	*/
 	public void init(Diagram diagram, IDiagramBehavior diagramBehavior) {
 		super.init(diagram, diagramBehavior);
 		

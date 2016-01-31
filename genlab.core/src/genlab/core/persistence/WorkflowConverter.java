@@ -9,7 +9,6 @@ import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.WorkflowHooks;
-import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.Collection;
@@ -201,18 +200,13 @@ public class WorkflowConverter extends Decoder implements Converter {
 				}}
 				);
 		
-	
-		final IGenlabProject project = GenlabPersistence.getPersistence().getCurrentProject();
-		if (project == null)
-			throw new ProgramException("project should not be null");
-		
+			
 		final String filename = GenlabPersistence.getPersistence().getCurrentWorkflowFilename();
 		if (filename == null)
 			throw new ProgramException("filename should not be null");
 		
 		GenlabWorkflowInstance workflow = new GenlabWorkflowInstance(
 				(String)readen.get("id"),
-				project,
 				(String)readen.get("name"),
 				(String)readen.get("description"),
 				filename

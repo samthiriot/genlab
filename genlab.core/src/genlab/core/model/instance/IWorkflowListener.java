@@ -1,7 +1,5 @@
 package genlab.core.model.instance;
 
-import genlab.core.projects.IGenlabProject;
-
 /**
  * Describes listeners interested in the lifecycle of workflows
  * 
@@ -19,8 +17,6 @@ public interface IWorkflowListener {
 	public void workflowSaving(IGenlabWorkflowInstance workflow);
 
 	public void workflowSaved(IGenlabWorkflowInstance workflow);
-
-	public void projectSaved(IGenlabProject project);
 
 	/**
 	 * Sent when a workflow was automatically created (thus, by a program, like for examples).

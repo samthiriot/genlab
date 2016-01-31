@@ -974,7 +974,7 @@ public class PrefuseVisuView
 				Object value = lastVersionDataToDisplay.getVertexAttributeValue(vertexId, attributeId);
 				if (value == null)
 					continue;
-				n.set(attributeId, (double)lastVersionDataToDisplay.getVertexAttributeValue(vertexId, attributeId));
+				n.set(attributeId, ((Number)lastVersionDataToDisplay.getVertexAttributeValue(vertexId, attributeId)).intValue());
 			}
 			
 			// tooltip

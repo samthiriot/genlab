@@ -1,5 +1,7 @@
 package genlab.testing.commons;
 
+import static org.junit.Assert.fail;
+
 import genlab.core.commons.UniqueTimestamp;
 import genlab.core.exec.Execution;
 import genlab.core.exec.IRunner;
@@ -11,9 +13,7 @@ import genlab.core.model.exec.IAlgoExecution;
 import genlab.core.model.instance.GenlabFactory;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.WorkflowCheckResult;
-import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.MessageLevel;
-import static org.junit.Assert.*;
 
 /**
  * BAsic test for a workflow: user just has to fill the workflow, and this basic class
@@ -24,7 +24,6 @@ import static org.junit.Assert.*;
  */
 public abstract class BasicTestWorkflow {
 
-	protected IGenlabProject project = null;
 	protected IGenlabWorkflowInstance workflow = null;
 	
 	public BasicTestWorkflow() {
@@ -45,10 +44,8 @@ public abstract class BasicTestWorkflow {
 		
 		// create host project and workflow
 		System.err.println("### tmp project creation...");
-		project = GenlabTestingUtils.createEmptyProject();
 		Object uniqueId = new UniqueTimestamp();
 		workflow = GenlabFactory.createWorkflow(
-									project, 
 									"test"+uniqueId.toString(), 
 									"test"+uniqueId.toString(), 
 									"my workflow test "+uniqueId.toString()

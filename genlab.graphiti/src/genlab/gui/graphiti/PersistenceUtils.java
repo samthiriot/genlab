@@ -7,7 +7,6 @@ import java.io.PrintStream;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.Connection;
 import genlab.core.model.instance.GenlabWorkflowInstance;
-import genlab.core.projects.GenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 
 import com.thoughtworks.xstream.XStream;
@@ -28,7 +27,6 @@ public class PersistenceUtils {
 		try {
 			xstream = new XStream(new StaxDriver());
 	
-			xstream.alias("project", GenlabProject.class);
 			xstream.alias("workflow", GenlabWorkflowInstance.class);
 			xstream.alias("algoinstance", AlgoInstance.class);
 			xstream.alias("connection", Connection.class);

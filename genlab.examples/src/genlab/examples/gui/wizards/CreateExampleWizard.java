@@ -1,10 +1,10 @@
 package genlab.examples.gui.wizards;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 
 import genlab.core.commons.ProgramException;
-import genlab.core.projects.IGenlabProject;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.examples.gui.creation.ExamplesCreation;
 import genlab.gui.Utils;
@@ -82,14 +82,12 @@ public class CreateExampleWizard extends Wizard implements IWorkbenchWizard, INe
 		
 		// now we have the project to use
 		// lets create the examples to create
-		
-		IGenlabProject glProject = GenLab2eclipseUtils.getGenlabProjectForEclipseProject(targetProject);
-		if (glProject == null)
-			throw new ProgramException("unable to find the GenLab project for this eclipse project");
+		File hostDirectory = new File(targetProject.getLocationURI());
+		hostDirectory.mkdirs();
 		
 		for (IGenlabExample ex: page2.getExamplesToCreate()) {
 			try {
-				ExamplesCreation.createWorkflow(ex, glProject);
+				ExamplesCreation.createWorkflow(ex, hostDirectory);
 			} catch (RuntimeException e) {
 				GLLogger.errorUser("unable to create the example workflow: "+e, getClass());
 			}
