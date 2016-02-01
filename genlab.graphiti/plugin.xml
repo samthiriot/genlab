@@ -117,19 +117,27 @@
                            value="*.glw">
                      </test>
                   </adapt>
+                  <test
+                        property="genlab.gui.graphiti.testgraphitidiagram.hasNoGraphitiDiagram"
+                        value="true">
+                  </test>
+                  <test
+                        property="genlab.gui.graphiti.testgraphitidiagram.hasNoGraphitiDiagram">
+                  </test>
                </iterate>
             </visibleWhen>
          </command>
       </menuContribution>
    </extension>
    <extension
-         point="org.eclipse.ui.navigator.viewer">
-      <viewer
-            viewerId="genlab.gui.views.projectexplorer">
-      </viewer>
-      <viewerActionBinding
-            viewerId="genlab.gui.views.projectexplorer">
-      </viewerActionBinding>
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="genlab.gui.graphiti.actions.GraphitiDiagramExistsPropertyTester"
+            id="genlab.gui.graphiti.testgraphitidiagram.tester"
+            namespace="genlab.gui.graphiti.testgraphitidiagram"
+            properties="hasNoGraphitiDiagram"
+            type="java.lang.Object">
+      </propertyTester>
    </extension>
 
 </plugin>
