@@ -1,19 +1,7 @@
 package genlab.gui.graphiti.features;
 
-import genlab.core.model.instance.AlgoInstance;
-import genlab.core.model.instance.GenlabWorkflowInstance;
-import genlab.core.model.instance.IAlgoContainerInstance;
-import genlab.core.model.instance.IAlgoInstance;
-import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.core.model.instance.IInputOutputInstance;
-import genlab.core.model.meta.IConstantAlgo;
-import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.graphiti.GraphitiImageProvider;
-
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
-import org.eclipse.graphiti.features.impl.AbstractAddFeature;
-import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.Image;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
@@ -21,14 +9,19 @@ import org.eclipse.graphiti.mm.algorithms.RoundedRectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.FixPointAnchor;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
-import org.eclipse.graphiti.util.IColorConstant;
+
+import genlab.core.model.instance.AlgoInstance;
+import genlab.core.model.instance.GenlabWorkflowInstance;
+import genlab.core.model.instance.IAlgoContainerInstance;
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IInputOutputInstance;
+import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.graphiti.GraphitiImageProvider;
 
 /**
  * From an algo instance, displays it.

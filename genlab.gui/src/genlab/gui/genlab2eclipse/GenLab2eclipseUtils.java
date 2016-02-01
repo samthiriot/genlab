@@ -75,13 +75,8 @@ public class GenLab2eclipseUtils {
 
 	public static IFile getFileForWorkflow(IGenlabWorkflowInstance workflow) {
 		
-		IFile[] filesForPath;
-		try {
-			filesForPath = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(new URI(workflow.getAbsolutePath()));
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			throw new ProgramException("unable to translate workdlow path to an URI: "+workflow, e);
-		}
+		IFile[] filesForPath = ResourcesPlugin.getWorkspace().getRoot().findFilesForLocationURI(Utils.getEclipseURIForWorkflowFile(workflow));
+		
 		if (filesForPath.length == 0)
 			throw new ProgramException("Unable to find any eclipse file for workflow "+workflow.getAbsolutePath());
 		if (filesForPath.length > 1)

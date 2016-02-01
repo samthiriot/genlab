@@ -15,6 +15,7 @@ import org.eclipse.ui.WorkbenchException;
 
 /**
  * Clears a messages view
+ * TODO unused today
  * 
  * @author Samuel Thiriot
  *

@@ -1,5 +1,9 @@
 package genlab.gui.graphiti.features;
 
+import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.ICreateContext;
+import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
+
 import genlab.core.model.instance.IAlgoContainerInstance;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
@@ -8,11 +12,6 @@ import genlab.core.model.meta.IAlgoContainer;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.GraphitiImageProvider;
 import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
-
-import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.ICreateContext;
-import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 
 /**
  * For an algo taken from the palette, creates an instance in the diagram.

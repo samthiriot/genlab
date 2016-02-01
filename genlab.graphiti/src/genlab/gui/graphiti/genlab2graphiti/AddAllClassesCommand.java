@@ -2,6 +2,7 @@ package genlab.gui.graphiti.genlab2graphiti;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.gui.graphiti.Utils;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
 
 import org.eclipse.core.resources.IFile;
@@ -15,6 +16,7 @@ import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
+import org.eclipse.osgi.internal.loader.ModuleClassLoader.GenerationProtectionDomain;
 
 /**
  * Used to create an empty graphiti diagram. 
@@ -56,14 +58,24 @@ public class AddAllClassesCommand extends RecordingCommand {
 		
 		//((GraphitiFeatureProvider)dtp.getFeatureProvider()).getIndependanceSolver().
 		
-        
-		IFolder diagramFolder = project.getFolder(project.getProjectRelativePath().append(workflow.getRelativePath())); //$NON-NLS-1$
+        // project = genlab.gui.Utils.findEclipseProjectForWorkflow(workflow)
+		
+		//genlab.gui.Utils.getEclipseURIForWorkflowFile(workflow);
+		
+		/*IFolder diagramFolder = project.getFolder(project.getProjectRelativePath().append(workflow.getRelativePath())); //$NON-NLS-1$
 		IFile diagramFile = diagramFolder.getFile(
 				workflow.getFilename()+
 				"."+ //$NON-NLS-1$
 				GraphitiDiagramTypeProvider.GRAPH_EXTENSION
-				); 
-		URI uri = URI.createPlatformResourceURI(diagramFile.getFullPath().toString(), true);
+				); */
+		URI uri = URI.createPlatformResourceURI(
+				"/"+
+				project.getName()+
+				"/"+
+				genlab.gui.Utils.getWorkflowPathRelativeToProject(workflow).toString()+
+				"."+GraphitiDiagramTypeProvider.GRAPH_EXTENSION, 
+				true
+				);
 		createdResource = editingDomain.getResourceSet().createResource(uri);
 		createdResource.getContents().add(diagram);
 	
@@ -73,7 +85,7 @@ public class AddAllClassesCommand extends RecordingCommand {
 		// add a link between the workflow and the diagram file
 		workflow.addObjectForKey(
 				Genlab2GraphitiUtils.KEY_WORKFLOW_TO_GRAPHITI_FILE, 
-				workflow.getRelativeFilename()
+				workflow.getAbsolutePath()
 				);
 
 	}

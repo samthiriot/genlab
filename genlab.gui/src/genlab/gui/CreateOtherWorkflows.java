@@ -9,6 +9,7 @@ import genlab.core.model.meta.GenlabWorkflow;
 import genlab.core.model.meta.LoopForAlgo;
 import genlab.core.model.meta.basics.algos.AppendToTableAlgo;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
@@ -58,10 +59,9 @@ public class CreateOtherWorkflows {
 		// create the target workflow
 		final String postfix = " loop "+System.currentTimeMillis();
 		IGenlabWorkflowInstance workflowRes = GenlabFactory.createWorkflow(
-				originalWorkflow.getProject(),
 				originalWorkflow.getName()+postfix, 
 				"automatically created for loop", 
-				originalWorkflow.getRelativePath()+"/"+originalWorkflow.getFilename()+postfix+".glw"
+				originalWorkflow.getAbsolutePath()+File.separator+originalWorkflow.getFilename()+postfix+".glw"
 				);
 		
 		// inside this workflow, let's create a NSGA2 instance ! 

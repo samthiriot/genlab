@@ -92,6 +92,7 @@ public class WorkflowHooks {
 			try {
 				l.workflowChanged(wf);
 			} catch (RuntimeException e) {
+				e.printStackTrace();
 				GLLogger.warnTech("in the workflow listener, catched an exception: "+e.getMessage(), getClass(), e);
 			}
 		}

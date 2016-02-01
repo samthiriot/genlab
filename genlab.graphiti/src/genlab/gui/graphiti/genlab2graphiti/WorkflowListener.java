@@ -19,7 +19,7 @@ import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IWorkflowContentListener;
 import genlab.core.model.instance.IWorkflowListener;
 import genlab.core.usermachineinteraction.GLLogger;
-import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
+import genlab.gui.Utils;
 import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
 import genlab.gui.graphiti.features.BasicLayoutDiagramFeature;
 import genlab.gui.graphiti.features.BeautifyDiagramFeature;
@@ -64,14 +64,11 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 	
 	@Override
 	public void workflowCreation(IGenlabWorkflowInstance workflow) {
-
-		//Genlab2GraphitiUtils.createDiagram(workflow, workflow.getProject().);
 		
 		GLLogger.debugTech(
 				"a genlab workflow was created; will create a graphiti diagram to edit it", 
 				getClass()
 				);
-		
 
 		// register the workflow so we can map its keys and so on
 		// this call is a bit redondant but solves problems of race conditions with the GUI 
@@ -79,7 +76,7 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 
 		Genlab2GraphitiUtils.createDiagram(
 				workflow, 
-				GenLab2eclipseUtils.getEclipseProjectForWorkflow(workflow)
+				Utils.findEclipseProjectForWorkflow(workflow)
 				);
 		
 		workflow.addListener(this);
@@ -215,7 +212,6 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 
 	@Override
 	public void workflowSaved(IGenlabWorkflowInstance workflow) {
-		// TODO Auto-generated method stub
 		
 	}
 

@@ -1,6 +1,7 @@
 package genlab.gui.graphiti.editors;
 
 import java.io.File;
+import java.util.EventObject;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IAdaptable;
@@ -11,9 +12,15 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 
+import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
+import genlab.core.model.instance.IWorkflowContentListener;
+import genlab.core.model.instance.IWorkflowListener;
+import genlab.core.model.instance.WorkflowHooks;
 import genlab.core.persistence.GenlabPersistence;
 import genlab.core.usermachineinteraction.GLLogger;
+import genlab.gui.Utils;
 import genlab.gui.editors.IWorkflowEditor;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
 import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
@@ -28,7 +35,7 @@ import genlab.gui.graphiti.genlab2graphiti.WorkflowListener;
  * 
  * @author Samuel Thiriot
  */
-public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEditor {
+public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEditor, IWorkflowListener {
 
 	public static final String EDITOR_ID = "genlab.gui.graphiti.editors.GenlabDiagramEditor";
 	
@@ -70,15 +77,42 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 			GLLogger.errorTech("unable to detect the file linked with this editor; thus the workflow will not be found !", getClass());
 			return;
 		}
-		
+
 		String filename = file.getLocation().toOSString();
 		
+		// TODO be sure it is a workflow
+		// this is not a graph; this is a workflow
+		// let's create one first. This should open a diagram editor
+		if (!file.getFileExtension().equalsIgnoreCase(GraphitiDiagramTypeProvider.GRAPH_EXTENSION)) {
+
+			// load the corresponding workflow
+			workflow = GenlabPersistence.getPersistence().getWorkflowForFilename(filename);
+
+			// register the workflow so we can map its keys and so on
+			GenLabIndependenceSolver.singleton.registerWorkflow(workflow);
+
+			// register the workflow so we can map its keys and so on
+			// this call is a bit redondant but solves problems of race conditions with the GUI 
+			//GenLabIndependenceSolver.singleton.registerWorkflow(workflow);
+
+			Genlab2GraphitiUtils.createDiagram(
+					workflow, 
+					Utils.findEclipseProjectForWorkflow(workflow)
+					);
+			
+			workflow.addListener(WorkflowListener.lastInstance);
+			return;
+		} 
+		
+	
+		// we are reading a graph extension
+
 		// search for the corresponding workflow, which should be 
 		filename = filename.substring(
 				0, 
 				filename.length()-GraphitiDiagramTypeProvider.GRAPH_EXTENSION.length()-1
 				);
-		
+
 		{
 			File fTest = new File(filename);
 			if (fTest.exists() && fTest.isFile() && fTest.canRead()) {
@@ -88,6 +122,7 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 			}
 		}
 		
+
 		// load the corresponding workflow
 		workflow = GenlabPersistence.getPersistence().getWorkflowForFilename(filename);
 
@@ -102,7 +137,6 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 		
 		((GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider()).associateWorkflowWithThisProvider(workflow);
 		
-		workflow.addListener(WorkflowListener.lastInstance);
 		//workflow.addListener(this);
 		
 		if (diagram == null) {
@@ -110,7 +144,6 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 		}
 
 		if (diagram == null) {
-			
 			GLLogger.errorTech("Unable to find the diagram; will not be created.", getClass());
 			return;
 		}
@@ -124,7 +157,10 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 				(GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider()
 				);
 		
-		
+        // listen to the workflow lifecycle, so when the workflow is saved, we set our state to clean again
+		workflow.addListener(WorkflowListener.lastInstance);
+        WorkflowHooks.getWorkflowHooks().declareListener(this);
+
 	}
 	
 	/**
@@ -156,26 +192,6 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 		// 
 		super.setInput(input);
 		
-		
-		// ugly: retrieved from DefaultPersistence. THe idea is to retrieve the diagram somewhere (and this is a good place, for sure)
-		/*
-		EObject modelElement = null;
-		try {
-			modelElement = getEditingDomain().getResourceSet().getEObject(input.get, false);
-			if (modelElement == null) {
-				modelElement = getEditingDomain().getResourceSet().getEObject(uri, true);
-				if (modelElement == null) {
-					return;
-				}
-			}
-			this.diagram = (Diagram) modelElement;
-		} catch (WrappedException e) {
-			GLLogger.warnTech("unable to retrieve diagram", getClass());
-			return;
-		}
-		*/
-		
-		
 	}
 
 
@@ -193,20 +209,12 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
         	return;
         }
 		
-		// save the mapping between genlab and graphiti
-		/*
-        monitor.subTask("saving the genlab-graphiti mapping");
-        PersistenceUtils.getPersistenceUtils().persistAsXml(
-				((GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider()).getIndependanceSolver(),
-				workflow.getAbsolutePath()+Genlab2GraphitiUtils.EXTENSION_FILE_MAPPING
-				);
-        */
-
         // for sure, we have to save the workflow
         monitor.subTask("saving Genlab workflow");
         GenlabPersistence.getPersistence().saveWorkflow(workflow);
         
-
+        // our dirty change will change indirectly when, and if, the corresponding genlab event comes back.
+        
 	}
 
 	@Override
@@ -216,22 +224,73 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 
 	@Override
 	public boolean isDirty() {
-		return super.isDirty();
-		// TODO solve this dirty aspect
+
+		return isWorkflowChanged;
 	}
 
 
 	@Override
 	public void close() {
+
+		
 		super.close();
 		
-		/*
-		if (workflow != null) {
-			workflow.removeListener(this);
-		}*/
 	}
 	
+
+	protected void setClean() {
+		
+		// change our internal state
+		this.isWorkflowChanged = false;
+		
+		// and ask Eclipse to refresh our dirty status
+		firePropertyChange(PROP_DIRTY);
+		
+	}
 	
+	protected void setDirty() {
+		
+		// change our internal state
+		this.isWorkflowChanged = true;
+		
+		// and ask Eclipse to refresh our dirty status
+		firePropertyChange(PROP_DIRTY);
+		
+	}
+
+
+	@Override
+	public void workflowCreation(IGenlabWorkflowInstance workflow) {
+		
+	}
+
+	@Override
+	public void workflowChanged(IGenlabWorkflowInstance workflow) {
+		if (this.workflow == workflow)
+			setDirty();
+	}
+
+	@Override
+	public void workflowOpened(IGenlabWorkflowInstance workflow) {
+	}
+
+	@Override
+	public void workflowSaving(IGenlabWorkflowInstance workflow) {
+	}
+
+	@Override
+	public void workflowSaved(IGenlabWorkflowInstance workflow) {
+		if (this.workflow == workflow)
+			setClean();
+	}
+
+	@Override
+	public void workflowAutomaticallyCreatedAndFinished(IGenlabWorkflowInstance instance) {
+	}
+
+	@Override
+	public void workflowLoaded(IGenlabWorkflowInstance instance) {		
+	}
 	
 	
 	

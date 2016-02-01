@@ -2,6 +2,7 @@ package genlab.gui.genlab2eclipse;
 
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.instance.IWorkflowListener;
+import genlab.core.usermachineinteraction.GLLogger;
 
 /**
  * Listens for workflow activity, and updates the corresponding 
@@ -44,17 +45,11 @@ public class WorkflowsListener implements IWorkflowListener {
 		
 		// we have to refresh the folder which contains the parent
 		
-		// TODO should we react to the saving of workfhlow with an UI action ?
-		/*
 		try {
-			IProject eclipseProject = GenLab2eclipseUtils.getEclipseProjectForGenlabProject(workflow.getProject());
-			Utils.updateCommonNavigator(
-					"genlab.gui.views.projectexplorer", 
-					eclipseProject.getFolder(workflow.getRelativePath())
-					);
+			GenLab2eclipseUtils.getFileForWorkflow(workflow).getParent().refreshLocal(1, null);
 		} catch (Throwable t) {
-			GLLogger.warnTech("error while attempting to process the saving state for project "+workflow.getProject(), getClass());
-		}*/
+			GLLogger.warnTech("error while attempting to refresh the folder containing the workflow "+workflow.getAbsolutePath(), getClass());
+		}
 	}
 
 	@Override

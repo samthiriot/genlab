@@ -77,7 +77,7 @@ public class GenLabIndependenceSolver implements IIndependenceSolver {
 	@Override
 	public Object getBusinessObjectForKey(String key) {
 
-		if (id2workflow.isEmpty()) {
+		if (id2workflow.isEmpty() || false) {
 			GLLogger.warnTech("no workflow; so unable to find mapping for key "+key, getClass());
 			return null;
 		}

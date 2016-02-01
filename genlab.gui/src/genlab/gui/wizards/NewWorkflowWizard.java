@@ -1,5 +1,7 @@
 package genlab.gui.wizards;
 
+import java.io.File;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
@@ -53,10 +55,14 @@ public class NewWorkflowWizard extends Wizard implements IWorkbenchWizard, INewW
 			IProject eclipseProject = page2.getSelectedProject();
 			//IProject eclipseProject = Utils.findEclipseProjectInSelection(selection);
 
+			String filenameAbsolute = eclipseProject.getWorkspace().getRoot().getLocation().toOSString()
+										+page2.getRelativePath().toString()
+										;
+					
 			IGenlabWorkflowInstance workflow = GenlabFactory.createWorkflow(
 					page1.getWorkflowName(), 
 					page1.getWorkflowDesc(), 
-					Utils.getPathRelativeToProject(eclipseProject, page2.getRelativePath().toString())
+					filenameAbsolute
 					);
 			
 	

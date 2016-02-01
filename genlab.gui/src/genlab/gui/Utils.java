@@ -1,7 +1,6 @@
 package genlab.gui;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.eclipse.core.internal.resources.File;
 import org.eclipse.core.resources.IFile;
@@ -11,6 +10,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableContext;
@@ -43,12 +43,32 @@ import genlab.gui.genlab2eclipse.GenLab2eclipseUtils;
 
 public class Utils {
 
+	public static IFile getEclipseFileForWorkflow(IGenlabWorkflowInstance workflow) {
+		
+		IProject project = findEclipseProjectForWorkflow(workflow);
+		IFile[] files = project.getWorkspace().getRoot().findFilesForLocationURI(getEclipseURIForWorkflowFile(workflow));
+		if (files.length == 0)
+			throw new ProgramException("unable to find workflow file "+workflow.getAbsolutePath());
+		if (files.length > 1)
+			throw new ProgramException("found several files for workflow: "+workflow.getAbsolutePath());
+		
+		return files[0];
+		
+	}
+	
+	public static IPath getWorkflowPathRelativeToProject(IGenlabWorkflowInstance workflow) {
+		
+		return getEclipseFileForWorkflow(workflow).getProjectRelativePath();
+		
+	}
+	
 	public static URI getEclipseURIForWorkflowFile(IGenlabWorkflowInstance workflow) {
-		try {
-			return new URI("file://"+workflow.getAbsolutePath());
+		return (new java.io.File(workflow.getAbsolutePath())).toURI();
+		/*try {
+			//return new URI("file://"+workflow.getAbsolutePath());
 		} catch (URISyntaxException e) {
-			throw new ProgramException("unable to convert the workflow to an URI: "+workflow.getAbsolutePath());
-		}
+			throw new ProgramException("unable to convert the workflow to an URI: "+workflow.getAbsolutePath(), e);
+		}*/
 	}
 	
 	/**
@@ -56,7 +76,7 @@ public class Utils {
 	 * @param workflow
 	 * @return
 	 */
-	protected static IProject findEclipseProjectForWorkflow(IGenlabWorkflowInstance workflow) {
+	public static IProject findEclipseProjectForWorkflow(IGenlabWorkflowInstance workflow) {
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IFile[] containers = workspace.getRoot().findFilesForLocationURI(getEclipseURIForWorkflowFile(workflow));
@@ -73,6 +93,12 @@ public class Utils {
 		
 	}
 	
+	
+	/**
+	 * Gets the output folder for this workflow (finds the corresponding Eclipse project)
+	 * @param workflow
+	 * @return
+	 */
 	public static java.io.File getOutputFolderForWorkflow(IGenlabWorkflowInstance workflow) {
 		
 		// find the parent project
