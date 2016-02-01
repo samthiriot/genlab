@@ -80,5 +80,56 @@
             targetID="genlab.gui.perspectives.WorkflowPerspective">
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="genlab.gui.category"
+            description="create another file with a graphical view of the diagram"
+            id="genlab.graphiti.commands.createWorkflowDiagram"
+            name="create_graphiti_diagram_workflow">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="genlab.gui.graphiti.actions.CreateGraphitiDiagramHandler"
+            commandId="genlab.graphiti.commands.createWorkflowDiagram">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="popup:genlab.gui.views.projectexplorer?before=import">
+         <command
+               commandId="genlab.graphiti.commands.createWorkflowDiagram"
+               label="view in a workflow diagram"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <iterate
+                     ifEmpty="false"
+                     operator="and">
+                  <adapt
+                        type="org.eclipse.core.resources.IResource">
+                     <test
+                           property="org.eclipse.core.resources.name"
+                           value="*.glw">
+                     </test>
+                  </adapt>
+               </iterate>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.navigator.viewer">
+      <viewer
+            viewerId="genlab.gui.views.projectexplorer">
+      </viewer>
+      <viewerActionBinding
+            viewerId="genlab.gui.views.projectexplorer">
+      </viewerActionBinding>
+   </extension>
 
 </plugin>
