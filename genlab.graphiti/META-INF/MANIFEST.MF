@@ -31,7 +31,8 @@ Require-Bundle: org.eclipse.core.runtime.compatibility;bundle-version="3.2.200",
  org.eclipse.ui.views.properties.tabbed;bundle-version="3.5.300",
  genlab.core,
  genlab.gui;bundle-version="0.0.1",
- genlab.algog.gui.examples;bundle-version="1.0.0"
+ genlab.algog.gui.examples;bundle-version="1.0.0",
+ org.eclipse.core.expressions;bundle-version="3.5.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: genlab.gui.graphiti.genlab2graphiti,

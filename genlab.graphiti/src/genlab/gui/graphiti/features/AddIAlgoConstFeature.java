@@ -125,10 +125,10 @@ public class AddIAlgoConstFeature extends AbstractAddFeature {
 		ContainerShape contextContainerShape = context.getTargetContainer();
 		GenlabWorkflowInstance workflow = null;
 		Object boForContainer = this.getBusinessObjectForPictogramElement(context.getTargetContainer());
-		
+		if (boForContainer == null)
+			boForContainer = addedAlgo.getWorkflow();
 		if (boForContainer instanceof GenlabWorkflowInstance) {
 			workflow = (GenlabWorkflowInstance)boForContainer;
-			
 		} else if (boForContainer instanceof IAlgoContainerInstance) {
 			IAlgoContainerInstance algoContainer = (IAlgoContainerInstance)boForContainer;
 			workflow = (GenlabWorkflowInstance) algoContainer.getWorkflow();

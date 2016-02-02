@@ -149,7 +149,6 @@ public class CreateWorkflowNSGA2FromWorkflow {
 		// create the target workflow
 		final String postfix = " nsga2 "+System.currentTimeMillis();
 		IGenlabWorkflowInstance workflowRes = GenlabFactory.createWorkflow(
-				originalWorkflow.getProject(),
 				originalWorkflow.getName()+postfix, 
 				"automatically created for NSGA2", 
 				originalWorkflow.getRelativePath()+"/"+originalWorkflow.getFilename()+postfix+".glw"

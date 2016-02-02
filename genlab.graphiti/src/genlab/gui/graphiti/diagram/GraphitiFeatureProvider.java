@@ -440,8 +440,6 @@ public class GraphitiFeatureProvider extends DefaultFeatureProviderWithPatterns 
 				GraphitiFeatureProvider.KEY_FEATURE_PROVIDER_FOR_WORKFLOW, 
 				this
 				);
-
-		
 		GLLogger.traceTech("registered feature provider "+this+" for workflow "+workflow, getClass());
 
 	}

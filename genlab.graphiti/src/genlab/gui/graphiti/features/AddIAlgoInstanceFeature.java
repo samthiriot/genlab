@@ -15,6 +15,7 @@ import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.services.IPeCreateService;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.AlgoInstance;
 import genlab.core.model.instance.GenlabWorkflowInstance;
 import genlab.core.model.instance.IAlgoContainerInstance;
@@ -90,6 +91,8 @@ public class AddIAlgoInstanceFeature extends AddFeatureAbstract {
 		AlgoInstance addedAlgo = (AlgoInstance) context.getNewObject();
 		
 		ContainerShape contextTargetContainer = context.getTargetContainer();
+		if (contextTargetContainer == null)
+			throw new ProgramException("context target container should not be null");
 		
 		Object boForContainer = getBusinessObjectForPictogramElement(contextTargetContainer);
 		GenlabWorkflowInstance workflow = null;

@@ -7,6 +7,7 @@ import genlab.core.model.meta.IReduceAlgo;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Instance of an algo container, that is an algo which contains
@@ -21,7 +22,6 @@ public class AlgoContainerInstance extends AlgoInstance implements IAlgoContaine
 	
 	public AlgoContainerInstance(IAlgoContainer algo, IGenlabWorkflowInstance workflow) {
 		super(algo, workflow);
-		
 		
 	}
 
@@ -176,6 +176,29 @@ public class AlgoContainerInstance extends AlgoInstance implements IAlgoContaine
 	public boolean canContain(IAlgoInstance bo) {
 		// by default, delegates to the meta level
 		return ((IAlgoContainer)algo).canContain(bo.getAlgo());
+	}
+
+	@Override
+	public void collectChildrenInOrder(List<IAlgoInstance> accumulator) {
+	
+		// first add all the children that are simple ones
+		for (IAlgoInstance ai: children) {
+			
+			if (ai instanceof IAlgoContainerInstance)
+				continue;
+			
+			accumulator.add(ai);	
+		}
+		
+		// now only the container children remain
+		for (IAlgoInstance ai: children) {
+			
+			if (!(ai instanceof IAlgoContainerInstance))
+				continue;
+			
+			accumulator.add(ai);
+			((IAlgoContainerInstance)ai).collectChildrenInOrder(accumulator);
+		}
 	}
 
 	

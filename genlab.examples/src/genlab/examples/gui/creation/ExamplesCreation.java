@@ -40,21 +40,23 @@ public class ExamplesCreation {
 	 * @return
 	 */
 	public static IGenlabWorkflowInstance createWorkflow(IGenlabExample example, File hostDirectory) {
-
 		
 		IGenlabWorkflowInstance workflow = GenlabFactory.createWorkflow(
 				example.getName(), 
 				example.getDescription(), 
-				getPathForExample(example)
+				hostDirectory.getAbsolutePath()+File.separator+getPathForExample(example)
 				);
 		
 		File dirData = new File(hostDirectory.getAbsolutePath()+File.separator+getPathForExampleResources(example));
 		dirData.mkdirs();
 		
+		// let the example create its data files
 		example.createFiles(dirData);
 		
+		// let the example create the algos in the workflow
 		example.fillInstance(workflow);
 		
+		// emit the information this workflow was automatically created (graphical counterparts might be automatically created)
 		WorkflowHooks.getWorkflowHooks().notifyWorkflowAutomaticallyDone(workflow);
 		
 		GenlabPersistence.getPersistence().saveWorkflow(workflow);

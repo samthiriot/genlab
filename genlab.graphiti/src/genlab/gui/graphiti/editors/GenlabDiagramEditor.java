@@ -12,6 +12,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
@@ -85,23 +86,9 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 		// let's create one first. This should open a diagram editor
 		if (!file.getFileExtension().equalsIgnoreCase(GraphitiDiagramTypeProvider.GRAPH_EXTENSION)) {
 
-			// load the corresponding workflow
-			workflow = GenlabPersistence.getPersistence().getWorkflowForFilename(filename);
-
-			// register the workflow so we can map its keys and so on
-			GenLabIndependenceSolver.singleton.registerWorkflow(workflow);
-
-			// register the workflow so we can map its keys and so on
-			// this call is a bit redondant but solves problems of race conditions with the GUI 
-			//GenLabIndependenceSolver.singleton.registerWorkflow(workflow);
-
-			Genlab2GraphitiUtils.createDiagram(
-					workflow, 
-					Utils.findEclipseProjectForWorkflow(workflow)
-					);
+			// TODO raise error !
 			
-			workflow.addListener(WorkflowListener.lastInstance);
-			return;
+			throw new ProgramException("this editor is designed to display workflow graphs");
 		} 
 		
 	
@@ -135,7 +122,7 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 		Genlab2GraphitiUtils.linkInTransaction(dfp, getDiagramTypeProvider().getDiagram(), workflow);
 		
 		
-		((GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider()).associateWorkflowWithThisProvider(workflow);
+		// TODO useful ? ((GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider()).associateWorkflowWithThisProvider(workflow);
 		
 		//workflow.addListener(this);
 		
@@ -148,14 +135,16 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 			return;
 		}
 		
-		isWorkflowChanged = false;
-		
 		// TODO check consistency ???
-		Genlab2GraphitiUtils.fillGraphitiFromGenlab(
+		// TODO does this even work ?
+		/*
+		isWorkflowChanged = Genlab2GraphitiUtils.fillGraphitiFromGenlab(
 				workflow, 
 				diagram, 
 				(GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider()
 				);
+		*/
+		isWorkflowChanged = false;
 		
         // listen to the workflow lifecycle, so when the workflow is saved, we set our state to clean again
 		workflow.addListener(WorkflowListener.lastInstance);
@@ -225,7 +214,7 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 	@Override
 	public boolean isDirty() {
 
-		return isWorkflowChanged;
+		return super.isDirty() || isWorkflowChanged;
 	}
 
 

@@ -7,6 +7,7 @@ import genlab.core.model.meta.IInputOutput;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 
@@ -72,6 +73,8 @@ public interface IGenlabWorkflowInstance extends IAlgoContainerInstance,
 
 	public Collection<IAlgoInstance> getAlgoInstances();
 
+	public Collection<IAlgoInstance> getDirectChildren();
+	
 	public Collection<Connection> getConnections();
 
 	public boolean containsAlgoInstance(IAlgoInstance algoInstance);
@@ -114,5 +117,7 @@ public interface IGenlabWorkflowInstance extends IAlgoContainerInstance,
 	void dispatchAlgoChange(IAlgoInstance ai);
 
 	public void _setFilename(String absoluteFilename);
+
+	List<IAlgoInstance> getAlgoInstancesOrdered();
 	
 }

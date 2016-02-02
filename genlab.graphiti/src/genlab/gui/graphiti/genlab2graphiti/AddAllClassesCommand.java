@@ -4,6 +4,9 @@ import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.gui.graphiti.Utils;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
+import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
+
+import java.io.ObjectInputStream.GetField;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -14,6 +17,7 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.eclipse.osgi.internal.loader.ModuleClassLoader.GenerationProtectionDomain;
@@ -56,6 +60,7 @@ public class AddAllClassesCommand extends RecordingCommand {
 				GraphitiDiagramTypeProvider.PROVIDER_ID
 				); 
 		
+		
 		//((GraphitiFeatureProvider)dtp.getFeatureProvider()).getIndependanceSolver().
 		
         // project = genlab.gui.Utils.findEclipseProjectForWorkflow(workflow)
@@ -87,7 +92,15 @@ public class AddAllClassesCommand extends RecordingCommand {
 				Genlab2GraphitiUtils.KEY_WORKFLOW_TO_GRAPHITI_FILE, 
 				workflow.getAbsolutePath()
 				);
-
+		GraphitiFeatureProvider gfp = (GraphitiFeatureProvider)dtp.getFeatureProvider();
+		gfp.associateWorkflowWithThisProvider(workflow);
+		
+		Genlab2GraphitiUtils.linkInTransaction(
+				gfp,
+				diagram, 
+				workflow
+				);
+		
 	}
 	
 	public Diagram getDiagram() {

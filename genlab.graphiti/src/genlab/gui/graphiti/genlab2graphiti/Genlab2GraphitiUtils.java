@@ -1,6 +1,9 @@
 package genlab.gui.graphiti.genlab2graphiti;
 
+import genlab.core.commons.ProgramException;
+import genlab.core.model.IGenlabResource;
 import genlab.core.model.instance.IAlgoInstance;
+import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.usermachineinteraction.GLLogger;
 import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
@@ -126,10 +129,10 @@ public class Genlab2GraphitiUtils {
 	
 	private static class AddCommand implements Command {
 
-		private final IAlgoInstance ai;
+		private final IGenlabResource ai;
 		private final GraphitiFeatureProvider gfp;
 		
-		public AddCommand(IAlgoInstance ai, GraphitiFeatureProvider gfp) {
+		public AddCommand(IGenlabResource ai, GraphitiFeatureProvider gfp) {
 			this.ai = ai;
 			this.gfp = gfp;
 		}
@@ -143,8 +146,15 @@ public class Genlab2GraphitiUtils {
 		public void execute() {
 			GLLogger.infoTech("no pictogram for element "+ai+"; will add it to the diagram", Genlab2GraphitiUtils.class);
 			
-			AreaContext area = new AreaContext();
-			AddContext ctxt = new AddContext(area, ai);
+			AddContext ctxt = null;
+			if (ai instanceof IAlgoInstance) {
+				ctxt = WorkflowListener.createAddContextToAddInstance((IAlgoInstance)this.ai, gfp);
+			} else if (ai instanceof IConnection) {
+				ctxt = WorkflowListener.createAddConnectionContext((IConnection)this.ai, gfp);
+			} else {
+				throw new ProgramException("unknown algo instance type "+ctxt);
+			}
+			
 			IAddFeature addFeature = gfp.getAddFeature(ctxt);
 			if (addFeature == null) {
 				GLLogger.warnTech("no add feature for element "+ai+"; will NOT add it to the diagram: :-(", Genlab2GraphitiUtils.class);
@@ -274,6 +284,7 @@ public class Genlab2GraphitiUtils {
 		// retrieve resources
 		//final ResourceSetImpl resourceSet = new ResourceSetImpl();
 	    
+		//final ResourceSet resourceSet = pictogramElement.eResource() != null ? pictogramElement.eResource().getResourceSet() : new ResourceSetImpl();
 		final ResourceSet resourceSet = pictogramElement.eResource().getResourceSet();
 		
 	
@@ -294,8 +305,7 @@ public class Genlab2GraphitiUtils {
         
 	}
 	
-	protected static void addInTransaction(IAlgoInstance ai, GraphitiFeatureProvider gfp, Diagram diagram) {
-
+	protected static void addInTransaction(IGenlabResource ai, GraphitiFeatureProvider gfp, Diagram diagram) {
 		
 		final Command cmd = new AddCommand(ai, gfp);
 		
@@ -432,13 +442,23 @@ protected static void ExecuteInTransaction(ICustomFeature feature, IContext ctxt
         editingDomain.getCommandStack().execute(fc);
 			
 	}
-	
-	public static void fillGraphitiFromGenlab(
+		
+	/**
+	 * returns true if something had to be created
+	 * @param workflow
+	 * @param diagram
+	 * @param gfp
+	 * @return
+	 */
+	public static boolean fillGraphitiFromGenlab(
 			IGenlabWorkflowInstance workflow, 
 			Diagram diagram, 
 			GraphitiFeatureProvider gfp) {
 		
-		for (IAlgoInstance ai: workflow.getAlgoInstances()) {
+		boolean change = false;
+		
+		// create algo instances
+		for (IAlgoInstance ai: workflow.getAlgoInstancesOrdered()) {
 		
 			// search for its diagram counterpart
 			PictogramElement pe = gfp.getPictogramElementForBusinessObject(ai);
@@ -449,16 +469,55 @@ protected static void ExecuteInTransaction(ICustomFeature feature, IContext ctxt
 				try {
 					addInTransaction(ai, gfp, diagram);
 				} catch (RuntimeException e) {
+					e.printStackTrace();
 					GLLogger.errorTech("error while adding a pictogram to element "+ai+"; the corresponding graphic representation will not be used.", Genlab2GraphitiUtils.class, e);
 				}
+				
+				change  = true;
 			}
-			
-			
 			
 		}
 		
+		// create connections
+		for (IConnection c : workflow.getConnections()) {
+			
+			// search for its diagram counterpart
+			PictogramElement pe = gfp.getPictogramElementForBusinessObject(c);
+			if (pe == null) {
+				// TODO change info => debug
+				GLLogger.infoTech("no pictogram for connection "+c+"; will add it to the diagram", Genlab2GraphitiUtils.class);
+			
+				try {
+					addInTransaction(c, gfp, diagram);
+				} catch (RuntimeException e) {
+					GLLogger.errorTech("error while adding a pictogram to element "+c+"; the corresponding graphic representation will not be used.", Genlab2GraphitiUtils.class, e);
+				}
+				
+				change  = true;
+			}
+
+			
+		}
+		
+		return change;
+		
+	}
+	
+	public static boolean fillGraphitiFromGenlab(
+			IGenlabWorkflowInstance workflow) {
+		
+		final GraphitiFeatureProvider gfp = GraphitiFeatureProvider.getFeatureProviderForWorkflow(workflow);
+		final Diagram diagram = (Diagram)gfp.getPictogramElementForBusinessObject(workflow);
+		
+		if (diagram == null)
+			throw new ProgramException("unable to find a diagram for this workflow: "+workflow.getName());
 		
 		
+		return fillGraphitiFromGenlab(
+				workflow, 
+				diagram, 
+				gfp
+				);
 	}
 	
 	// TODO remove old code for errors

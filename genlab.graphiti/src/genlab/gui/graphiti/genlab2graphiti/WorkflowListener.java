@@ -13,6 +13,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 
+import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.instance.IConnection;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
@@ -215,6 +216,19 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 		
 	}
 
+	protected static AddConnectionContext createAddConnectionContext(IConnection c, GraphitiFeatureProvider dfp) {
+
+		Anchor anchorFrom = (Anchor) dfp.getPictogramElementForBusinessObject(c.getFrom());
+		Anchor anchorTo = (Anchor) dfp.getPictogramElementForBusinessObject(c.getTo());
+		
+		AddConnectionContext addContext = new AddConnectionContext(
+				anchorFrom, 
+				anchorTo
+				);
+		addContext.setNewObject(c);
+		
+		return addContext;
+	}
 
 	@Override
 	public void notifyConnectionAdded(IConnection c) {
@@ -227,14 +241,7 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 			try {
 				GLLogger.debugTech("the connection "+c+" has no graphiti counterpart; let's create it", getClass());
 				
-				Anchor anchorFrom = (Anchor) dfp.getPictogramElementForBusinessObject(c.getFrom());
-				Anchor anchorTo = (Anchor) dfp.getPictogramElementForBusinessObject(c.getTo());
-				
-				AddConnectionContext addContext = new AddConnectionContext(
-						anchorFrom, 
-						anchorTo
-						);
-				addContext.setNewObject(c);
+				AddConnectionContext addContext = createAddConnectionContext(c, dfp);
 				
 				dfp.addIfPossible(addContext);
 			} catch (RuntimeException e2) {
@@ -270,22 +277,36 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 		*/
 	}
 
+	protected static AddContext createAddContextToAddInstance(IAlgoInstance instance, GraphitiFeatureProvider dfp) {
+
+		Diagram diagram = (Diagram) dfp.getPictogramElementForBusinessObject(instance.getWorkflow());
+		if (diagram == null) {
+			throw new ProgramException("unable to find the diagram for workflow "+instance.getWorkflow());
+		}
+				
+		AddContext ctxt = new AddContext();
+		ctxt.setNewObject(instance);
+		
+		if (instance.getContainer() == null) {
+			// direct diagram child
+			ctxt.setTargetContainer(diagram);
+		} else {	
+			// inside another container ?
+			PictogramElement containerPE = dfp.getPictogramElementForBusinessObject(instance.getContainer());
+			ctxt.setTargetContainer((ContainerShape) containerPE);
+		}
+		
+		return ctxt;
+	}
+	
 	@Override
 	public void notifyAlgoAdded(IAlgoInstance instance) {
 	
 		// retrieve the right feature provider (there is one per diagram)
 		// it is stored into the workflow
-		
 		final GraphitiFeatureProvider dfp = GraphitiFeatureProvider.getFeatureProviderForWorkflow(instance.getWorkflow());
 		if (dfp == null) {
-			GLLogger.errorTech("unable to retrieve in the workflow "+instance.getWorkflow()+" the feature provider; unable to maintain synchronicity between genlab an graphiti", getClass());
-			return;
-		}
-		
-		Diagram diagram = (Diagram) dfp.getPictogramElementForBusinessObject(instance.getWorkflow());
-		if (diagram == null) {
-			GLLogger.errorTech("unable to retrieve in "+dfp+" the diagram for instance "+instance.getWorkflow()+" ; unable to maintain synchronicity between genlab an graphiti", getClass());
-			return;
+			throw new ProgramException("unable to retrieve in the workflow "+instance.getWorkflow()+" the feature provider; unable to maintain synchronicity between genlab an graphiti");
 		}
 		
 		PictogramElement e = dfp.getPictogramElementForBusinessObject(instance);
@@ -294,17 +315,9 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 			try {
 				GLLogger.debugTech("the instance "+instance+" has no graphiti counterpart; let's create it", getClass());
 				
-				AddContext ctxt = new AddContext();
-				
-				if (instance.getContainer() == null) {
-					// direct diagram child
-					ctxt.setTargetContainer(diagram);
-				} else {	
-					// inside another container ?
-					PictogramElement containerPE = dfp.getPictogramElementForBusinessObject(instance.getContainer());
-					ctxt.setTargetContainer((ContainerShape) containerPE);
-				}
-				
+				AddContext ctxt = createAddContextToAddInstance(instance, dfp);
+
+				// retrieve stored info about where the user clicked
 				UIInfos uiInfos = objectCreated2infos.get(instance);
 				ctxt.setNewObject(instance);
 				
@@ -319,6 +332,7 @@ public class WorkflowListener implements IWorkflowListener, IWorkflowContentList
 				}
 				
 				dfp.addIfPossible(ctxt);
+				
 			} catch (RuntimeException e2) {
 				GLLogger.errorTech("unable to create a graphical representation for algo instance: "+instance+"; the graphical representation is no more consistant with the actual data", getClass(), e2);
 			}

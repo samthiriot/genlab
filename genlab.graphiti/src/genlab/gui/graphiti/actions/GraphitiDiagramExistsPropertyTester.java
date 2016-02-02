@@ -1,13 +1,11 @@
 package genlab.gui.graphiti.actions;
 
 import org.eclipse.core.expressions.PropertyTester;
-import org.eclipse.core.internal.resources.File;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.Path;
 
 import genlab.core.persistence.GenlabPersistence;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
-import genlab.gui.graphiti.editors.GenlabDiagramEditor;
 
 /**
  * Offers eclipse expressions to test wether the graphiti diagram file does exist for 

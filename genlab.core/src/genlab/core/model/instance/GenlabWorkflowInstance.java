@@ -21,7 +21,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,8 +38,6 @@ import java.util.Set;
  *
  */
 public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
-
-	public static GenlabWorkflowInstance currentTODO = null;
 	
 	protected Set<Connection> connections = new HashSet<Connection>();
 	
@@ -53,9 +53,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	
 	private transient Map<String,Object> transientKey2object = new HashMap<String, Object>();
 
-	
-	protected static final Map<String,GenlabWorkflowInstance> id2instance = new HashMap<String, GenlabWorkflowInstance>(); 
-	
+		
 	private LinkedList<IWorkflowContentListener> listeners = new LinkedList<IWorkflowContentListener>();
 	
 	private IAlgoContainerInstance container = null;
@@ -71,15 +69,7 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 			this.absoluteFilename = absoluteFilename;
 		else
 			this.absoluteFilename = absoluteFilename+GenlabPersistence.EXTENSION_WORKFLOW;
-		
-		// remove that later (unicity is not at a static level, only project)
-		if (id2instance.containsKey(id))
-			throw new WrongParametersException(" workflow instance with id "+id+" already exists ...");
-		id2instance.put(id, this);
-		
-		// TODO remove
-		currentTODO = this;
-		
+				
 		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
 	}
 	
@@ -93,18 +83,9 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 			this.absoluteFilename = absoluteFilename;
 		else
 			this.absoluteFilename = absoluteFilename+GenlabPersistence.EXTENSION_WORKFLOW;
-		
-		// remove that later (unicity is not at a static level, only project)
-		if (id2instance.containsKey(id))
-			throw new WrongParametersException(" workflow instance with id "+id+" already exists ...");
-		
-		id2instance.put(id, this);
-		
+				
 		GLLogger.debugTech("I now contain these algos: "+id2algoInstance, getClass());
 
-
-		// TODO remove
-		currentTODO = this;
 	}
 
 	@Override
@@ -214,6 +195,15 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 		return id2algoInstance.values();
 	}
 
+	public Collection<IAlgoInstance> getDirectChildren() {
+		Collection<IAlgoInstance> res = new LinkedList<>();
+		for (IAlgoInstance ai: id2algoInstance.values()) {
+			if (ai.getContainer() == this)
+				res.add(ai);
+		}
+		return res;
+	}
+	
 	@Override
 	public Collection<Connection> getConnections() {
 		return Collections.unmodifiableCollection(connections);
@@ -285,11 +275,6 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 
     private Object readResolve() {
     	
-    	id2instance.put(id, this);
-    	
-		// TODO remove
-		currentTODO = this;
-		
 	    return this;
 	}
 
@@ -591,6 +576,47 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	}
 
 	@Override
+	public void collectChildrenInOrder(List<IAlgoInstance> accumulator) {
+
+		Collection<IAlgoInstance> directChildren = getDirectChildren();
+	
+		// first add all the children that are simple ones
+		for (IAlgoInstance ai: directChildren) {
+			
+			if (ai instanceof IAlgoContainerInstance)
+				continue;
+			
+			accumulator.add(ai);	
+		}
+		
+		// now only the container children remain
+		for (IAlgoInstance ai: directChildren) {
+			
+			if (!(ai instanceof IAlgoContainerInstance))
+				continue;
+			
+			accumulator.add(ai);
+			((IAlgoContainerInstance)ai).collectChildrenInOrder(accumulator);
+		}
+	}
+	
+	/**
+	 * Returns the list of contained instances in the right order 
+	 * for creation: first containers, then children
+	 * @return
+	 */
+	@Override
+	public List<IAlgoInstance> getAlgoInstancesOrdered() {
+
+		List<IAlgoInstance> res = new LinkedList<>();
+		
+		collectChildrenInOrder(res);
+		
+		return res;
+		
+	}
+	
+	@Override
 	public Collection<IConnection> getAllIncomingConnections() {
 		return Collections.EMPTY_LIST;
 	}
@@ -685,6 +711,62 @@ public class GenlabWorkflowInstance implements IGenlabWorkflowInstance {
 	@Override
 	public void _initializeParamChangeName() {
 		// nothing
+	}
+
+	@Override
+	public Set<IInputOutput> getInputs() {
+		return Collections.EMPTY_SET;
+	}
+
+	@Override
+	public Set<IInputOutput> getOuputs() {
+		return Collections.EMPTY_SET;
+	}
+
+	@Override
+	public boolean containsInput(IInputOutput input) {
+		return false;
+	}
+
+	@Override
+	public boolean containsOutput(IInputOutput output) {
+		return false;
+	}
+
+	@Override
+	public Map<String, Object> getParametersAndValues() {
+		return Collections.EMPTY_MAP;
+	}
+
+	@Override
+	public void declareParameter(Parameter<?> p) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public boolean isDisabled() {
+		return false;
+	}
+
+	@Override
+	public Collection<Object> getPrecomputedValuesForInput(IInputOutput<?> input) {
+		return null;
+	}
+
+	@Override
+	public Object getPrecomputedValueForInput(IInputOutput<?> input) {
+		return null;
+	}
+
+	@Override
+	public Object getPrecomputedValueForOutput(IInputOutput<?> output) {
+		return null;
+	}
+
+	@Override
+	public IConnection connect(IAlgoInstance fromAlgoInstance, IInputOutput<?> output, IAlgoInstance toAlgoInstance,
+			IInputOutput<?> input) {
+		return connect(fromAlgoInstance.getOutputInstanceForOutput(output), toAlgoInstance.getInputInstanceForInput(input));
 	}
 
 

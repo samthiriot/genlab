@@ -218,6 +218,7 @@ public class WorkflowConverter extends Decoder implements Converter {
 			a._setWorkflowInstance(workflow);
 			a._initializeParamChangeName();
 			workflow.addAlgoInstance(a);
+			a.setContainer(workflow); // by default; will be erased then when relevant
 		}
 		
 		// post processing on connections (?)
@@ -234,7 +235,12 @@ public class WorkflowConverter extends Decoder implements Converter {
 			for (String childId : child2parentId.keySet()) {
 				String containerId = child2parentId.get(childId);
 				IAlgoInstance aiChild = workflow.getAlgoInstanceForId(childId);
-				IAlgoContainerInstance aiContainer = (IAlgoContainerInstance)workflow.getAlgoInstanceForId(containerId);
+				IAlgoContainerInstance aiContainer = null;
+				if (containerId.equals(workflow.getId())) {
+					aiContainer = workflow;
+				} else {
+					aiContainer = (IAlgoContainerInstance)workflow.getAlgoInstanceForId(containerId);
+				}
 				if (aiChild == null)
 					throw new WrongParametersException("unable to find a children for "+childId);
 				if (aiContainer == null)

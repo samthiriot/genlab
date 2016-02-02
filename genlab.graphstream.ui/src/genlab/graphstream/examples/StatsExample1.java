@@ -15,7 +15,6 @@ import genlab.core.model.meta.basics.algos.ConstantValueDouble;
 import genlab.core.model.meta.basics.algos.ConstantValueInteger;
 import genlab.core.model.meta.basics.algos.StandardOutputAlgo;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
-import genlab.core.projects.IGenlabProject;
 import genlab.graphstream.algos.generators.WattsStrogatzAlgo;
 import genlab.graphstream.algos.measure.GraphStreamAverageClustering;
 import genlab.graphstream.ui.algos.GraphDisplayAlgo;
