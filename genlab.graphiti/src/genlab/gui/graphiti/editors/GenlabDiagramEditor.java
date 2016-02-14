@@ -120,10 +120,10 @@ public class GenlabDiagramEditor extends DiagramEditor implements IWorkflowEdito
 		GraphitiFeatureProvider dfp = (GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider();
 
 		Genlab2GraphitiUtils.linkInTransaction(dfp, getDiagramTypeProvider().getDiagram(), workflow);
+		((GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider()).associateWorkflowWithThisProvider(workflow);
 		
 		
-		// TODO useful ? ((GraphitiFeatureProvider)getDiagramTypeProvider().getFeatureProvider()).associateWorkflowWithThisProvider(workflow);
-		
+		// TODO useful ? 
 		//workflow.addListener(this);
 		
 		if (diagram == null) {
