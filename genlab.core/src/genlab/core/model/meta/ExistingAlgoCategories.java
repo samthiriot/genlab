@@ -43,6 +43,21 @@ public class ExistingAlgoCategories {
 			"populations"
 			);
 	
+
+	public static final AlgoCategory READER = new AlgoCategory(
+			null, 
+			"readers", 
+			"read something from the filesystem (one or more files)", 
+			"readers"
+			);
+
+	public static final AlgoCategory READER_GRAPH = new AlgoCategory(
+			READER, 
+			"graphs", 
+			"read graphs from files", 
+			"graphs"
+			);
+
 	public static final AlgoCategory WRITER = new AlgoCategory(
 			null, 
 			"writers", 
@@ -254,6 +269,7 @@ public class ExistingAlgoCategories {
 			"simulation models", 
 			"simulation models"
 			);
+	
 
 
 	private ExistingAlgoCategories() {
@@ -266,6 +282,9 @@ public class ExistingAlgoCategories {
 		declareCategory(GENERATORS_GRAPHS);
 		declareCategory(STATIC_GRAPHS_LCF);
 		
+		declareCategory(READER);
+		declareCategory(READER_GRAPH);
+
 		declareCategory(WRITER);
 		declareCategory(WRITER_POPULATION);
 		declareCategory(WRITER_GRAPH);

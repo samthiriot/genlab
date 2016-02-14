@@ -4,6 +4,7 @@ import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
+import genlab.core.parameters.StringParameter;
 import genlab.igraph.algos.AbstractIGraphAlgo;
 import genlab.igraph.parameters.ChoiceOfImplementationParameter.EIgraphImplementation;
 
@@ -16,7 +17,19 @@ public abstract class AbstractIGraphWriterAlgo extends AbstractIGraphAlgo {
 			"the graph to write"
 	);
 	
-	protected final String extension;
+	public static final StringParameter PARAM_FILENAME_PREFIX = new StringParameter(
+			"param_filename_prefix",
+			"filename prefix",
+			"the file will be written in the experiment output directory with <prefix><number>.<extension>",
+			"graph_"
+	);
+	
+	public final StringParameter PARAM_FILENAME_EXTENSION = new StringParameter(
+			"param_filename_extension",
+			"filename extension",
+			"the file will be written in the experiment output directory with <prefix><number>.<extension>",
+			".net"
+	);
 		
 	public AbstractIGraphWriterAlgo(
 			String name, 
@@ -33,7 +46,11 @@ public abstract class AbstractIGraphWriterAlgo extends AbstractIGraphAlgo {
 		
 		inputs.add(INPUT_GRAPH);
 		
-		this.extension = extension;
+		PARAM_FILENAME_EXTENSION.setDefaultValue(extension);
+		
+		registerParameter(PARAM_FILENAME_PREFIX);
+		registerParameter(PARAM_FILENAME_EXTENSION);
+		
 		
 	}
 	

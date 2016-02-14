@@ -1,21 +1,17 @@
-package genlab.igraph.algos.writers;
+package genlab.igraph.algos.readers;
 
-import java.io.File;
-
-import genlab.core.commons.FileUtils;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.ComputationResult;
 import genlab.core.model.exec.ComputationState;
 import genlab.core.model.instance.IAlgoInstance;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
-import genlab.igraph.algos.AbstractIGraphAlgo;
 import genlab.igraph.algos.AbstractIGraphExec;
-import genlab.igraph.algos.measure.AbstractIGraphMeasure;
 
-public abstract class AbstractIGraphWriterExec extends AbstractIGraphExec {
+import java.io.File;
 
-	
-	public AbstractIGraphWriterExec(
+public abstract class AbstractIGraphReaderExec extends AbstractIGraphExec {
+
+	public AbstractIGraphReaderExec(
 			IExecution exec, 
 			IAlgoInstance algoInst
 			) {
@@ -26,7 +22,7 @@ public abstract class AbstractIGraphWriterExec extends AbstractIGraphExec {
 		
 	}
 	
-	protected abstract void writeGraph(IGenlabGraph graph, String filename);
+	protected abstract IGenlabGraph readGraph(String filename);
 
 	@Override
 	public void run() {
@@ -37,26 +33,19 @@ public abstract class AbstractIGraphWriterExec extends AbstractIGraphExec {
 		progress.setComputationState(ComputationState.STARTED);
 		
 		ComputationResult result = new ComputationResult(algoInst, progress, exec.getListOfMessages());
-		setResult(result);
 		
-	
 		// decode parameters
-		final IGenlabGraph glGraph = (IGenlabGraph) getInputValueForInput(AbstractIGraphMeasure.INPUT_GRAPH);
-		
-		// generate a file name
-		File targetFile = FileUtils.createFileWithIncrementingNumber(
-				getExecution().getResultsDirectory(), 
-				(String)getAlgoInstance().getValueForParameter(AbstractIGraphWriterAlgo.PARAM_FILENAME_PREFIX), 
-				(String)getAlgoInstance().getValueForParameter(((AbstractIGraphWriterAlgo)getAlgoInstance().getAlgo()).PARAM_FILENAME_EXTENSION)
-				);
-		messages.infoUser("the graph will be written to "+targetFile.getAbsolutePath(), getClass());
+		final File inputFile = (File)getInputValueForInput(AbstractIGraphReaderAlgo.INPUT_FILE);
+
 		progress.setProgressTotal(5);
 		
 		try {
 			
-			// write
-			writeGraph(glGraph, targetFile.getAbsolutePath());
-							
+			// read graph
+			IGenlabGraph glGraph = readGraph(inputFile.getAbsolutePath());		
+			result.setResult(AbstractIGraphReaderAlgo.OUTPUT_GRAPH, glGraph);
+			setResult(result);
+			
 			progress.setProgressMade(40);
 			progress.setComputationState(ComputationState.FINISHED_OK);
 			
@@ -90,6 +79,6 @@ public abstract class AbstractIGraphWriterExec extends AbstractIGraphExec {
 	/**
 	 * for serialization only
 	 */
-	public AbstractIGraphWriterExec() {}
+	public AbstractIGraphReaderExec() {}
 
 }
