@@ -113,10 +113,10 @@ public class Utils {
 				throw new ProgramException("Unable to create output folder for this project "+eclipseProject.getName(),e);
 			}
 
-
 		// define the output file
-		java.io.File directoryProjectOutputs = folderOutputs.getFullPath().toFile();
-
+		
+		java.io.File directoryProjectOutputs = new java.io.File(eclipseProject.getWorkspace().getRoot().getRawLocation().toOSString()+folderOutputs.getFullPath().toOSString());
+		
 		return directoryProjectOutputs;
 	}
 	

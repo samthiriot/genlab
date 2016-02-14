@@ -374,7 +374,7 @@ public class AlgoInstance implements IAlgoInstance, Serializable {
 				res.messages.add(new TextMessageFromAlgoInstance(
 						this, 
 						MessageLevel.ERROR, 
-						"input "+in.getMeta().getName()+" is not connected"
+						"input "+in.getMeta().getName()+" is not connected for algo "+getName()
 						)
 				);
 			else if (!in.getMeta().acceptsMultipleInputs() && inputConnections.size() > 1) 

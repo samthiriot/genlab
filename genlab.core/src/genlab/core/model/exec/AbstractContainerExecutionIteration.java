@@ -210,7 +210,7 @@ public class AbstractContainerExecutionIteration
 			final IAlgoExecution toExec = instance2execForSubtasks.get(c.getTo().getAlgoInstance());
 			
 			for (IConnectionExecution cEx : toExec.getConnectionsForInput(c.getTo())) {
-				Object value = inputConnection2value.get(c);
+				Object value = inputConnection2value.get(cEx.getConnection());
 				messages.traceTech("defining for "+c+": "+value, getClass());
 				cEx.forceValue(value);
 

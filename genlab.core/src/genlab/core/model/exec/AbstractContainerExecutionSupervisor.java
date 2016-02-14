@@ -200,9 +200,10 @@ public abstract class AbstractContainerExecutionSupervisor
 		Map<IConnection,Object> inputConnection2value = new HashMap<IConnection, Object>();
 		for (IConnection c : algoInst.getConnectionsComingFromOutside()) {
 
-			Object value = getInputValueForInput(c.getTo());
+			inputConnection2value.putAll(getInputValuesForInput(c.getTo()));
+			//Object value = getInputValueForInput(c.getTo());
 			
-			inputConnection2value.put(c, value);
+			//inputConnection2value.put(c, value);
 		}
 		
 		// create the container for the iteration
