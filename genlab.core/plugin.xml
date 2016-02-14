@@ -82,6 +82,10 @@
             class="genlab.core.model.meta.basics.algos.IfBlockAlgo"
             id="genlab.core.model.meta.basics.algos.IfBlockAlgo">
       </algo>
+      <algo
+            class="genlab.core.model.meta.basics.algos.AddAttributesToGraphAlgo"
+            id="genlab.core.model.meta.basics.algos.AddAttributesToGraphAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">

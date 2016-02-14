@@ -1,6 +1,7 @@
 package genlab.jung.utils;
 
 import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.Hypergraph;
 import edu.uci.ics.jung.io.GraphMLWriter;
 import genlab.core.model.meta.basics.graphs.IGenlabGraph;
 
@@ -18,6 +19,22 @@ public class JungWriters {
 		
 		Graph<String,String> jungGraph = Converters.getJungGraphForGenlabGraphReadonly(graph);
 		GraphMLWriter<String, String> graphWriter = new GraphMLWriter<String, String>();
+		
+		// add graph attributes
+		for (final String id: graph.getDeclaredGraphAttributes()) {
+			graphWriter.addGraphData(
+					id, 
+					null, 
+					"NaN", 
+					new Transformer<Hypergraph<String,String>,String>() {
+
+						@Override
+						public String transform(Hypergraph<String, String> a) {
+							return graph.getGraphAttribute(id).toString();
+						}										
+					});
+		}
+		
 		// add node attributes
 		for (Entry<String, Class> e : graph.getDeclaredVertexAttributesAndTypes().entrySet()) {
 			
