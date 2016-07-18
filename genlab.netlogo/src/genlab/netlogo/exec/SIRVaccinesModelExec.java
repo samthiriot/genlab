@@ -17,6 +17,7 @@ import java.util.TreeSet;
 
 import cern.jet.random.Uniform;
 import genlab.core.commons.ProgramException;
+import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
@@ -118,9 +119,15 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 			final Boolean openGui = (Boolean)algoInst.getValueForParameter(SIRVaccinesModelAlgo.PARAM_GUI);
 			
 
-			final Integer countVaccinesRandom = (Integer)getInputValueForInput(SIRVaccinesModelAlgo.INPUT_VACCINE_RANDOM);
-			final Integer countVaccinesDegree = (Integer)getInputValueForInput(SIRVaccinesModelAlgo.INPUT_VACCINE_HIGHEST_DEGREE);
-			final Integer countVaccinesBetweeness = (Integer)getInputValueForInput(SIRVaccinesModelAlgo.INPUT_VACCINE_HIGHEST_BETWEENESS);
+			final Integer countVaccines= (Integer)getInputValueForInput(SIRVaccinesModelAlgo.INPUT_VACCINE_COUNT);
+			final Double proportionVaccinesDegree = (Double)getInputValueForInput(SIRVaccinesModelAlgo.INPUT_VACCINE_DEGREE);
+			final Double proportionVaccinesBetweeness = (Double)getInputValueForInput(SIRVaccinesModelAlgo.INPUT_VACCINE_BETWEENESS);
+			final Double proportionVaccinesRandom = 1-proportionVaccinesBetweeness-proportionVaccinesDegree;
+			final double norm = proportionVaccinesDegree + proportionVaccinesBetweeness + proportionVaccinesRandom;
+			
+			final Integer countVaccinesDegree = (int)Math.round((double)countVaccines*proportionVaccinesDegree/norm);
+			final Integer countVaccinesBetweeness = (int)Math.round((double)countVaccines*proportionVaccinesBetweeness/norm);
+			final Integer countVaccinesRandom = countVaccines - countVaccinesDegree - countVaccinesBetweeness;
 			
 			progress.setProgressMade(1);
 		
