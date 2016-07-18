@@ -51,7 +51,7 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution impleme
 			connection2colIdx = new HashMap<IConnection, Integer>(inputInstance.getConnections().size());
 			for (IConnection c: inputInstance.getConnections()) {
 				
-				int columnIdx = outputTable.declareColumn(c.getFrom().getName());
+				int columnIdx = outputTable.declareColumn(c.getFrom().getAlgoInstance().getName()+":"+c.getFrom().getMeta().getName());
 				
 				connection2colIdx.put(c, columnIdx);
 				
@@ -84,13 +84,15 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution impleme
 		progress.setComputationState(ComputationState.STARTED);
 		
 		// where do we come from ?
-		try {
+		/*
+		 * try {
+		 *
 			throw new ProgramException("where are we ?");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		System.err.println("we are in thread: "+Thread.currentThread().getName());
-		
+		*/
 		// maybe we did not receive all the values yet ?
 		completeValues();
 		
