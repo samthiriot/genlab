@@ -47,6 +47,10 @@ public class AppendToTableAlgo extends BasicAlgo implements IReduceAlgo {
 				);
 		
 		inputs.add(INPUT_ANYTHING);
+		
+
+		OUTPUT_TABLE.setIsContinuousOutput(true);
+		
 		outputs.add(OUTPUT_TABLE);
 	}
 	

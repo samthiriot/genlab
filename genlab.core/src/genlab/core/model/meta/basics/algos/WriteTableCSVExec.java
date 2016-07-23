@@ -16,7 +16,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
-public class WriteTableCSVExec extends AbstractAlgoExecutionOneshot implements IAlgoExecutionContinuous {
+public class WriteTableCSVExec 
+						extends AbstractAlgoExecutionOneshot 
+						implements IAlgoExecutionContinuous {
 
 	/**
 	 * Writes the table passed as a parameter to the file. 

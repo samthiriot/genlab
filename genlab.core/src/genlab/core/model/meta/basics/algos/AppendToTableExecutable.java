@@ -29,12 +29,34 @@ import java.util.Map;
  * @author Samuel Thiriot
  *
  */
-public class AppendToTableExecutable extends AbstractAlgoReduceExecution implements IAlgoExecutionOneshot {
+public class AppendToTableExecutable 
+							extends AbstractAlgoReduceExecution 
+							implements IAlgoExecutionOneshot {
 
+	/**
+	 * The minimal time before sending again outputs in continuous mode (ms)
+	 */
+	public static final long CONTINUOUS_MIN_DELAY = 60*1000;
+	
+	/**
+	 * Minimal count of rows added to the table
+	 */
+	public static final int CONTINOUS_MIN_ADDED_ROWS = 20;
+	
 	protected IGenlabTable outputTable = null;
 
 	protected Map<IConnection, Integer> connection2colIdx;
 	protected Map<IAlgoExecution, Integer> execId2rowId;
+	
+	/** 
+	 * the last time a continuous output was sent
+	 */
+	protected long lastContinuousTimestamp = 0;
+	
+	/**
+	 * The length of the last table sent
+	 */
+	protected int lastContinuousTableLength = 0;
 	
 	public AppendToTableExecutable(IExecution exec,
 			IAlgoInstance algoInst) {
@@ -58,14 +80,14 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution impleme
 			}
 		}
 		
+		/* WTF ? To remove
 		if (outputTable == null) { 
 			outputTable = new GenlabTable();
 		}
-		
+		*/
 		
 		// mapping between exec if and row id: start empty
 		execId2rowId = new HashMap<IAlgoExecution, Integer>();
-		
 		
 	}
 
@@ -214,7 +236,61 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution impleme
 			
 	}
 
+	/**
+	 * returns true if we should send the update
+	 * @return
+	 */
+	protected boolean shouldSendContinuous() {
+		
+		// enough time elapsed (don't send updates every minute !
+		if (System.currentTimeMillis() - lastContinuousTimestamp < CONTINUOUS_MIN_DELAY)
+			return false;
+		
+		// data changed enough since last time: don't update for one line !
+		if (outputTable.getRowsCount() - lastContinuousTableLength < CONTINOUS_MIN_ADDED_ROWS)
+			return false;
+		
+		return true;
+	}
+	
+	protected void sendContinuous() {
+		
+		
+		// add table to output
+		IGenlabTable sent = this.outputTable.cloneOnlyFullLines();
+		
+		if (outputTable.getRowsCount() - lastContinuousTableLength < CONTINOUS_MIN_ADDED_ROWS)
+			// well there were enough lines in the table for it too look bigger
+			// but visibly these novel rows were all scarce.
+			return;
 
+		// a different result per call
+		ComputationResult res = new ComputationResult(algoInst, progress, messages);
+		res.setResult(AppendToTableAlgo.OUTPUT_TABLE, sent);
+
+		// update last sent
+		lastContinuousTableLength = sent.getRowsCount();
+		lastContinuousTimestamp = System.currentTimeMillis();
+		
+		// set this result
+		setResult(res);
+		
+		// notify children
+		progress.setComputationState(ComputationState.SENDING_CONTINOUS);
+		
+	}
+	
+	/**
+	 * It is seems relevent, might send the current state of the table 
+	 * to the connected algos
+	 */
+	protected void maybeSendContinuous() {
+
+		if (shouldSendContinuous()) {
+			sendContinuous();
+		}
+		
+	}
 
 	@Override
 	protected void processNovelInputs(IAlgoExecution executionRun, IConnectionExecution connectionExec, Object value) {
@@ -230,7 +306,7 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution impleme
 		// check wether the row id is filled or not
 		outputTable.setValue(rowId, columnId, value);
 		
-		
+		maybeSendContinuous();
 	}
 
 
