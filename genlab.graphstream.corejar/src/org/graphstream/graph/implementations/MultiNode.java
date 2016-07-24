@@ -127,11 +127,11 @@ public class MultiNode extends AdjacencyListNode implements Externalizable {
 	}
 
 	public <T extends Edge> Collection<T> getEdgeSetBetween(String id) {
-		return getEdgeSetBetween(graph.getNode(id));
+		return getEdgeSetBetween((Node)graph.getNode(id));
 	}
 
 	public <T extends Edge> Collection<T> getEdgeSetBetween(int index) {
-		return getEdgeSetBetween(graph.getNode(index));
+		return getEdgeSetBetween((Node)graph.getNode(index));
 	}
 	
 

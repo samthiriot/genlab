@@ -380,7 +380,7 @@ public abstract class AbstractGraph extends AbstractElement implements Graph,
 	 */
 	public <T extends Edge> T addEdge(String id, int fromIndex, int toIndex,
 			boolean directed) {
-		return addEdge(id, getNode(fromIndex), getNode(toIndex), directed);
+		return addEdge(id, (Node)getNode(fromIndex), (Node)getNode(toIndex), directed);
 	}
 
 	/*
@@ -941,7 +941,7 @@ public abstract class AbstractGraph extends AbstractElement implements Graph,
 			}
 		else
 			while (node.getDegree() > 0)
-				removeEdge(node.getEdge(0));
+				removeEdge((Edge)node.getEdge(0));
 	}
 
 	// *** Methods for iterators ***

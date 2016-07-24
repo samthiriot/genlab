@@ -243,18 +243,22 @@ public abstract class AbstractNode extends AbstractElement implements Node, Exte
 	 * This implementation uses {@link #getEdgeToward(Node)}
 	 * 
 	 * @see org.graphstream.graph.Node#getEdgeToward(int)
+	 * 
 	 */
+	@Override
 	public <T extends Edge> T getEdgeToward(int index) {
-		return getEdgeToward(graph.getNode(index));
+		return getEdgeToward((Node)graph.getNode(index));
 	}
 
 	/**
 	 * This implementation uses {@link #getEdgeToward(Node)}
 	 * 
 	 * @see org.graphstream.graph.Node#getEdgeToward(java.lang.String)
+	 * 
 	 */
+	@Override
 	public <T extends Edge> T getEdgeToward(String id) {
-		return getEdgeToward(graph.getNode(id));
+		return getEdgeToward((Node)graph.getNode(id));
 	}
 
 	public abstract <T extends Edge> T getEdgeFrom(Node node);
@@ -265,7 +269,7 @@ public abstract class AbstractNode extends AbstractElement implements Node, Exte
 	 * @see org.graphstream.graph.Node#getEdgeFrom(int)
 	 */
 	public <T extends Edge> T getEdgeFrom(int index) {
-		return getEdgeFrom(graph.getNode(index));
+		return getEdgeFrom((Node)graph.getNode(index));
 	}
 
 	/**
@@ -274,7 +278,7 @@ public abstract class AbstractNode extends AbstractElement implements Node, Exte
 	 * @see org.graphstream.graph.Node#getEdgeFrom(java.lang.String)
 	 */
 	public <T extends Edge> T getEdgeFrom(String id) {
-		return getEdgeFrom(graph.getNode(id));
+		return getEdgeFrom((Node)graph.getNode(id));
 	}
 
 	public abstract <T extends Edge> T getEdgeBetween(Node node);
@@ -285,7 +289,7 @@ public abstract class AbstractNode extends AbstractElement implements Node, Exte
 	 * @see org.graphstream.graph.Node#getEdgeBetween(int)
 	 */
 	public <T extends Edge> T getEdgeBetween(int index) {
-		return getEdgeBetween(graph.getNode(index));
+		return getEdgeBetween((Node)graph.getNode(index));
 	}
 
 	/**
@@ -294,7 +298,7 @@ public abstract class AbstractNode extends AbstractElement implements Node, Exte
 	 * @see org.graphstream.graph.Node#getEdgeBetween(java.lang.String)
 	 */
 	public <T extends Edge> T getEdgeBetween(String id) {
-		return getEdgeBetween(graph.getNode(id));
+		return getEdgeBetween((Node)graph.getNode(id));
 	}
 
 	// get[_|Entering|Leaving]EdgeIterator
