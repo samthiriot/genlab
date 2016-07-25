@@ -1,6 +1,7 @@
 package genlab.core.model.exec;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import genlab.core.exec.ICleanableTask;
 import genlab.core.exec.IExecution;
@@ -38,6 +39,16 @@ public class ExplorationExecutionIteration extends AbstractContainerExecutionIte
 	protected void initSubtasks() {
 		super.initSubtasks();
 		
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("iteration ");
+		for (Entry<String,Object> entry : parameter2value.entrySet()) {
+		    sb.append(entry.getKey()).append("=").append(entry.getValue()).append(",");
+		}
+		return sb.toString();
 	}
 	
 }
