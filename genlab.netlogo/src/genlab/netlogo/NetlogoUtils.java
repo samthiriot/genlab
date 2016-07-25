@@ -102,8 +102,8 @@ public class NetlogoUtils {
 		URL fileURL = bundle.getEntry(resourcePath);
 		File file = null;
 		try {
-		    file = new File(FileLocator.resolve(fileURL).toURI());
-		} catch (URISyntaxException|IOException e) {
+		    file = new File(FileLocator.resolve(fileURL).getFile());
+		} catch (IOException e) {
 		    throw new ProgramException("unable to find the file for the Netlogo model", e);
 		} 
 		return file;
