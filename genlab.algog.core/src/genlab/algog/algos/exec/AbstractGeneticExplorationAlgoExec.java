@@ -157,6 +157,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 
 		for (IAlgoInstance childInstance: algoInst.getChildren()) {
 			
+			System.err.println("processing child "+childInstance);
+			
 			if (!(childInstance.getAlgo() instanceof GenomeAlgo))
 				continue;
 			
@@ -232,10 +234,10 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 						genomeGoalAlgos
 						);
 				
-				if (genomeGoalAlgos.size() != allGoals.size())
-					throw new WrongParametersException("each genome should be connected to algos connected to all the goals.");
-				
 			}		
+
+			if (genomeGoalAlgos.size() != allGoals.size())
+				throw new WrongParametersException("each genome should be connected to algos connected to all the goals.");
 			
 			// sort the genes by name
 			{
