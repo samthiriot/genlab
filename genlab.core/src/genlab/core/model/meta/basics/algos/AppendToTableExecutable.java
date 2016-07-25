@@ -84,13 +84,15 @@ public class AppendToTableExecutable extends AbstractAlgoReduceExecution impleme
 		progress.setComputationState(ComputationState.STARTED);
 		
 		// where do we come from ?
-		try {
+		/*
+		 * try {
+		 *
 			throw new ProgramException("where are we ?");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		System.err.println("we are in thread: "+Thread.currentThread().getName());
-		
+		*/
 		// maybe we did not receive all the values yet ?
 		completeValues();
 		
