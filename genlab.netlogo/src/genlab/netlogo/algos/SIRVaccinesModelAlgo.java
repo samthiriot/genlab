@@ -8,6 +8,7 @@ import genlab.core.model.instance.IGenlabWorkflowInstance;
 import genlab.core.model.meta.BasicAlgo;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.InputOutput;
+import genlab.core.model.meta.basics.flowtypes.DoubleInOut;
 import genlab.core.model.meta.basics.flowtypes.IntegerInOut;
 import genlab.core.model.meta.basics.flowtypes.ProbabilityInOut;
 import genlab.core.model.meta.basics.flowtypes.SimpleGraphFlowType;
@@ -44,33 +45,43 @@ public class SIRVaccinesModelAlgo extends BasicAlgo {
 			);
 
 
-	public static final IntegerInOut INPUT_VACCINE_RANDOM = new IntegerInOut(
+	public static final IntegerInOut INPUT_VACCINE_COUNT = new IntegerInOut(
+			"in_vaccines_distributed", 
+			"count of vaccines", 
+			"number of vaccines to distribute total",
+			50,
+			0
+			);
+	
+
+	public static final DoubleInOut INPUT_VACCINE_RANDOM = new DoubleInOut(
 			"in_vaccine_random", 
-			"count vaccines random", 
-			"number of vaccines distributed randomly",
-			0,
-			0
-			);
-	
-
-
-	public static final IntegerInOut INPUT_VACCINE_HIGHEST_DEGREE = new IntegerInOut(
-			"in_vaccine_degree_count", 
-			"count vaccines degree", 
-			"number of vaccines for the highest degrees",
-			5,
-			0
-			);
-	
-
-	public static final IntegerInOut INPUT_VACCINE_HIGHEST_BETWEENESS = new IntegerInOut(
-			"in_vaccine_betweeness_count", 
-			"count vaccines betweeness", 
-			"number of vaccines for the highest node betweenees",
-			0,
-			0
+			"random proportion", 
+			"proportion of vaccines distributed randomly",
+			0.0,
+			0.0,
+			1.0
 			);
 
+	public static final DoubleInOut INPUT_VACCINE_BETWEENESS = new DoubleInOut(
+			"in_vaccine_betweeness", 
+			"betwenness proportion", 
+			"proportion of betweeness distributed",
+			0.0,
+			0.0,
+			1.0
+			);
+
+	// proportion of 
+
+	public static final DoubleInOut INPUT_VACCINE_DEGREE = new DoubleInOut(
+			"in_vaccine_degree", 
+			"degree proportion", 
+			"proportion of vaccines distributed by degree",
+			0.0,
+			0.0,
+			1.0
+			);
 	
 	public static final ProbabilityInOut INPUT_RECOVER_CHANCE = new ProbabilityInOut(
 			"in_recover", 
@@ -141,9 +152,11 @@ public class SIRVaccinesModelAlgo extends BasicAlgo {
 		inputs.add(INPUT_RECOVER_CHANCE);
 		inputs.add(INPUT_RESISTANCE_CHANCE);
 		
+	
+		inputs.add(INPUT_VACCINE_COUNT);
 		inputs.add(INPUT_VACCINE_RANDOM);
-		inputs.add(INPUT_VACCINE_HIGHEST_DEGREE);
-		inputs.add(INPUT_VACCINE_HIGHEST_BETWEENESS);
+		inputs.add(INPUT_VACCINE_DEGREE);
+		inputs.add(INPUT_VACCINE_BETWEENESS);
 		
 		outputs.add(OUTPUT_SUSCEPTIBLE);
 		outputs.add(OUTPUT_INFECTED);
@@ -171,7 +184,7 @@ public class SIRVaccinesModelAlgo extends BasicAlgo {
 	@Override
 	public IAlgoExecution createExec(IExecution execution,
 			AlgoInstance algoInstance) {
-		return new NetlogoModelExec(execution, algoInstance);
+		return new SIRVaccinesModelExec(execution, algoInstance);
 	}
 
 }
