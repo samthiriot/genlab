@@ -18,7 +18,13 @@ public class UserMachineInteractionUtils {
 				sb.append(durationS).append(" s");
 			} else {
 				final int durationM = (int)Math.round(durationS / 60.0);
-				sb.append(durationM).append(" m");
+				if (durationM < 60) {
+					sb.append(durationM).append(" m");	
+				} else {
+					final int durationH = (int)Math.round(durationM / 60.0);
+					sb.append(durationH).append(" h");
+				}
+				
 			}
 		}
 		return sb.toString();

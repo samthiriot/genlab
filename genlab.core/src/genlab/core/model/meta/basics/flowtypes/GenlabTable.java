@@ -394,4 +394,60 @@ public class GenlabTable implements IGenlabTable, IDumpableToText {
 		
 	}
 
+	@Override
+	public IGenlabTable clone() {
+		GenlabTable clone = new GenlabTable();
+
+		// copy metadata
+		for (Map.Entry<String,Object> metaEntry: getTableMetaData().entrySet()) {
+			clone.setTableMetaData(metaEntry.getKey(), metaEntry.getValue());
+		}
+		// copy columns
+		clone.declareColumns(getColumnsId());
+		// and their metadata
+		for (String colId: getColumnsId()) {
+			for (Map.Entry<String,Object> metaEntry: getColumnMetaData(colId).entrySet()) {
+				clone.setColumnMetaData(colId, metaEntry.getKey(), metaEntry.getValue());	
+			}
+			
+		}
+		// copy data
+		for (Object[] line: content) {
+			
+			if (!Arrays.asList(line).contains(null)) {
+				clone.addRow(line.clone());
+			}
+
+		}
+		return clone;
+	}
+
+	@Override
+	public IGenlabTable cloneOnlyFullLines() {
+		GenlabTable clone = new GenlabTable();
+
+		// copy metadata
+		for (Map.Entry<String,Object> metaEntry: getTableMetaData().entrySet()) {
+			clone.setTableMetaData(metaEntry.getKey(), metaEntry.getValue());
+		}
+		// copy columns
+		clone.declareColumns(getColumnsId());
+		// and their metadata
+		for (String colId: getColumnsId()) {
+			for (Map.Entry<String,Object> metaEntry: getColumnMetaData(colId).entrySet()) {
+				clone.setColumnMetaData(colId, metaEntry.getKey(), metaEntry.getValue());	
+			}
+			
+		}
+		// copy data
+		for (Object[] line: content) {
+			
+			if (!Arrays.asList(line).contains(null)) {
+				clone.addRow(line.clone());
+			}
+
+		}
+		return clone;
+	}
+
 }

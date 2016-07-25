@@ -17,7 +17,6 @@ import java.util.TreeSet;
 
 import cern.jet.random.Uniform;
 import genlab.core.commons.ProgramException;
-import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
@@ -84,7 +83,7 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 					// keep that as the lowest value 
 					lowerValue = value;
 					// remove the first one (which happens to be the lower one)
-					Iterator<String> it = bests.descendingIterator();
+					Iterator<String> it = bests.iterator();
 					it.next();
 					it.remove();
 					bests.add(vertexId);
@@ -199,7 +198,7 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 					
 					graph.setVertexAttribute(vertexId, "presistant", true);
 				}
-				messages.infoUser("will vaccinate "+idsVaccinated.size()+" nodes randomly: "+idsVaccinated, getClass());
+				messages.infoUser("will vaccinate nodes randomly: "+idsVaccinated, getClass());
 
 				
 			} 

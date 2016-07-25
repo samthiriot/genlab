@@ -1,119 +1,265 @@
 extensions [nw]
 
+; for interfacing with genlab: indicate what is inputs
+to-report genlab-inputs
+  report ["network-filename" "proportion-active" "proportion-promoters" "duration-seek" "duration-proactive"]
+end
+
+
+to-report result-A
+  report (count turtles with [not unaware?] / count turtles)
+end
+
+to-report result-AK
+  report count turtles with [(not unaware?) and (not ignorant?)] / count turtles
+end
+
+to-report genlab-outputs
+  report ["result-AK" "result-A" ]
+end
+
 breed [nodes node]
 undirected-link-breed [edges edge]
 
+
 turtles-own
 [
-  infected?           ;; if true, the turtle is infectious
-  resistant?          ;; if true, the turtle can't be infected
-  virus-check-timer   ;; number of ticks since this turtle's last virus-check
+  unaware?           ;; if true, the turtle is infectious
+  seeking?         ;;
+  aware?             ;; if true, the turtle can't be infected
+  ignorant?          ;; if true, the turtle can't be infected
+  proactive?
+  knowledgeable?     ;; if true, the turtle can't be infected
+  active?            ;; if true, this individual would like to seek actively information
+  promoter?          ;; if true, thisindividual would ike to promote his knowledge
+  time ; if > 0, the time to remain in this step
 ]
 
-to setup
-  clear-all
-  setup-network-load
-  ask n-of initial-outbreak-size turtles
-    [ become-infected ]
-  ask links [ set color white ]
-  reset-ticks
-end
 
 to setup-network-load
   ;; load the network from the file and also initialize their state
-  nw:load-gml network-filename nodes edges
-  [
+  show "loading network"
+  show network-filename
+  nw:load-gml network-filename nodes links
+   [
     ; for visual reasons, we don't put any nodes *too* close to the edges
-    setxy (random-xcor * 0.2) (random-ycor * 0.2)
-    become-susceptible
-    set virus-check-timer random virus-check-frequency
+    setxy (random-xcor * 0.8) (random-ycor * 0.8)
+    set size 1.2
+    set unaware? true
+    set seeking? false
+    set aware? false
+    set ignorant? true
+    set proactive? false
+    set knowledgeable? false
+    set time 0
+    set active? random-float 1 < proportion-active
+    set promoter? random-float 1 < proportion-promoters
+    if (active? or promoter?) [ set shape "square" ]
+    if (with-gui) [ set-color ]
   ]
-  ;; also layout it for beauty purpose
+   show "loaded links and turtles"
+   show count edges
+   show count turtles
+   ;; also layout it for beauty purpose
+   if (with-gui) [
+     repeat 500 [layout-spring turtles links 0.2 2 2]
+     ;layout-radial turtles links (turtle 0)
 
-  ;;repeat 100 [layout-spring nodes edges 0.2 1 6]
+   ]
+   ;repeat 5 [ layout-spring turtles links 0.8 (world-width / (sqrt count turtles)) 1 ]
+
+end
+
+
+to setup
+
+  clear-all
+
+  setup-network-load
+  setup-nodes
+
+  ask n-of (initial-proportion-knowledgeable * count turtles) turtles [ become-knowledgeable ]
+
+  ask links [ set color gray ]
+
+  reset-ticks
 end
 
 to setup-nodes
-  set-default-shape turtles "circle"
+  if (with-gui) [ set-default-shape turtles "circle" ]
 
 end
 
+
 to go
-  if all? turtles [not infected?]
+  ; stopping condition
+  if not (any? turtles with [ proactive? or seeking? or unaware?])
     [ stop ]
-  ask turtles
-  [
-     set virus-check-timer virus-check-timer + 1
-     if virus-check-timer >= virus-check-frequency
-       [ set virus-check-timer 0 ]
-  ]
-  spread-virus
-  do-virus-checks
+
+
+  manage-timeouts
+
+  ; inform with advertisement
+  ask n-of (advertisement-proportion-per-step * count turtles) turtles [ receive-advertisement ]
+
+  ; change from proactive to knowledage, or seeking to aware
+  exchange-info
+
+
+  ;spread-virus
+  ;do-virus-checks
   tick
 end
 
-to become-infected  ;; turtle procedure
-  set infected? true
-  set resistant? false
-  set color red
-end
+to set-color
+  if (with-gui) [
+  if (unaware? and ignorant?) [ set color gray set label "UI"]
+  if (unaware? and proactive?) [ set color orange  set label "UP"]
+  if (unaware? and knowledgeable?) [ set color brown set label "UK"]
 
-to become-susceptible  ;; turtle procedure
-  set infected? false
-  set resistant? false
-  set color green
-end
+  if (seeking? and ignorant?) [ set color green set label "SI"]
 
-to become-resistant  ;; turtle procedure
-  set infected? false
-  set resistant? true
-  set color gray
-  ask my-links [ set color gray - 2 ]
-end
+  if (aware? and ignorant?) [ set color gray set label "AI"]
+  if (aware? and proactive?) [ set color red set label "AP"]
+  if (aware? and knowledgeable?) [ set color violet set label "AK"]
 
-to spread-virus
-  ask turtles with [infected?]
-    [ ask link-neighbors with [not resistant?]
-        [ if random-float 100 < virus-spread-chance
-            [ become-infected ] ] ]
-end
 
-to-report measure-susceptible
-  report (count turtles with [not infected? and not resistant?]) / (count turtles) * 100
-end
+  ; these cases are errors
+  if (seeking? and proactive?) [ set color green set label "!SP" print "illegal SP" print who]
+  if (seeking? and knowledgeable?) [ set color green set label "!SK" print "illegal SK" print who]
 
-to-report measure-infected
-  report (count turtles with [infected?]) / (count turtles) * 100
-end
-
-to-report measure-resistant
-  report (count turtles with [resistant?]) / (count turtles) * 100
-end
-
-to do-virus-checks
-  ask turtles with [infected? and virus-check-timer = 0]
-  [
-    if random 100 < recovery-chance
-    [
-      ifelse random 100 < gain-resistance-chance
-        [ become-resistant ]
-        [ become-susceptible ]
-    ]
   ]
 end
 
+to become-unaware ;; turtle procedure
+  set unaware? true
+  set seeking? false
+  set aware? false
+  set time 0
+  set-color
+end
 
-; Copyright 2008 Uri Wilensky.
+
+to become-seeking  ;; turtle procedure
+  if (unaware?) [
+    set unaware? false
+    set seeking? true
+    set aware? false
+    set time duration-seek
+    set-color
+  ]
+end
+
+to become-aware  ;; turtle procedure
+  set unaware? false
+  set seeking? false
+  set aware? true
+  set time 0
+  set-color
+end
+
+to become-ignorant ;; turtle procedure
+  set ignorant? true
+  set proactive? false
+  set knowledgeable? false
+  set time 0
+  set-color
+end
+
+to become-proactive ;; turtle procedure
+  set ignorant? false
+  set proactive? true
+  set knowledgeable? false
+  set time duration-proactive
+  if (seeking?) [ set seeking? false set aware? true ]
+  set-color
+end
+
+to become-knowledgeable ;; turtle procedure
+  set ignorant? false
+  set proactive? false
+  set knowledgeable? true
+  set time 0
+  if (seeking?) [ set seeking? false set aware? true ]
+  set-color
+end
+
+to inform-someone
+  ask one-of turtles [ become-proactive ]
+end
+
+to advertise-someone
+  ask one-of turtles [ receive-advertisement ]
+end
+
+to receive-advertisement
+  if unaware?
+  [
+    ifelse (active? and ignorant?) [ become-seeking] [ become-aware]
+  ]
+end
+
+to receive-knowledge
+  if ignorant?
+  [
+   ifelse promoter? [ become-proactive ] [ become-knowledgeable ]
+  ]
+end
+
+to manage-timeouts
+
+  ask turtles with [time > 0 and (seeking? or proactive?)]
+    [
+      set time (time - 1)
+    ]
+  ask turtles with [proactive? and time = 0]
+     [
+      become-knowledgeable
+     ]
+  ask turtles with [seeking? and time = 0]
+     [
+      become-aware
+     ]
+
+
+end
+
+to exchange-info
+  ask links [ set color gray ]
+  ask n-of (probability-link-meeting * count links)  links
+  [
+
+    set color white
+
+    ; searching behaviour: X learns from Y when X searches and Y knows
+    if ( [seeking?] of end1 ) [
+      if ([not ignorant?] of end2) [ ask end1 [receive-knowledge] set color orange  ]
+      if ([unaware?] of end2) [ ask end2 [receive-advertisement]  set color orange ]
+      ]
+    if ( [seeking?] of end2 ) [
+      if ([not ignorant?] of end1) [ ask end2 [receive-knowledge] set color orange ]
+      if ([unaware?] of end1) [ ask end1 [receive-advertisement] set color orange ]
+      ]
+
+    ; proactive behaviour: X teaches to Y if X is proactive and Y doesnt knows
+    if ( ([proactive?] of end1) and ([ignorant?] of end2) ) [ ask end2 [receive-knowledge] set color orange ]
+    if ( ([proactive?] of end2) and ([ignorant?] of end1) ) [ ask end1 [receive-knowledge] set color orange ]
+
+  ]
+
+end
+
+; Copyright 2016 Samuel Thiriot.
 ; See Info tab for full copyright and license.
 @#$#@#$#@
 GRAPHICS-WINDOW
-472
+690
 10
-1193
-752
+1304
+645
 20
 20
-17.3415
+14.732
 1
 10
 1
@@ -133,56 +279,11 @@ GRAPHICS-WINDOW
 ticks
 30.0
 
-SLIDER
-25
-280
-230
-313
-gain-resistance-chance
-gain-resistance-chance
-0.0
-100
-100
-1
-1
-%
-HORIZONTAL
-
-SLIDER
-25
-245
-230
-278
-recovery-chance
-recovery-chance
-0.0
-10.0
-5
-0.1
-1
-%
-HORIZONTAL
-
-SLIDER
-25
-175
-230
-208
-virus-spread-chance
-virus-spread-chance
-0.0
-10.0
-3.6
-0.1
-1
-%
-HORIZONTAL
-
 BUTTON
 25
-125
+96
 120
-165
+136
 NIL
 setup
 NIL
@@ -197,9 +298,9 @@ NIL
 
 BUTTON
 135
-125
+96
 230
-165
+136
 NIL
 go
 T
@@ -213,84 +314,210 @@ NIL
 1
 
 PLOT
-5
-325
-457
-652
-Network Status
-time
-% of nodes
+26
+258
+647
+482
+diffusion
+NIL
+NIL
 0.0
-52.0
+10.0
 0.0
-100.0
+1.0
 true
 true
 "" ""
 PENS
-"susceptible" 1.0 0 -10899396 true "" "plot measure-susceptible"
-"infected" 1.0 0 -2674135 true "" "plot measure-infected"
-"resistant" 1.0 0 -7500403 true "" "plot measure-resistant"
+"Seeking" 1.0 0 -14439633 true "" "plot (count turtles with [seeking?] / count turtles)"
+"Aware" 1.0 0 -11053225 true "" "plot (count turtles with [aware?] / count turtles)"
+"AK" 1.0 0 -8630108 true "" "plot (count turtles with [(not unaware?) and (not ignorant?)] / count turtles)"
+"Proactive" 1.0 0 -955883 true "" "plot (count turtles with [proactive?] / count turtles)"
+
+BUTTON
+136
+148
+230
+187
+step
+go
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 SLIDER
-25
-210
-230
-243
-virus-check-frequency
-virus-check-frequency
-1
-20
-1
+241
+178
+545
+211
+probability-link-meeting
+probability-link-meeting
+0
 1
 1
-ticks
+0.01
+1
+NIL
 HORIZONTAL
 
-INPUTBOX
-25
-48
-227
-108
-network-filename
-/tmp/genlab_tmp_10184410045681295.net
-1
-0
-String
-
 SLIDER
-27
-10
-221
-43
-initial-outbreak-size
-initial-outbreak-size
+437
+13
+609
+46
+duration-seek
+duration-seek
 0
 100
-2
+11
 1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+437
+55
+626
+88
+duration-proactive
+duration-proactive
+0
+100
+7
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+241
+138
+548
+171
+advertisement-proportion-per-step
+advertisement-proportion-per-step
+0
+1
+0.11
+0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+241
+95
+546
+128
+initial-proportion-knowledgeable
+initial-proportion-knowledgeable
+0
+1
+0.05
+0.01
 1
 NIL
 HORIZONTAL
 
 PLOT
-1224
-160
-1580
-376
-plot 1
+35
+509
+646
+659
+interactions
 NIL
 NIL
 0.0
 10.0
 0.0
-10.0
+1.0
 true
-false
+true
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "plot count turtles"
-"pen-1" 1.0 0 -7500403 true "" "plot ticks"
+"active" 1.0 0 -16777216 true "" "plot (count links with [color = white] / count links)"
+"used" 1.0 0 -955883 true "" "plot (count links with [color = orange] / count links)"
+
+SLIDER
+241
+13
+421
+46
+proportion-active
+proportion-active
+0
+1
+0.28
+0.01
+1
+NIL
+HORIZONTAL
+
+SLIDER
+241
+54
+421
+87
+proportion-promoters
+proportion-promoters
+0
+1
+0.26
+0.01
+1
+NIL
+HORIZONTAL
+
+INPUTBOX
+24
+11
+231
+87
+network-filename
+ws1.gml.net
+1
+0
+String
+
+SWITCH
+1328
+11
+1440
+44
+with-gui
+with-gui
+0
+1
+-1000
+
+MONITOR
+556
+105
+652
+150
+NIL
+count turtles
+17
+1
+11
+
+MONITOR
+558
+162
+652
+207
+NIL
+count links
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -350,12 +577,15 @@ Links are used for modeling the network.  The `layout-spring` primitive is used 
 
 Though it is not used in this model, there exists a network extension for NetLogo that you can download at: https://github.com/NetLogo/NW-Extension.
 
-
 ## HOW TO CITE
 
-If you mention this model in a publication, we ask that you include these citations for the model itself and for the NetLogo software:
+If you mention this model or the NetLogo software in a publication, we ask that you include the citations below.
+
+For the model itself:
 
 * Stonedahl, F. and Wilensky, U. (2008).  NetLogo Virus on a Network model.  http://ccl.northwestern.edu/netlogo/models/VirusonaNetwork.  Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
+
+Please cite the NetLogo software as:
 
 * Wilensky, U. (1999). NetLogo. http://ccl.northwestern.edu/netlogo/. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
 
@@ -365,9 +595,11 @@ Copyright 2008 Uri Wilensky.
 
 ![CC BY-NC-SA 3.0](http://ccl.northwestern.edu/images/creativecommons/byncsa.png)
 
-This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License.  To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/ or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
+This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 License.  To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/3.0/ or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
 
 Commercial licenses are also available. To inquire about commercial licenses, please contact Uri Wilensky at uri@northwestern.edu.
+
+<!-- 2008 Cite: Stonedahl, F. -->
 @#$#@#$#@
 default
 true

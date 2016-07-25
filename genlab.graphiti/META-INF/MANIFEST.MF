@@ -5,8 +5,7 @@ Bundle-SymbolicName: genlab.graphiti; singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: genlab.gui.graphiti.Activator
 Bundle-Vendor: Samuel Thiriot
-Require-Bundle: org.eclipse.core.runtime.compatibility;bundle-version="3.2.200",
- org.eclipse.ui,
+Require-Bundle:  org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.graphiti,
  org.eclipse.graphiti.ui,

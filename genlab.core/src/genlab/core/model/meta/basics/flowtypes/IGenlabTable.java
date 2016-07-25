@@ -68,5 +68,11 @@ public interface IGenlabTable {
 	public int addRow(Object[] values);
 
 	public Object[] getRow(int i);
+
+	/**
+	 * Creates a clone of the table that contains only the full lines (with no NaN)
+	 * @return
+	 */
+	public IGenlabTable cloneOnlyFullLines();
 	
 }

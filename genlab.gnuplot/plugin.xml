@@ -7,6 +7,10 @@
             class="genlab.gnuplot.algos.SaveTableAsGnuplotAlgo"
             id="genlab.gnuplot.algos.SaveTableAsGnuplotAlgo">
       </algo>
+      <algo
+            class="genlab.gnuplot.algos.WriteGnuplotSkeletonAlgo"
+            id="genlab.gnuplot.algos.WriteGnuplotSkeletonAlgo">
+      </algo>
    </extension>
    <extension
          point="genlab.core.doc">

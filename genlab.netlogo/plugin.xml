@@ -15,6 +15,10 @@
             class="genlab.netlogo.algos.NetlogoModelAlgo"
             id="genlab.netlogo.algos.NetlogoModelAlgo">
       </algo>
+      <algo
+            class="genlab.netlogo.algos.WOMModelAlgo"
+            id="genlab.netlogo.algos.WOMModelAlgo">
+      </algo>
    </extension>
 
 </plugin>
