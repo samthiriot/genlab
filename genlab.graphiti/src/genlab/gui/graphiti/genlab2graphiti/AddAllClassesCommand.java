@@ -2,14 +2,9 @@ package genlab.gui.graphiti.genlab2graphiti;
 
 import genlab.core.commons.ProgramException;
 import genlab.core.model.instance.IGenlabWorkflowInstance;
-import genlab.gui.graphiti.Utils;
 import genlab.gui.graphiti.diagram.GraphitiDiagramTypeProvider;
 import genlab.gui.graphiti.diagram.GraphitiFeatureProvider;
 
-import java.io.ObjectInputStream.GetField;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -17,10 +12,8 @@ import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
-import org.eclipse.osgi.internal.loader.ModuleClassLoader.GenerationProtectionDomain;
 
 /**
  * Used to create an empty graphiti diagram. 
