@@ -64,11 +64,16 @@ public class WOMModelExec extends AbstractAlgoExecutionOneshot {
 			inputs.put("duration-seek", (Integer)getInputValueForInput(WOMModelAlgo.INPUT_DURATION_SEEKERS));
 			inputs.put("duration-proactive", (Integer)getInputValueForInput(WOMModelAlgo.INPUT_DURATION_PROMOTERS));
 			inputs.put("with-gui", false);
+			inputs.put("advertisement-duration", (Integer)getInputValueForInput(WOMModelAlgo.INPUT_DURATION_AD));
+			inputs.put("advertisement-proportion-per-step", (Double)getInputValueForInput(WOMModelAlgo.INPUT_IMPACT_AD));
 
 			// define outputs
 			Collection<String> requiredOutputs = new LinkedList<String>();
 			requiredOutputs.add("result-A");
 			requiredOutputs.add("result-AK");
+			requiredOutputs.add("ticks-for-peak-A");
+			requiredOutputs.add("ticks-for-peak-AK");
+			requiredOutputs.add("ticks-last-activity");
 					
 			progress.setProgressMade(3);
 	
@@ -89,7 +94,10 @@ public class WOMModelExec extends AbstractAlgoExecutionOneshot {
 			res.setResult(WOMModelAlgo.OUTPUT_A, result.get("result-A"));
 			res.setResult(WOMModelAlgo.OUTPUT_AK, result.get("result-AK"));
 			res.setResult(WOMModelAlgo.OUTPUT_DURATION, result.get("_duration"));
-
+			res.setResult(WOMModelAlgo.OUTPUT_PEAK_A, result.get("ticks-for-peak-A"));
+			res.setResult(WOMModelAlgo.OUTPUT_PEAK_AK, result.get("ticks-for-peak-AK"));
+			res.setResult(WOMModelAlgo.OUTPUT_LAST_ACTIVITY, result.get("ticks-last-activity"));
+			
 			progress.setProgressMade(100);
 			
 			progress.setComputationState(ComputationState.FINISHED_OK);

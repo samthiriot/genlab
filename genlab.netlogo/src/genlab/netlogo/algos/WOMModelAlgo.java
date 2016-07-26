@@ -71,6 +71,25 @@ public class WOMModelAlgo extends BasicAlgo {
 			);
 	
 
+	public static final IntegerInOut INPUT_DURATION_AD = new IntegerInOut(
+			"in_duration_ad", 
+			"duration ad", 
+			"count of timesteps during which the compain lasts",
+			10,
+			0
+			);
+	
+
+	public static final DoubleInOut INPUT_IMPACT_AD = new DoubleInOut(
+			"in_impact_ad", 
+			"impact ad", 
+			"proportion of agents touched every time step",
+			0.1,
+			0.0,
+			1.0
+			);
+	
+
 	public static final DoubleInOut OUTPUT_A = new DoubleInOut(
 			"out_aware", 
 			"awareness", 
@@ -89,7 +108,25 @@ public class WOMModelAlgo extends BasicAlgo {
 			"duration of simulation in steps"
 			);
 	
-	
+
+	public static final IntegerInOut OUTPUT_PEAK_A = new IntegerInOut(
+			"out_peak_a", 
+			"time max A", 
+			"timestep for max awareness"
+			);
+
+	public static final IntegerInOut OUTPUT_PEAK_AK = new IntegerInOut(
+			"out_peak_ak", 
+			"time max AK", 
+			"timestep for max awareness and knowledge"
+			);
+
+
+	public static final IntegerInOut OUTPUT_LAST_ACTIVITY = new IntegerInOut(
+			"out_last_activity", 
+			"time last activity", 
+			"timestep for last change in the population"
+			);
 
 	public static final IntParameter PARAM_MAX_STEPS = new IntParameter(
 			"param_maxiteration", 
@@ -118,9 +155,15 @@ public class WOMModelAlgo extends BasicAlgo {
 		inputs.add(INPUT_DURATION_SEEKERS);
 		inputs.add(INPUT_DURATION_PROMOTERS);
 		
+		inputs.add(INPUT_DURATION_AD);
+		inputs.add(INPUT_IMPACT_AD);
+		
 		outputs.add(OUTPUT_A);
 		outputs.add(OUTPUT_AK);
 		outputs.add(OUTPUT_DURATION);
+		outputs.add(OUTPUT_PEAK_A);
+		outputs.add(OUTPUT_PEAK_AK);
+		outputs.add(OUTPUT_LAST_ACTIVITY);
 		
 		registerParameter(PARAM_MAX_STEPS);
 		

@@ -17,7 +17,6 @@ import java.util.TreeSet;
 
 import cern.jet.random.Uniform;
 import genlab.core.commons.ProgramException;
-import genlab.core.commons.WrongParametersException;
 import genlab.core.exec.IExecution;
 import genlab.core.model.exec.AbstractAlgoExecutionOneshot;
 import genlab.core.model.exec.ComputationProgressWithSteps;
@@ -59,7 +58,7 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 			public int compare(String arg0, String arg1) {
 				Number n1 = (Number) graph.getVertexAttributeValue(arg0, attributeId);
 				Number n2 = (Number) graph.getVertexAttributeValue(arg1, attributeId);
-				int doubleRes = Double.compare(n1.doubleValue(), n2.doubleValue());
+				int doubleRes = Double.compare(n2.doubleValue(), n1.doubleValue());
 				if (doubleRes == 0)
 					return arg0.compareTo(arg1);
 				else 
@@ -93,7 +92,18 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 			}
 			
 		}
+		/*
+		StringBuffer sb = new StringBuffer("values for best: ");
 		
+		
+		for (String v: bests) {
+			sb.append(v);
+			sb.append("=>");
+			sb.append(graph.getVertexAttributeValue(v, attributeId));
+			sb.append("; ");
+		}
+		System.out.println(sb.toString());
+		*/
 		return bests;
 	}
 	@Override
@@ -122,12 +132,12 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 			final Integer countVaccines= (Integer)getInputValueForInput(SIRVaccinesModelAlgo.INPUT_VACCINE_COUNT);
 			final Double proportionVaccinesDegree = (Double)getInputValueForInput(SIRVaccinesModelAlgo.INPUT_VACCINE_DEGREE);
 			final Double proportionVaccinesBetweeness = (Double)getInputValueForInput(SIRVaccinesModelAlgo.INPUT_VACCINE_BETWEENESS);
-			final Double proportionVaccinesRandom = 1-proportionVaccinesBetweeness-proportionVaccinesDegree;
+			final Double proportionVaccinesRandom = (Double)getInputValueForInput(SIRVaccinesModelAlgo.INPUT_VACCINE_RANDOM);
 			final double norm = proportionVaccinesDegree + proportionVaccinesBetweeness + proportionVaccinesRandom;
 			
 			final Integer countVaccinesDegree = (int)Math.round((double)countVaccines*proportionVaccinesDegree/norm);
 			final Integer countVaccinesBetweeness = (int)Math.round((double)countVaccines*proportionVaccinesBetweeness/norm);
-			final Integer countVaccinesRandom = countVaccines - countVaccinesDegree - countVaccinesBetweeness;
+			final Integer countVaccinesRandom = (int)Math.round((double)countVaccines*proportionVaccinesRandom/norm);
 			
 			progress.setProgressMade(1);
 		
@@ -157,7 +167,7 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 														paramAttributeBetweenessId
 														);
 	
-				messages.infoUser("will vaccinate nodes with highest betweeness: "+highestBetweeness, getClass());
+				messages.infoUser("will vaccinate "+highestBetweeness.size()+" nodes with highest betweeness: "+highestBetweeness, getClass());
 				for (String vertexId: highestBetweeness) {
 					graph.setVertexAttribute(vertexId, "presistant", true);
 				}
@@ -170,7 +180,7 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 														paramAttributeDegreeId
 														);
 	
-				messages.infoUser("will vaccinate nodes with highest degree: "+highestDegree, getClass());
+				messages.infoUser("will vaccinate "+highestDegree.size()+" nodes with highest degree: "+highestDegree, getClass());
 				for (String vertexId: highestDegree) {
 					graph.setVertexAttribute(vertexId, "presistant", true);
 				}
@@ -178,7 +188,7 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 			} 	
 			if (countVaccinesRandom > 0) {
 				Set<String> idsVaccinated = new HashSet<String>(countVaccinesRandom); 
-				ColtRandomGenerator random = new ColtRandomGenerator(); 
+				ColtRandomGenerator random = new ColtRandomGenerator();
 				while (idsVaccinated.size() < countVaccinesRandom) {
 					// pick up a random vertex
 					String candidate = graph.getVertex(random.nextIntBetween(0, (int)graph.getVerticesCount()-1));
@@ -256,7 +266,7 @@ public class SIRVaccinesModelExec extends AbstractAlgoExecutionOneshot {
 			double protectedTotal = susceptibleAtEndOfSimulation +((double)totalResistanceBeginning)*100/graph.getVerticesCount();
 			
 			res.setResult(SIRModelAlgo.OUTPUT_INFECTED, result.get("measure-infected"));
-			res.setResult(SIRModelAlgo.OUTPUT_SUSCEPTIBLE, protectedTotal);
+			res.setResult(SIRModelAlgo.OUTPUT_SUSCEPTIBLE, susceptibleAtEndOfSimulation);
 			res.setResult(SIRModelAlgo.OUTPUT_RESISTANT, result.get("measure-resistant"));
 			res.setResult(SIRModelAlgo.OUTPUT_DURATION, result.get("_duration"));
 

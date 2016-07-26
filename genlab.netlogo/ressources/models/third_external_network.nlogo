@@ -21,6 +21,14 @@ end
 breed [nodes node]
 undirected-link-breed [edges edge]
 
+globals
+[
+  ticks-for-peak-A ;; the tick for the max of Awareness (was never higher later)
+  last-max-peak-A
+  ticks-for-peak-AK ;; the tick for the max of AK (was never higher later)
+  last-max-peak-AK
+  ticks-last-activity ; the last tick when something happened
+]
 
 turtles-own
 [
@@ -78,6 +86,12 @@ to setup
   setup-network-load
   setup-nodes
 
+  set ticks-for-peak-A 0
+  set ticks-for-peak-AK 0
+  set last-max-peak-A 0
+  set last-max-peak-AK 0
+  set ticks-last-activity 0
+
   ask n-of (initial-proportion-knowledgeable * count turtles) turtles [ become-knowledgeable ]
 
   ask links [ set color gray ]
@@ -100,6 +114,8 @@ to go
     )
     [ stop ]
 
+
+
   ; change the state of agents which are in timeout
   manage-timeouts
 
@@ -110,9 +126,29 @@ to go
   ; change from proactive to knowledage, or seeking to aware
   exchange-info
 
+  ; detect outputs related to time
+  update-ticks-detection
+
   ;spread-virus
   ;do-virus-checks
   tick
+end
+
+to update-ticks-detection
+  let prop_A (count turtles with [aware?] / count turtles)
+  if (prop_A > last-max-peak-A) [
+    set ticks-for-peak-A ticks
+    set last-max-peak-A prop_A
+  ]
+
+  let prop_AK (count turtles with [not unaware? and not ignorant?] / count turtles)
+  if (prop_AK > last-max-peak-AK) [
+    set ticks-for-peak-AK ticks
+    set last-max-peak-AK prop_AK
+  ]
+
+  set ticks-last-activity max list ticks-for-peak-A ticks-for-peak-AK
+
 end
 
 to set-color
@@ -547,12 +583,45 @@ SLIDER
 advertisement-duration
 advertisement-duration
 0
-10000
-10
+50
+5
 1
 1
 NIL
 HORIZONTAL
+
+MONITOR
+27
+205
+85
+250
+peak A
+ticks-for-peak-A
+17
+1
+11
+
+MONITOR
+97
+204
+154
+249
+peak AK
+ticks-for-peak-AK
+17
+1
+11
+
+MONITOR
+169
+205
+226
+250
+NIL
+ticks-last-activity
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?
