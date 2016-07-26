@@ -186,6 +186,7 @@ public abstract class AbstractContainerExecution
 				ourState = ComputationState.FINISHED_CANCEL;
 			} else {
 				ourState = ComputationState.FINISHED_OK;
+				
 			}
 			
 			messages.traceTech("all subs terminated; should transmit results (and set my state to "+ourState+")", getClass());

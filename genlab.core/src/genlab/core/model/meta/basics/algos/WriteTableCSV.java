@@ -81,12 +81,12 @@ public class WriteTableCSV extends BasicAlgo {
 				// local checks: conformity of parameters
 				File file = (File)getValueForParameter(PARAMETER_FILE);
 				if (file.isDirectory()) {
-					res.messages.errorUser("invalid value for the parameter "+PARAMETER_FILE.getName()+": the path "+file.getPath()+" is a directory while a file is expected", getClass());
+					res.messages.errorUser("invalid value for the parameter "+PARAMETER_FILE.getName()+": the path "+file.getPath()+" is a directory while a file is expected", WriteTableCSV.class);
 				} else if (file.exists()) {
 					if (!file.canWrite()) {
-						res.messages.errorUser("invalid value for the parameter "+PARAMETER_FILE.getName()+": the file "+file.getPath()+" is not writable", getClass());
+						res.messages.errorUser("invalid value for the parameter "+PARAMETER_FILE.getName()+": the file "+file.getPath()+" is not writable", WriteTableCSV.class);
 					} else {
-						res.messages.warnUser("the parameter "+PARAMETER_FILE.getName()+" will lead to the replacement of the file "+file.getPath()+"; its previous content will be lost", getClass());
+						res.messages.warnUser("the parameter "+PARAMETER_FILE.getName()+" will lead to the replacement of the file "+file.getPath()+"; its previous content will be lost", WriteTableCSV.class);
 					}
 				}
 			}

@@ -154,6 +154,7 @@ public class WriteTableCSVExec
 
 		
 		try {
+			messages.debugUser("writing intermediate results into "+file.getName(), getClass());
 			writeTableToFile(file, table);					
 		} catch (ProgramException e) {
 

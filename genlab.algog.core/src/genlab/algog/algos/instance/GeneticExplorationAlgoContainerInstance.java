@@ -12,6 +12,7 @@ import genlab.core.model.instance.WorkflowCheckResult;
 import genlab.core.model.meta.ExistingAlgoCategories;
 import genlab.core.model.meta.IAlgo;
 import genlab.core.model.meta.IAlgoContainer;
+import genlab.core.usermachineinteraction.GLLogger;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -111,55 +112,77 @@ public class GeneticExplorationAlgoContainerInstance extends
 			
 			explored.add(current);
 			
-			// all the parents of this algo have to be processed
-			if (current.getContainer() != this) {
-				toExplore.add(current.getContainer());
-				children.add(current.getContainer());
-			}
-			
-			// all the outputs have to be processed
-			for (IInputOutputInstance outInstance : current.getOutputInstances()) {
+			try {
 				
-				for (IConnection outC: outInstance.getConnections()) {
-					IAlgoInstance to = outC.getTo().getAlgoInstance();
-					
-					if (to.getAlgo() instanceof AbstractGeneAlgo) 
-						continue;
-					
-					if (!explored.contains(to))
-						toExplore.add(to);
-					
-					if (to.getAlgo() instanceof GoalAlgo) {
-						
-						// found a goal, let's add it.
-						genomeGoalAlgos.add(to);
-						
-					} 
-						
-					children.add(to);
-					
+				// all the parents of this algo have to be processed
+				if (current.getContainer() != null && current.getContainer() != this) {
+					toExplore.add(current.getContainer());
+					children.add(current.getContainer());
 				}
-			}
-			
-			// but also all the inputs !
-			for (IInputOutputInstance inInstance : current.getInputInstances()) {
-				
-				for (IConnection inC: inInstance.getConnections()) {
-					IAlgoInstance fromA = inC.getFrom().getAlgoInstance();
-					
-					if (fromA.getAlgo() instanceof AbstractGeneAlgo) 
-						continue;
-					if (fromA.getAlgo() instanceof GenomeAlgo) 
-						continue;
 
-					if (!explored.contains(fromA))
-						toExplore.add(fromA); 
-					
-					children.add(fromA);
-					
-				}
+				
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+				GLLogger.errorTech("error while processing the container for algo "+current, getClass(), e);
+				throw e;
 			}
 			
+			try {
+	
+				// all the outputs have to be processed
+				for (IInputOutputInstance outInstance : current.getOutputInstances()) {
+					
+					for (IConnection outC: outInstance.getConnections()) {
+						IAlgoInstance to = outC.getTo().getAlgoInstance();
+						
+						if (to.getAlgo() instanceof AbstractGeneAlgo) 
+							continue;
+						
+						if (!explored.contains(to))
+							toExplore.add(to);
+						
+						if (to.getAlgo() instanceof GoalAlgo) {
+							
+							// found a goal, let's add it.
+							genomeGoalAlgos.add(to);
+							
+						} 
+							
+						children.add(to);
+						
+					}
+				}
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+				GLLogger.errorTech("error while processing the outputs for algo "+current, getClass(), e);
+				throw e;
+			}
+			
+			try { 
+			
+				// but also all the inputs !
+				for (IInputOutputInstance inInstance : current.getInputInstances()) {
+					
+					for (IConnection inC: inInstance.getConnections()) {
+						IAlgoInstance fromA = inC.getFrom().getAlgoInstance();
+						
+						if (fromA.getAlgo() instanceof AbstractGeneAlgo) 
+							continue;
+						if (fromA.getAlgo() instanceof GenomeAlgo) 
+							continue;
+	
+						if (!explored.contains(fromA))
+							toExplore.add(fromA); 
+						
+						children.add(fromA);
+						
+					}
+				}
+			} catch (RuntimeException e) {
+				e.printStackTrace();
+				GLLogger.errorTech("error while processing the outputs for algo "+current, getClass(), e);
+				throw e;
+			}
 			
 			toExplore.remove(current);
 		}

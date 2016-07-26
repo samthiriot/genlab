@@ -431,7 +431,7 @@ duration-seek
 duration-seek
 0
 100
-9
+3
 1
 1
 NIL
@@ -446,7 +446,7 @@ duration-proactive
 duration-proactive
 0
 100
-28
+3
 1
 1
 NIL
