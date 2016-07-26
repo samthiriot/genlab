@@ -122,8 +122,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * @param resultTargets
 	 * @param resultValues
 	 */
-	protected void manageResultsForCurrentGeneration(Set<AnIndividual> individuals
-			) {
+	protected void manageResultsForCurrentGeneration(Set<AnIndividual> individuals) {
 		
 		messages.infoUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
 
@@ -135,9 +134,9 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 
 		
 		this.progress.incProgressMade();
-
-		
+	
 	}
+	
 	/**
 	 * Called before any other computation.
 	 * Detects the actual work to do given the parameters.
@@ -156,6 +155,8 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		Map<AGene<?>,IAlgoInstance> gene2geneAlgoInstanceLocal = new LinkedHashMap<AGene<?>, IAlgoInstance>();
 
 		for (IAlgoInstance childInstance: algoInst.getChildren()) {
+			
+			System.err.println("processing child "+childInstance);
 			
 			if (!(childInstance.getAlgo() instanceof GenomeAlgo))
 				continue;
@@ -232,10 +233,10 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 						genomeGoalAlgos
 						);
 				
-				if (genomeGoalAlgos.size() != allGoals.size())
-					throw new WrongParametersException("each genome should be connected to algos connected to all the goals.");
-				
 			}		
+
+			if (genomeGoalAlgos.size() != allGoals.size())
+				throw new WrongParametersException("each genome should be connected to algos connected to all the goals.");
 			
 			// sort the genes by name
 			{
@@ -688,8 +689,6 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		// notify children of our updates
 		progress.setComputationState(ComputationState.SENDING_CONTINOUS);
 
-		
-		
 		
 	}
 	

@@ -40,7 +40,7 @@ public class IfBlockExec
 		// let's check whether we should start tasks or not
 		shouldRun = (Boolean) getInputValueForInput(IfBlockAlgo.INPUT_CONDITION);
 
-		messages.infoTech("Starting If", getClass());
+		//messages.infoTech("Starting If", getClass());
 		
 		super.run();
 		
@@ -50,7 +50,7 @@ public class IfBlockExec
 			return;
 		} 
 		
-		messages.infoTech("Started If", getClass());
+		//messages.infoTech("Started If", getClass());
 		
 	}
 

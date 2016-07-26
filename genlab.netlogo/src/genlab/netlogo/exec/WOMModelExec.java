@@ -72,7 +72,7 @@ public class WOMModelExec extends AbstractAlgoExecutionOneshot {
 					
 			progress.setProgressMade(3);
 	
-			final File fileModel = NetlogoUtils.findFileInPlugin("ressources/models/second_external_network.nlogo");
+			final File fileModel = NetlogoUtils.findFileInPlugin("ressources/models/third_external_network.nlogo");
 				
 			// run the model
 			Map<String,Object> result = null;

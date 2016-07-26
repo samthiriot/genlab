@@ -44,7 +44,6 @@
    <vm>
    </vm>
 
-
    <plugins>
       <plugin id="ar.com.tadp.xml.rinzo.core"/>
       <plugin id="ar.com.tadp.xml.rinzo.jdt"/>

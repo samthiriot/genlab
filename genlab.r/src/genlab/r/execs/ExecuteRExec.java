@@ -54,7 +54,8 @@ public class ExecuteRExec extends AbstractAlgoExecutionOneshot {
 				
 				@Override
 				public void println(String arg0) {
-					messages.debugUser("R:"+arg0, getClass());
+					if (messages != null)
+						messages.debugUser("R:"+arg0, getClass());
 				}
 				
 			});

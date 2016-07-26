@@ -121,7 +121,7 @@ public class AbstractContainerExecutionIteration
 		
 	}
 
-	private void initSubtasks() {
+	protected void initSubtasks() {
 		
 		messages.debugTech("init subtasks for this iteration", getClass());
 		
