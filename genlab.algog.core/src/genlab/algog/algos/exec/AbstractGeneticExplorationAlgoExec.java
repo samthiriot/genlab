@@ -122,8 +122,7 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 	 * @param resultTargets
 	 * @param resultValues
 	 */
-	protected void manageResultsForCurrentGeneration(Set<AnIndividual> individuals
-			) {
+	protected void manageResultsForCurrentGeneration(Set<AnIndividual> individuals) {
 		
 		messages.infoUser("retrieving the fitness results for the generation "+iterationsMade, getClass());
 
@@ -135,9 +134,9 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 
 		
 		this.progress.incProgressMade();
-
-		
+	
 	}
+	
 	/**
 	 * Called before any other computation.
 	 * Detects the actual work to do given the parameters.
@@ -690,8 +689,6 @@ public abstract class AbstractGeneticExplorationAlgoExec extends AbstractContain
 		// notify children of our updates
 		progress.setComputationState(ComputationState.SENDING_CONTINOUS);
 
-		
-		
 		
 	}
 	

@@ -230,6 +230,8 @@ public abstract class AbstractOpenViewAlgoExec extends AbstractAlgoExecutionOnes
 	@Override
 	public void run() {
 
+		System.err.println("runing view");
+		
 		try {
 
 			getProgress().setComputationState(ComputationState.STARTED);
